@@ -1,0 +1,6 @@
+data/connections.json
+demo/
+demo-report/
+*.zip
+.DS_Store
+Thumbs.db

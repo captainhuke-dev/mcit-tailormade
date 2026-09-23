@@ -1,0 +1,18 @@
+[
+    {
+        "id": "l1788928194557",
+        "name": "TMS",
+        "url": "http:\/\/192.168.0.200\/tms\/",
+        "desc": "Base folder ของภาพเอกสารจากขนส่ง TMS — ใช้โดยโปรแกรม P115 (TMS View Picture)",
+        "updatedAt": "2026-09-09T11:35:40+07:00",
+        "createdAt": "2026-09-09T11:29:54+07:00"
+    },
+    {
+        "id": "l1788928673397",
+        "name": "BILLING",
+        "url": "http:\/\/192.168.0.200\/Billing\/",
+        "desc": "Base folder ของภาพเอกสาร Invoice จากบัญชี — ใช้โดยโปรแกรม P022 (View Billing Document)",
+        "updatedAt": "2026-09-09T11:37:53+07:00",
+        "createdAt": "2026-09-09T11:37:53+07:00"
+    }
+]
