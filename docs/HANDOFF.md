@@ -47,11 +47,23 @@
 | P033 | รายงานลูกค้าที่มียอดค้างเกินวงเงิน | ready (1 หน้า — real data MAC5 3 modes + preview A4 Landscape multi-page + zoom + พิมพ์เอกสาร) |
 | P035 | ตรวจสอบลูกค้าติดอนุมัติ | ready (1 หน้า — real data MAC5 + checkbox เกรด X + pager 15/หน้า + detail modal) |
 | P053 | สติ๊กเกอร์ 10x7.5 (ใบปะ) | ready (1 หน้า — real data MAC5 + logic A/B + table 280×205px + zoom 100% + หน้าถัด ๆ + พิมพ์ 1 ตั๋ว/หน้า) |
+| P054 | Packing Order/Cartonize/ใบจัดกล่อง | dev (1 หน้า — mock data — สไตล์ P063: filter card + actionbar + table + preview modal ป้ายชื่อผู้รับ + พิมพ์ A4) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 23/09 — P054 Packing Order/Cartonize/ใบจัดกล่อง — **DEV**
+- **1 หน้า (ไม่มี tab)** — `assets/js/p054-packing.js` (IIFE `window.P054Packing`) — **real data MAC5** (`api/p054_search.php`)
+- **SQL (user verbatim)**: MIH LEFT JOIN DEB — `WHERE MIHvnos IN (SELECT MILvnos FROM MIL WHERE ISNUMERIC(CONVERT(nvarchar(255),MILvCol2))=0 AND CONVERT(nvarchar(255),MILvCol2)!='' AND MILtype='IS' GROUP BY MILvnos)` + วันที่ (CONVERT DATE 103) + MIHstatus + MIHvnos LIKE — ORDER BY MIHvnos — SELECT: date/vnos/DEBcode/DEBnameT/DEBcontactT/status/desc/memo/notes/MIHjob — **test: 2026-09-22 + status 65 = 43 rows** ✓
+- **สไตล์ลอก P063 รายการ Invoice** — CSS vars `--p054-*` (light/dark) — filter card (grid 3) + toolbar (h2 "รายการใบสำคัญ" + result text) + actionbar (selicon + "เลือกแล้ว N รายการ" + ปุ่มเลือกทั้งหมด/Print Preview) + table card (th uppercase / td 14px / row hover+selected / doc number = primary monospace)
+- **Filter**: วันที่ + **สถานะ** (19 values — 32-Pack ปกติ (default) → 67-Not Ship) + **เลขใบสำคัญ** (search = document เท่านั้น) + ปุ่มค้นหา/ล้างค่า — **doSearch = fetch API** (loading + btn disabled)
+- **ตาราง 7 คอลั่น** (checkbox | วันที่ | เลขที่ใบสำคัญ | รหัสลูกค้า | ชื่อลูกค้า | พื้นที่(=DEBcontactT) | สถานะ) — row click = toggle — 0 rows = empty row — **pagination 15/หน้า** (สไตล์ P063: "แสดง X-Y จาก N รายการ · หน้า i/total" + ‹ + ปุ่มเลข (สูงสุด 7, active) + › — เลือกทั้งหมด = รายหน้า — select คร่อมหน้า)
+- **Actionbar**: ปุ่มเลือกทั้งหมด + Print Preview (route/font input ตัดแล้ว)
+- **Preview modal (A4)** — title "Packing Order" — **zoom − / % / + / พอดีจอ** (25-250%) — 1 หน้า A4 = 794×1123px (padding **15pt** ทั้ง 4 ด้าน) — **4 ป้าย/หน้า** — **ป้าย = table 550pt × 65pt ขอบ 1px — colgroup 55pt/155pt/340pt — กึ่งกลางกระดาษ** (table-layout fixed): col1 **"Route" (12px) + [Route] (18px ตัวหนา)** (จาก BI_CUBE.dbo.JOB_TransportRoute ตาม JOBcode — fallback JOBcode — monospace) · col2 **text (12px monospace ตัวหนา — ข้างบน) + barcode CODE128 150×50px** (displayValue=false) · col3 "**ชื่อลูกค้า : DEBcode DEBnameT DEBcontactT**" (**16px ปกติ weight 400 — ชิดบน valign top**)
+- **พิมพ์** — `.p054-printroot` ระดับ body (pattern P053) + `@page{size:A4;margin:0}` + `.p054-page` 210×297mm + page-break-after — **test: 9 ป้าย = 3 หน้า A4** ✓
+- modules.php: P054 status **dev** — **ต่อไป: status ready (ถ้า user ยืนยัน) + test print จริง**
 
 ### 22-23/09 — P053 สติ๊กเกอร์ 10x7.5 (ใบปะ) — **READY**
 - **1 หน้า (ไม่มี tab)** — `assets/js/p053-sticker.js` (IIFE `window.P053Sticker`) — real data MAC5 — form = เลขที่ใบสำคัญ (44px radius 11px + ปุ่ม gradient + search icon — แบบ P050) + ปุ่มสร้างชิด textbox
