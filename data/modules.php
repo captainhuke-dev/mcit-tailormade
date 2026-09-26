@@ -146,7 +146,7 @@ return [
                     ["id" => "P051", "name" => "รายงานการเก็บเงินสด"],
                     ["id" => "P052", "name" => "สติ๊กเกอร์ 10x10 (ใบปะ)"],
                     ["id" => "P053", "name" => "สติ๊กเกอร์ 10x7.5 (ใบปะ)", "status" => "ready"],
-                    ["id" => "P054", "name" => "Packing Order/Cartonize/ใบจัดกล่อง"],
+                    ["id" => "P054", "name" => "Packing Order/Cartonize/ใบจัดกล่อง", "status" => "ready"],
                 ],
             ],
             [
@@ -238,7 +238,7 @@ return [
                     ["id" => "P089", "name" => "ชื่อเล่นสินค้า"],
                     ["id" => "P090", "name" => "Mail โฆษณา"],
                     ["id" => "P091", "name" => "ตั้งราคาซื้อ-ขายสินค้า"],
-                    ["id" => "P092", "name" => "พิมพ์ Barcode/สคบ."],
+                    ["id" => "P092", "name" => "พิมพ์ Barcode/สคบ.", "status" => "dev"],
                 ],
             ],
         ],
@@ -344,7 +344,7 @@ return [
                 "name"        => "พิมพ์เอกสาร",
                 "description" => "พิมพ์ Barcode สำหรับงานคลัง",
                 "programs"   => [
-                    ["id" => "P092", "name" => "พิมพ์ Barcode/สคบ."],
+                    ["id" => "P092", "name" => "พิมพ์ Barcode/สคบ.", "status" => "dev"],
                     ["id" => "P119", "name" => "พิมพ์ Barcode/สคบ. จาก PO"],
                 ],
             ],

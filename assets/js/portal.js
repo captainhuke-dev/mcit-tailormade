@@ -1053,6 +1053,20 @@
       `;
     }
 
+    // P092: Barcode/สคบ. (พิมพ์ Barcode/สติกเกอร์)
+    if (programId === "P092") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p092Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P035: ตรวจสอบลูกค้าติดอนุมัติ
     if (programId === "P035") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1385,6 +1399,12 @@
     if (page.type === "program" && page.programId === "P054" && window.P054Packing) {
       const root = document.getElementById("p054Root");
       if (root) window.P054Packing.mount(root);
+    }
+
+    // P092: mount Barcode/สคบ. app
+    if (page.type === "program" && page.programId === "P092" && window.P092Barcode) {
+      const root = document.getElementById("p092Root");
+      if (root) window.P092Barcode.mount(root);
     }
 
     // P053: mount Sticker app

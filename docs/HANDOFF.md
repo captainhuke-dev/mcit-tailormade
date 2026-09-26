@@ -47,12 +47,32 @@
 | P033 | รายงานลูกค้าที่มียอดค้างเกินวงเงิน | ready (1 หน้า — real data MAC5 3 modes + preview A4 Landscape multi-page + zoom + พิมพ์เอกสาร) |
 | P035 | ตรวจสอบลูกค้าติดอนุมัติ | ready (1 หน้า — real data MAC5 + checkbox เกรด X + pager 15/หน้า + detail modal) |
 | P053 | สติ๊กเกอร์ 10x7.5 (ใบปะ) | ready (1 หน้า — real data MAC5 + logic A/B + table 280×205px + zoom 100% + หน้าถัด ๆ + พิมพ์ 1 ตั๋ว/หน้า) |
-| P054 | Packing Order/Cartonize/ใบจัดกล่อง | dev (1 หน้า — mock data — สไตล์ P063: filter card + actionbar + table + preview modal ป้ายชื่อผู้รับ + พิมพ์ A4) |
+| P054 | Packing Order/Cartonize/ใบจัดกล่อง | ready (1 หน้า label+items+notes + หน้า JOB 1 กลุ่มตัวอักษรต้น MILvCol2 = 1 หน้า A4 — real data MAC5 — สไตล์ P063 + preview A4 + barcode + พิมพ์) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 26/09 — P092 Barcode/สคบ. (พิมพ์ Barcode/สติกเกอร์) — **DEV**
+- `assets/js/p092-barcode.js` (IIFE `window.P092Barcode`) — ตาม `demo/P092_demo.html` — **mock data** (10010671/10010673/10011159 — API ภายหลัง)
+- รหัสสินค้า → modal ตั้งค่า (ประเภท สติกเกอร์/บาร์โค้ด · ขนาด เล็ก/กลาง — ใหญ่+ใหญ่ 10×7 disabled · จำนวน 1-50 + หน่วย Ea/Box/Bag/Pack/Set) → sticker sheet (4/หน้า 2×2 — ชื่อสินค้า + barcode CODE128 + number + info line) → print A4 2 คอลั่น (small 45mm / medium 65mm)
+- modules.php status dev (อยู่ 2 modules: การตลาด + คลังสินค้า) — cache `?v=20260926a`
+
+### 25/09 — P054 JOB pages (หน้าต่อไป — จาก C# Frm_BucketParts_Version2) — **READY**
+- **1 กลุ่มตัวอักษรต้น MILvCol2 = 1 หน้า A4** — แทรกหลังหน้า 1 ของแต่ละ row ที่เลือก — renderPreview fetch 3 APIs (routes + items + **groups**)
+- **API `api/p054_groups.php`** (POST `{connectionId, vnos[]}`) — conditions = ตัวอักษรแรกของแต่ละส่วนใน MILvCol2 (split `,` — หมดซ้ำ — เรียง A→Z) · items กลุ่ม = `MILtype='IS' AND MILvCol2 LIKE '%X%' AND STKsnsv != 3` · MIS (snsv=4) = `MIS WHERE MISvnos=? AND MISstk=? AND MISline=?` · packing = `TOP 1 BI_CUBE.dbo.tb_MILPacking.unitpacking` — **test: IVVN6909-3855 → l,m,n** ✓
+- **`genStkRows`** (4 รูปแบบ — C# GenSTKTablePage): snsv=4 `A/2` = MIS แจก lot + desc `(q1,q2,...)` · `A/3` = 3 แถว qty=(quan/3)/conv · `A=5,B=3` = ตัดส่วนที่ตรงกับ cond · ปกติ = quan/conv
+- **`createJobPage` — spec สุดท้าย (rounds 20260925b→w):**
+  - **ตาราง 1 (header 550pt — 50/250/250pt):** col1 = Route (12px) + **ค่า route lookup** (18px 700 mono — เหมือนตาราง 1 หน้า 1) · col2 = **เลขที่ใบสำคัญ (14px mono 700) + barcode 150×50** · col3 = **JOB Open (14px mono 700) + barcode `O-เลขที่-กลุ่ม` 150×50**
+  - **ตาราง 2 (ผู้รับ 550pt — 2 คอลั่น 50/500pt):** แถว 1 = colspan 2 "ผู้รับ" (30px 700 + padding-top 20px) · แถว 2 = col1 ว่าง + col2 = **DEBnameT \n DEBcontactT** (ตั้งตรง — ไม่ cleanProductDesc — **font ตาม input ขนาดอักษรชื่อผู้รับ — default 42** — 700 — padding-top 20px — แถวสูง 300px — `white-space: pre-line`) — **ถ้า MIHdesc มี "ส่งต่อ" → MIHmemo แทน**
+  - **ตาราง 3 (items 550pt — 20/75/325/70/60pt):** หัวคอลั่น (16px 700) + items (16px — **แถว 30px** — **ไม่ pad**) + packing (20px right)
+  - **ตาราง 4 (footer 550pt — 275/275pt):** **position absolute — ขยับขึ้นจากขอบล่าง 150px (bottom 170px) — กึ่งกลางหน้า** — แถว 1 = รหัส-กลุ่ม + JOB Close (14px) · แถว 2 = barcode `รหัส-กลุ่ม` / `C-รหัส-กลุ่ม` (**150×50**)
+  - **เส้นตาราง:** ตาราง 1+2 = **เส้นออก ยกเว้นเส้น bottom (แถวสุดท้าย)** · ตาราง 3+4 = **ไร้เส้น** — **ระยะห่างระหว่างตาราง = 10px** (margin-top)
+  - **barcode 4 ตัว/หน้า:** header `vn` + `O-vn-X` (150×50) · footer `vn-X` + `C-vn-X` (150×50)
+- **หน้า P054 (rounds 20260925j→w):** **input "ขนาดอักษรชื่อผู้รับ"** (type number — value 42 — min 8 max 120 — label ข้างหน้า input ในบรรทัดเดียวกัน — actionbar **ก่อนปุ่ม Print Preview**) — `state.receiverFont` (save ข้าม re-render) — ควบคุม font ชื่อผู้รับตาราง 2 ทุกหน้า JOB · **วันที่ค้นหา = วันปัจจุบัน** (set อัตโนมัติ — reset = วันนี้) · **modal: ปุ่ม "พิมพ์" (primary) ข้างบน (head — ข้าง zoom) — ปุ่มปิด (p054BtnClose + modalfoot) ตัดแล้ว** (ปิด = × หรือ click backdrop)
+- **test CDP mock fetch**: 1 ป้าย + 3 JOB pages = "1 ป้าย · 4 หน้า A4" · 12 barcodes · receiver = memo ✓ · items l: 10300158 qty=1 (จาก `l=1,m=1`) ✓
+- **modules.php: P054 status ready** (user ยืนยัน 2026-09-25) — cache: `p054-packing.js?v=20260925w`
 
 ### 23/09 — P054 Packing Order/Cartonize/ใบจัดกล่อง — **DEV**
 - **1 หน้า (ไม่มี tab)** — `assets/js/p054-packing.js` (IIFE `window.P054Packing`) — **real data MAC5** (`api/p054_search.php`)
@@ -215,7 +235,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ## 4. สถานะปัจจุบัน + สิ่งที่ทำต่อได้
 
-### เสร็จแล้ว (ready): P063, P064, P115, P128, P022, P031, P032, P111, P050, P034, P013, P033, P035, P053
+### เสร็จแล้ว (ready): P063, P064, P115, P128, P022, P031, P032, P111, P050, P034, P013, P033, P035, P053, P054
 
 ### ทำต่อได้
 - P036+ (บัญชี), P112, P113-P119 ฯลฯ — placeholders
