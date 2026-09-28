@@ -307,7 +307,7 @@
         '<table class="p092-grid p092-glb p092-border">' + cols(2) +
         '<tr>' +
         '<td class="p092-r1h p092-c p092-f50px p092-vmid">' + mid4 + '</td>' +
-        '<td class="p092-r1h p092-c p092-vmid">' + esc(p.stkBarcode) + '<br>' + eanL + '</td>' +
+        '<td class="p092-r1h p092-c p092-vmid p092-f12px">' + esc(p.stkBarcode) + '<br>' + eanL + '</td>' +
         '</tr>' +
         '<tr><td class="p092-r2h p092-vmid p092-f16px p092-pl10 p092-nb" colspan="2">' + skbText(p, 'p092-f16px') + '</td></tr>' +
         '<tr>' +
@@ -325,7 +325,7 @@
       '<table class="p092-grid p092-glb p092-border">' + cols(2) +
       '<tr>' +
       '<td class="p092-r1h7 p092-c p092-f50px p092-vmid">' + mid4b + '</td>' +
-      '<td class="p092-r1h7 p092-c p092-vmid">' + esc(p.stkBarcode) + '<br>' + eanL2 + '</td>' +
+      '<td class="p092-r1h7 p092-c p092-vmid p092-f10px">' + esc(p.stkBarcode) + '<br>' + eanL2 + '</td>' +
       '</tr>' +
       '<tr><td class="p092-r2h7 p092-vmid p092-f12px p092-pl10 p092-nb" colspan="2">' + skbText(p, 'p092-f12px') + '</td></tr>' +
       '<tr>' +
@@ -666,6 +666,8 @@
       ".p092-r1m{height:15px;vertical-align:bottom}",
       ".p092-grid td.p092-r1m{height:15px;vertical-align:bottom}",
       ".p092-f12px{font-size:12px}",
+      ".p092-f10px{font-size:10px}",
+      ".p092-grid td.p092-f10px{font-size:10px}",
       ".p092-grid td.p092-f12px{font-size:12px}",
       ".p092-f14px{font-size:14px}",
       ".p092-f16px{font-size:16px}",
