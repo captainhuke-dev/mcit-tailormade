@@ -238,7 +238,7 @@ return [
                     ["id" => "P089", "name" => "ชื่อเล่นสินค้า"],
                     ["id" => "P090", "name" => "Mail โฆษณา"],
                     ["id" => "P091", "name" => "ตั้งราคาซื้อ-ขายสินค้า"],
-                    ["id" => "P092", "name" => "พิมพ์ Barcode/สคบ.", "status" => "dev"],
+                    ["id" => "P092", "name" => "พิมพ์ Barcode/สคบ.", "status" => "ready"],
                 ],
             ],
         ],
@@ -344,7 +344,7 @@ return [
                 "name"        => "พิมพ์เอกสาร",
                 "description" => "พิมพ์ Barcode สำหรับงานคลัง",
                 "programs"   => [
-                    ["id" => "P092", "name" => "พิมพ์ Barcode/สคบ.", "status" => "dev"],
+                    ["id" => "P092", "name" => "พิมพ์ Barcode/สคบ.", "status" => "ready"],
                     ["id" => "P119", "name" => "พิมพ์ Barcode/สคบ. จาก PO"],
                 ],
             ],

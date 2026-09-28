@@ -235,7 +235,8 @@
     var p = state.product;
     var isBarcode = state.type === 'barcode';
     var ub = eanValue(p);
-    var sn = snCode(state.running + i + 1);
+    var sn = snCode(state.running + i * stickersPerPage() + 1);
+    var sn2 = snCode(state.running + i * stickersPerPage() + 2);
 
     /* ---- Small (3 ตัว/หน้า — 5 คอลั่น [92,5,92,5,92]) ---- */
     if (state.size === 'small') {
@@ -249,15 +250,15 @@
           cell +
           '</tr></table></article>';
       }
-      /* Small_Barcode — แถว 1 = STKBarcode ×3 (9px) · แถว 2 = EAN13 80×50 ×3 */
+      /* Small_Barcode — แถว 1 = STKBarcode ×3 (9px · สูง 30px ชิดล่าง) · แถว 2 = EAN13 110×60 ×3 — คอลั่น 93/5/93/5/93pt */
       var bc = esc(p.stkBarcode);
-      var ean = ean13HTML(ub, 80, 50);
+      var ean = ean13HTML(ub, 110, 60);
       return '<article class="p092-sticker p092-st-small">' +
-        '<table class="p092-grid p092-g5">' + cols(5) +
+        '<table class="p092-grid p092-g5b">' + cols(5) +
         '<tr>' +
-        '<td class="p092-c p092-f9px">' + bc + '</td><td></td>' +
-        '<td class="p092-c p092-f9px">' + bc + '</td><td></td>' +
-        '<td class="p092-c p092-f9px">' + bc + '</td>' +
+        '<td class="p092-c p092-f9px p092-r1">' + bc + '</td><td></td>' +
+        '<td class="p092-c p092-f9px p092-r1">' + bc + '</td><td></td>' +
+        '<td class="p092-c p092-f9px p092-r1">' + bc + '</td>' +
         '</tr>' +
         '<tr>' +
         '<td class="p092-c">' + ean + '</td><td></td>' +
@@ -276,52 +277,61 @@
           cellM + cellM +
           '</tr></table></article>';
       }
-      /* Middel_Barcode — 3 แถว × 2: STKBarcode · EAN13 (h43) · S/N + CODE128 */
-      var eanM = ean13HTML(ub, 120, 40);
-      var snM = code128HTML(sn, 100, 30);
+      /* Middel_Barcode — 3 แถว × 5 คอลั่น (20/122/5/20/122pt): แถว 1 สูง 15px ชิดล่าง · แถว 2 middle · S/N 12px + CODE128 40px เต็ม cell (padding-left 25px) — เส้นตาราง */
+      var bcM = esc(p.stkBarcode);
+      var eanM = ean13HTML(ub, 100, 50);
+      var snM = code128HTML(sn, 135, 40);
       return '<article class="p092-sticker p092-st-medium">' +
-        '<table class="p092-grid p092-g2m">' + cols(2) +
-        '<tr><td class="p092-c p092-f9">' + esc(p.stkBarcode) + '</td>' +
-        '<td class="p092-c p092-f9">' + esc(p.stkBarcode) + '</td></tr>' +
-        '<tr><td class="p092-c p092-eanrow">' + eanM + '</td>' +
-        '<td class="p092-c p092-eanrow">' + eanM + '</td></tr>' +
-        '<tr><td class="p092-snrow"><span class="p092-snlabel p092-f12">S/N</span>' + snM + '</td>' +
-        '<td class="p092-snrow"><span class="p092-snlabel p092-f12">S/N</span>' + snM + '</td></tr>' +
+        '<table class="p092-grid p092-g5m">' + cols(5) +
+        '<tr>' +
+        '<td class="p092-c p092-f8px p092-r1m" colspan="2">' + bcM + '</td><td></td>' +
+        '<td class="p092-c p092-f8px p092-r1m" colspan="2">' + bcM + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td class="p092-c p092-vmid" colspan="2">' + eanM + '</td><td></td>' +
+        '<td class="p092-c p092-vmid" colspan="2">' + eanM + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td class="p092-c p092-f12px p092-vmid">S/N</td><td class="p092-vleft p092-pl25">' + snM + '</td><td></td>' +
+        '<td class="p092-c p092-f12px p092-vmid">S/N</td><td class="p092-vleft p092-pl25">' + code128HTML(sn2, 135, 40) + '</td>' +
+        '</tr>' +
         '</table></article>';
     }
 
-    /* ---- Large 10×10 (1 ตัว/หน้า — 2 คอลั่น [100,180]) — barcode layout เสมอ ---- */
+    /* ---- Large 10×10 (1 ตัว/หน้า — 2 คอลั่น [100,180]pt) — barcode layout เสมอ ---- */
     if (state.size === 'large') {
-      var eanL = ean13HTML(ub, 160, 60);
-      var snL = code128HTML(sn, 90, 30);
+      var eanL = ean13HTML(ub, 150, 60);
+      var snL = code128HTML(sn, 170, 45);
       var mid4 = esc(ub.substr(4, 4));
       return '<article class="p092-sticker p092-st-large">' +
-        '<table class="p092-grid p092-gl">' + cols(2) +
+        '<table class="p092-grid p092-glb p092-border">' + cols(2) +
         '<tr>' +
-        '<td class="p092-mid p092-f58" rowspan="2">' + mid4 + '</td>' +
-        '<td class="p092-c p092-f12 p092-btbr">' + esc(p.stkBarcode) + '</td>' +
+        '<td class="p092-r1h p092-c p092-f50px p092-vmid">' + mid4 + '</td>' +
+        '<td class="p092-r1h p092-c p092-vmid">' + esc(p.stkBarcode) + '<br>' + eanL + '</td>' +
         '</tr>' +
-        '<tr><td class="p092-c p092-f12 p092-bbbr">' + eanL + '</td></tr>' +
-        '<tr><td class="p092-cell p092-cell-l p092-f17" colspan="2">' + skbText(p, 'p092-f17') + '</td></tr>' +
-        '<tr><td class="p092-snrow p092-snrow-l"><span class="p092-snlabel p092-f14">S/N</span>' + snL + '</td>' +
-        '<td class="p092-c"></td></tr>' +
+        '<tr><td class="p092-r2h p092-vmid p092-f16px p092-pl10 p092-nb" colspan="2">' + skbText(p, 'p092-f16px') + '</td></tr>' +
+        '<tr>' +
+        '<td class="p092-r3h p092-r p092-f14px p092-vmid p092-nb">S/N</td>' +
+        '<td class="p092-r3h p092-vleft p092-pl10 p092-nb">' + snL + '</td>' +
+        '</tr>' +
         '</table></article>';
     }
 
-    /* ---- Large 10×7 (1 ตัว/หน้า — font น้อยกว่า) ---- */
-    var eanL2 = ean13HTML(ub, 160, 50);
-    var snL2 = code128HTML(sn, 90, 30);
+    /* ---- Large 10×7 (1 ตัว/หน้า — โครงเดียวกัน large — กระดาษ 282×210pt — สูงแถว scale ×0.78) ---- */
+    var eanL2 = ean13HTML(ub, 150, 55);
+    var snL2 = code128HTML(sn, 170, 45);
     var mid4b = esc(ub.substr(4, 4));
     return '<article class="p092-sticker p092-st-large10x7">' +
-      '<table class="p092-grid p092-gl">' + cols(2) +
+      '<table class="p092-grid p092-glb p092-border">' + cols(2) +
       '<tr>' +
-      '<td class="p092-mid p092-f40" rowspan="2">' + mid4b + '</td>' +
-      '<td class="p092-c p092-f10 p092-btbr">' + esc(p.stkBarcode) + '</td>' +
+      '<td class="p092-r1h7 p092-c p092-f50px p092-vmid">' + mid4b + '</td>' +
+      '<td class="p092-r1h7 p092-c p092-vmid">' + esc(p.stkBarcode) + '<br>' + eanL2 + '</td>' +
       '</tr>' +
-      '<tr><td class="p092-c p092-f10 p092-bbbr">' + eanL2 + '</td></tr>' +
-      '<tr><td class="p092-cell p092-cell-l7 p092-f12" colspan="2">' + skbText(p, 'p092-f12') + '</td></tr>' +
-      '<tr><td class="p092-snrow"><span class="p092-snlabel p092-f12">S/N</span>' + snL2 + '</td>' +
-      '<td class="p092-c"></td></tr>' +
+      '<tr><td class="p092-r2h7 p092-vmid p092-f12px p092-pl10 p092-nb" colspan="2">' + skbText(p, 'p092-f12px') + '</td></tr>' +
+      '<tr>' +
+      '<td class="p092-r3h7 p092-r p092-f14px p092-vmid p092-nb">S/N</td>' +
+      '<td class="p092-r3h7 p092-vleft p092-pl10 p092-nb">' + snL2 + '</td>' +
+      '</tr>' +
       '</table></article>';
   }
 
@@ -330,6 +340,11 @@
      ถึง large (1 sticker/หน้า) — หนึ่ง ๆ = 1 หน้า */
   function perPage() {
     return 1;
+  }
+
+  /* สินค้าต่อหน้า (S/N นับต่อ — medium = 2 ตัว/หน้า) */
+  function stickersPerPage() {
+    return state.size === 'medium' ? 2 : 1;
   }
 
   function pagesCount() {
@@ -635,17 +650,43 @@
       /* sticker — ขนาดตาม C# (pt → mm) */
       ".p092-sticker{box-sizing:border-box;background:#fff;color:#000;font-family:'TH Sarabun New',Sarabun,sans-serif}",
       ".p092-st-small{width:292pt;height:76pt}",
-      ".p092-st-medium{width:288pt;height:99pt}",
-      ".p092-st-large{width:100mm;height:100mm}",
-      ".p092-st-large10x7{width:100mm;height:70mm}",
+      ".p092-st-medium{width:290pt;height:100pt}",
+      ".p092-st-large{width:282pt;height:282pt}",
+      ".p092-st-large10x7{width:282pt;height:210pt;display:flex;align-items:flex-start;justify-content:center;padding:1px 0 1px 0}",
       ".p092-grid{width:100%;height:100%;border-collapse:collapse;table-layout:fixed}",
       ".p092-grid td{vertical-align:top;overflow:hidden}",
       ".p092-border td{border:1px solid #000}",
       ".p092-pad8{padding-left:8pt;padding-top:8pt}",
+      ".p092-pt10{padding-top:10px}",
+      ".p092-r1{height:30px;vertical-align:bottom}",
+      ".p092-grid td.p092-r1{height:30px;vertical-align:bottom}",
+      ".p092-grid td.p092-vmid{vertical-align:middle}",
+      ".p092-grid td.p092-vtop{vertical-align:top}",
+      ".p092-grid td.p092-vleft{vertical-align:middle;text-align:left}",
+      ".p092-r1m{height:15px;vertical-align:bottom}",
+      ".p092-grid td.p092-r1m{height:15px;vertical-align:bottom}",
+      ".p092-f12px{font-size:12px}",
+      ".p092-grid td.p092-f12px{font-size:12px}",
+      ".p092-f14px{font-size:14px}",
+      ".p092-f16px{font-size:16px}",
+      ".p092-grid td.p092-f16px{font-size:16px}",
+      ".p092-pl10{padding-left:10px}",
+      ".p092-f50px{font-size:50px}",
+      ".p092-grid td.p092-f50px{font-size:50px}",
+      ".p092-pd{padding:0 4px}",
+      ".p092-border td.p092-nb{border:none}",
+      ".p092-pl25{padding-left:25px}",
       ".p092-pad6{padding-left:6pt;padding-top:10pt}",
       ".p092-g5{width:292pt}",
       ".p092-g5 col:nth-child(1),.p092-g5 col:nth-child(3),.p092-g5 col:nth-child(5){width:92pt}",
       ".p092-g5 col:nth-child(2),.p092-g5 col:nth-child(4){width:5pt}",
+      ".p092-g5b{width:289pt}",
+      ".p092-g5b col:nth-child(1),.p092-g5b col:nth-child(3),.p092-g5b col:nth-child(5){width:93pt}",
+      ".p092-g5b col:nth-child(2),.p092-g5b col:nth-child(4){width:5pt}",
+      ".p092-g5m{width:269pt}",
+      ".p092-g5m col:nth-child(1),.p092-g5m col:nth-child(4){width:20pt}",
+      ".p092-g5m col:nth-child(2),.p092-g5m col:nth-child(5){width:122pt}",
+      ".p092-g5m col:nth-child(3){width:5pt}",
       ".p092-g2{width:288pt}",
       ".p092-g2 col:nth-child(1){width:143pt}",
       ".p092-g2 col:nth-child(2){width:145pt}",
@@ -655,6 +696,18 @@
       ".p092-gl{width:99mm}",
       ".p092-gl col:nth-child(1){width:33mm}",
       ".p092-gl col:nth-child(2){width:66mm}",
+      ".p092-glb{width:280pt;height:auto;margin:0 auto}",
+      ".p092-glb col:nth-child(1){width:100pt}",
+      ".p092-glb col:nth-child(2){width:180pt}",
+      ".p092-st-large{display:flex;align-items:flex-start;justify-content:center;padding:1px 0 1px 0}",
+      ".p092-r90{height:90px}",
+      ".p092-grid td.p092-r1h{height:100px}",
+      ".p092-grid td.p092-r2h{height:200px}",
+      ".p092-grid td.p092-r3h{height:60px}",
+      ".p092-grid td.p092-r1h7{height:85px}",
+      ".p092-grid td.p092-r2h7{height:140px}",
+      ".p092-grid td.p092-r3h7{height:45px}",
+      ".p092-r{text-align:right}",
       /* fonts — TH Sarabun (C# font sizes pt) */
       ".p092-f6{font-size:6px}",
       ".p092-f9{font-size:9pt}",
@@ -670,6 +723,8 @@
       ".p092-f9-b{font-weight:700}",
       ".p092-f12-b{font-weight:700}",
       ".p092-f17-b{font-weight:700}",
+      ".p092-f16px-b{font-weight:700}",
+      ".p092-f12px-b{font-weight:700}",
       /* cells */
       ".p092-cell{padding:2mm 0 0 2.5mm;line-height:1.25}",
       ".p092-cell-m{height:31mm;padding:2mm 0 0 2mm;vertical-align:middle;display:flex;align-items:center}",
@@ -688,15 +743,16 @@
       /* modal */
       ".p092-modalbackdrop{position:fixed;inset:0;z-index:100;display:none;padding:18px;place-items:center;background:rgba(15,23,42,.48);backdrop-filter:blur(4px)}",
       ".p092-modalbackdrop.show{display:grid}",
-      ".p092-modal{width:min(560px,100%);overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 28px 72px rgba(15,23,42,.35)}",
+      ".p092-modal{width:min(560px,100%);max-height:calc(100vh - 36px);display:flex;flex-direction:column;overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 28px 72px rgba(15,23,42,.35)}",
       ".p092-modalhead{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--p092-border)}",
       ".p092-modalhead h2{margin:0;font-size:16px;font-weight:600}",
       ".p092-modalhead p{margin:1px 0 0;color:var(--p092-muted);font-size:10px}",
       ".p092-modalclose{display:grid;width:34px;height:34px;place-items:center;color:var(--p092-muted);border:0;border-radius:9px;background:#f1f5f9;font-size:20px;cursor:pointer}",
       ".p092-modalclose:hover{color:#dc2626;background:#fef2f2}",
-      ".p092-modalbody{display:grid;gap:16px;padding:18px}",
-      ".p092-setgroup{padding:14px;border:1px solid var(--p092-border);border-radius:13px;background:var(--p092-surface2)}",
-      ".p092-setgroup h3{margin:0 0 11px;font-size:13px;font-weight:600}",
+      ".p092-modalbody{display:grid;gap:14px;padding:18px;overflow-y:auto;flex:1}",
+      ".p092-setgroup{padding:14px 14px 15px;border:1px solid var(--p092-border);border-radius:13px;background:var(--p092-surface2)}",
+      ".p092-setgroup h3{display:flex;align-items:center;gap:9px;margin:0 0 11px;color:var(--p092-ink);font-size:12.5px;font-weight:800}",
+      ".p092-step{display:grid;width:22px;height:22px;place-items:center;color:#fff;border-radius:50%;background:var(--p092-primary);font-size:11px;font-weight:800;flex:none}",
       ".p092-optgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}",
       ".p092-radio{display:flex;align-items:center;gap:8px;min-height:44px;padding:10px 11px;border:1px solid var(--p092-border);border-radius:10px;background:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:.15s ease}",
       ".p092-radio:hover{border-color:#93c5fd;background:#eff6ff}",
@@ -709,8 +765,10 @@
       ".p092-mfield input:focus,.p092-mfield select:focus{border-color:#60a5fa;box-shadow:0 0 0 4px rgba(96,165,250,.14)}",
       ".p092-previnfo{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 13px;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:11px;background:#eff6ff;font-size:11px}",
       ".p092-previnfo strong{font-size:13px}",
-      ".p092-modalfoot{display:flex;justify-content:flex-end;gap:8px;padding:13px 18px;border-top:1px solid var(--p092-border);background:var(--p092-surface2)}",
-      ".p092-modalfoot .p092-btn{height:41px;font-size:12px}",
+      ".p092-modalfoot{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:8px;padding:13px 18px;border-top:1px solid var(--p092-border);background:var(--p092-surface2)}",
+      ".p092-modalfoot .p092-btn{flex:1 1 45%;min-width:140px;height:44px;font-size:13px}",
+      ".p092-modalfoot .p092-btn--ghost{background:#fff;color:#334155;border-color:#cbd5e1}",
+      ".p092-modalfoot .p092-btn--primary{background:#2563eb !important;border-color:#2563eb !important;color:#fff !important}",
       ".p092-toast{position:fixed;right:20px;bottom:20px;z-index:200;display:flex;visibility:hidden;align-items:center;gap:8px;padding:11px 14px;color:#fff;border-radius:11px;opacity:0;background:#0f172a;box-shadow:0 16px 36px rgba(15,23,42,.28);font-size:11px;transform:translateY(12px);transition:.2s ease}",
       ".p092-toast.show{visibility:visible;opacity:1;transform:translateY(0)}",
       ".p092-toast.error{background:#dc2626}",
@@ -722,7 +780,7 @@
       ".p092-printroot .p092-sticker{box-shadow:none;page-break-after:always;break-after:page}" +
       ".p092-printroot .p092-sticker:last-child{page-break-after:auto;break-after:auto}" +
       ".p092-printroot .p092-st-small{width:292pt;height:76pt}" +
-      ".p092-printroot .p092-st-medium{width:288pt;height:99pt}" +
+      ".p092-printroot .p092-st-medium{width:290pt;height:100pt}" +
       ".p092-printroot .p092-st-large{width:282pt;height:282pt}" +
       ".p092-printroot .p092-st-large10x7{width:282pt;height:210pt}" +
       "}"
@@ -771,13 +829,13 @@
         '      <button type="button" class="p092-modalclose" id="p092ModalClose" aria-label="ปิด">×</button>' +
         '    </div>' +
         '    <div class="p092-modalbody">' +
-        '      <section class="p092-setgroup"><h3>ประเภทเอกสาร</h3>' +
+        '      <section class="p092-setgroup"><h3><span class="p092-step">1</span>ประเภทเอกสาร</h3>' +
         '        <div class="p092-optgrid">' +
         '          <label class="p092-radio"><input type="radio" name="p092Type" value="สคบ" checked>สคบ.</label>' +
         '          <label class="p092-radio"><input type="radio" name="p092Type" value="barcode">Barcode</label>' +
         '        </div>' +
         '      </section>' +
-        '      <section class="p092-setgroup"><h3>ขนาดเอกสาร</h3>' +
+        '      <section class="p092-setgroup"><h3><span class="p092-step">2</span>ขนาดเอกสาร</h3>' +
         '        <div class="p092-optgrid">' +
         '          <label class="p092-radio"><input type="radio" name="p092Size" value="small" checked>เล็ก</label>' +
         '          <label class="p092-radio"><input type="radio" name="p092Size" value="medium">กลาง</label>' +
@@ -785,9 +843,9 @@
         '          <label class="p092-radio disabled" id="p092RadioL2"><input type="radio" name="p092Size" value="large10x7" disabled>ใหญ่ (10×7)</label>' +
         '        </div>' +
         '      </section>' +
-        '      <section class="p092-setgroup"><h3>จำนวน / หน่วย</h3>' +
+        '      <section class="p092-setgroup"><h3><span class="p092-step">3</span>จำนวน / หน่วย</h3>' +
         '        <div class="p092-qtygrid">' +
-        '          <div class="p092-mfield"><label for="p092Qty">จำนวน</label><input id="p092Qty" type="number" min="0.5" step="0.5" value="1"></div>' +
+        '          <div class="p092-mfield"><label for="p092Qty">จำนวน</label><input id="p092Qty" type="number" min="1" step="1" value="1"></div>' +
         '          <div class="p092-mfield"><label for="p092Unit">หน่วย</label><select id="p092Unit"></select></div>' +
         '        </div>' +
         '      </section>' +
@@ -860,8 +918,8 @@
           toast(root, 'กรุณากรอกรหัสสินค้า', true);
           return;
         }
-        var q = Number(_el.qtyInput.value);
-        if (!isFinite(q) || q < 0.5) q = 0.5;
+        var q = Math.round(Number(_el.qtyInput.value));
+        if (!isFinite(q) || q < 1) q = 1;
         _el.qtyInput.value = q;
 
         state.type = radioValue('p092Type') || 'สคบ';
@@ -979,7 +1037,7 @@
         /* @page size = ขนาดกระดาษ (C# — 1 iteration = 1 หน้า PDF — landscape = กว้าง > สูง) */
         var PAGE_SIZES = {
           small: { size: '292pt 76pt', orient: 'landscape' },
-          medium: { size: '288pt 99pt', orient: 'landscape' },
+          medium: { size: '290pt 100pt', orient: 'landscape' },
           large: { size: '282pt 282pt', orient: 'portrait' },
           large10x7: { size: '282pt 210pt', orient: 'landscape' }
         };
@@ -1006,10 +1064,10 @@
           }, 150);
         }
         if (saveSN) {
-          api('api/p092_running.php', { connectionId: CONNECTION, code: state.product.code, save: true })
+          api('api/p092_running.php', { connectionId: CONNECTION, code: state.product.code, save: true, copy: Math.ceil(state.quantity) * stickersPerPage() })
             .then(function (d) {
-              if (d && d.ok) state.running = d.running;
               doPrint();
+              if (d && d.ok) state.running = d.running; /* หลังพิมพ์ — ครั้งถัดไปนับต่อ */
             })
             .catch(function () {
               doPrint();

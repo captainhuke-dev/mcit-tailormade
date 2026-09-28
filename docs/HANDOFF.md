@@ -48,16 +48,19 @@
 | P035 | ตรวจสอบลูกค้าติดอนุมัติ | ready (1 หน้า — real data MAC5 + checkbox เกรด X + pager 15/หน้า + detail modal) |
 | P053 | สติ๊กเกอร์ 10x7.5 (ใบปะ) | ready (1 หน้า — real data MAC5 + logic A/B + table 280×205px + zoom 100% + หน้าถัด ๆ + พิมพ์ 1 ตั๋ว/หน้า) |
 | P054 | Packing Order/Cartonize/ใบจัดกล่อง | ready (1 หน้า label+items+notes + หน้า JOB 1 กลุ่มตัวอักษรต้น MILvCol2 = 1 หน้า A4 — real data MAC5 — สไตล์ P063 + preview A4 + barcode + พิมพ์) |
+| P092 | พิมพ์ Barcode/สคบ. | ready (1 หน้า — real data MAC5 3 APIs + modal ตั้งค่า 3 blocks + layouts small/medium/large/large10x7 ตาม C# + EAN13 JsBarcode SVG + S/N running + พิมพ์ตามขนาดกระดาษ) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
 
-### 26/09 — P092 Barcode/สคบ. (พิมพ์ Barcode/สติกเกอร์) — **DEV**
-- `assets/js/p092-barcode.js` (IIFE `window.P092Barcode`) — ตาม `demo/P092_demo.html` — **mock data** (10010671/10010673/10011159 — API ภายหลัง)
-- รหัสสินค้า → modal ตั้งค่า (ประเภท สติกเกอร์/บาร์โค้ด · ขนาด เล็ก/กลาง — ใหญ่+ใหญ่ 10×7 disabled · จำนวน 1-50 + หน่วย Ea/Box/Bag/Pack/Set) → sticker sheet (4/หน้า 2×2 — ชื่อสินค้า + barcode CODE128 + number + info line) → print A4 2 คอลั่น (small 45mm / medium 65mm)
-- modules.php status dev (อยู่ 2 modules: การตลาด + คลังสินค้า) — cache `?v=20260926a`
+### 26/09 — P092 Barcode/สคบ. (พิมพ์ Barcode/สติกเกอร์) — **READY**
+- `assets/js/p092-barcode.js` (IIFE `window.P092Barcode`) — **real data MAC5 3 APIs** (`p092_search` / `p092_autocomplete` TOP20 / `p092_running` get+save STKrunning)
+- รหัสสินค้า (autocomplete) → modal ตั้งค่า 3 blocks (① ประเภท สคบ./Barcode ② ขนาด เล็ก/กลาง/ใหญ่/ใหญ่ 10×7 — สคบ. = เล็กเสมอ ③ จำนวน int + หน่วย) → sticker sheet 1 ตัว/หน้า → print `@page size` ตามกระดาษ margin 0
+- **Layouts ตาม C#:** สคบ. เล็ก 292×76pt (5 คอลั่น 92pt 6px) / กลาง 290×100pt (2 คอลั่น 143/145pt 8px) · Barcode เล็ก 289pt (93/5/93/5/93 — แถว 1 STKBarcode 30px · แถว 2 EAN13 110×60) / กลาง 269pt (20/122/5/20/122 — 3 แถว + S/N 2 ตัว/หน้า) / ใหญ่ 282×282pt (2 คอลั่น 100/180 — แถว 100/200/60px — border แถว 1) / ใหญ่ 10×7 282×210pt (โครงเดียวกัน — แถว 85/140/45px — font 12px label หนา)
+- **EAN13 = JsBarcode SVG** (canvas เดิมผิด spec ตัด — ean13.ttf PUA only) + `compressEanDigits` (13 tspans spacing 0.60w) · `eanValue` = Barcode{unit} ≥12 ตัว — ว่าง = fallback รหัส pad 0 เป็น 12 ตัว · **S/N** = yyMMdd+running 6 ตัว (CODE128) — save = ceil(qty)×stickersPerPage + พิมพ้ก่อน save
+- modules.php status **ready** (2 menus: การตลาด + คลังสินค้า) — cache `?v=20260926i` — **16 modules ready**
 
 ### 25/09 — P054 JOB pages (หน้าต่อไป — จาก C# Frm_BucketParts_Version2) — **READY**
 - **1 กลุ่มตัวอักษรต้น MILvCol2 = 1 หน้า A4** — แทรกหลังหน้า 1 ของแต่ละ row ที่เลือก — renderPreview fetch 3 APIs (routes + items + **groups**)
