@@ -49,11 +49,19 @@
 | P053 | สติ๊กเกอร์ 10x7.5 (ใบปะ) | ready (1 หน้า — real data MAC5 + logic A/B + table 280×205px + zoom 100% + หน้าถัด ๆ + พิมพ์ 1 ตั๋ว/หน้า) |
 | P054 | Packing Order/Cartonize/ใบจัดกล่อง | ready (1 หน้า label+items+notes + หน้า JOB 1 กลุ่มตัวอักษรต้น MILvCol2 = 1 หน้า A4 — real data MAC5 — สไตล์ P063 + preview A4 + barcode + พิมพ์) |
 | P092 | พิมพ์ Barcode/สคบ. | ready (1 หน้า — real data MAC5 3 APIs + modal ตั้งค่า 3 blocks + layouts small/medium/large/large10x7 ตาม C# + EAN13 JsBarcode SVG + S/N running + พิมพ์ตามขนาดกระดาษ) |
+| P037 | ตรวจสอบของจองที่มีการเปิดบิล | ready (1 หน้า — real data MAC5 2 APIs + search วันที่/ดำเนินหน้าใบ/คus/vnos/dep + ตาราง INV (IS/IVV%) + ตาราง RSV (SS, cancel=0, status != 4, เดือน/ปี, cus IN) + click row = filter + dblclick = modal items INV vs RSV) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 28/09 — P037 ตรวจสอบของจองที่มีการเปิดบิล — **READY**
+- `assets/js/p037-inv-booking.js` (IIFE `window.P037InvBooking`) — **real data MAC5 2 APIs** (`p037_search` / `p037_items`) — ตาม C# `FrmINVGUI` + `INVResult` (AppINV) + demo/P037-demo.html
+- **search:** วันที่ (default วันนี้) + ดำเนินหน้าใบ (IVV/IVN) + รหัสลูกค้า (exact) + เลขที่ใบสำคัญ (exact) + โทรขาย (LIKE) — **INV** = MIH (IS, vnos LIKE type%) + DEB + IC_S — วัน/เดือน/ปี = วันที่ค้นหา · **RSV** = MIH (SS, RSV%) + cancel=0 + status != 4 + เดือน/ปีเดียวกัน + `MIHcus IN (ลูกค้าจาก INV)`
+- **UI 3 cards:** เงื่อนไขค้นหา + ตารางใบแจ้งหนี้ (No./วันที่/คus/ชื่อ/ใบสำคัญ/สถานะ badge/โทรขาย) + ตารางใบจอง (วันที่/คus/ชื่อ/ใบสำคัญ/สถานะ(ใบเบิก)/บันทึกภายใน/หมายเหตุ) — **click แถว INV = filter RSV ตามลูกค้า** (ไฮไลต์แถว) · **dblclick = modal items** (INV items vs RSV items — MIL+STK — รหัส/ชื่อ/qty=quan÷conv/หน่วย/VC)
+- **สถานะ = IC_S** (1=Draft · 2=Verify+รอ Approve · 3=Approve · 4=Void รอแก้ไข (RSV ตัดออก) · 5=PACKING · 6=ติดท้ายรถ · 7=นัดส่ง · 8=รอโอนเงิน · 10=ยกเลิก) — status 32/42/60+ = ว่างใน IC_S → แสดง '-'
+- test CDP: 28/09/2569 IVV = 185 INV + click row = RSV filter ✓ · items API IVVN6909-4436 + RSV16909-0082 ✓ — modules.php status **ready** — cache `p037-inv-booking.js?v=20260928a` + `portal.js?v=20260928a` — **17 modules ready**
 
 ### 26/09 — P092 Barcode/สคบ. (พิมพ์ Barcode/สติกเกอร์) — **READY**
 - `assets/js/p092-barcode.js` (IIFE `window.P092Barcode`) — **real data MAC5 3 APIs** (`p092_search` / `p092_autocomplete` TOP20 / `p092_running` get+save STKrunning)
