@@ -1081,6 +1081,20 @@
       `;
     }
 
+    // P047: เช็คสถานะ Invoice
+    if (programId === "P047") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p047Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P035: ตรวจสอบลูกค้าติดอนุมัติ
     if (programId === "P035") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1425,6 +1439,12 @@
     if (page.type === "program" && page.programId === "P037" && window.P037InvBooking) {
       const root = document.getElementById("p037Root");
       if (root) window.P037InvBooking.mount(root);
+    }
+
+    // P047: mount Invoice Status Check app
+    if (page.type === "program" && page.programId === "P047" && window.P047InvoiceStatus) {
+      const root = document.getElementById("p047Root");
+      if (root) window.P047InvoiceStatus.mount(root);
     }
 
     // P053: mount Sticker app
