@@ -130,7 +130,7 @@ return [
                     ["id" => "P044", "name" => "ตรวจสอบเลขบิลซ้ำ (MH,HP)"],
                     ["id" => "P045", "name" => "ตรวจสอบบิลลูกค้าเดียวกัน"],
                     ["id" => "P046", "name" => "ตรวจสอบ Pack Master"],
-                    ["id" => "P047", "name" => "เช็คสถานะ Invoice"],
+                    ["id" => "P047", "name" => "เช็คสถานะ Invoice", "status" => "ready"],
                     ["id" => "P048", "name" => "UPDATE ที่อยู่ขนส่ง"],
                     ["id" => "P049", "name" => "Check TMS"],
                 ],
