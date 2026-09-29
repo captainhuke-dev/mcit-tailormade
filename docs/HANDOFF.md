@@ -61,7 +61,7 @@
 - `assets/js/p047-invoice-status.js` (IIFE `window.P047InvoiceStatus`) — **real data MAC5** (`api/p047_search.php`) — ตาม C# `frm_CheckStatusInvoiceGUI` (AppCheckStatusInvoice) + demo/P047-demo.html
 - **search:** range วันที่ (default 1 ค่าเดือนก่อน → วันนี้-3 ตาม C#) + สถานะ = dropdown checkbox (**user spec SQL 2026-09-29:** `AR_S WHERE AR_SnameT IS NOT NULL AND AR_Scode < 63 AND AR_Scode NOT IN (0,1,5,7,9,10,11,12,13,14,15,18,20,21,22,25,26,27,28,41)` — **32 สถานะ** — name = `code : nameT` เช่น "2 : ปกติ-ส่งขนส่ง" — check ทั้งหมด + ปุ่มเลือกทั้งหมด) — **rows** = MIH (IS, cancel=0, status IN, range วันที่) + DEB + `ISNULL(MIHprintN,0)`
 - **UI 2 cards:** เงื่อนไขค้นหา (range + status dropdown) + ตาราง Invoice (วันที่/เลขที่/รหัส/ชื่อ/สถานะ badge (title = ชื่อ status)/จำนวนพิมพ์) + **quick search** (vnos/cus/name/status — client) + **sort column** (วันที่/เลขที่/รหัส/ชื่อ/สถานะ/จำนวนพิมพ์ — วันที่ sort ใช้ iso) + **click row = select**
-- test CDP: default range = 10 rows (status ใน list) ✓ · status label "เลือก 32 สถานะ" ✓ · quick + sort ✓ — cache `p047-invoice-status.js?v=20260929b` + `portal.js?v=20260929a` — **modules.php ยังไม่ mark ready (รอ user)**
+- test CDP: default range = 10 rows (status ใน list) ✓ · status label "เลือก 32 สถานะ" ✓ · quick + sort ✓ · **dropdown status = ตัด `overflow:hidden` ออกจาก card** (menu ถูก clip — probe ยืนยัน menu h=268 แสดงแล้ว) — cache `p047-invoice-status.js?v=20260929c` + `portal.js?v=20260929a` — **modules.php ยังไม่ mark ready (รอ user)**
 
 ### 28/09 — P037 ตรวจสอบของจองที่มีการเปิดบิล — **READY**
 - `assets/js/p037-inv-booking.js` (IIFE `window.P037InvBooking`) — **real data MAC5 2 APIs** (`p037_search` / `p037_items`) — ตาม C# `FrmINVGUI` + `INVResult` (AppINV) + demo/P037-demo.html
