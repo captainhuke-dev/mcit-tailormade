@@ -2,7 +2,7 @@
    ตาม C# Frm_CheckBillReceiptGUI (AppCheckBillReceipt) + demo/P015-demo.html:
      เงื่อนไขค้นหา: รหัสลูกหนี้ (LIKE vnos/cus/name — ค่าว่าง = ทั้งหมด)
      → ตารางบิลค้างรับ (CFS: CFSclearALL=0, net != 0) — วันที่/เลขที่/รหัส/ชื่อ/เขต/ยอดหนี้/วางบิล/ค้างบิล/หมายเหตุ (display)
-     → คลิกแถว = modal แก้ไข (checkbox วางบิล/ค้างบิล — exclusive + หมายเหตุ) + บันทึกทีละแถว
+     → ดับเบิลคลิกแถว = modal แก้ไข (checkbox วางบิล/ค้างบิล — exclusive + หมายเหตุ) + บันทึกทีละแถว
      → บันทึก (upsert BI_CUBE.tb_CFS_bill_status — 1 แถวต่อครั้ง)
    Real data MAC5 — api/p015_search.php + api/p015_status.php
    (IIFE — window.P015BillStatus = { mount, destroy })
@@ -61,7 +61,7 @@
       '<div class="p015">' +
       '  <section class="p015-card">' +
       '    <div class="p015-cardhead"><div class="p015-cardtitle"><span>⌕</span> เงื่อนไขการค้นหา</div>' +
-      '      <span class="p015-hint">ค่าว่าง = ค้นหาบิลค้างรับทั้งหมด · คลิกแถวเพื่อบันทึกสถานะ</span>' +
+      '      <span class="p015-hint">ค่าว่าง = ค้นหาบิลค้างรับทั้งหมด · ดับเบิลคลิกแถวเพื่อบันทึกสถานะ</span>' +
       '    </div>' +
       '    <div class="p015-cardbody">' +
       '      <form class="p015-filter" id="p015Form">' +
@@ -312,8 +312,8 @@
       updateTotals(rows);
     }
 
-    /* ---- row click = open modal ---- */
-    _el.body.addEventListener('click', function (e) {
+    /* ---- row dblclick = open modal ---- */
+    _el.body.addEventListener('dblclick', function (e) {
       var tr = e.target.closest('tr[data-v]');
       if (!tr) return;
       openModal(tr.getAttribute('data-v'));
