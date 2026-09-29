@@ -52,8 +52,11 @@
       inv: [],
       rsv: [],
       selCus: null,
-      selVnos: null
+      selVnos: null,
+      invPage: 1,
+      rsvPage: 1
     };
+    var PER = 10;
     var _el = {};
     var _modal = null;
 
@@ -84,6 +87,7 @@
       '        <tbody id="p037InvBody"></tbody>' +
       '      </table>' +
       '    </div>' +
+      '    <div class="p037-pager" id="p037InvPager"></div>' +
       '  </section>' +
       '  <section class="p037-card">' +
       '    <div class="p037-cardhead">' +
@@ -92,10 +96,11 @@
       '    </div>' +
       '    <div class="p037-twrap">' +
       '      <table class="p037-tbl">' +
-      '        <thead><tr><th>วันที่</th><th>รหัสลูกค้า</th><th>ชื่อลูกค้า</th><th>ใบสำคัญ</th><th>สถานะ(ใบเบิก)</th><th>บันทึกภายใน</th><th>หมายเหตุ</th></tr></thead>' +
+      '        <thead><tr><th>วันที่</th><th>รหัสลูกค้า</th><th>ใบสำคัญ</th><th>สถานะ(ใบเบิก)</th><th>บันทึกภายใน</th><th>หมายเหตุ</th></tr></thead>' +
       '        <tbody id="p037RsvBody"></tbody>' +
       '      </table>' +
       '    </div>' +
+      '    <div class="p037-pager" id="p037RsvPager"></div>' +
       '  </section>' +
       '  <div class="p037-footnote">คลิกแถวใบแจ้งหนี้เพื่อดูใบจองของลูกค้านั้น · double-click แถวใบแจ้งหนี้เพื่อดูรายละเอียดสินค้า (INV vs RSV)</div>' +
       '</div>';
@@ -107,25 +112,55 @@
     _el.rsvSum = root.querySelector('#p037RsvSum');
     _el.invBody = root.querySelector('#p037InvBody');
     _el.rsvBody = root.querySelector('#p037RsvBody');
+    _el.invPager = root.querySelector('#p037InvPager');
+    _el.rsvPager = root.querySelector('#p037RsvPager');
 
     _el.date.value = state.date;
 
     /* ---- render ---- */
+    /* ---- pagination (10 ตัว/หน้า) ---- */
+    function pagerHTML(total, page, btnCls) {
+      var pages = Math.max(1, Math.ceil(total / PER));
+      if (page > pages) page = pages;
+      if (total <= PER) return '';
+      var s = '<button type="button" class="p037-pbtn" data-p="prev"' + (page <= 1 ? ' disabled' : '') + '>‹</button>';
+      s += '<span class="p037-pinfo">หน้า ' + page + ' / ' + pages + '</span>';
+      s += '<button type="button" class="p037-pbtn" data-p="next"' + (page >= pages ? ' disabled' : '') + '>›</button>';
+      return s;
+    }
+
+    function bindPager(el, setPage) {
+      el.addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-p]');
+        if (!b || b.disabled) return;
+        if (b.getAttribute('data-p') === 'prev') setPage(-1);
+        else setPage(1);
+      });
+    }
+
     function renderInv() {
       if (!state.searched) {
         _el.invSum.textContent = 'ยังไม่ค้นหา';
         _el.invBody.innerHTML = '<tr><td colspan="7" class="p037-empty">กรุณาเลือกเงื่อนไขแล้วกด ค้นหา</td></tr>';
+        _el.invPager.innerHTML = '';
         return;
       }
       _el.invSum.innerHTML = 'พบทั้งหมด <span class="p037-count">' + state.inv.length + '</span> รายการ';
       if (state.inv.length === 0) {
         _el.invBody.innerHTML = '<tr><td colspan="7" class="p037-empty">ไม่พบข้อมูลใบแจ้งหนี้ตามเงื่อนไขที่ระบุ</td></tr>';
+        _el.invPager.innerHTML = '';
         return;
       }
-      _el.invBody.innerHTML = state.inv.map(function (r, i) {
+      var pages = Math.ceil(state.inv.length / PER);
+      if (state.invPage > pages) state.invPage = pages;
+      if (state.invPage < 1) state.invPage = 1;
+      var start = (state.invPage - 1) * PER;
+      var slice = state.inv.slice(start, start + PER);
+      _el.invBody.innerHTML = slice.map(function (r, i) {
+        var idx = start + i;
         var sel = state.selVnos === r.vnos ? ' class="p037-sel"' : '';
-        return '<tr data-i="' + i + '"' + sel + '>' +
-          '<td class="p037-no">' + (i + 1) + '</td>' +
+        return '<tr data-i="' + idx + '"' + sel + '>' +
+          '<td class="p037-no">' + (idx + 1) + '</td>' +
           '<td>' + esc(r.date) + '</td>' +
           '<td>' + esc(r.cus) + '</td>' +
           '<td>' + esc(r.name) + '</td>' +
@@ -134,6 +169,7 @@
           '<td>' + (esc(r.dep) || '-') + '</td>' +
           '</tr>';
       }).join('');
+      _el.invPager.innerHTML = pagerHTML(state.inv.length, state.invPage);
     }
 
     function rsvFiltered() {
@@ -143,33 +179,40 @@
     function renderRsv() {
       if (!state.searched || state.selCus === null) {
         _el.rsvSum.textContent = state.searched ? (state.inv.length === 0 ? 'ไม่มีใบแจ้งหนี้' : 'กรุณาเลือกใบแจ้งหนี้') : 'กรุณาเลือกใบแจ้งหนี้';
-        _el.rsvBody.innerHTML = '<tr><td colspan="7" class="p037-empty">' + (state.searched && state.inv.length === 0 ? 'ไม่มีข้อมูล' : 'เลือกใบแจ้งหนี้จากตารางด้านบนเพื่อแสดงรายการใบจอง') + '</td></tr>';
+        _el.rsvBody.innerHTML = '<tr><td colspan="6" class="p037-empty">' + (state.searched && state.inv.length === 0 ? 'ไม่มีข้อมูล' : 'เลือกใบแจ้งหนี้จากตารางด้านบนเพื่อแสดงรายการใบจอง') + '</td></tr>';
+        _el.rsvPager.innerHTML = '';
         return;
       }
       var rows = rsvFiltered();
       _el.rsvSum.innerHTML = 'พบรายการใบจอง <span class="p037-count">' + rows.length + '</span> รายการ · ลูกค้า ' + esc(state.selCus);
       if (rows.length === 0) {
-        _el.rsvBody.innerHTML = '<tr><td colspan="7" class="p037-empty">ไม่พบรายการใบจองที่เชื่อมโยงกับใบแจ้งหนี้นี้</td></tr>';
+        _el.rsvBody.innerHTML = '<tr><td colspan="6" class="p037-empty">ไม่พบรายการใบจองที่เชื่อมโยงกับใบแจ้งหนี้นี้</td></tr>';
+        _el.rsvPager.innerHTML = '';
         return;
       }
-      _el.rsvBody.innerHTML = rows.map(function (r) {
+      var pages = Math.ceil(rows.length / PER);
+      if (state.rsvPage > pages) state.rsvPage = pages;
+      if (state.rsvPage < 1) state.rsvPage = 1;
+      var start = (state.rsvPage - 1) * PER;
+      var slice = rows.slice(start, start + PER);
+      _el.rsvBody.innerHTML = slice.map(function (r) {
         return '<tr>' +
           '<td>' + esc(r.date) + '</td>' +
           '<td>' + esc(r.cus) + '</td>' +
-          '<td>' + esc(r.name) + '</td>' +
           '<td class="p037-vno">' + esc(r.vnos) + '</td>' +
           '<td>' + statusBadge(r.status) + '</td>' +
           '<td>' + (esc(r.desc) || '-') + '</td>' +
           '<td>' + (esc(r.notes) || '-') + '</td>' +
           '</tr>';
       }).join('');
+      _el.rsvPager.innerHTML = pagerHTML(rows.length, state.rsvPage);
     }
 
     /* RSV — fetch ตามลูกค้าที่เลือก (api/p037_rsv.php — user spec 2026-09-28) */
     function loadRsv(done) {
       if (!state.selCus) return;
       _el.rsvSum.textContent = 'กำลังโหลดใบจอง...';
-      _el.rsvBody.innerHTML = '<tr><td colspan="7" class="p037-empty">กำลังโหลด...</td></tr>';
+      _el.rsvBody.innerHTML = '<tr><td colspan="6" class="p037-empty">กำลังโหลด...</td></tr>';
       api('api/p037_rsv.php', { date: state.date, cus: state.selCus }).then(function (d) {
         if (!d || !d.ok) {
           state.rsv = [];
@@ -178,6 +221,7 @@
           return;
         }
         state.rsv = d.rsv || [];
+        state.rsvPage = 1;
         renderRsv();
         if (typeof done === 'function') done();
       }).catch(function () {
@@ -259,6 +303,8 @@
         state.searched = true;
         state.inv = d.inv || [];
         state.rsv = [];
+        state.invPage = 1;
+        state.rsvPage = 1;
         renderInv();
         renderRsv();
       }).catch(function () {
@@ -292,6 +338,9 @@
       renderInv();
       loadRsv();
     });
+
+    bindPager(_el.invPager, function (d) { state.invPage += d; renderInv(); });
+    bindPager(_el.rsvPager, function (d) { state.rsvPage += d; renderRsv(); });
 
     _el.invBody.addEventListener('dblclick', function (e) {
       var tr = e.target.closest('tr[data-i]');
@@ -344,6 +393,11 @@
       ".p037-st--waiting{background:#fff1d8;color:#c98213}",
       ".p037-tbl tbody tr.p037-sel .p037-st{background:rgba(255,255,255,.22);color:#fff}",
       ".p037-empty{padding:32px;color:var(--muted,#738397);text-align:center}",
+      ".p037-pager{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:8px 14px 10px;font-size:13px}",
+      ".p037-pbtn{min-width:28px;height:28px;padding:0 8px;border:1px solid var(--border,#d8e2ee);border-radius:5px;background:#fff;color:var(--ink,#1b2b3c);cursor:pointer;font-size:15px;line-height:1}",
+      ".p037-pbtn:hover:not(:disabled){border-color:#2563eb;color:#2563eb}",
+      ".p037-pbtn:disabled{opacity:.4;cursor:default}",
+      ".p037-pinfo{color:var(--muted,#738397)}",
       ".p037-footnote{color:var(--muted,#738397);font-size:11px;text-align:right}",
       /* items modal */
       ".p037-mback{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(15,30,50,.55);padding:20px}",
