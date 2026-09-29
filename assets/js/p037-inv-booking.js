@@ -83,7 +83,7 @@
       '    </div>' +
       '    <div class="p037-twrap">' +
       '      <table class="p037-tbl">' +
-      '        <thead><tr><th class="p037-no">No.</th><th>วันที่</th><th>รหัสลูกค้า</th><th>ชื่อลูกค้า</th><th>ใบสำคัญ</th><th>สถานะ</th><th>โทรขาย</th></tr></thead>' +
+      '        <thead><tr><th>วันที่</th><th>รหัสลูกค้า</th><th>ชื่อลูกค้า</th><th>ใบสำคัญ</th><th>สถานะ</th><th>โทรขาย</th></tr></thead>' +
       '        <tbody id="p037InvBody"></tbody>' +
       '      </table>' +
       '    </div>' +
@@ -119,35 +119,45 @@
 
     /* ---- render ---- */
     /* ---- pagination (10 ตัว/หน้า) ---- */
-    function pagerHTML(total, page, btnCls) {
+    function pagerHTML(total, page) {
       var pages = Math.max(1, Math.ceil(total / PER));
       if (page > pages) page = pages;
-      if (total <= PER) return '';
-      var s = '<button type="button" class="p037-pbtn" data-p="prev"' + (page <= 1 ? ' disabled' : '') + '>‹</button>';
+      if (pages <= 1) return '';
+      var s = '<div class="p037-pagerbox">';
       s += '<span class="p037-pinfo">หน้า ' + page + ' / ' + pages + '</span>';
-      s += '<button type="button" class="p037-pbtn" data-p="next"' + (page >= pages ? ' disabled' : '') + '>›</button>';
+      s += '<div class="p037-pbtns">';
+      s += '<button type="button" class="p037-pbtn" data-p="prev"' + (page <= 1 ? ' disabled' : '') + ' title="หน้าก่อนหน้า">‹</button>';
+      var a = Math.max(1, page - 1);
+      var b = Math.min(pages, page + 1);
+      for (var n = a; n <= b; n++) {
+        s += '<button type="button" class="p037-pbtn p037-pnum' + (n === page ? ' p037-pact' : '') + '" data-p="' + n + '">' + n + '</button>';
+      }
+      s += '<button type="button" class="p037-pbtn" data-p="next"' + (page >= pages ? ' disabled' : '') + ' title="หน้าหลังหน้า">›</button>';
+      s += '</div></div>';
       return s;
     }
 
-    function bindPager(el, setPage) {
+    function bindPager(el, getPage, setPage) {
       el.addEventListener('click', function (e) {
         var b = e.target.closest('button[data-p]');
         if (!b || b.disabled) return;
-        if (b.getAttribute('data-p') === 'prev') setPage(-1);
-        else setPage(1);
+        var v = b.getAttribute('data-p');
+        if (v === 'prev') setPage(getPage() - 1);
+        else if (v === 'next') setPage(getPage() + 1);
+        else setPage(parseInt(v, 10));
       });
     }
 
     function renderInv() {
       if (!state.searched) {
         _el.invSum.textContent = 'ยังไม่ค้นหา';
-        _el.invBody.innerHTML = '<tr><td colspan="7" class="p037-empty">กรุณาเลือกเงื่อนไขแล้วกด ค้นหา</td></tr>';
+        _el.invBody.innerHTML = '<tr><td colspan="6" class="p037-empty">กรุณาเลือกเงื่อนไขแล้วกด ค้นหา</td></tr>';
         _el.invPager.innerHTML = '';
         return;
       }
       _el.invSum.innerHTML = 'พบทั้งหมด <span class="p037-count">' + state.inv.length + '</span> รายการ';
       if (state.inv.length === 0) {
-        _el.invBody.innerHTML = '<tr><td colspan="7" class="p037-empty">ไม่พบข้อมูลใบแจ้งหนี้ตามเงื่อนไขที่ระบุ</td></tr>';
+        _el.invBody.innerHTML = '<tr><td colspan="6" class="p037-empty">ไม่พบข้อมูลใบแจ้งหนี้ตามเงื่อนไขที่ระบุ</td></tr>';
         _el.invPager.innerHTML = '';
         return;
       }
@@ -160,7 +170,6 @@
         var idx = start + i;
         var sel = state.selVnos === r.vnos ? ' class="p037-sel"' : '';
         return '<tr data-i="' + idx + '"' + sel + '>' +
-          '<td class="p037-no">' + (idx + 1) + '</td>' +
           '<td>' + esc(r.date) + '</td>' +
           '<td>' + esc(r.cus) + '</td>' +
           '<td>' + esc(r.name) + '</td>' +
@@ -339,8 +348,8 @@
       loadRsv();
     });
 
-    bindPager(_el.invPager, function (d) { state.invPage += d; renderInv(); });
-    bindPager(_el.rsvPager, function (d) { state.rsvPage += d; renderRsv(); });
+    bindPager(_el.invPager, function () { return state.invPage; }, function (p) { state.invPage = p; renderInv(); });
+    bindPager(_el.rsvPager, function () { return state.rsvPage; }, function (p) { state.rsvPage = p; renderRsv(); });
 
     _el.invBody.addEventListener('dblclick', function (e) {
       var tr = e.target.closest('tr[data-i]');
@@ -375,16 +384,14 @@
       ".p037-btn--ghost:hover{background:#f0f6fc}",
       ".p037-summary{display:flex;align-items:center;gap:8px;color:var(--muted,#738397);font-size:12px}",
       ".p037-count{display:inline-grid;width:25px;height:25px;place-items:center;border-radius:50%;background:#eaf4ff;color:#1769c2;font-weight:700}",
-      ".p037-twrap{overflow:auto;max-height:380px}",
-      ".p037-tbl{width:100%;border-collapse:collapse;white-space:nowrap}",
-      ".p037-tbl thead th{position:sticky;z-index:1;top:0;padding:11px 12px;border-bottom:1px solid #cfdbe7;background:#edf5fc;color:#426176;font-size:12px;font-weight:700;text-align:center}",
-      ".p037-tbl tbody td{padding:10px 12px;border-bottom:1px solid #e6edf4;color:#2d4052}",
+      ".p037-twrap{overflow:hidden}",
+      ".p037-tbl{width:100%;table-layout:fixed;border-collapse:collapse;white-space:nowrap}",
+      ".p037-tbl thead th{position:sticky;z-index:1;top:0;padding:11px 12px;border-bottom:1px solid #cfdbe7;background:#edf5fc;color:#426176;font-size:12px;font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis}",
+      ".p037-tbl tbody td{padding:10px 12px;border-bottom:1px solid #e6edf4;color:#2d4052;overflow:hidden;text-overflow:ellipsis}",
       ".p037-tbl tbody tr{cursor:pointer;transition:background .15s ease}",
       ".p037-tbl tbody tr:hover{background:#f0f7ff}",
       ".p037-tbl tbody tr.p037-sel{background:#1769c2 !important}",
       ".p037-tbl tbody tr.p037-sel td{color:#fff;border-bottom-color:rgba(255,255,255,.2)}",
-      ".p037-no{width:54px;text-align:center;color:var(--muted,#738397)}",
-      ".p037-tbl tbody tr.p037-sel .p037-no{color:rgba(255,255,255,.8)}",
       ".p037-vno{color:#0c4f9b;font-weight:700}",
       ".p037-tbl tbody tr.p037-sel .p037-vno{color:#fff}",
       ".p037-r{text-align:right}",
@@ -393,11 +400,14 @@
       ".p037-st--waiting{background:#fff1d8;color:#c98213}",
       ".p037-tbl tbody tr.p037-sel .p037-st{background:rgba(255,255,255,.22);color:#fff}",
       ".p037-empty{padding:32px;color:var(--muted,#738397);text-align:center}",
-      ".p037-pager{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding:8px 14px 10px;font-size:13px}",
-      ".p037-pbtn{min-width:28px;height:28px;padding:0 8px;border:1px solid var(--border,#d8e2ee);border-radius:5px;background:#fff;color:var(--ink,#1b2b3c);cursor:pointer;font-size:15px;line-height:1}",
-      ".p037-pbtn:hover:not(:disabled){border-color:#2563eb;color:#2563eb}",
-      ".p037-pbtn:disabled{opacity:.4;cursor:default}",
-      ".p037-pinfo{color:var(--muted,#738397)}",
+      ".p037-pager{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-top:1px solid #e6edf4}",
+      ".p037-pagerbox{display:flex;align-items:center;justify-content:space-between;gap:14px;width:100%}",
+      ".p037-pinfo{color:#53687b;font-size:12px;font-weight:700}",
+      ".p037-pbtns{display:flex;align-items:center;gap:5px}",
+      ".p037-pbtn{min-width:32px;height:32px;padding:0 10px;display:inline-grid;place-items:center;border:1px solid #cbd8e5;border-radius:8px;background:#fff;color:#33506b;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;transition:all .15s ease}",
+      ".p037-pbtn:hover:not(:disabled){border-color:#2563eb;color:#2563eb;background:#f5f9ff}",
+      ".p037-pbtn:disabled{opacity:.35;cursor:default}",
+      ".p037-pnum.p037-pact{background:#2563eb !important;border-color:#2563eb !important;color:#fff !important}",
       ".p037-footnote{color:var(--muted,#738397);font-size:11px;text-align:right}",
       /* items modal */
       ".p037-mback{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(15,30,50,.55);padding:20px}",
