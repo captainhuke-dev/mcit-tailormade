@@ -47,8 +47,14 @@ try {
 }
 
 try {
-    // statuses (C# getStatus — AR_S IN 62,63,65,67,68,70)
-    $st = $pdo->query("SELECT AR_Scode, AR_SnameT FROM AR_S WHERE AR_SnameT IS NOT NULL AND AR_Scode IN (62,63,65,67,68,70) ORDER BY AR_Scode");
+    // statuses (user spec 2026-09-29 — AR_Scode < 63 + NOT IN)
+    $st = $pdo->query("SELECT AR_Scode,
+            CAST(AR_Scode AS VARCHAR) + ' : ' + CAST(AR_SnameT AS VARCHAR) AS AR_SnameT
+            FROM AR_S
+            WHERE AR_SnameT IS NOT NULL
+            AND AR_Scode < 63
+            AND AR_Scode NOT IN (0,1,5,7,9,10,11,12,13,14,15,18,20,21,22,25,26,27,28,41)
+            ORDER BY AR_Scode");
     $statusList = array();
     while ($r = $st->fetch(PDO::FETCH_ASSOC)) {
         $statusList[] = array('code' => (int) $r['AR_Scode'], 'name' => $r['AR_SnameT']);

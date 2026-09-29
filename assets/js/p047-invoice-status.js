@@ -35,7 +35,7 @@
     return p[2] + '/' + p[1] + '/' + p[0];
   }
 
-  var STATUS_CLS = { 62: 'blue', 63: 'orange', 65: 'green', 67: 'red', 68: 'green', 70: 'blue' };
+  var STATUS_CLS = { 2: 'blue', 3: 'orange', 4: 'green', 33: 'red' };
 
   function statusBadge(code, nameMap) {
     var cls = STATUS_CLS[code] || 'blue';
@@ -149,7 +149,7 @@
 
     function renderOpts() {
       _el.opts.innerHTML = state.allStatuses.map(function (s) {
-        return '<label class="p047-opt"><input type="checkbox" value="' + s.code + '"' + (state.statuses[s.code] ? ' checked' : '') + '> ' + esc(s.code) + ' · ' + esc(s.name) + '</label>';
+        return '<label class="p047-opt"><input type="checkbox" value="' + s.code + '"' + (state.statuses[s.code] ? ' checked' : '') + '> ' + esc(s.name) + '</label>';
       }).join('');
     }
 
