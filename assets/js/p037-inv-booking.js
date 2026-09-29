@@ -64,10 +64,8 @@
       '    <div class="p037-cardbody">' +
       '      <form class="p037-filter" id="p037Form">' +
       '        <div class="p037-fg"><label>วันที่</label><input type="date" id="p037Date"></div>' +
-      '        <div class="p037-fg"><label>ดำเนินหน้าใบ</label><select id="p037Type"><option value="">ทั้งหมด</option><option value="IVV">IVV</option><option value="IVN">IVN</option></select></div>' +
+      '        <div class="p037-fg"><label>เลขที่ใบสำคัญ</label><input type="text" id="p037Type" value=""></div>' +
       '        <div class="p037-fg"><label>รหัสลูกค้า</label><input type="text" id="p037Cus" placeholder="ระบุรหัสลูกค้า"></div>' +
-      '        <div class="p037-fg"><label>เลขที่ใบสำคัญ</label><input type="text" id="p037Vnos" placeholder="เช่น IVVN6909-4436"></div>' +
-      '        <div class="p037-fg"><label>โทรขาย</label><input type="text" id="p037Dep" placeholder="เช่น DIV1"></div>' +
       '        <div class="p037-btns">' +
       '          <button type="submit" class="p037-btn p037-btn--primary">⌕ ค้นหา</button>' +
       '          <button type="button" class="p037-btn p037-btn--ghost" id="p037Clear">↺ ล้างข้อมูล</button>' +
@@ -105,15 +103,12 @@
     _el.date = root.querySelector('#p037Date');
     _el.type = root.querySelector('#p037Type');
     _el.cus = root.querySelector('#p037Cus');
-    _el.vnos = root.querySelector('#p037Vnos');
-    _el.dep = root.querySelector('#p037Dep');
     _el.invSum = root.querySelector('#p037InvSum');
     _el.rsvSum = root.querySelector('#p037RsvSum');
     _el.invBody = root.querySelector('#p037InvBody');
     _el.rsvBody = root.querySelector('#p037RsvBody');
 
     _el.date.value = state.date;
-    _el.type.value = state.type;
 
     /* ---- render ---- */
     function renderInv() {
@@ -229,16 +224,14 @@
     root.querySelector('#p037Form').addEventListener('submit', function (e) {
       e.preventDefault();
       state.date = _el.date.value || todayStr();
-      state.type = _el.type.value || 'IVV';
+      state.type = _el.type.value.trim().toUpperCase();
       state.cus = _el.cus.value.trim();
-      state.vnos = _el.vnos.value.trim();
-      state.dep = _el.dep.value.trim();
       state.searched = false;
       state.selCus = null;
       state.selVnos = null;
       renderInv();
       renderRsv();
-      api('api/p037_search.php', { date: state.date, type: state.type, cus: state.cus, vnos: state.vnos, dep: state.dep }).then(function (d) {
+      api('api/p037_search.php', { date: state.date, type: state.type, cus: state.cus }).then(function (d) {
         if (!d || !d.ok) {
           _el.invSum.textContent = 'ค้นหาไม่ได้: ' + ((d && d.error) || '');
           return;
@@ -255,10 +248,8 @@
 
     root.querySelector('#p037Clear').addEventListener('click', function () {
       state.date = todayStr();
-      state.type = 'IVV';
+      state.type = '';
       state.cus = '';
-      state.vnos = '';
-      state.dep = '';
       state.searched = false;
       state.inv = [];
       state.rsv = [];
@@ -267,8 +258,6 @@
       _el.date.value = state.date;
       _el.type.value = state.type;
       _el.cus.value = '';
-      _el.vnos.value = '';
-      _el.dep.value = '';
       renderInv();
       renderRsv();
     });
@@ -305,7 +294,7 @@
       ".p037-cardtitle{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:700}",
       ".p037-cardtitle>span{color:#1769c2}",
       ".p037-cardbody{padding:16px 18px}",
-      ".p037-filter{display:grid;grid-template-columns:180px 160px 180px 200px 160px auto;gap:14px;align-items:end}",
+      ".p037-filter{display:grid;grid-template-columns:200px 200px 220px auto;gap:14px;align-items:end}",
       ".p037-fg{display:flex;flex-direction:column;gap:6px}",
       ".p037-fg label{color:#506579;font-size:12px;font-weight:700}",
       ".p037-fg input,.p037-fg select{width:100%;height:36px;padding:0 10px;outline:0;border:1px solid #cbd8e5;border-radius:7px;background:#fff;color:inherit;font-family:inherit;font-size:13px}",

@@ -31,13 +31,10 @@ if ($date === '' || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
     echo json_encode(array('ok' => false, 'error' => 'date must be yyyy-mm-dd'));
     exit;
 }
-if ($type !== '' && !preg_match('/^[A-Z]{3}$/', $type)) {
+if ($type !== '' && !preg_match('/^[A-Za-z0-9]{1,10}$/', $type)) {
     http_response_code(400);
     echo json_encode(array('ok' => false, 'error' => 'invalid type'));
     exit;
-}
-if ($type === '') {
-    $type = 'IVV';
 }
 // vnos filter — alphanumeric + dash only (C# = exact match)
 if ($vnos !== '' && !preg_match('/^[A-Za-z0-9\-]+$/', $vnos)) {
@@ -70,30 +67,47 @@ $month = (int) $parts[1];
 $year = (int) $parts[0];
 
 try {
-    // ---- INV (C# verbatim — LEFT JOIN DEB + IC_S) ----
-    $sql = "SELECT MIHday, MIHmonth, MIHyear, MIHcus, DEBnameT, MIHvnos, IC_SnameT, MIHdep
+    // ---- INV (user spec 2026-09-28 — แสดงเฉพาะใบแจ้งหนี้ที่มี RSV เชื่อมโยง) ----
+    $miHdate = "CONVERT(DATE, STR(MIHday) + '/' + STR(MIHmonth) + '/' + STR(MIHyear), 103)";
+    $sql = "SELECT " . $miHdate . " AS MIHdate,
+            MIHcus,
+            Convert(varchar(200), DEBnameT) AS DEBnameT,
+            MIHvnos,
+            Convert(varchar(200), IC_SnameT) AS IC_SnameT,
+            MIHdep
             FROM MIH
-            LEFT JOIN DEB ON MIH.MIHcus = DEB.DEBcode
+            LEFT JOIN DEB ON MIH.MIHcus = DEBcode
             LEFT JOIN IC_S ON MIH.MIHstatus = IC_S.IC_Scode
-            WHERE (MIHvnos LIKE " . $pdo->quote($type . '%') . " AND MIHtype = 'IS')
-            AND (MIHday = '" . $day . "' AND MIHmonth = '" . $month . "' AND MIHyear = '" . $year . "')";
+            LEFT JOIN
+            (
+                SELECT MIHcus AS RSVcus, MIHvnos AS RSVvnos FROM MIH
+                WHERE (MIHvnos LIKE 'RSV%' AND MIHtype = 'SS')
+                AND MIHcancel = 0
+                AND MIH.MIHstatus != 4
+                AND (MIHmonth = '" . $month . "' AND MIHyear = '" . $year . "')
+            ) RSV ON MIHcus = RSVcus
+            WHERE MIHtype = 'IS'
+            AND MIHvnos LIKE " . $pdo->quote($type . '%') . "
+            AND " . $miHdate . " = '" . $date . "'
+            AND RSVvnos IS NOT NULL";
     if ($cus !== '') {
-        $sql .= " AND MIHcus = '" . $pdo->quote($cus) . "'";
+        $sql .= " AND MIHcus LIKE " . $pdo->quote($cus . '%');
     }
-    if ($vnos !== '') {
-        $sql .= " AND MIHvnos = '" . $pdo->quote($vnos) . "'";
-    }
-    if ($dep !== '') {
-        $sql .= " AND MIHdep LIKE '" . $pdo->quote($dep) . "'";
-    }
-    $sql .= " ORDER BY MIHcus ASC";
+    $sql .= "
+            GROUP BY " . $miHdate . ",
+            MIHcus,
+            Convert(varchar(200), DEBnameT),
+            MIHvnos,
+            Convert(varchar(200), IC_SnameT),
+            MIHdep
+            ORDER BY MIHcus, MIHvnos ASC";
 
     $stmt = $pdo->query($sql);
     $inv = array();
     $cusList = array();
     while ($r = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $inv[] = array(
-            'date' => sprintf('%02d/%02d/%04d', (int) $r['MIHday'], (int) $r['MIHmonth'], (int) $r['MIHyear']),
+            'date' => $r['MIHdate'] ? date('d/m/Y', strtotime($r['MIHdate'])) : '',
             'cus' => $r['MIHcus'],
             'name' => $r['DEBnameT'],
             'vnos' => $r['MIHvnos'],
