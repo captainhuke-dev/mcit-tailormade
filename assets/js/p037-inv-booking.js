@@ -123,7 +123,7 @@
         return;
       }
       _el.invBody.innerHTML = state.inv.map(function (r, i) {
-        var sel = state.selCus === r.cus ? ' class="p037-sel"' : '';
+        var sel = state.selVnos === r.vnos ? ' class="p037-sel"' : '';
         return '<tr data-i="' + i + '"' + sel + '>' +
           '<td class="p037-no">' + (i + 1) + '</td>' +
           '<td>' + esc(r.date) + '</td>' +
@@ -137,8 +137,7 @@
     }
 
     function rsvFiltered() {
-      if (state.selCus === null) return [];
-      return state.rsv.filter(function (r) { return r.cus === state.selCus; });
+      return state.rsv;
     }
 
     function renderRsv() {
@@ -148,7 +147,6 @@
         return;
       }
       var rows = rsvFiltered();
-      var invRow = state.inv.filter(function (r) { return r.cus === state.selCus; })[0] || {};
       _el.rsvSum.innerHTML = 'พบรายการใบจอง <span class="p037-count">' + rows.length + '</span> รายการ · ลูกค้า ' + esc(state.selCus);
       if (rows.length === 0) {
         _el.rsvBody.innerHTML = '<tr><td colspan="7" class="p037-empty">ไม่พบรายการใบจองที่เชื่อมโยงกับใบแจ้งหนี้นี้</td></tr>';
@@ -165,6 +163,28 @@
           '<td>' + (esc(r.notes) || '-') + '</td>' +
           '</tr>';
       }).join('');
+    }
+
+    /* RSV — fetch ตามลูกค้าที่เลือก (api/p037_rsv.php — user spec 2026-09-28) */
+    function loadRsv(done) {
+      if (!state.selCus) return;
+      _el.rsvSum.textContent = 'กำลังโหลดใบจอง...';
+      _el.rsvBody.innerHTML = '<tr><td colspan="7" class="p037-empty">กำลังโหลด...</td></tr>';
+      api('api/p037_rsv.php', { date: state.date, cus: state.selCus }).then(function (d) {
+        if (!d || !d.ok) {
+          state.rsv = [];
+          _el.rsvSum.textContent = 'โหลดใบจองไม่ได้: ' + ((d && d.error) || '');
+          renderRsv();
+          return;
+        }
+        state.rsv = d.rsv || [];
+        renderRsv();
+        if (typeof done === 'function') done();
+      }).catch(function () {
+        state.rsv = [];
+        _el.rsvSum.textContent = 'โหลดใบจองไม่ได้ (network)';
+        renderRsv();
+      });
     }
 
     /* ---- items modal (C# INVResult — double-click แถว INV) ---- */
@@ -238,7 +258,7 @@
         }
         state.searched = true;
         state.inv = d.inv || [];
-        state.rsv = d.rsv || [];
+        state.rsv = [];
         renderInv();
         renderRsv();
       }).catch(function () {
@@ -270,7 +290,7 @@
       state.selCus = row.cus;
       state.selVnos = row.vnos;
       renderInv();
-      renderRsv();
+      loadRsv();
     });
 
     _el.invBody.addEventListener('dblclick', function (e) {
@@ -281,8 +301,7 @@
       state.selCus = row.cus;
       state.selVnos = row.vnos;
       renderInv();
-      renderRsv();
-      openItems();
+      loadRsv(openItems);
     });
 
     /* ---- CSS ---- */

@@ -119,38 +119,9 @@ try {
         }
     }
 
-    // ---- RSV (C# verbatim — cancel=0 + status != 4 + เดือน/ปี + cus IN) ----
-    $rsv = array();
-    if (count($cusList) > 0) {
-        $in = array();
-        foreach ($cusList as $c) {
-            $in[] = $pdo->quote($c);
-        }
-        $sql2 = "SELECT MIHday, MIHmonth, MIHyear, MIHcus, DEBnameT, MIHvnos, IC_SnameT, MIHdesc, MIHnotes
-                 FROM MIH
-                 LEFT JOIN DEB ON DEB.DEBcode = MIH.MIHcus
-                 LEFT JOIN IC_S ON IC_S.IC_Scode = MIHstatus
-                 WHERE (MIHvnos LIKE 'RSV%' AND MIHtype = 'SS')
-                 AND MIHcancel = 0
-                 AND MIH.MIHstatus != 4
-                 AND (MIHmonth = '" . $month . "' AND MIHyear = '" . $year . "')
-                 AND MIHcus IN (" . implode(',', $in) . ")
-                 ORDER BY MIHyear, MIHmonth, MIHday, MIHcus ASC";
-        $stmt2 = $pdo->query($sql2);
-        while ($r = $stmt2->fetch(PDO::FETCH_ASSOC)) {
-            $rsv[] = array(
-                'date' => sprintf('%02d/%02d/%04d', (int) $r['MIHday'], (int) $r['MIHmonth'], (int) $r['MIHyear']),
-                'cus' => $r['MIHcus'],
-                'name' => $r['DEBnameT'],
-                'vnos' => $r['MIHvnos'],
-                'status' => $r['IC_SnameT'],
-                'desc' => $r['MIHdesc'],
-                'notes' => $r['MIHnotes']
-            );
-        }
-    }
+    // ---- RSV = fetch แยกตามลูกค้าที่เลือก (api/p037_rsv.php — user spec 2026-09-28) ----
 
-    echo json_encode(array('ok' => true, 'inv' => $inv, 'rsv' => $rsv), JSON_UNESCAPED_UNICODE);
+    echo json_encode(array('ok' => true, 'inv' => $inv), JSON_UNESCAPED_UNICODE);
 } catch (Exception $e) {
     http_response_code(500);
     echo json_encode(array('ok' => false, 'error' => 'Query failed', 'detail' => $e->getMessage()));
