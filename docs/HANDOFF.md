@@ -50,11 +50,18 @@
 | P054 | Packing Order/Cartonize/ใบจัดกล่อง | ready (1 หน้า label+items+notes + หน้า JOB 1 กลุ่มตัวอักษรต้น MILvCol2 = 1 หน้า A4 — real data MAC5 — สไตล์ P063 + preview A4 + barcode + พิมพ์) |
 | P092 | พิมพ์ Barcode/สคบ. | ready (1 หน้า — real data MAC5 3 APIs + modal ตั้งค่า 3 blocks + layouts small/medium/large/large10x7 ตาม C# + EAN13 JsBarcode SVG + S/N running + พิมพ์ตามขนาดกระดาษ) |
 | P037 | ตรวจสอบของจองที่มีการเปิดบิล | ready (1 หน้า — real data MAC5 3 APIs + search วันที่/เลขที่ใบสำคัญ (คำนำหน้า LIKE)/รหัสลูกค้า (LIKE) + **ตาราง INV = เฉพาะใบแจ้งหนี้ที่มี RSV เชื่อมโยง** (LEFT JOIN subquery + RSVvnos IS NOT NULL) + **ตาราง RSV = API แยก `p037_rsv.php` ตามลูกค้าที่เลือก (exact)** — fetch ตอนคลิกแถว + **pagination 10 รายการ/หน้า (ทั้ง 2 ตาราง — pager กป๋านหัวหน้า ‹ 1 2 3 › + "หน้า X / Y" ซ้าย)** + **RSV ตัด column ชื่อลูกค้าออก + INV ตัด column No. ออก** + **ตารางเต็มกว้าง (10 แถวพอดี — ไม่มี scroll)** + click row = select 1 แถว + dblclick = modal items INV vs RSV) |
+| P047 | เช็คสถานะ Invoice | in progress (1 หน้า — real data MAC5 `p047_search` — range วันที่ (default 1 ค่าเดือนก่อน → วันนี้-3 ตาม C#) + สถานะ dropdown (AR_S IN 62,63,65,67,68,70 — checkbox ทั้งหมด) + ตาราง Invoice (MIH IS + cancel=0 + status IN + range — วันที่/เลขที่/รหัส/ชื่อ/สถานะ badge/จำนวนพิมพ์) + quick search + sort column + select row — **ยังไม่ mark ready**) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 29/09 — P047 เช็คสถานะ Invoice — **IN PROGRESS**
+- `assets/js/p047-invoice-status.js` (IIFE `window.P047InvoiceStatus`) — **real data MAC5** (`api/p047_search.php`) — ตาม C# `frm_CheckStatusInvoiceGUI` (AppCheckStatusInvoice) + demo/P047-demo.html
+- **search:** range วันที่ (default 1 ค่าเดือนก่อน → วันนี้-3 ตาม C#) + สถานะ = dropdown checkbox (AR_S IN 62,63,65,67,68,70 — 62=ADS ส่ง ACC · 63=รับเอง · 65=WH · 67=NOT SHIP · 68=SHIP · 70=LOG — check ทั้งหมด + เลือกทั้งหมด) — **rows** = MIH (IS, cancel=0, status IN, range วันที่) + DEB + `ISNULL(MIHprintN,0)`
+- **UI 2 cards:** เงื่อนไขค้นหา (range + status dropdown) + ตาราง Invoice (วันที่/เลขที่/รหัส/ชื่อ/สถานะ badge (title = ชื่อ status)/จำนวนพิมพ์) + **quick search** (vnos/cus/name/status — client) + **sort column** (วันที่/เลขที่/รหัส/ชื่อ/สถานะ/จำนวนพิมพ์ — วันที่ sort ใช้ iso) + **click row = select**
+- test CDP: default range 01/08-26/09 = 378 rows ✓ · status label "เลือก 6 สถานะ" ✓ · quick "IVVN6909" = 306 ✓ · sort status ✓ — cache `p047-invoice-status.js?v=20260929a` + `portal.js?v=20260929a` — **modules.php ยังไม่ mark ready (รอ user)**
 
 ### 28/09 — P037 ตรวจสอบของจองที่มีการเปิดบิล — **READY**
 - `assets/js/p037-inv-booking.js` (IIFE `window.P037InvBooking`) — **real data MAC5 2 APIs** (`p037_search` / `p037_items`) — ตาม C# `FrmINVGUI` + `INVResult` (AppINV) + demo/P037-demo.html
