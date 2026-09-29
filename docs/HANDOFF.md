@@ -51,11 +51,20 @@
 | P092 | พิมพ์ Barcode/สคบ. | ready (1 หน้า — real data MAC5 3 APIs + modal ตั้งค่า 3 blocks + layouts small/medium/large/large10x7 ตาม C# + EAN13 JsBarcode SVG + S/N running + พิมพ์ตามขนาดกระดาษ) |
 | P037 | ตรวจสอบของจองที่มีการเปิดบิล | ready (1 หน้า — real data MAC5 3 APIs + search วันที่/เลขที่ใบสำคัญ (คำนำหน้า LIKE)/รหัสลูกค้า (LIKE) + **ตาราง INV = เฉพาะใบแจ้งหนี้ที่มี RSV เชื่อมโยง** (LEFT JOIN subquery + RSVvnos IS NOT NULL) + **ตาราง RSV = API แยก `p037_rsv.php` ตามลูกค้าที่เลือก (exact)** — fetch ตอนคลิกแถว + **pagination 10 รายการ/หน้า (ทั้ง 2 ตาราง — pager กป๋านหัวหน้า ‹ 1 2 3 › + "หน้า X / Y" ซ้าย)** + **RSV ตัด column ชื่อลูกค้าออก + INV ตัด column No. ออก** + **ตารางเต็มกว้าง (10 แถวพอดี — ไม่มี scroll)** + click row = select 1 แถว + dblclick = modal items INV vs RSV) |
 | P047 | เช็คสถานะ Invoice | ready (1 หน้า — real data MAC5 `p047_search` — range วันที่ (default วันปัจจุบัน~วันปัจจุบัน) + สถานะ dropdown (AR_S < 63 + NOT IN — 32 สถานะ) + ตาราง Invoice (MIH IS + cancel=0 + status IN + range — วันที่/เลขที่/รหัส/ชื่อ/สถานะ badge/จำนวนพิมพ์ — เฉพาะอ่าน) + **pagination 15 รายการ/หน้า** + quick search + sort column + select row) |
+| P015 | สถานะบิลค้างรับ | in progress (1 หน้า — real data MAC5 2 APIs — ค้นหารหัสลูกหนี้ (LIKE vnos/cus/name — ว่าง = ทั้งหมด) + ตารางบิลค้างรับ (CFS CFSclearALL=0 + net != 0 — วันที่/เลขที่/รหัส/ชื่อ/เขต/ยอดหนี้/วางบิล/ค้างบิล/หมายเหตุ — display) + **pagination 15 รายการ/หน้า** + sort column + **คลิกแถว = modal แก้ไข (checkbox วางบิล/ค้างบิล exclusive + หมายเหตุ) + บันทึกทีละแถว** (upsert `BI_CUBE.tb_CFS_bill_status`) — **ยังไม่ mark ready**) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 29/09 — P015 สถานะบิลค้างรับ — **IN PROGRESS**
+- `assets/js/p015-bill-status.js` (IIFE `window.P015BillStatus`) — **real data MAC5 2 APIs** (`p015_search` / `p015_status`) — ตาม C# `Frm_CheckBillReceiptGUI` (AppCheckBillReceipt) + demo/P015-demo.html
+- **search:** `api/p015_search.php` — POST {connectionId, keyword} — CFS (CFSclearALL=0 + net != 0) + DEB (ชื่อ/เขต) + `BI_CUBE.tb_CFS_bill_status` (Billing/AccruedBill/comment) — keyword LIKE 3 ช่อง (CFSvnosID/CFScusID/DEBnameT — **ว่าง = ทั้งหมด**) — ORDER BY CFScusID, DEBnameT — test: 10100-020 = 7 rows · IVVF6908 = ค้นหาโดยเลขที่ ✓ · ว่าง = 7,852 rows
+- **save:** `api/p015_status.php` — POST {connectionId, rows[]} — **upsert** `BI_CUBE.tb_CFS_bill_status` (key vnos+cus — UPDATE ถ้ามี / INSERT ถ้าไม่มี — transaction) — test round-trip: save → verify DB → revert ✓
+- **UI 2 cards:** เงื่อนไขค้นหา (รหัสลูกหนี้ + ปุ่มค้นหา) + ตารางบิลค้างรับ (วันที่/เลขที่/รหัส/ชื่อ/เขต/ยอดหนี้/วางบิล tag/ค้างบิล tag/หมายเหตุ — **display เท่านั้น — table-layout:fixed**) + **pagination 15 รายการ/หน้า** (pager กป๋านหัวหน้า) + sort column + **ยอดรวมฟุตเตอร์** (ยอดวางบิล/ยอดค้างบิล)
+- **modal ต่อแถว (user spec 2026-09-29):** **คลิกแถว = modal "บันทึกสถานะบิล"** — info (เลขที่/วันที่/ลูกหนี้/ยอดหนี้) + checkbox **วางบิล/ค้างบิล exclusive** (ตาม C# CellClick — check หนึ่งอัน = อีกอัน uncheck) + หมายเหตุ textarea + ปุ่ม **✎ บันทึก = save 1 แถว** (toast "บันทึก XXX เรียบร้อยแล้ว") — ปิด = × / ปิด / mask click / Escape
+- test CDP: mount ✓ · search 10100-020 = 7 rows ✓ · click row = modal (info + checkbox) ✓ · exclusive (billing on → accrued off) ✓ · **save round-trip: modal → DB (Billing=1, comment) → แถว = "✓ วางบิล" + ยอดรวม ฿3,960.00 → revert DB** ✓ — cache `p015-bill-status.js?v=20260929b` + `portal.js?v=20260929b` — **modules.php ยังไม่ mark ready (รอ user)**
 
 ### 29/09 — P047 เช็คสถานะ Invoice — **READY**
 - `assets/js/p047-invoice-status.js` (IIFE `window.P047InvoiceStatus`) — **real data MAC5** (`api/p047_search.php`) — ตาม C# `frm_CheckStatusInvoiceGUI` (AppCheckStatusInvoice) + demo/P047-demo.html
