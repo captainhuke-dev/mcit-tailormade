@@ -96,7 +96,7 @@
       '    </div>' +
       '    <div class="p037-twrap">' +
       '      <table class="p037-tbl">' +
-      '        <thead><tr><th>วันที่</th><th>รหัสลูกค้า</th><th>ใบสำคัญ</th><th>สถานะ(ใบเบิก)</th><th>บันทึกภายใน</th><th>หมายเหตุ</th></tr></thead>' +
+      '        <thead><tr><th class="p037-r1">วันที่</th><th class="p037-r2">รหัสลูกค้า</th><th class="p037-r3">ใบสำคัญ</th><th class="p037-r4">สถานะ(ใบเบิก)</th><th class="p037-r5">บันทึกภายใน</th><th class="p037-r6">หมายเหตุ</th></tr></thead>' +
       '        <tbody id="p037RsvBody"></tbody>' +
       '      </table>' +
       '    </div>' +
@@ -210,8 +210,8 @@
           '<td>' + esc(r.cus) + '</td>' +
           '<td class="p037-vno">' + esc(r.vnos) + '</td>' +
           '<td>' + statusBadge(r.status) + '</td>' +
-          '<td>' + (esc(r.desc) || '-') + '</td>' +
-          '<td>' + (esc(r.notes) || '-') + '</td>' +
+          '<td class="p037-wrap">' + (esc(r.desc) || '-') + '</td>' +
+          '<td class="p037-wrap">' + (esc(r.notes) || '-') + '</td>' +
           '</tr>';
       }).join('');
       _el.rsvPager.innerHTML = pagerHTML(rows.length, state.rsvPage);
@@ -387,7 +387,14 @@
       ".p037-twrap{overflow:hidden}",
       ".p037-tbl{width:100%;table-layout:fixed;border-collapse:collapse;white-space:nowrap}",
       ".p037-tbl thead th{position:sticky;z-index:1;top:0;padding:11px 12px;border-bottom:1px solid #cfdbe7;background:#edf5fc;color:#426176;font-size:12px;font-weight:700;text-align:center;overflow:hidden;text-overflow:ellipsis}",
+      ".p037-tbl th.p037-r1{width:9%}",
+      ".p037-tbl th.p037-r2{width:12%}",
+      ".p037-tbl th.p037-r3{width:14%}",
+      ".p037-tbl th.p037-r4{width:13%}",
+      ".p037-tbl th.p037-r5{width:26%}",
+      ".p037-tbl th.p037-r6{width:26%}",
       ".p037-tbl tbody td{padding:10px 12px;border-bottom:1px solid #e6edf4;color:#2d4052;overflow:hidden;text-overflow:ellipsis}",
+      ".p037-tbl tbody td.p037-wrap{white-space:normal;line-height:1.5;word-break:break-word}",
       ".p037-tbl tbody tr{cursor:pointer;transition:background .15s ease}",
       ".p037-tbl tbody tr:hover{background:#f0f7ff}",
       ".p037-tbl tbody tr.p037-sel{background:#1769c2 !important}",
