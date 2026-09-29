@@ -44,14 +44,13 @@
   }
 
   function mount(root) {
-    // C# default: 1 ค่าเดือนก่อน → วันนี้ - 3
+    // default: วันปัจจุบัน → วันปัจจุบัน (user spec 2026-09-29)
     var now = new Date();
-    var from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    var to = new Date(now); to.setDate(to.getDate() - 3);
+    var today = iso(now);
 
     var state = {
-      dateFrom: iso(from),
-      dateTo: iso(to),
+      dateFrom: today,
+      dateTo: today,
       statuses: {},
       allStatuses: [],
       searched: false,
@@ -59,8 +58,10 @@
       selVnos: null,
       sortField: 'date',
       sortDir: 'asc',
-      quick: ''
+      quick: '',
+      page: 1
     };
+    var PER = 15;
     var _el = {};
 
     root.innerHTML =
@@ -104,19 +105,19 @@
       '    <div class="p047-twrap">' +
       '      <table class="p047-tbl">' +
       '        <thead><tr>' +
-      '          <th class="p047-sort p047-c" data-f="date">วันที่</th>' +
-      '          <th class="p047-sort" data-f="vnos">เลขที่ใบสำคัญ</th>' +
-      '          <th class="p047-sort" data-f="cus">รหัสลูกค้า</th>' +
-      '          <th class="p047-sort" data-f="name">ชื่อลูกค้า</th>' +
-      '          <th class="p047-sort p047-c" data-f="status">สถานะ</th>' +
-      '          <th class="p047-sort p047-c" data-f="printN">จำนวนพิมพ์</th>' +
+      '          <th class="p047-sort p047-c p047-w1" data-f="date">วันที่</th>' +
+      '          <th class="p047-sort p047-w2" data-f="vnos">เลขที่ใบสำคัญ</th>' +
+      '          <th class="p047-sort p047-w3" data-f="cus">รหัสลูกค้า</th>' +
+      '          <th class="p047-sort p047-w4" data-f="name">ชื่อลูกค้า</th>' +
+      '          <th class="p047-sort p047-c p047-w5" data-f="status">สถานะ</th>' +
+      '          <th class="p047-sort p047-c p047-w6" data-f="printN">จำนวนพิมพ์</th>' +
       '        </tr></thead>' +
       '        <tbody id="p047Body"></tbody>' +
       '      </table>' +
       '    </div>' +
       '    <div class="p047-foot">' +
       '      <span id="p047FootCount">ยังไม่ค้นหา</span>' +
-      '      <span class="p047-footst" id="p047FootSt"></span>' +
+      '      <div class="p047-pagerbox" id="p047Pager"></div>' +
       '    </div>' +
       '  </section>' +
       '</div>';
@@ -131,7 +132,7 @@
     _el.quick = root.querySelector('#p047Quick');
     _el.body = root.querySelector('#p047Body');
     _el.footCount = root.querySelector('#p047FootCount');
-    _el.footSt = root.querySelector('#p047FootSt');
+    _el.pager = root.querySelector('#p047Pager');
 
     _el.dateFrom.value = state.dateFrom;
     _el.dateTo.value = state.dateTo;
@@ -144,7 +145,6 @@
     function updateSelLabel() {
       var n = checkedList().length;
       _el.selVal.innerHTML = n === 0 ? 'เลือกสถานะ' : 'เลือก <strong>' + n + '</strong> สถานะ';
-      _el.footSt.textContent = n > 0 ? 'สถานะที่เลือก ' + n + ' สถานะ' : '';
     }
 
     function renderOpts() {
@@ -185,6 +185,34 @@
       if (state.searched) doSearch(false);
     });
 
+    /* ---- pagination (15 ตัว/หน้า) ---- */
+    function pagerHTML(total, page) {
+      var pages = Math.max(1, Math.ceil(total / PER));
+      if (page > pages) page = pages;
+      if (pages <= 1) return '';
+      var s = '<div class="p047-pbtns">';
+      s += '<button type="button" class="p047-pbtn" data-p="prev"' + (page <= 1 ? ' disabled' : '') + ' title="หน้าก่อนหน้า">‹</button>';
+      var a = Math.max(1, page - 1);
+      var b = Math.min(pages, page + 1);
+      for (var n = a; n <= b; n++) {
+        s += '<button type="button" class="p047-pbtn p047-pnum' + (n === page ? ' p047-pact' : '') + '" data-p="' + n + '">' + n + '</button>';
+      }
+      s += '<button type="button" class="p047-pbtn" data-p="next"' + (page >= pages ? ' disabled' : '') + ' title="หน้าหลังหน้า">›</button>';
+      s += '</div><span class="p047-pinfo">หน้า ' + page + ' / ' + pages + '</span>';
+      return s;
+    }
+
+    function bindPager(el, getPage, setPage) {
+      el.addEventListener('click', function (e) {
+        var b = e.target.closest('button[data-p]');
+        if (!b || b.disabled) return;
+        var v = b.getAttribute('data-p');
+        if (v === 'prev') setPage(getPage() - 1);
+        else if (v === 'next') setPage(getPage() + 1);
+        else setPage(parseInt(v, 10));
+      });
+    }
+
     /* ---- search ---- */
     function doSearch(notify) {
       var sel = checkedList();
@@ -209,6 +237,7 @@
         state.dateFrom = _el.dateFrom.value;
         state.dateTo = _el.dateTo.value;
         state.selVnos = null;
+        state.page = 1;
         render();
       }).catch(function () {
         state.rows = [];
@@ -255,6 +284,7 @@
         _el.body.innerHTML = '<tr><td colspan="6" class="p047-empty">เลือกเงื่อนไขแล้วกด ค้นหา</td></tr>';
         _el.period.textContent = 'ยังไม่ค้นหา';
         _el.footCount.textContent = 'ยังไม่ค้นหา';
+        _el.pager.innerHTML = '';
         return;
       }
       _el.period.textContent = 'วันที่ ' + thDate(state.dateFrom) + ' ถึง ' + thDate(state.dateTo);
@@ -262,8 +292,14 @@
       var nm = nameMap();
       if (rows.length === 0) {
         _el.body.innerHTML = '<tr><td colspan="6" class="p047-empty">' + (state.rows.length === 0 ? 'ไม่พบข้อมูล' : 'ไม่พบรายการตามคำค้นหา') + '</td></tr>';
+        _el.pager.innerHTML = '';
       } else {
-        _el.body.innerHTML = rows.map(function (r) {
+        var pages = Math.ceil(rows.length / PER);
+        if (state.page > pages) state.page = pages;
+        if (state.page < 1) state.page = 1;
+        var start = (state.page - 1) * PER;
+        var slice = rows.slice(start, start + PER);
+        _el.body.innerHTML = slice.map(function (r) {
           var sel = state.selVnos === r.vnos ? ' class="p047-sel"' : '';
           return '<tr data-v="' + esc(r.vnos) + '"' + sel + '>' +
             '<td class="p047-c">' + esc(r.date) + '</td>' +
@@ -274,10 +310,13 @@
             '<td class="p047-c p047-print">' + esc(r.printN) + '</td>' +
             '</tr>';
         }).join('');
+        _el.pager.innerHTML = pagerHTML(rows.length, state.page);
       }
       _el.footCount.textContent = 'แสดง ' + rows.length + ' รายการ';
       updateSelLabel();
     }
+
+    bindPager(_el.pager, function () { return state.page; }, function (p) { state.page = p; render(); });
 
     _el.quick.addEventListener('input', function () {
       state.quick = _el.quick.value;
@@ -340,13 +379,19 @@
       ".p047-period{color:#53687b;font-size:12px;font-weight:600}",
       ".p047-quick{margin-left:auto}",
       ".p047-quick input{width:260px;height:32px;font-size:12px}",
-      ".p047-twrap{overflow:auto;max-height:560px}",
-      ".p047-tbl{width:100%;border-collapse:collapse;white-space:nowrap}",
+      ".p047-twrap{overflow:hidden}",
+      ".p047-tbl{width:100%;table-layout:fixed;border-collapse:collapse;white-space:nowrap}",
       ".p047-tbl thead th{position:sticky;z-index:1;top:0;padding:11px 14px;border-bottom:1px solid #cfdbe7;background:#edf5fc;color:#426176;font-size:12px;font-weight:700;text-align:left;user-select:none}",
+      ".p047-tbl th.p047-w1{width:11%}",
+      ".p047-tbl th.p047-w2{width:17%}",
+      ".p047-tbl th.p047-w3{width:14%}",
+      ".p047-tbl th.p047-w4{width:30%}",
+      ".p047-tbl th.p047-w5{width:14%}",
+      ".p047-tbl th.p047-w6{width:14%}",
       ".p047-tbl thead th.p047-c{text-align:center}",
       ".p047-tbl thead th.p047-sort{cursor:pointer}",
       ".p047-tbl thead th.p047-sort:hover{color:#1769c2;background:#e2eefb}",
-      ".p047-tbl tbody td{padding:10px 14px;border-bottom:1px solid #e6edf4;color:#2d4052}",
+      ".p047-tbl tbody td{padding:10px 14px;border-bottom:1px solid #e6edf4;color:#2d4052;overflow:hidden;text-overflow:ellipsis}",
       ".p047-tbl tbody td.p047-c{text-align:center}",
       ".p047-tbl tbody tr{cursor:pointer;transition:background .15s ease}",
       ".p047-tbl tbody tr:nth-child(even){background:#fbfdff}",
@@ -361,7 +406,14 @@
       ".p047-st--green{color:#047857;background:#d1fae5}",
       ".p047-st--red{color:#b91c1c;background:#fee2e2}",
       ".p047-empty{padding:32px;color:#738397;text-align:center}",
-      ".p047-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px;padding:8px 16px;border-top:1px solid #e6edf4;background:#f8fafc;color:#53687b;font-size:12px}"
+      ".p047-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:46px;padding:8px 16px;border-top:1px solid #e6edf4;background:#f8fafc;color:#53687b;font-size:12px}",
+      ".p047-pagerbox{display:flex;align-items:center;gap:14px}",
+      ".p047-pinfo{color:#53687b;font-size:12px;font-weight:700}",
+      ".p047-pbtns{display:flex;align-items:center;gap:5px}",
+      ".p047-pbtn{min-width:32px;height:32px;padding:0 10px;display:inline-grid;place-items:center;border:1px solid #cbd8e5;border-radius:8px;background:#fff;color:#33506b;cursor:pointer;font-size:13px;font-weight:700;font-family:inherit;transition:all .15s ease}",
+      ".p047-pbtn:hover:not(:disabled){border-color:#2563eb;color:#2563eb;background:#f5f9ff}",
+      ".p047-pbtn:disabled{opacity:.35;cursor:default}",
+      ".p047-pnum.p047-pact{background:#2563eb !important;border-color:#2563eb !important;color:#fff !important}"
     ].join('\n');
     document.head.appendChild(style);
   }
