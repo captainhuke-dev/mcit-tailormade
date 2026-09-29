@@ -173,7 +173,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p092-barcode.js?v=20260926k"></script>
   <script src="assets/js/p037-inv-booking.js?v=20260928i"></script>
   <script src="assets/js/p047-invoice-status.js?v=20260929d"></script>
-  <script src="assets/js/p015-bill-status.js?v=20260929b"></script>
+  <script src="assets/js/p015-bill-status.js?v=20260929d"></script>
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>
   <script src="assets/js/font-settings.js"></script>

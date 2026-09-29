@@ -303,7 +303,7 @@
             '<td class="p015-r p015-amt">' + fmtMoney(r.amount) + '</td>' +
             '<td class="p015-c">' + tag(r.billing, 'green', 'วางบิล') + '</td>' +
             '<td class="p015-c">' + tag(r.accrued, 'orange', 'ค้างบิล') + '</td>' +
-            '<td title="' + esc(r.comment) + '">' + esc(r.comment || '') + '</td>' +
+            '<td title="' + esc(r.comment) + '" class="p015-wrap">' + esc(r.comment || '') + '</td>' +
             '</tr>';
         }).join('');
         _el.pager.innerHTML = pagerHTML(rows.length, state.page);
@@ -405,19 +405,20 @@
       ".p015-tbl{width:100%;table-layout:fixed;border-collapse:collapse;white-space:nowrap}",
       ".p015-tbl thead th{position:sticky;z-index:1;top:0;padding:11px 14px;border-bottom:1px solid #cfdbe7;background:#edf5fc;color:#426176;font-size:12px;font-weight:700;text-align:left;user-select:none}",
       ".p015-tbl th.p015-w1{width:9%}",
-      ".p015-tbl th.p015-w2{width:14%}",
+      ".p015-tbl th.p015-w2{width:13%}",
       ".p015-tbl th.p015-w3{width:11%}",
-      ".p015-tbl th.p015-w4{width:22%}",
-      ".p015-tbl th.p015-w5{width:12%}",
+      ".p015-tbl th.p015-w4{width:16%}",
+      ".p015-tbl th.p015-w5{width:10%}",
       ".p015-tbl th.p015-w6{width:11%}",
-      ".p015-tbl th.p015-w7{width:8%}",
-      ".p015-tbl th.p015-w8{width:8%}",
-      ".p015-tbl th.p015-w9{width:5%}",
+      ".p015-tbl th.p015-w7{width:7%}",
+      ".p015-tbl th.p015-w8{width:7%}",
+      ".p015-tbl th.p015-w9{width:16%}",
       ".p015-tbl thead th.p015-c{text-align:center}",
       ".p015-tbl thead th.p015-r{text-align:right}",
       ".p015-tbl thead th.p015-sort{cursor:pointer}",
       ".p015-tbl thead th.p015-sort:hover{color:#1769c2;background:#e2eefb}",
       ".p015-tbl tbody td{padding:10px 14px;border-bottom:1px solid #e6edf4;color:#2d4052;overflow:hidden;text-overflow:ellipsis}",
+      ".p015-tbl td.p015-wrap{white-space:normal;line-height:1.5;word-break:break-word;overflow:visible;text-overflow:clip;padding-top:8px;padding-bottom:8px}",
       ".p015-tbl tbody td.p015-c{text-align:center}",
       ".p015-tbl tbody td.p015-r{text-align:right}",
       ".p015-tbl tbody tr{cursor:pointer;transition:background .15s ease}",
