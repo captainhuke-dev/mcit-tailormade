@@ -308,7 +308,7 @@
     var style = document.createElement('style');
     style.textContent = [
       ".p047{display:grid;gap:16px;color:var(--ink,#1b2b3c);font-size:13px}",
-      ".p047-card{overflow:hidden;border:1px solid #d8e2ee;border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(30,72,118,.10)}",
+      ".p047-card{border:1px solid #d8e2ee;border-radius:12px;background:#fff;box-shadow:0 10px 30px rgba(30,72,118,.10)}",
       ".p047-cardhead{display:flex;align-items:center;gap:14px;min-height:50px;padding:0 18px;border-bottom:1px solid #d8e2ee;background:linear-gradient(90deg,#fff,#f8fbff)}",
       ".p047-cardtitle{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;color:#17324d}",
       ".p047-cardtitle span{display:grid;width:30px;height:30px;place-items:center;border-radius:8px;background:#eaf4ff;color:#1769c2;font-size:14px}",
