@@ -61,13 +61,13 @@
       '<div class="p015">' +
       '  <section class="p015-card">' +
       '    <div class="p015-cardhead"><div class="p015-cardtitle"><span>⌕</span> เงื่อนไขการค้นหา</div>' +
-      '      <span class="p015-hint">ค่าว่าง = ค้นหาบิลค้างรับทั้งหมด · ดับเบิลคลิกแถวเพื่อบันทึกสถานะ</span>' +
+      '      <span class="p015-hint">กร่ารหัสลูกหนี้อย่างน้อย 1 ตัวอักษร · ดับเบิลคลิกแถวเพื่อบันทึกสถานะ</span>' +
       '    </div>' +
       '    <div class="p015-cardbody">' +
       '      <form class="p015-filter" id="p015Form">' +
       '        <div class="p015-fg">' +
       '          <label>รหัสลูกหนี้</label>' +
-      '          <input type="text" id="p015Cus" placeholder="กรอกรหัสลูกหนี้ เช่น 10100-020 (ว่าง = ทั้งหมด)" autocomplete="off">' +
+      '<input type="text" id="p015Cus" placeholder="กรอกรหัสลูกหนี้ เช่น 10100-020" autocomplete="off" required>' +
       '        </div>' +
       '        <div class="p015-btns">' +
       '          <button type="submit" class="p015-btn p015-btn--primary">⌕ ค้นหา</button>' +
@@ -348,6 +348,13 @@
     /* ---- search ---- */
     function doSearch() {
       var kw = _el.cus.value.trim();
+      if (kw.length < 1) {
+        _el.cus.classList.add('p015-err');
+        _el.cus.focus();
+        showToast('กร่ารหัสลูกหนี้อย่างน้อย 1 ตัวอักษร');
+        return;
+      }
+      _el.cus.classList.remove('p015-err');
       _el.body.innerHTML = '<tr><td colspan="9" class="p015-empty">กำลังค้นหา...</td></tr>';
       api('api/p015_search.php', { keyword: kw }).then(function (d) {
         if (!d || !d.ok) {
@@ -390,6 +397,7 @@
       ".p015-fg label{color:#506579;font-size:12px;font-weight:700}",
       ".p015-fg input{height:38px;padding:0 12px;outline:0;border:1px solid #cbd8e5;border-radius:7px;background:#fff;color:inherit;font-family:inherit;font-size:13px}",
       ".p015-fg input:focus{border-color:#1769c2;box-shadow:0 0 0 3px rgba(23,105,194,.13)}",
+      ".p015-fg input.p015-err{border-color:#dc2626;box-shadow:0 0 0 3px rgba(220,38,38,.13)}",
       ".p015-btns{display:flex;gap:8px}",
       ".p015-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:38px;padding:0 20px;cursor:pointer;border:0;border-radius:7px;font-size:13px;font-weight:700;font-family:inherit}",
       ".p015-btn--primary{background:#2563eb !important;color:#fff}",
