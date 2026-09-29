@@ -49,7 +49,7 @@
 | P053 | สติ๊กเกอร์ 10x7.5 (ใบปะ) | ready (1 หน้า — real data MAC5 + logic A/B + table 280×205px + zoom 100% + หน้าถัด ๆ + พิมพ์ 1 ตั๋ว/หน้า) |
 | P054 | Packing Order/Cartonize/ใบจัดกล่อง | ready (1 หน้า label+items+notes + หน้า JOB 1 กลุ่มตัวอักษรต้น MILvCol2 = 1 หน้า A4 — real data MAC5 — สไตล์ P063 + preview A4 + barcode + พิมพ์) |
 | P092 | พิมพ์ Barcode/สคบ. | ready (1 หน้า — real data MAC5 3 APIs + modal ตั้งค่า 3 blocks + layouts small/medium/large/large10x7 ตาม C# + EAN13 JsBarcode SVG + S/N running + พิมพ์ตามขนาดกระดาษ) |
-| P037 | ตรวจสอบของจองที่มีการเปิดบิล | ready (1 หน้า — real data MAC5 2 APIs + search วันที่/ดำเนินหน้าใบ/คus/vnos/dep + ตาราง INV (IS/IVV%) + ตาราง RSV (SS, cancel=0, status != 4, เดือน/ปี, cus IN) + click row = filter + dblclick = modal items INV vs RSV) |
+| P037 | ตรวจสอบของจองที่มีการเปิดบิล | ready (1 หน้า — real data MAC5 2 APIs + search วันที่/เลขที่ใบสำคัญ (คำนำหน้า LIKE)/รหัสลูกค้า (LIKE) + **ตาราง INV = เฉพาะใบแจ้งหนี้ที่มี RSV เชื่อมโยง** (LEFT JOIN subquery + RSVvnos IS NOT NULL — user spec SQL 2026-09-28) + ตาราง RSV (SS, cancel=0, status != 4, เดือน/ปี, cus IN) + click row = filter + dblclick = modal items INV vs RSV) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
