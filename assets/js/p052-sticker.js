@@ -81,7 +81,7 @@
         '<colgroup><col style="width:10.7%"><col style="width:50%"><col style="width:39.3%"></colgroup>' +
         '<tbody>' +
         '<tr><td colspan="3" class="p052-tc-send">กรุณาส่ง</td></tr>' +
-        '<tr style="height:130px"><td></td><td colspan="2" class="p052-tc-memo">' + esc((d.memo || '').replace(/\r\n/g, ' ')) + '</td></tr>' +
+        '<tr style="height:130px"><td></td><td colspan="2" class="p052-tc-customer">' + esc(d.name || '') + '<br>' + esc(d.contact || '') + '</td></tr>' +
         '<tr><td colspan="2" class="p052-tc-bc">' + barcodeSVG(vn, 170, 45) + '</td>' +
         '<td rowspan="2" class="p052-tc-page ' + pageFont + '">' + i + '/' + denom + '</td></tr>' +
         '<tr><td colspan="2" class="p052-tc-doc">' + esc(vn) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(date) + '</td></tr>' +
