@@ -46,7 +46,7 @@
 | P013 | ใบอนุมัติสั่งขายและปรับวงเงิน | ready (1 หน้า — รายงานใบอนุมัติวงเงิน real data ทั้ง 6 ตาราง + พิมพ์ multi-paper + printN+1) |
 | P033 | รายงานลูกค้าที่มียอดค้างเกินวงเงิน | ready (1 หน้า — real data MAC5 3 modes + preview A4 Landscape multi-page + zoom + พิมพ์เอกสาร) |
 | P035 | ตรวจสอบลูกค้าติดอนุมัติ | ready (1 หน้า — real data MAC5 + checkbox เกรด X + pager 15/หน้า + detail modal) |
-| P053 | สติ๊กเกอร์ 10x7.5 (ใบปะ) | ready (1 หน้า — real data MAC5 + logic A/B + table 280×205px + zoom 100% + หน้าถัด ๆ + พิมพ์ 1 ตั๋ว/หน้า) |
+| P053 | สติ๊กเกอร์ 10x7.5 (ใบปะ) | ready (rewrite ตาม C# MCIT_Frm_FaceSheetProduct_10x7 — real data MAC5 + logic A/B + totalCopy + company + table 280pt 4 คอลั่น border 0 + THSarabunNew web font + zoom 100% + หน้าถัด ๆ + พิมพ์ 1 ตั๋ว/หน้า 282×210pt) |
 | P052 | สติ๊กเกอร์ 10x10 (ใบปะ) | ready (1 หน้า — real data MAC5 ตาม C# MCIT_Frm_FaceSheetProductV2 + logic A/B + table 280pt 3 คอลั่น + THSarabunNew web font + font pt + zoom 100% + พิมพ์ 1 ตั๋ว/หน้า 282×282pt) |
 | P054 | Packing Order/Cartonize/ใบจัดกล่อง | ready (1 หน้า label+items+notes + หน้า JOB 1 กลุ่มตัวอักษรต้น MILvCol2 = 1 หน้า A4 — real data MAC5 — สไตล์ P063 + preview A4 + barcode + พิมพ์) |
 | P092 | พิมพ์ Barcode/สคบ. | ready (1 หน้า — real data MAC5 3 APIs + modal ตั้งค่า 3 blocks + layouts small/medium/large/large10x7 ตาม C# + EAN13 JsBarcode SVG + S/N running + พิมพ์ตามขนาดกระดาษ) |
@@ -58,6 +58,11 @@
 ---
 
 ## 2. รายงานรายวัน
+
+### 30/09 — P053 สติ๊กเกอร์ 10x7.5 — rewrite ตาม C# `MCIT_Frm_FaceSheetProduct_10x7`
+- `api/p053_search.php` — pattern เดียวกัน P052: **total = totalCopy** (รวม MILnotes ทั้งหมด → denom = total ทั้ง A+B) + **company** (typeReport — Company/NotCompany) — test: A `IVVN6909-0001` = 21/21 Company · B `TOUB6908-0008` = count 0 (ref2 ว่าง) → modal
+- `assets/js/p053-sticker.js` — layout ตาม C#: sheet 282×210pt pad **2pt 1pt** · table **280pt (373px) 4 คอลั่น 30/65/90/95pt border 0** · font **THSarabunNew web font** — A: r1 DEBnameT+DEBcontactT 22pt B 90pt padL15 · r2 i/total 40pt B **right padR140** (C# ColumnText x=140 y=85) · r3 vnos+วันที่ 14pt padL20 · r4 address บริษัท 14pt padL15 **เฉพาะ type=Company** (NotCompany = แถวว่าง) — B: r1 MIHmemo 22pt B · r4 "จาก name contact / Tel" 16pt padL15
+- CDP วัด: table 373×273px · cols 40/87/120/127 · font 29.3/53.3/18.7/21.3px ✓ — cache `?v=20260930b` — commit `fe877f2`
 
 ### 29-30/09 — P052 สติ๊กเกอร์ 10x10 (ใบปะ) — **READY**
 - `assets/js/p052-sticker.js` (IIFE `window.P052Sticker`) — **real data MAC5** (`api/p052_search.php`) — **ตาม C# `MCIT_Frm_FaceSheetProductV2`** — clone P053 → rewrite
