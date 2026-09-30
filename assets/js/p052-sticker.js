@@ -85,7 +85,7 @@
         '<tr><td colspan="2" class="p052-tc-bc">' + barcodeSVG(vn, 170, 45) + '</td>' +
         '<td rowspan="2" class="p052-tc-page ' + pageFont + '">' + i + '/' + denom + '</td></tr>' +
         '<tr><td colspan="2" class="p052-tc-doc">' + esc(vn) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(date) + '</td></tr>' +
-        '<tr><td colspan="3" class="p052-tc-from">จาก&nbsp;&nbsp;' + esc(d.name || '') + ' ' + esc(d.contact || '') + '<br>Tel : ' + esc(d.tel || '') + '</td></tr>' +
+        '<tr><td colspan="3" class="p052-tc-from">จาก&nbsp;&nbsp;' + esc(d.name || '') + ' ' + esc(d.contact || '') + ' Tel : ' + esc(d.tel || '') + '</td></tr>' +
         '</tbody>' +
         '</table>' +
         '</article>';
@@ -93,7 +93,7 @@
     // A (ทั่วไป)
     var addr = '';
     if (state.company === 'Company') {
-      addr = '<tr><td colspan="3" class="p052-tc-addr">จาก บจก.มหาโชค มหาชัย อินเตอร์เทรด<br>58/9 ม.6 ถ.เศรษฐกิจ1 ต.คลองมะเดื่อ อ.กระทุ่มแบน จ.สมุทรสาคร 74110<br>โทร. 034-878366-68 &nbsp;แฟกซ์ 034-878369 &nbsp;Line : @m-group</td></tr>';
+      addr = '<tr><td colspan="3" class="p052-tc-addr">จาก บจก.มหาโชค มหาชัย อินเตอร์เทรด 58/9 ม.6 ถ.เศรษฐกิจ1 ต.คลองมะเดื่อ อ.กระทุ่มแบน จ.สมุทรสาคร 74110 โทร. 034-878366-68 แฟกซ์ 034-878369 Line : @m-group</td></tr>';
     }
     return '<article class="p052-sticker">' +
       '<table class="p052-tbl">' +
@@ -221,8 +221,8 @@
       ".p052-tbl td.p052-tc-page{font-size:40pt;font-weight:700;line-height:1.1;text-align:center;vertical-align:middle}",
       ".p052-tbl td.p052-tc-page.p052-sm{font-size:36pt}",
       ".p052-tbl td.p052-tc-doc{font-size:14pt;text-align:center;padding-top:0px}",
-      ".p052-tbl td.p052-tc-addr{font-size:17px;line-height:1.4;text-align:left;padding-top:0px;padding-left:2px}",
-      ".p052-tbl td.p052-tc-from{font-size:17px;line-height:1.4;text-align:left;padding-top:0px;padding-left:2px}",
+      ".p052-tbl td.p052-tc-addr{font-size:17px;line-height:1.4;text-align:left;padding-top:0px;padding-left:2px;word-break:break-word}",
+      ".p052-tbl td.p052-tc-from{font-size:17px;line-height:1.4;text-align:left;padding-top:0px;padding-left:2px;word-break:break-word}",
       /* modal */
       ".p052-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.55)}",
       ".p052-modalbox{width:400px;max-width:calc(100vw - 40px);background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(15,23,42,.35)}",
