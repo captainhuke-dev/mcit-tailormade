@@ -207,8 +207,8 @@
       ".p052-sheetwrap{position:relative;flex:1 1 auto;min-height:0;overflow:auto;display:flex;border:1px solid var(--p052-border);border-radius:12px;background:radial-gradient(circle at 1px 1px,rgba(100,116,139,.16) 1px,transparent 0) 0 0/18px 18px,#eef2f7}",
       ".p052-sheets{margin:auto;flex:0 0 auto;transform-origin:top left}",
       /* sheet — กระดาษ 282×282pt (10×10cm) ขอบกระดาษ 2pt ทั้ง 4 ด้าน — 1 ตั๋ว/หน้า */
-      ".p052-sheet{display:grid;width:282pt;height:282pt;grid-template-columns:1fr;grid-template-rows:1fr;padding:2pt;background:#fff;box-shadow:0 22px 55px rgba(15,23,42,.3);flex:none}",
-      ".p052-sticker{display:flex;min-width:0;min-height:0;align-items:flex-start;justify-content:center;flex-direction:column;color:#000;padding:6pt 4pt}",
+      ".p052-sheet{display:grid;width:282pt;height:282pt;grid-template-columns:1fr;grid-template-rows:1fr;padding:0;background:#fff;box-shadow:0 22px 55px rgba(15,23,42,.3);flex:none}",
+      ".p052-sticker{display:flex;min-width:0;min-height:0;align-items:center;justify-content:center;flex-direction:column;color:#000;padding:4pt}",
       /* table กว้าง 280pt (373px) — 3 คอลั่น — font pt×1.333 = px */
       ".p052-tbl{width:373px;border-collapse:collapse;table-layout:fixed;color:#000;border:1px solid #000}",
       ".p052-tbl td{border:1px solid #000;padding:0;vertical-align:top;font-family:'THSarabunNew',Arial,sans-serif}",
@@ -243,7 +243,7 @@
       "body{margin:0 !important;padding:0 !important}" +
       "body > *:not(.p052-printroot){display:none !important}" +
       ".p052-printroot{margin:0 !important;padding:0 !important}" +
-      ".p052-sheet{position:static !important;box-sizing:border-box !important;overflow:hidden !important;width:282pt;height:282pt;padding:2pt;margin:0 !important;box-shadow:none !important;transform:none !important;page-break-after:always;break-after:page}" +
+      ".p052-sheet{position:static !important;box-sizing:border-box !important;overflow:hidden !important;width:282pt;height:282pt;padding:0;margin:0 !important;box-shadow:none !important;transform:none !important;page-break-after:always;break-after:page}" +
       ".p052-sheet:last-child{page-break-after:auto;break-after:auto}" +
       "}"
     ].join('\n');
