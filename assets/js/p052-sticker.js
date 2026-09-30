@@ -93,7 +93,7 @@
     // A (ทั่วไป)
     var addr = '';
     if (state.company === 'Company') {
-      addr = '<tr><td colspan="3" class="p052-tc-addr">จาก บจก.มหาโชค มหาชัย อินเตอร์เทรด 58/9 ม.6 ถ.เศรษฐกิจ1 ต.คลองมะเดื่อ อ.กระทุ่มแบน จ.สมุทรสาคร 74110 โทร. 034-878366-68 แฟกซ์ 034-878369 Line : @m-group</td></tr>';
+      addr = '<tr><td colspan="3" class="p052-tc-addr">จาก บจก.มหาโชค มหาชัย อินเตอร์เทรด<br>58/9 ม.6 ถ.เศรษฐกิจ1 ต.คลองมะเดื่อ อ.กระทุ่มแบน จ.สมุทรสาคร 74110<br>โทร. 034-878366-68 &nbsp;แฟกซ์ 034-878369 &nbsp;Line : @m-group</td></tr>';
     }
     return '<article class="p052-sticker">' +
       '<table class="p052-tbl">' +
@@ -256,11 +256,7 @@
     el.empty.hidden = true;
     el.printBtn.disabled = false;
     el.sub.textContent = 'เอกสาร ' + d.vn + ' · ' + state.count + ' หน้า · ประเภท ' + state.type + (state.type === 'B' ? ' (ส่งต่อ)' : (state.company === 'Company' ? ' (Company)' : ' (NotCompany)'));
-    if (!state.userZoom) {
-      fitPreview(el);
-    } else {
-      updateScale(el);
-    }
+    updateScale(el);
     updatePageLabel(el);
   }
 
