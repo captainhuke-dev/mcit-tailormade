@@ -1,4 +1,4 @@
-/* P052 — สติ๊กเกอร์ 10x10 (ใบปะ) */
+/* P052 — สติ๊กเกอร์ 10x10 (ใบปะ) — layout ตาม C# MCIT_Frm_FaceSheetProductV2 */
 (function () {
   'use strict';
 
@@ -11,8 +11,7 @@
     chevL: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>',
     chevR: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>',
     fit: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3"></path><path d="M16 3h3a2 2 0 0 1 2 2v3"></path><path d="M8 21H5a2 2 0 0 1-2-2v-3"></path><path d="M16 21h3a2 2 0 0 0 2-2v-3"></path></svg>',
-    print: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8" rx="1"></rect></svg>',
-    doc: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><path d="M14 3v6h6"></path></svg>'
+    print: '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8" rx="1"></rect></svg>'
   };
 
   /* mock data (dev — fallback เมื่อ API ล้มเหลว) */
@@ -20,16 +19,6 @@
     SCRE69080846: {
       date: '01/09/2569', vn: 'SCRE6908-0846', cus: '000234',
       name: 'บำรุงการเกษตร (LM)<br>(บางม่วง)', contact: '0896575609', tel: '0896575609',
-      ref2: '', desc: 'ข้อความตัวอย่าง'
-    },
-    SCRE69091490: {
-      date: '02/09/2569', vn: 'SCRE6909-1490', cus: '000371',
-      name: 'ลูกค้าตัวอย่าง', contact: '0812345678', tel: '0812345678',
-      ref2: '', desc: 'ข้อความตัวอย่าง'
-    },
-    SCRE69091965: {
-      date: '03/09/2569', vn: 'SCRE6909-1965', cus: '000412',
-      name: 'ลูกค้าตัวอย่าง', contact: '0898765432', tel: '0898765432',
       ref2: '', desc: 'ข้อความตัวอย่าง'
     }
   };
@@ -41,7 +30,8 @@
     data: null,
     type: null,
     count: 0,
-    denom: 0
+    denom: 0,
+    company: 'Company'
   };
 
   function $(sel, ctx) {
@@ -52,6 +42,72 @@
     return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
     });
+  }
+
+  /* ---- barcode SVG (JsBarcode — CODE128 / CODE93) ---- */
+
+  function barcodeSVG(value, w, h) {
+    try {
+      if (window.JsBarcode) {
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        // NOTE: C# ใช้ CODE93 (type B) แต่ JsBarcode ไม่สนับสนุน — ใช้ CODE128 ทั้งหมด (scan ได้ — value เดียวกัน)
+        var modules = 24 + 11 * String(value).length;
+        var mw = Math.max(0.5, w / modules);
+        window.JsBarcode(svg, String(value), {
+          format: 'CODE128', width: mw, height: h,
+          displayValue: false, margin: 0, lineColor: '#000'
+        });
+        svg.style.maxWidth = w + 'px';
+        svg.style.maxHeight = h + 'px';
+        return svg.outerHTML;
+      }
+    } catch (e) { /* fallback below */ }
+    return '<div class="p052-bcfb">' + esc(value) + '</div>';
+  }
+
+  /* ---- sticker (layout ตาม C# MCIT_Frm_FaceSheetProductV2) ----
+     Sheet 282×282pt — table กว้าง 280pt (373px) 3 คอลั่น — 1 ตั๋ว/หน้า
+     A: กรณีส่ง(30B) + customer(26B h120) + CODE128 130×25 + i/total(40B rowspan2) + vnos date(14) + address(14 ถ้า Company)
+     B: กรณีส่ง(30B) + MIHmemo(22B h125) + CODE93(30) + i/total(40B/35B rowspan2) + vnos date(14) + จาก name contact + Tel(16) */
+
+  function createSticker(d, i, denom) {
+    var vn = d.vn || '';
+    var date = d.date || '';
+    var pageFont = denom > 99 ? 'p052-sm' : '';
+    if (state.type === 'B') {
+      // B (ส่งต่อ)
+      return '<article class="p052-sticker">' +
+        '<table class="p052-tbl">' +
+        '<colgroup><col style="width:10.7%"><col style="width:50%"><col style="width:39.3%"></colgroup>' +
+        '<tbody>' +
+        '<tr><td colspan="3" class="p052-tc-send">กรณีส่ง</td></tr>' +
+        '<tr><td></td><td colspan="2" class="p052-tc-memo">' + esc((d.memo || '').replace(/\r\n/g, ' ')) + '</td></tr>' +
+        '<tr><td colspan="2" class="p052-tc-bc">' + barcodeSVG(vn, 250, 40) + '</td>' +
+        '<td rowspan="2" class="p052-tc-page ' + pageFont + '">' + i + '/' + denom + '</td></tr>' +
+        '<tr><td colspan="2" class="p052-tc-doc">' + esc(vn) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(date) + '</td></tr>' +
+        '<tr><td colspan="3" class="p052-tc-from">จาก&nbsp;&nbsp;' + esc(d.name || '') + ' ' + esc(d.contact || '') + '<br>Tel : ' + esc(d.tel || '') + '</td></tr>' +
+        '</tbody>' +
+        '</table>' +
+        '</article>';
+    }
+    // A (ทั่วไป)
+    var addr = '';
+    if (state.company === 'Company') {
+      addr = '<tr><td colspan="3" class="p052-tc-addr">จาก บจก.มหาโชค มหาชัย อินเตอร์เทรด<br>58/9 ม.6 ถ.เศรษฐกิจ1 ต.คลองมะเดื่อ อ.กระทุ่มแบน จ.สมุทรสาคร 74110<br>โทร. 034-878366-68 &nbsp;แฟกซ์ 034-878369 &nbsp;Line : @m-group</td></tr>';
+    }
+    return '<article class="p052-sticker">' +
+      '<table class="p052-tbl">' +
+      '<colgroup><col style="width:10.7%"><col style="width:50%"><col style="width:39.3%"></colgroup>' +
+      '<tbody>' +
+      '<tr><td colspan="3" class="p052-tc-send">กรณีส่ง</td></tr>' +
+      '<tr><td></td><td colspan="2" class="p052-tc-customer">' + esc(d.name || '') + '<br>' + esc(d.contact || '') + '</td></tr>' +
+      '<tr><td colspan="2" class="p052-tc-bc">' + barcodeSVG(vn, 173, 33) + '</td>' +
+      '<td rowspan="2" class="p052-tc-page ' + pageFont + '">' + i + '/' + denom + '</td></tr>' +
+      '<tr><td colspan="2" class="p052-tc-doc">' + esc(vn) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(date) + '</td></tr>' +
+      addr +
+      '</tbody>' +
+      '</table>' +
+      '</article>';
   }
 
   function renderRoot(root) {
@@ -152,18 +208,21 @@
       ".p052-sheets{margin:auto;flex:0 0 auto;transform-origin:top left}",
       /* sheet — กระดาษ 282×282pt (10×10cm) ขอบกระดาษ 2pt ทั้ง 4 ด้าน — 1 ตั๋ว/หน้า */
       ".p052-sheet{display:grid;width:282pt;height:282pt;grid-template-columns:1fr;grid-template-rows:1fr;padding:2pt;background:#fff;box-shadow:0 22px 55px rgba(15,23,42,.3);flex:none}",
-      ".p052-sticker{display:flex;min-width:0;min-height:0;align-items:center;justify-content:center;flex-direction:column;color:#000;text-align:center;padding:8pt 6pt}",
-      ".p052-sticker-customer{font-size:22px;font-weight:500;line-height:1.35}",
-      ".p052-sticker-page{margin:8pt 0 4pt;font-family:Arial,sans-serif;font-size:40px;font-weight:700;line-height:1.1}",
-      ".p052-sticker-document{display:flex;justify-content:center;gap:28px;font-family:Arial,sans-serif;font-size:14px;line-height:1.5}",
-      ".p052-sticker-company{margin-top:4pt;font-family:Arial,sans-serif;font-size:14px;line-height:1.4}",
-      /* A — table 280×280px ขอบ 1 ทั้งหมด */
-      ".p052-tbl{width:280px;height:280px;border-collapse:collapse;table-layout:fixed;text-align:center;color:#000;border:1px solid #000}",
-      ".p052-tbl td{padding:2px 4px;vertical-align:middle;font-family:Arial,sans-serif}",
-      ".p052-tc-customer{font-size:18px;font-weight:500;line-height:1.35;text-align:left}",
-      ".p052-tc-page{font-size:30px;font-weight:700;line-height:1.1}",
-      ".p052-tc-doc{font-size:12px;line-height:1.5;text-align:left}",
-      ".p052-tc-fix{font-size:12px;line-height:1.4;text-align:left}",
+      ".p052-sticker{display:flex;min-width:0;min-height:0;align-items:flex-start;justify-content:center;flex-direction:column;color:#000;padding:6pt 4pt}",
+      /* table กว้าง 280pt (373px) — 3 คอลั่น — font pt×1.333 = px */
+      ".p052-tbl{width:373px;border-collapse:collapse;table-layout:fixed;color:#000}",
+      ".p052-tbl td{border:0;padding:0;vertical-align:top;font-family:'THSarabunNew',Arial,sans-serif}",
+      ".p052-tc-send{font-size:40px;font-weight:700;line-height:1.1;padding-top:13px;padding-left:7px;text-align:left}",
+      ".p052-tc-customer{font-size:34.7px;font-weight:700;line-height:1.25;padding-top:27px;text-align:left;word-break:break-word}",
+      ".p052-tc-memo{font-size:29.3px;font-weight:700;line-height:1.3;padding-top:10px;text-align:left;word-break:break-word}",
+      ".p052-tc-bc{padding-top:7px;padding-bottom:7px;text-align:center}",
+      ".p052-tc-bc svg{display:block;margin:0 auto}",
+      ".p052-bcfb{font-family:Arial,sans-serif;font-size:14px;color:#000}",
+      ".p052-tc-page{font-size:53px;font-weight:700;line-height:1.1;text-align:center;vertical-align:top}",
+      ".p052-tc-page.p052-sm{font-size:47px}",
+      ".p052-tc-doc{font-size:18.7px;text-align:center;padding-top:2px}",
+      ".p052-tc-addr{font-size:18.7px;line-height:1.4;text-align:left;padding-top:4px}",
+      ".p052-tc-from{font-size:21.3px;line-height:1.4;text-align:left;padding-top:2px}",
       /* modal */
       ".p052-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.55)}",
       ".p052-modalbox{width:400px;max-width:calc(100vw - 40px);background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(15,23,42,.35)}",
@@ -190,47 +249,13 @@
     ].join('\n');
   }
 
-  /* ---- sticker ---- */
-
-  function createSticker(d, i, denom) {
-    var isB = state.type === 'B';
-    if (!isB) {
-      // A — table 280×280px ขอบ 1 ทั้งหมด
-      return '<article class="p052-sticker">' +
-        '<table class="p052-tbl">' +
-        '<colgroup><col style="width:50%"><col style="width:50%"></colgroup>' +
-        '<tbody>' +
-        '<tr style="height:90px"><td colspan="2" class="p052-tc-customer">' + esc(d.name || 'ลูกค้าตัวอย่าง') + '<br>' + esc(d.contact || '') + '</td></tr>' +
-        '<tr><td colspan="2" class="p052-tc-page">' + i + '/' + denom + '</td></tr>' +
-        '<tr><td class="p052-tc-doc">' + esc(d.vn || '') + '</td><td class="p052-tc-doc">' + esc(d.date || '') + '</td></tr>' +
-        '<tr><td colspan="2" class="p052-tc-fix">' + esc('จาก บริษัท มหาโชค มหาชัย อินเตอร์เทรด จำกัด') + '</td></tr>' +
-        '<tr><td colspan="2" class="p052-tc-fix">' + esc('โทร 034-878366-68 · Line : @m-group') + '</td></tr>' +
-        '</tbody>' +
-        '</table>' +
-        '</article>';
-    }
-    // B (ส่งต่อ) — table 280×280px — customer = MIHmemo · footer = DEBnameT + DEBcontactT + "Tel : " DEBtel
-    return '<article class="p052-sticker">' +
-      '<table class="p052-tbl">' +
-      '<colgroup><col style="width:50%"><col style="width:50%"></colgroup>' +
-      '<tbody>' +
-      '<tr style="height:90px"><td colspan="2" class="p052-tc-customer">' + esc(d.memo || '') + '</td></tr>' +
-      '<tr><td colspan="2" class="p052-tc-page">' + i + '/' + denom + '</td></tr>' +
-      '<tr style="height:35px"><td class="p052-tc-doc">' + esc(d.vn || '') + '</td><td class="p052-tc-doc">' + esc(d.date || '') + '</td></tr>' +
-      '<tr><td colspan="2" class="p052-tc-fix">' + esc('จาก ' + (d.name || '') + ' ' + (d.contact || '')) + '</td></tr>' +
-      '<tr><td colspan="2" class="p052-tc-fix">Tel : ' + esc(d.tel || '') + '</td></tr>' +
-      '</tbody>' +
-      '</table>' +
-      '</article>';
-  }
-
   function renderPage(el) {
     var d = state.data;
     var html = '<section class="p052-sheet">' + createSticker(d, state.page, state.denom) + '</section>';
     el.sheets.innerHTML = html;
     el.empty.hidden = true;
     el.printBtn.disabled = false;
-    el.sub.textContent = 'เอกสาร ' + d.vn + ' · ' + state.count + ' หน้า · ประเภท ' + state.type + (state.type === 'B' ? ' (ส่งต่อ)' : '');
+    el.sub.textContent = 'เอกสาร ' + d.vn + ' · ' + state.count + ' หน้า · ประเภท ' + state.type + (state.type === 'B' ? ' (ส่งต่อ)' : (state.company === 'Company' ? ' (Company)' : ' (NotCompany)'));
     updateScale(el);
     updatePageLabel(el);
   }
@@ -263,7 +288,6 @@
       return;
     }
     var z = state.zoom;
-    // กรอบ content = ขนาดหลัง scale → กลาง wrap เมื่อเล็กกว่า / scroll เมื่อใหญ่กว่า
     el.sheets.style.width = (sheet.offsetWidth * z) + 'px';
     el.sheets.style.height = (sheet.offsetHeight * z) + 'px';
     el.sheets.style.justifyContent = 'center';
@@ -281,7 +305,6 @@
   function fitPreview(el) {
     var sheet = el.sheets.firstElementChild;
     if (!sheet) return;
-    // fit เต็ม wrap — ขยายให้สวย
     var sheetW = sheet.offsetWidth;
     var sheetH = sheet.offsetHeight;
     var availW = el.sheetWrap.clientWidth - 24;
@@ -375,26 +398,26 @@
         }
         state.data = d.row;
         state.type = d.type;
+        state.company = d.company || 'Company';
         if (d.type === 'B') {
-          // ประเภท B (ส่งต่อ) — หน้าปัจจุบัน/จำนวนหน้า (MIHref2)
+          // ประเภท B (ส่งต่อ) — count = MIHref2 — ตัวเลขหลัง / = total (totalCopy)
           if (d.count > 0) {
             state.count = d.count;
-            state.denom = d.count;
           } else {
             state.count = 1;
-            state.denom = 0;
           }
+          state.denom = d.total || 0;
           showResult(root, el);
         } else if (d.count > 0) {
-          // ประเภท A — จำนวน = ผลรวม MILnotes
+          // ประเภท A — จำนวน = ผลรวม MILnotes (filter)
           state.count = d.count;
-          state.denom = d.count;
+          state.denom = d.total || d.count;
           showResult(root, el);
         } else {
-          // ประเภท A + count <= 0 → modal ใส่จำนวน — ตัวเลขหลัง / = 0 เสมอ
+          // ประเภท A + count <= 0 → modal ใส่จำนวน
           showCountModal(function (n) {
             state.count = n;
-            state.denom = 0;
+            state.denom = d.total || 0;
             showResult(root, el);
           });
         }
@@ -406,6 +429,7 @@
         if (mock) {
           state.data = mock;
           state.type = 'A';
+          state.company = 'Company';
           state.count = 1;
           state.denom = 1;
           showResult(root, el);
@@ -510,7 +534,6 @@
       }, { passive: false });
       _el.printBtn.addEventListener('click', function () {
         if (!state.data) return;
-        // ก่อนพิมพ์ — render ทั้งหมดใน container ระดับ body (ไม่โดน layout portal → ไม่มีหน้าแรกเปล่า)
         var d = state.data;
         var html = '';
         for (var i = 1; i <= state.count; i++) {
@@ -522,7 +545,6 @@
         document.body.appendChild(holder);
         window.print();
         document.body.removeChild(holder);
-        // หลังพิมพ์ — กลับไปหน้าปัจจุบัน
         renderPage(_el);
       });
 
