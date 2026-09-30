@@ -1316,6 +1316,11 @@
     if (page.type === "dev") content.innerHTML = renderProgramList("dev");
     if (page.type === "settings") content.innerHTML = renderSettings();
 
+    // page transition animation (restart on every render)
+    content.classList.remove("page-anim");
+    void content.offsetWidth;
+    content.classList.add("page-anim");
+
     // bind settings form buttons (post-render)
     if (page.type === "settings") {
       const testBtn = document.getElementById("btnTestConn");

@@ -30,7 +30,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
       document.documentElement.style.fontSize = Math.round(16 * scale) + "px";
     })();
   </script>
-  <link rel="stylesheet" href="assets/css/portal.css">
+  <link rel="stylesheet" href="assets/css/portal.css?v=20260929a">
   <link rel="stylesheet" href="assets/css/fonts.css">
 </head>
 
@@ -177,6 +177,6 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20260929b"></script>
+  <script src="assets/js/portal.js?v=20260929c"></script>
 </body>
 </html>

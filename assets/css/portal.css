@@ -455,6 +455,18 @@ kbd {
   padding: 32px;
 }
 
+/* page transition (applied by portal.js renderPage) */
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.page-anim {
+  animation: pageIn 0.28s ease both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-anim { animation: none; }
+}
+
 .breadcrumb {
   margin-bottom: 18px;
   color: var(--text-secondary);
