@@ -31,7 +31,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
     })();
   </script>
   <link rel="stylesheet" href="assets/css/portal.css?v=20260929a">
-  <link rel="stylesheet" href="assets/css/fonts.css">
+  <link rel="stylesheet" href="assets/css/fonts.css?v=20260929a">
 </head>
 
 <body>
