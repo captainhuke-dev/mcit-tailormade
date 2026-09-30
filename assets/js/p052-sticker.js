@@ -81,8 +81,8 @@
         '<colgroup><col style="width:10.7%"><col style="width:50%"><col style="width:39.3%"></colgroup>' +
         '<tbody>' +
         '<tr><td colspan="3" class="p052-tc-send">กรุณาส่ง</td></tr>' +
-        '<tr style="height:120px"><td></td><td colspan="2" class="p052-tc-memo">' + esc((d.memo || '').replace(/\r\n/g, ' ')) + '</td></tr>' +
-        '<tr><td colspan="2" class="p052-tc-bc">' + barcodeSVG(vn, 250, 40) + '</td>' +
+        '<tr style="height:150px"><td></td><td colspan="2" class="p052-tc-memo">' + esc((d.memo || '').replace(/\r\n/g, ' ')) + '</td></tr>' +
+        '<tr><td colspan="2" class="p052-tc-bc">' + barcodeSVG(vn, 250, 50) + '</td>' +
         '<td rowspan="2" class="p052-tc-page ' + pageFont + '">' + i + '/' + denom + '</td></tr>' +
         '<tr><td colspan="2" class="p052-tc-doc">' + esc(vn) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(date) + '</td></tr>' +
         '<tr><td colspan="3" class="p052-tc-from">จาก&nbsp;&nbsp;' + esc(d.name || '') + ' ' + esc(d.contact || '') + '<br>Tel : ' + esc(d.tel || '') + '</td></tr>' +
@@ -100,8 +100,8 @@
       '<colgroup><col style="width:10.7%"><col style="width:50%"><col style="width:39.3%"></colgroup>' +
       '<tbody>' +
       '<tr><td colspan="3" class="p052-tc-send">กรุณาส่ง</td></tr>' +
-      '<tr style="height:120px"><td></td><td colspan="2" class="p052-tc-customer">' + esc(d.name || '') + '<br>' + esc(d.contact || '') + '</td></tr>' +
-      '<tr><td colspan="2" class="p052-tc-bc">' + barcodeSVG(vn, 173, 40) + '</td>' +
+      '<tr style="height:150px"><td></td><td colspan="2" class="p052-tc-customer">' + esc(d.name || '') + '<br>' + esc(d.contact || '') + '</td></tr>' +
+      '<tr><td colspan="2" class="p052-tc-bc">' + barcodeSVG(vn, 250, 50) + '</td>' +
       '<td rowspan="2" class="p052-tc-page ' + pageFont + '">' + i + '/' + denom + '</td></tr>' +
       '<tr><td colspan="2" class="p052-tc-doc">' + esc(vn) + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(date) + '</td></tr>' +
       addr +
@@ -212,17 +212,17 @@
       /* table กว้าง 280pt (373px) — 3 คอลั่น — font pt×1.333 = px */
       ".p052-tbl{width:373px;border-collapse:collapse;table-layout:fixed;color:#000;border:1px solid #000}",
       ".p052-tbl td{border:1px solid #000;padding:0;vertical-align:top;font-family:'THSarabunNew',Arial,sans-serif}",
-      ".p052-tc-send{font-size:30px;font-weight:700;line-height:1.1;padding-top:13px;padding-left:7px;text-align:left}",
-      ".p052-tc-customer{font-size:26px;font-weight:700;line-height:1.25;padding-top:10px;text-align:left;word-break:break-word}",
-      ".p052-tc-memo{font-size:26px;font-weight:700;line-height:1.3;padding-top:10px;text-align:left;word-break:break-word}",
+      ".p052-tbl td.p052-tc-send{font-size:30px;font-weight:700;line-height:1.1;padding-top:20px;padding-left:10px;text-align:left}",
+      ".p052-tbl td.p052-tc-customer{font-size:26px;font-weight:700;line-height:1.25;padding-top:20px;text-align:left;word-break:break-word}",
+      ".p052-tbl td.p052-tc-memo{font-size:26px;font-weight:700;line-height:1.3;padding-top:20px;text-align:left;word-break:break-word}",
       ".p052-tc-bc{padding-top:7px;padding-bottom:7px;text-align:center}",
       ".p052-tc-bc svg{display:block;margin:0 auto}",
       ".p052-bcfb{font-family:Arial,sans-serif;font-size:14px;color:#000}",
-      ".p052-tc-page{font-size:40px;font-weight:700;line-height:1.1;text-align:center;vertical-align:top}",
-      ".p052-tc-page.p052-sm{font-size:35px}",
-      ".p052-tc-doc{font-size:14px;text-align:center;padding-top:2px}",
-      ".p052-tc-addr{font-size:14px;line-height:1.4;text-align:left;padding-top:4px}",
-      ".p052-tc-from{font-size:14px;line-height:1.4;text-align:left;padding-top:2px}",
+      ".p052-tc-page{font-size:48px;font-weight:700;line-height:1.1;text-align:center;vertical-align:top}",
+      ".p052-tc-page.p052-sm{font-size:42px}",
+      ".p052-tc-doc{font-size:14px;text-align:center;padding-top:10px}",
+      ".p052-tc-addr{font-size:14px;line-height:1.4;text-align:left;padding-top:10px}",
+      ".p052-tc-from{font-size:14px;line-height:1.4;text-align:left;padding-top:10px}",
       /* modal */
       ".p052-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.55)}",
       ".p052-modalbox{width:400px;max-width:calc(100vw - 40px);background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(15,23,42,.35)}",
