@@ -256,7 +256,11 @@
     el.empty.hidden = true;
     el.printBtn.disabled = false;
     el.sub.textContent = 'เอกสาร ' + d.vn + ' · ' + state.count + ' หน้า · ประเภท ' + state.type + (state.type === 'B' ? ' (ส่งต่อ)' : (state.company === 'Company' ? ' (Company)' : ' (NotCompany)'));
-    updateScale(el);
+    if (!state.userZoom) {
+      fitPreview(el);
+    } else {
+      updateScale(el);
+    }
     updatePageLabel(el);
   }
 
