@@ -47,6 +47,7 @@
 | P033 | รายงานลูกค้าที่มียอดค้างเกินวงเงิน | ready (1 หน้า — real data MAC5 3 modes + preview A4 Landscape multi-page + zoom + พิมพ์เอกสาร) |
 | P035 | ตรวจสอบลูกค้าติดอนุมัติ | ready (1 หน้า — real data MAC5 + checkbox เกรด X + pager 15/หน้า + detail modal) |
 | P053 | สติ๊กเกอร์ 10x7.5 (ใบปะ) | ready (1 หน้า — real data MAC5 + logic A/B + table 280×205px + zoom 100% + หน้าถัด ๆ + พิมพ์ 1 ตั๋ว/หน้า) |
+| P052 | สติ๊กเกอร์ 10x10 (ใบปะ) | ready (1 หน้า — real data MAC5 ตาม C# MCIT_Frm_FaceSheetProductV2 + logic A/B + table 280pt 3 คอลั่น + THSarabunNew web font + font pt + zoom 100% + พิมพ์ 1 ตั๋ว/หน้า 282×282pt) |
 | P054 | Packing Order/Cartonize/ใบจัดกล่อง | ready (1 หน้า label+items+notes + หน้า JOB 1 กลุ่มตัวอักษรต้น MILvCol2 = 1 หน้า A4 — real data MAC5 — สไตล์ P063 + preview A4 + barcode + พิมพ์) |
 | P092 | พิมพ์ Barcode/สคบ. | ready (1 หน้า — real data MAC5 3 APIs + modal ตั้งค่า 3 blocks + layouts small/medium/large/large10x7 ตาม C# + EAN13 JsBarcode SVG + S/N running + พิมพ์ตามขนาดกระดาษ) |
 | P037 | ตรวจสอบของจองที่มีการเปิดบิล | ready (1 หน้า — real data MAC5 3 APIs + search วันที่/เลขที่ใบสำคัญ (คำนำหน้า LIKE)/รหัสลูกค้า (LIKE) + **ตาราง INV = เฉพาะใบแจ้งหนี้ที่มี RSV เชื่อมโยง** (LEFT JOIN subquery + RSVvnos IS NOT NULL) + **ตาราง RSV = API แยก `p037_rsv.php` ตามลูกค้าที่เลือก (exact)** — fetch ตอนคลิกแถว + **pagination 10 รายการ/หน้า (ทั้ง 2 ตาราง — pager กป๋านหัวหน้า ‹ 1 2 3 › + "หน้า X / Y" ซ้าย)** + **RSV ตัด column ชื่อลูกค้าออก + INV ตัด column No. ออก** + **ตารางเต็มกว้าง (10 แถวพอดี — ไม่มี scroll)** + click row = select 1 แถว + dblclick = modal items INV vs RSV) |
@@ -57,6 +58,14 @@
 ---
 
 ## 2. รายงานรายวัน
+
+### 29-30/09 — P052 สติ๊กเกอร์ 10x10 (ใบปะ) — **READY**
+- `assets/js/p052-sticker.js` (IIFE `window.P052Sticker`) — **real data MAC5** (`api/p052_search.php`) — **ตาม C# `MCIT_Frm_FaceSheetProductV2`** — clone P053 → rewrite
+- **API:** POST {connectionId, vnos} — MIH + DEB by MIHvnos — **type B** = `MIHdesc LIKE '%ส่งต่อ%'` → count = MIHref2 (ไม่ check company) · **type A** = count = รวมตัวเลข MILnotes (MILstk NOT IN BI_CUBE.tb_FaceSheetSTK STKnotCount='1') — count <= 0 → modal ใส่จำนวน — **company** = MIHcus IN BI_CUBE.tb_FaceSheetDEB หรือ MILstk IN STKnotCompany='1' → NotCompany — ไม่ → Company — **total** = รวมตัวเลข MILnotes ทั้งหมด (ไม่ filter) → แสดง "i/total" — test: A `IVVN6909-0001` count 21/total 21/Company · B `TOUB6908-0008` count 0/total 0
+- **ตั๋ว = กระดาษ 282×282pt (10×10cm) ขอบกระดาษ 0 — ตาราง 280pt (373px) 3 คอลั่น (10.7/50/39.3%) — ชิดบนกระดาษ — font THSarabunNew web font (@font-face 4 weights — จาก C# — fonts.css ?v=20260929a)**
+- **Layout (user spec — วัด CDP):** r1 "กรุณาส่ง" 30pt B (pad 10/10) · r2 **130px** (pad-top 10) = DEBnameT + DEBcontactT (26pt B — **ทั้ง A + B**) · r3 barcode **170×45 CODE128** + i/total **40pt B valign middle rowspan 2** · r4 vnos + วันที่ 14pt (pad-top 0) · r5 **17px pad-top 0 pad-left 2 word-break** = A: ที่อยู่บริษัท 3 บรรทัด (br ×2) / B: "จาก DEBnameT DEBcontactT Tel : DEBtel" — **ไม่มีเส้นตาราง** (border 0 — user ตัดออก)
+- **Preview:** zoom 100% (range 0.25–2.5) + พอดีจอ + wheel เลื่อนหน้า — **พิมพ์:** `.p052-printroot` + `@page{size:282pt 282pt;margin:0}` + sheet static + page-break-after — 1 ตั๋ว/หน้า
+- test CDP: A `IVVN6909-0001` (21 หน้า) + B `TOUB6908-0008` — sheet 376×376px + table 373px + font sizes + padding + r5 wrap ไม่ล้น — cache `p052-sticker.js?v=20260929u` — modules.php status **ready** — **20 modules ready**
 
 ### 29/09 — P015 สถานะบิลค้างรับ — **READY**
 - `assets/js/p015-bill-status.js` (IIFE `window.P015BillStatus`) — **real data MAC5 2 APIs** (`p015_search` / `p015_status`) — ตาม C# `Frm_CheckBillReceiptGUI` (AppCheckBillReceipt) + demo/P015-demo.html
@@ -262,7 +271,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ## 4. สถานะปัจจุบัน + สิ่งที่ทำต่อได้
 
-### เสร็จแล้ว (ready): P063, P064, P115, P128, P022, P031, P032, P111, P050, P034, P013, P033, P035, P053, P054
+### เสร็จแล้ว (ready): P063, P064, P115, P128, P022, P031, P032, P111, P050, P034, P013, P033, P035, P053, P054, P092, P037, P047, P015, P052
 
 ### ทำต่อได้
 - P036+ (บัญชี), P112, P113-P119 ฯลฯ — placeholders
