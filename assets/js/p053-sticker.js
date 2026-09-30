@@ -150,20 +150,17 @@
       ".p053-emptysub{font-size:12px}",
       ".p053-sheetwrap{position:relative;flex:1 1 auto;min-height:0;overflow:auto;display:flex;border:1px solid var(--p053-border);border-radius:12px;background:radial-gradient(circle at 1px 1px,rgba(100,116,139,.16) 1px,transparent 0) 0 0/18px 18px,#eef2f7}",
       ".p053-sheets{margin:auto;flex:0 0 auto;transform-origin:top left}",
-      /* sheet — กระดาษ 282×210pt (10×7.5cm) ขอบกระดาษ 2pt ทั้ง 4 ด้าน — 1 ตั๋ว/หน้า */
-      ".p053-sheet{display:grid;width:282pt;height:210pt;grid-template-columns:1fr;grid-template-rows:1fr;padding:2pt;background:#fff;box-shadow:0 22px 55px rgba(15,23,42,.3);flex:none}",
-      ".p053-sticker{display:flex;min-width:0;min-height:0;align-items:center;justify-content:center;flex-direction:column;color:#000;text-align:center;padding:8pt 6pt}",
-      ".p053-sticker-customer{font-size:22px;font-weight:500;line-height:1.35}",
-      ".p053-sticker-page{margin:8pt 0 4pt;font-family:Arial,sans-serif;font-size:40px;font-weight:700;line-height:1.1}",
-      ".p053-sticker-document{display:flex;justify-content:center;gap:28px;font-family:Arial,sans-serif;font-size:14px;line-height:1.5}",
-      ".p053-sticker-company{margin-top:4pt;font-family:Arial,sans-serif;font-size:14px;line-height:1.4}",
-      /* A — table 280×205px ขอบ 1 ทั้งหมด */
-      ".p053-tbl{width:280px;height:205px;border-collapse:collapse;table-layout:fixed;text-align:center;color:#000;border:1px solid #000}",
-      ".p053-tbl td{padding:2px 4px;vertical-align:middle;font-family:Arial,sans-serif}",
-      ".p053-tc-customer{font-size:18px;font-weight:500;line-height:1.35;text-align:left}",
-      ".p053-tc-page{font-size:30px;font-weight:700;line-height:1.1}",
-      ".p053-tc-doc{font-size:12px;line-height:1.5;text-align:left}",
-      ".p053-tc-fix{font-size:12px;line-height:1.4;text-align:left}",
+      /* sheet — กระดาษ 282×210pt (10×7.5cm) ขอบกระดาษ L/R 1pt, T/B 2pt (C# margins) — 1 ตั๋ว/หน้า */
+      ".p053-sheet{display:grid;width:282pt;height:210pt;grid-template-columns:1fr;grid-template-rows:1fr;padding:2pt 1pt;background:#fff;box-shadow:0 22px 55px rgba(15,23,42,.3);flex:none}",
+      ".p053-sticker{display:flex;min-width:0;min-height:0;align-items:center;justify-content:flex-start;flex-direction:column;color:#000;text-align:left;padding:0}",
+      /* A/B — table 280pt ขีด 4 คอลั่น (30/65/90/95) — border 0 (C# cell.Border=0) — font THSarabunNew */
+      ".p053-tbl{width:280pt;border-collapse:collapse;table-layout:fixed;color:#000}",
+      ".p053-tbl td{padding:2pt 0;vertical-align:middle;font-family:'THSarabunNew',Arial,sans-serif}",
+      ".p053-tc-customer{font-size:22pt;font-weight:700;line-height:1.3;text-align:left;height:90pt;padding:5pt 0 0 15pt}",
+      ".p053-tc-page{font-size:40pt;font-weight:700;line-height:1.1;text-align:right;padding-right:140pt;padding-top:0;padding-bottom:0}",
+      ".p053-tc-doc{font-size:14pt;line-height:1.4;text-align:left;padding-left:20pt;padding-top:0;padding-bottom:0}",
+      ".p053-tc-fix{font-size:14pt;line-height:1.4;text-align:left;padding-left:15pt;padding-top:0;padding-bottom:0}",
+      ".p053-tc-fixb{font-size:16pt;line-height:1.4;text-align:left;padding-left:15pt;padding-top:0;padding-bottom:0}",
       /* modal */
       ".p053-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.55)}",
       ".p053-modalbox{width:400px;max-width:calc(100vw - 40px);background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(15,23,42,.35)}",
@@ -184,41 +181,50 @@
       "body{margin:0 !important;padding:0 !important}" +
       "body > *:not(.p053-printroot){display:none !important}" +
       ".p053-printroot{margin:0 !important;padding:0 !important}" +
-      ".p053-sheet{position:static !important;box-sizing:border-box !important;overflow:hidden !important;width:282pt;height:210pt;padding:2pt;margin:0 !important;box-shadow:none !important;transform:none !important;page-break-after:always;break-after:page}" +
+      ".p053-sheet{position:static !important;box-sizing:border-box !important;overflow:hidden !important;width:282pt;height:210pt;padding:2pt 1pt;margin:0 !important;box-shadow:none !important;transform:none !important;page-break-after:always;break-after:page}" +
       ".p053-sheet:last-child{page-break-after:auto;break-after:auto}" +
       "}"
     ].join('\n');
   }
 
-  /* ---- sticker ---- */
+  /* ---- sticker (ตาม C# MCIT_Frm_FaceSheetProduct_10x7 — table 4 คอลั่น 30/65/90/95 border 0) ---- */
+
+  var COLS = '<colgroup><col style="width:30pt"><col style="width:65pt"><col style="width:90pt"><col style="width:95pt"></colgroup>';
 
   function createSticker(d, i, denom) {
     var isB = state.type === 'B';
+    var isCompany = (state.company || 'Company') === 'Company';
     if (!isB) {
-      // A — table 280×205px ขอบ 1 ทั้งหมด
+      // A — report ทั่วไป: r1 DEBnameT+DEBcontactT (22pt B, 90pt, padL15) · r2 spacer 40pt B
+      //   + i/total 40pt B วางขวา (ตรงกลางหน้า — C# ColumnText y=85) · r3 vnos+วันที่ 14pt padL20
+      //   · r4 A: address บริษัท 14pt padL15 (เฉพาะ type=Company) / ไม่ว่าง (NotCompany)
+      var addr = '';
+      if (isCompany) {
+        addr = '<tr><td colspan="4" class="p053-tc-fix">จาก บจก.มหาโชค มหาชัย อินเตอร์เทรด<br>โทร. 034-878366-68&nbsp;&nbsp;Line : @m-group</td></tr>';
+      } else {
+        addr = '<tr><td colspan="4" class="p053-tc-fix">&nbsp;</td></tr>';
+      }
       return '<article class="p053-sticker">' +
-        '<table class="p053-tbl">' +
-        '<colgroup><col style="width:50%"><col style="width:50%"></colgroup>' +
+        '<table class="p053-tbl">' + COLS +
         '<tbody>' +
-        '<tr style="height:90px"><td colspan="2" class="p053-tc-customer">' + esc(d.name || 'ลูกค้าตัวอย่าง') + '<br>' + esc(d.contact || '') + '</td></tr>' +
-        '<tr><td colspan="2" class="p053-tc-page">' + i + '/' + denom + '</td></tr>' +
-        '<tr><td class="p053-tc-doc">' + esc(d.vn || '') + '</td><td class="p053-tc-doc">' + esc(d.date || '') + '</td></tr>' +
-        '<tr><td colspan="2" class="p053-tc-fix">' + esc('จาก บริษัท มหาโชค มหาชัย อินเตอร์เทรด จำกัด') + '</td></tr>' +
-        '<tr><td colspan="2" class="p053-tc-fix">' + esc('โทร 034-878366-68 · Line : @m-group') + '</td></tr>' +
+        '<tr><td colspan="4" class="p053-tc-customer">' + esc(d.name || '') + '<br>' + esc(d.contact || '') + '</td></tr>' +
+        '<tr><td colspan="4" class="p053-tc-page">' + i + '/' + denom + '</td></tr>' +
+        '<tr><td colspan="4" class="p053-tc-doc">' + esc(d.vn || '') + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(d.date || '') + '</td></tr>' +
+        addr +
         '</tbody>' +
         '</table>' +
         '</article>';
     }
-    // B (ส่งต่อ) — table 280×205px — customer = MIHmemo · footer = DEBnameT + DEBcontactT + "Tel : " DEBtel
+    // B (ส่งต่อ) — r1 MIHmemo (22pt B, 90pt, padL15) · r2 spacer + i/total 40pt B · r3 vnos+วันที่ 14pt
+    //   · r4 "จาก DEBnameT DEBcontactT" + "Tel : DEBtel" 16pt padL15
+    var memo = esc(String(d.memo || '').replace(/\r\n/g, ' '));
     return '<article class="p053-sticker">' +
-      '<table class="p053-tbl">' +
-      '<colgroup><col style="width:50%"><col style="width:50%"></colgroup>' +
+      '<table class="p053-tbl">' + COLS +
       '<tbody>' +
-      '<tr style="height:90px"><td colspan="2" class="p053-tc-customer">' + esc(d.memo || '') + '</td></tr>' +
-      '<tr><td colspan="2" class="p053-tc-page">' + i + '/' + denom + '</td></tr>' +
-      '<tr style="height:20px"><td class="p053-tc-doc">' + esc(d.vn || '') + '</td><td class="p053-tc-doc">' + esc(d.date || '') + '</td></tr>' +
-      '<tr><td colspan="2" class="p053-tc-fix">' + esc('จาก ' + (d.name || '') + ' ' + (d.contact || '')) + '</td></tr>' +
-      '<tr><td colspan="2" class="p053-tc-fix">Tel : ' + esc(d.tel || '') + '</td></tr>' +
+      '<tr><td colspan="4" class="p053-tc-customer">' + memo + '</td></tr>' +
+      '<tr><td colspan="4" class="p053-tc-page">' + i + '/' + denom + '</td></tr>' +
+      '<tr><td colspan="4" class="p053-tc-doc">' + esc(d.vn || '') + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(d.date || '') + '</td></tr>' +
+      '<tr><td colspan="4" class="p053-tc-fixb">จาก&nbsp;&nbsp;' + esc(d.name || '') + ' ' + esc(d.contact || '') + '<br>Tel : ' + esc(d.tel || '') + '</td></tr>' +
       '</tbody>' +
       '</table>' +
       '</article>';
@@ -230,7 +236,7 @@
     el.sheets.innerHTML = html;
     el.empty.hidden = true;
     el.printBtn.disabled = false;
-    el.sub.textContent = 'เอกสาร ' + d.vn + ' · ' + state.count + ' หน้า · ประเภท ' + state.type + (state.type === 'B' ? ' (ส่งต่อ)' : '');
+    el.sub.textContent = 'เอกสาร ' + d.vn + ' · ' + state.count + ' หน้า' + (state.total > 0 ? ' (total ' + state.total + ')' : '') + ' · ประเภท ' + state.type + (state.type === 'B' ? ' (ส่งต่อ)' : ' · ' + (state.company || 'Company'));
     updateScale(el);
     updatePageLabel(el);
   }
@@ -375,26 +381,29 @@
         }
         state.data = d.row;
         state.type = d.type;
+        state.company = d.company || 'Company';
+        // i/total — C# แสดง "i/total" ทั้ง A+B (total = totalCopy — รวม MILnotes ทั้งหมด)
+        state.total = d.total || 0;
         if (d.type === 'B') {
-          // ประเภท B (ส่งต่อ) — หน้าปัจจุบัน/จำนวนหน้า (MIHref2)
+          // ประเภท B (ส่งต่อ) — count = MIHref2
           if (d.count > 0) {
             state.count = d.count;
-            state.denom = d.count;
+            state.denom = state.total;
           } else {
             state.count = 1;
             state.denom = 0;
           }
           showResult(root, el);
         } else if (d.count > 0) {
-          // ประเภท A — จำนวน = ผลรวม MILnotes
+          // ประเภท A — count = ผลรวม MILnotes (ยกเว้น STKnotCount)
           state.count = d.count;
-          state.denom = d.count;
+          state.denom = state.total;
           showResult(root, el);
         } else {
-          // ประเภท A + count <= 0 → modal ใส่จำนวน — ตัวเลขหลัง / = 0 เสมอ
+          // ประเภท A + count <= 0 → modal ใส่จำนวน
           showCountModal(function (n) {
             state.count = n;
-            state.denom = 0;
+            state.denom = state.total;
             showResult(root, el);
           });
         }

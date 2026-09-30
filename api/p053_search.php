@@ -1,15 +1,18 @@
 <?php
 /**
- * P053 — สติ๊กเกอร์ 10x7.5 (ใบปะ) (search)
+ * P053 — สติ๊กเกอร์ 10x7.5 (ใบปะ) (search) — ตาม C# MCIT_Frm_FaceSheetProduct_10x7
  * POST { connectionId, vnos }
- * MAC5 (SQL Server) — MIH + DEB (+ MIL + BI_CUBE สำหรับประเภท A)
+ * MAC5 (SQL Server)
  *
- * เงื่อนไข (user spec 2026-09-22):
- * 1. MIHdesc LIKE '%ส่งต่อ%' → ประเภท B (จำนวน = MIHref2)
- *    ไม่มี → ประเภท A
- * 2. ประเภท A: รวมตัวเลขจาก MILnotes (MIL โดย MILvnos — ยกเว้น
- *    MILstk ที่อยู่ใน BI_CUBE.dbo.tb_FaceSheetSTK WHERE STKnotCount = '1')
- * 3. ประเภท A รวม <= 0 → count = 0 (UI เปิด modal ให้ใส่จำนวน)
+ * Logic (C# GeneratePdf):
+ * 1. MIH + DEB โดย MIHvnos
+ * 2. MIHdesc LIKE '%ส่งต่อ%' → type B (count = MIHref2) — ไม่ check company
+ *    ไม่ → type A:
+ *      count = CountCopyPrint: รวมตัวเลข MILnotes (MILstk NOT IN tb_FaceSheetSTK STKnotCount='1')
+ *      count <= 0 → UI ให้ใส่จำนวน (modal)
+ *      company = typeReport: MIHcus IN BI_CUBE.tb_FaceSheetDEB → NotCompany
+ *              หรือ MILstk IN tb_FaceSheetSTK STKnotCompany='1' → NotCompany — ไม่ → Company
+ * 3. total = totalCopy: รวมตัวเลข MILnotes ทั้งหมด (ไม่ filter) — แสดง "i/total" (40pt B มุมขวา)
  */
 require_once __DIR__ . '/lib/db.php';
 
@@ -78,40 +81,64 @@ if (!$r) {
 $desc = (string) $r['MIHdesc'];
 $type = (strpos($desc, 'ส่งต่อ') !== false) ? 'B' : 'A';
 
+// sum digits from MILnotes (with optional NOT IN filter) — C# CountCopyPrint/totalCopy
+function sumMilNotes($pdo, $vnos, $exclude) {
+    $sql = "SELECT MILnotes FROM MIL WHERE MILvnos = '" . $vnos . "'";
+    if ($exclude) {
+        $sql .= " AND MILstk NOT IN (SELECT STKcode FROM BI_CUBE.dbo.tb_FaceSheetSTK WHERE STKnotCount = '1')";
+    }
+    $stmt = $pdo->query($sql);
+    $sum = 0;
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        if (preg_match_all('/\d+/', (string) $row['MILnotes'], $m)) {
+            foreach ($m[0] as $n) {
+                $sum += (int) $n;
+            }
+        }
+    }
+    return $sum;
+}
+
 $count = 0;
 $countSource = null;
+$company = 'Company';
 
 if ($type === 'B') {
-    // B: จำนวนจาก MIHref2 (ตัวเลข)
-    if (preg_match_all('/\d+/', (string) $r['MIHref2'], $m)) {
-        foreach ($m[0] as $n) {
-            $count += (int) $n;
-        }
+    // B: count = MIHref2 (C# Convert.ToInt16)
+    if (preg_match('/\d+/', (string) $r['MIHref2'], $m)) {
+        $count = (int) $m[0];
     }
     $countSource = 'ref2';
 } else {
-    // A: รวมตัวเลขจาก MILnotes (ยกเว้น MILstk ที่ STKnotCount = '1')
-    $sql2 = "SELECT MIL.MILnotes
-        FROM MIL
-        WHERE MIL.MILvnos = '" . $vnos . "'
-            AND MIL.MILstk NOT IN (
-                SELECT STKcode FROM BI_CUBE.dbo.tb_FaceSheetSTK WHERE STKnotCount = '1'
-            )";
+    // A: CountCopyPrint + typeReport
     try {
-        $stmt2 = $pdo->query($sql2);
-        while ($row = $stmt2->fetch(PDO::FETCH_ASSOC)) {
-            if (preg_match_all('/\d+/', (string) $row['MILnotes'], $m)) {
-                foreach ($m[0] as $n) {
-                    $count += (int) $n;
-                }
-            }
-        }
+        $count = sumMilNotes($pdo, $vnos, true);
         $countSource = 'milnotes';
     } catch (Exception $e) {
-        // BI_CUBE ข้าม DB อาจไม่อยู่ — ให้ count = 0 (UI ให้ใส่จำนวนเอง)
         $count = 0;
         $countSource = 'milnotes-error';
     }
+    try {
+        $st = $pdo->query("SELECT MIHcus FROM MIH WHERE MIHvnos = '" . $vnos . "' AND MIHcus IN (SELECT DEBcode FROM BI_CUBE.dbo.tb_FaceSheetDEB)");
+        if ($st->fetch()) {
+            $company = 'NotCompany';
+        } else {
+            $st2 = $pdo->query("SELECT MILstk FROM MIL WHERE MILvnos = '" . $vnos . "' AND MILstk IN (SELECT STKcode FROM BI_CUBE.dbo.tb_FaceSheetSTK WHERE STKnotCompany = '1')");
+            if ($st2->fetch()) {
+                $company = 'NotCompany';
+            }
+        }
+    } catch (Exception $e) {
+        $company = 'Company'; // BI_CUBE ข้าม DB อาจไม่อยู่ — default Company (show address)
+    }
+}
+
+// total = totalCopy (ทั้งหมด — ไม่ filter) — แสดง "i/total"
+$total = 0;
+try {
+    $total = sumMilNotes($pdo, $vnos, false);
+} catch (Exception $e) {
+    $total = 0;
 }
 
 // date → d/m/พ.ศ. (ค.ศ. + 543)
@@ -129,6 +156,8 @@ echo json_encode(array(
     'type' => $type,
     'count' => $count,
     'countSource' => $countSource,
+    'total' => $total,
+    'company' => $company,
     'row' => array(
         'date' => $dateStr,
         'vn' => $r['MIHvnos'],
