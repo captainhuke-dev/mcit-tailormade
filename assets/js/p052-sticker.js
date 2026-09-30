@@ -220,9 +220,9 @@
       ".p052-bcfb{font-family:Arial,sans-serif;font-size:14px;color:#000}",
       ".p052-tbl td.p052-tc-page{font-size:40pt;font-weight:700;line-height:1.1;text-align:center;vertical-align:middle}",
       ".p052-tbl td.p052-tc-page.p052-sm{font-size:36pt}",
-      ".p052-tbl td.p052-tc-doc{font-size:14pt;text-align:center;padding-top:10px}",
-      ".p052-tbl td.p052-tc-addr{font-size:14pt;line-height:1.4;text-align:left;padding-top:10px}",
-      ".p052-tbl td.p052-tc-from{font-size:14pt;line-height:1.4;text-align:left;padding-top:10px}",
+      ".p052-tbl td.p052-tc-doc{font-size:14pt;text-align:center;padding-top:0px}",
+      ".p052-tbl td.p052-tc-addr{font-size:17px;line-height:1.4;text-align:left;padding-top:0px}",
+      ".p052-tbl td.p052-tc-from{font-size:17px;line-height:1.4;text-align:left;padding-top:0px}",
       /* modal */
       ".p052-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.55)}",
       ".p052-modalbox{width:400px;max-width:calc(100vw - 40px);background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(15,23,42,.35)}",
