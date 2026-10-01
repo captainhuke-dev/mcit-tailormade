@@ -34,7 +34,7 @@
     allRows: [],
     currentRows: [],
     selectedDocument: "",
-    sortField: "index",
+    sortField: "document",
     sortDirection: "asc",
     searched: false
   };
@@ -57,7 +57,7 @@
   function mount(root) {
     state.currentRows = [];
     state.selectedDocument = "";
-    state.sortField = "index";
+    state.sortField = "document";
     state.sortDirection = "asc";
     injectCSS();
 
@@ -106,7 +106,6 @@
         '<div class="p051-table-container">' +
           '<table id="p051PrintTable">' +
             "<thead><tr>" +
-              '<th class="p051-sortable p051-center" data-sort="index">ลำดับ <span class="p051-sort-mark">↕</span></th>' +
               '<th class="p051-sortable" data-sort="document">เลขใบสำคัญ <span class="p051-sort-mark">↕</span></th>' +
               '<th class="p051-sortable p051-center" data-sort="date">วันที่ <span class="p051-sort-mark">↕</span></th>' +
               '<th class="p051-sortable" data-sort="customerCode">รหัสลูกค้า <span class="p051-sort-mark">↕</span></th>' +
@@ -233,7 +232,6 @@
       var sel = it.document === state.selectedDocument ? " p051-selected" : "";
       html +=
         '<tr class="' + sel.trim() + '" data-doc="' + esc(it.document) + '">' +
-          '<td class="p051-center">' + it.index + "</td>" +
           '<td class="p051-doc">' + esc(it.document) + "</td>" +
           '<td class="p051-center">' + esc(formatDate(it.date)) + "</td>" +
           '<td class="p051-code">' + esc(it.customerCode) + "</td>" +
@@ -270,11 +268,6 @@
       return !keyword || text.indexOf(keyword) >= 0;
     });
 
-    /* re-index ตามแถวที่แสดง */
-    for (var i = 0; i < state.currentRows.length; i++) {
-      state.currentRows[i].index = i + 1;
-    }
-
     var typeText = type === "cash" ? "รายการเงินสด" : "รายการทั้งหมด";
     el(root, "#p051Subtitle").textContent = typeText + " · สถานะ " + (status || "ทั้งหมด");
     renderRows();
@@ -282,10 +275,10 @@
 
   function exportCSV() {
     if (!state.currentRows.length) { alert("ไม่พบข้อมูลสำหรับส่งออก"); return; }
-    var headers = ["ลำดับ", "เลขใบสำคัญ", "วันที่", "รหัสลูกค้า", "ชื่อลูกค้า", "ผู้แทน", "ยอดเงินสุทธิ"];
+    var headers = ["เลขใบสำคัญ", "วันที่", "รหัสลูกค้า", "ชื่อลูกค้า", "ผู้แทน", "ยอดเงินสุทธิ"];
     var lines = [headers];
     state.currentRows.forEach(function (it) {
-      lines.push([it.index, it.document, formatDate(it.date), it.customerCode, it.customerName, it.salesperson, Number(it.amount).toFixed(2)]);
+      lines.push([it.document, formatDate(it.date), it.customerCode, it.customerName, it.salesperson, Number(it.amount).toFixed(2)]);
     });
     var csv = lines.map(function (row) {
       return row.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(",");
@@ -339,7 +332,7 @@
       ".p051-table-search input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,.12)}" +
       ".p051-badge{padding:5px 10px;color:#1d4ed8;border-radius:999px;background:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap}" +
       ".p051-table-container{min-height:0;flex:1;overflow:auto}" +
-      ".p051-table-container table{width:100%;min-width:1080px;border-collapse:separate;border-spacing:0;white-space:nowrap}" +
+      ".p051-table-container table{width:100%;min-width:980px;border-collapse:separate;border-spacing:0;white-space:nowrap}" +
       ".p051-table-container th{position:sticky;top:0;z-index:2;padding:13px 14px;color:#475569;border-bottom:1px solid #dbe3ef;background:#f8fafc;font-size:13px;font-weight:700;text-align:left;user-select:none}" +
       ".p051-table-container th.p051-sortable{cursor:pointer}" +
       ".p051-table-container th.p051-sortable:hover{color:#2563eb;background:#f1f5f9}" +
