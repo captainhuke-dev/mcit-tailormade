@@ -80,10 +80,10 @@
         '<section class="p051-filter-card">' +
           "<h2>" + icon("baht", 18) + " ยอดขั้นต่ำสำหรับแสดงรายงาน</h2>" +
           '<div class="p051-field">' +
-            '<label for="p051MinAmount">ยอดเงิน (บาท)</label>' +
+            '<label for="p051MinAmount">ตัวอย่าง 43,44,60</label>' +
             '<div class="p051-input-wrap">' +
               icon("baht", 17) +
-              '<input id="p051MinAmount" type="number" min="0" step="100" value="0">' +
+              '<input id="p051MinAmount" type="text" value="43,44,60">' +
             "</div>" +
           "</div>" +
         "</section>" +
@@ -261,9 +261,20 @@
     updateSummary(root, sorted);
   }
 
+  /* parse Thai amount — "43,44,60" = 4344.60 (comma แร้งสุดหลัง = ทศนิยม, comma ก่อน = พัน — ตรง demo) */
+  function parseAmount(s) {
+    s = String(s == null ? "" : s).trim();
+    if (!s) return 0;
+    var ci = s.lastIndexOf(",");
+    if (ci < 0) return Number(s.replace(/[^\d.]/g, "")) || 0;
+    var intPart = s.substring(0, ci).replace(/,/g, "").replace(/[^\d]/g, "");
+    var decPart = s.substring(ci + 1).replace(/[^\d]/g, "");
+    return Number(intPart + (decPart ? "." + decPart : "")) || 0;
+  }
+
   function applyFilters() {
     var root = _root;
-    var minimum = Number(el(root, "#p051MinAmount").value) || 0;
+    var minimum = parseAmount(el(root, "#p051MinAmount").value);
     var type = currentReportType(root);
     var keyword = el(root, "#p051QuickSearch").value.trim().toLowerCase();
 
