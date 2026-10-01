@@ -51,10 +51,6 @@
       eye: '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle>',
       download: '<path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path>',
       grid: '<path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path>',
-      hash: '<line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line>',
-      money: '<rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle>',
-      chart: '<line x1="12" y1="20" x2="12" y2="10"></line><line x1="18" y1="20" x2="18" y2="4"></line><line x1="6" y1="20" x2="6" y2="16"></line>',
-      trendUp: '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline>',
       empty: '<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35M8 11h6"></path>'
     };
     var p = paths[name] || paths.grid;
@@ -92,13 +88,6 @@
           '<button class="p051-btn success" id="p051ExportBtn" type="button">' + icon("download", 16) + " Export CSV</button>" +
         "</div>" +
       "</form>" +
-
-      '<div class="p051-summary-grid">' +
-        summaryCard("hash", "", "จำนวนรายการ", "p051SummaryCount") +
-        summaryCard("money", "green", "ยอดรวมทั้งหมด", "p051SummaryAmount") +
-        summaryCard("chart", "orange", "ยอดเฉลี่ย", "p051SummaryAverage") +
-        summaryCard("trendUp", "red", "ยอดสูงสุด", "p051SummaryMaximum") +
-      "</div>" +
 
       '<section class="p051-panel">' +
         '<div class="p051-panel-header">' +
@@ -174,18 +163,6 @@
     applyFilters();
   }
 
-  function summaryCard(ic, color, label, id) {
-    return (
-      '<div class="p051-summary-card ' + (color || "") + '">' +
-        '<div class="p051-summary-icon">' + icon(ic, 20) + "</div>" +
-        '<div class="p051-summary-text">' +
-          "<span>" + esc(label) + "</span>" +
-          "<strong id=\"" + id + "\">-</strong>" +
-        "</div>" +
-      "</div>"
-    );
-  }
-
   function currentReportType() {
     var el = _root.querySelector('input[name="p051Type"]:checked');
     return el ? el.value : "all";
@@ -206,16 +183,10 @@
   function el(root, sel) { return root.querySelector(sel); }
 
   function updateSummary(root, items) {
-    var total = 0, max = 0;
+    var total = 0;
     for (var i = 0; i < items.length; i++) {
       total += Number(items[i].amount || 0);
-      if (items[i].amount > max) max = items[i].amount;
     }
-    var avg = items.length ? total / items.length : 0;
-    el(root, "#p051SummaryCount").textContent = String(items.length);
-    el(root, "#p051SummaryAmount").textContent = "฿" + formatMoney(total);
-    el(root, "#p051SummaryAverage").textContent = "฿" + formatMoney(avg);
-    el(root, "#p051SummaryMaximum").textContent = "฿" + formatMoney(max);
     el(root, "#p051FooterAmount").textContent = "฿" + formatMoney(total);
   }
 
@@ -335,15 +306,6 @@
       ".p051-btn.secondary:hover{color:#fff;border-color:#2563eb;background:#2563eb}" +
       ".p051-btn.success{color:#fff;border:0;background:#059669;box-shadow:0 7px 16px rgba(5,150,105,.18)}" +
       ".p051-btn.success:hover{background:#047857}" +
-      ".p051-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:12px}" +
-      ".p051-summary-card{display:flex;min-width:0;align-items:center;gap:12px;padding:14px 16px;border:1px solid #dbe3ef;border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,.04)}" +
-      ".p051-summary-icon{display:grid;width:42px;height:42px;flex:0 0 auto;place-items:center;color:#2563eb;border-radius:12px;background:#eff6ff}" +
-      ".p051-summary-card.green .p051-summary-icon{color:#059669;background:#ecfdf5}" +
-      ".p051-summary-card.orange .p051-summary-icon{color:#d97706;background:#fffbeb}" +
-      ".p051-summary-card.red .p051-summary-icon{color:#dc2626;background:#fef2f2}" +
-      ".p051-summary-text{min-width:0}" +
-      ".p051-summary-text span{display:block;color:#64748b;font-size:10px}" +
-      ".p051-summary-text strong{display:block;overflow:hidden;margin-top:2px;font-size:18px;text-overflow:ellipsis;white-space:nowrap;color:#172033}" +
       ".p051-panel{display:flex;min-height:480px;flex:1;flex-direction:column;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 12px 30px rgba(15,23,42,.08)}" +
       ".p051-panel-header{display:flex;min-height:64px;align-items:center;justify-content:space-between;gap:12px;padding:11px 15px;border-bottom:1px solid #dbe3ef}" +
       ".p051-panel-heading{display:flex;min-width:0;align-items:center;gap:10px}" +
@@ -385,7 +347,7 @@
         "#p051PrintTable{position:absolute;top:0;left:0;width:281mm;border-collapse:collapse}" +
         "#p051PrintTable th,#p051PrintTable td{padding:4px;border:1px solid #888;font-size:8px}" +
       "}" +
-      "@media (max-width:1000px){.p051-launcher,.p051-summary-grid{grid-template-columns:repeat(2,1fr)}}";
+      "@media (max-width:1000px){.p051-launcher{grid-template-columns:repeat(2,1fr)}}";
     document.head.appendChild(st);
   }
 
