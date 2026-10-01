@@ -997,6 +997,20 @@
       `;
     }
 
+    // P026: ประวัติการเงินเจ้าหนี้ (clone UI หน้าค้นหาจาก P034 — ยังไม่เชื่อม DB)
+    if (programId === "P026") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p026Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P033: รายงานลูกค้าที่มียอดค้างเกินวงเงิน
     if (programId === "P033") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1436,6 +1450,12 @@
     if (page.type === "program" && page.programId === "P050" && window.P050Billing) {
       const root = document.getElementById("p050Root");
       if (root) window.P050Billing.mount(root);
+    }
+
+    // P026: mount Payable History app
+    if (page.type === "program" && page.programId === "P026" && window.P026PayableHistory) {
+      const root = document.getElementById("p026Root");
+      if (root) window.P026PayableHistory.mount(root);
     }
 
     // P033: mount Credit Report app
