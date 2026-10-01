@@ -32,7 +32,7 @@ try {
 }
 
 try {
-  $st = $db->prepare("SELECT TOP 50
+  $st = $db->prepare("SELECT TOP 10
 \tCREcode,
 \tCREgroup,
 \tCREnameT
