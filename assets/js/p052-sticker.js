@@ -211,7 +211,7 @@
       ".p052-sticker{display:flex;min-width:0;min-height:0;align-items:center;justify-content:flex-start;flex-direction:column;color:#000;padding:4pt}",
       /* table กว้าง 280pt (373px) — 3 คอลั่น — font pt×1.333 = px */
       ".p052-tbl{width:373px;border-collapse:collapse;table-layout:fixed;color:#000}",
-      ".p052-tbl td{padding:0;vertical-align:top;font-family:'THSarabunNew',Arial,sans-serif}",
+      ".p052-tbl td, body .p052-tbl td{padding:0;vertical-align:top;font-family:'THSarabunNew',Arial,sans-serif !important}",
       ".p052-tbl td.p052-tc-send{font-size:30pt;font-weight:700;line-height:1.1;padding-top:10px;padding-left:10px;text-align:left}",
       ".p052-tbl td.p052-tc-customer{font-size:26pt;font-weight:700;line-height:1.25;padding-top:10px;text-align:left;word-break:break-word}",
       ".p052-tbl td.p052-tc-memo{font-size:26pt;font-weight:700;line-height:1.3;padding-top:10px;text-align:left;word-break:break-word}",
@@ -472,6 +472,23 @@
         _style.id = 'p052-sticker-style';
         _style.textContent = css();
         document.head.appendChild(_style);
+      }
+      // preload THSarabunNew (force font load ก่อนใช้ — ป้องกัน browser fallback → Sarabun)
+      ['400', '700'].forEach(function (w) {
+        var link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'font';
+        link.type = 'font/ttf';
+        link.crossOrigin = 'anonymous';
+        link.href = 'assets/fonts/THSarabunNew' + (w === '700' ? '%20Bold' : '') + '.ttf';
+        document.head.appendChild(link);
+      });
+      // force load + wait ก่อน render ตารางแรก (ป้องกัน FOUC font)
+      if (document.fonts && document.fonts.load) {
+        Promise.all([
+          document.fonts.load('700 22pt THSarabunNew', 'กรุณาส่ง'),
+          document.fonts.load('400 14pt THSarabunNew', 'ข้อความทดสอบ')
+        ]).then(function () { document.documentElement.classList.add('p052-fonts-ready'); });
       }
       renderRoot(root);
       _el = {

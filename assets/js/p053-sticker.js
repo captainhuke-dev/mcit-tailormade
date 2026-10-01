@@ -155,7 +155,7 @@
       ".p053-sticker{display:flex;min-width:0;min-height:0;align-items:center;justify-content:flex-start;flex-direction:column;color:#000;text-align:left;padding:0}",
       /* A/B — table 1 คอลั่น 280pt — แสดงเส้นตาราง 1px (user spec 2026-09-30) — font THSarabunNew */
       ".p053-tbl{width:280pt;border-collapse:collapse;table-layout:fixed;color:#000;border:1px solid #000}",
-      ".p053-tbl td{padding:2pt 0;vertical-align:middle;font-family:'THSarabunNew',Arial,sans-serif;border:1px solid #000}",
+      ".p053-tbl td, body .p053-tbl td{padding:2pt 0;vertical-align:middle;font-family:'THSarabunNew',Arial,sans-serif !important;border:1px solid #000}",
       ".p053-tbl td.p053-tc-customer{font-size:22pt;font-weight:700;line-height:1.3;text-align:left;height:90pt;padding:5px 0 0 10px;vertical-align:middle}",
       ".p053-tbl td.p053-tc-page{font-size:32pt;font-weight:700;line-height:1.1;text-align:center;padding-top:0;padding-bottom:0}",
       ".p053-tbl td.p053-tc-doc{font-size:14pt;line-height:1.4;text-align:center;padding-top:0;padding-bottom:0}",
@@ -449,6 +449,22 @@
         _style.id = 'p053-sticker-style';
         _style.textContent = css();
         document.head.appendChild(_style);
+      }
+      // preload THSarabunNew (force font load — ป้องกัน browser fallback → Sarabun)
+      ['400', '700'].forEach(function (w) {
+        var link = document.createElement('link');
+        link.rel = 'preload';
+        link.as = 'font';
+        link.type = 'font/ttf';
+        link.crossOrigin = 'anonymous';
+        link.href = 'assets/fonts/THSarabunNew' + (w === '700' ? '%20Bold' : '') + '.ttf';
+        document.head.appendChild(link);
+      });
+      if (document.fonts && document.fonts.load) {
+        Promise.all([
+          document.fonts.load('700 22pt THSarabunNew', 'ฮั่งเฮงฮาร์ดแวร์'),
+          document.fonts.load('400 14pt THSarabunNew', 'ข้อความทดสอบ')
+        ]).then(function () { document.documentElement.classList.add('p053-fonts-ready'); });
       }
       renderRoot(root);
       _el = {
