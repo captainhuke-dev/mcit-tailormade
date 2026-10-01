@@ -78,11 +78,10 @@
           "</div>" +
         "</section>" +
         '<section class="p051-filter-card">' +
-          "<h2>" + icon("baht", 18) + " ยอดขั้นต่ำสำหรับแสดงรายงาน</h2>" +
+          "<h2>" + icon("baht", 18) + " สถานะ</h2>" +
           '<div class="p051-field">' +
             '<label for="p051MinAmount">ตัวอย่าง 43,44,60</label>' +
             '<div class="p051-input-wrap">' +
-              icon("baht", 17) +
               '<input id="p051MinAmount" type="text" value="43,44,60">' +
             "</div>" +
           "</div>" +
@@ -326,7 +325,7 @@
       ".p051-field label{display:block;margin-bottom:7px;color:#64748b;font-size:11px;font-weight:700}" +
       ".p051-input-wrap{position:relative}" +
       ".p051-input-wrap svg{position:absolute;top:50%;left:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}" +
-      ".p051-input-wrap input{width:100%;height:44px;padding:0 12px 0 40px;color:#172033;border:1px solid #dbe3ef;border-radius:10px;outline:none;background:#fff;font-weight:600;font-size:13px}" +
+      ".p051-input-wrap input{width:100%;height:44px;padding:0 12px;color:#172033;border:1px solid #dbe3ef;border-radius:10px;outline:none;background:#fff;font-weight:600;font-size:13px}" +
       ".p051-input-wrap input:focus{border-color:#60a5fa;box-shadow:0 0 0 4px rgba(96,165,250,.14)}" +
       ".p051-actions{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}" +
       ".p051-btn{display:inline-flex;height:44px;align-items:center;justify-content:center;gap:8px;padding:0 17px;border-radius:11px;font-size:12px;font-weight:700;white-space:nowrap;transition:.16s ease;cursor:pointer}" +
