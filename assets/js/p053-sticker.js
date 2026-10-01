@@ -153,9 +153,9 @@
       /* sheet — กระดาษ 282×210pt (10×7.5cm) ขอบกระดาษ L/R 1pt, T/B 2pt (C# margins) — 1 ตั๋ว/หน้า */
       ".p053-sheet{display:grid;width:282pt;height:210pt;grid-template-columns:1fr;grid-template-rows:1fr;padding:2pt 1pt;background:#fff;box-shadow:0 22px 55px rgba(15,23,42,.3);flex:none}",
       ".p053-sticker{display:flex;min-width:0;min-height:0;align-items:center;justify-content:flex-start;flex-direction:column;color:#000;text-align:left;padding:0}",
-      /* A/B — table 1 คอลั่น 280pt — แสดงเส้นตาราง 1px (user spec 2026-09-30) — font THSarabunNew */
-      ".p053-tbl{width:280pt;border-collapse:collapse;table-layout:fixed;color:#000;border:1px solid #000}",
-      ".p053-tbl td, body .p053-tbl td{padding:2pt 0;vertical-align:middle;font-family:'THSarabunNew',Arial,sans-serif !important;border:1px solid #000}",
+      /* A/B — table 1 คอลั่น 280pt — ไม่มีเส้นตาราง (user spec 2026-10-01) — font THSarabunNew */
+      ".p053-tbl{width:280pt;border-collapse:collapse;table-layout:fixed;color:#000;border:0}",
+      ".p053-tbl td, body .p053-tbl td{padding:2pt 0;vertical-align:middle;font-family:'THSarabunNew',Arial,sans-serif !important;border:0}",
       ".p053-tbl td.p053-tc-customer{font-size:22pt;font-weight:700;line-height:1.3;text-align:left;height:90pt;padding:5px 0 0 10px;vertical-align:top}",
       ".p053-tbl td.p053-tc-page{font-size:36pt;font-weight:700;line-height:1.1;text-align:center;padding-top:0;padding-bottom:0}",
       ".p053-tbl td.p053-tc-doc{font-size:14pt;line-height:1.4;text-align:left;padding:0 0 0 15px}",
