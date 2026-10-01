@@ -1,9 +1,12 @@
-/* P026 — ประวัติการเงินเจ้าหนี้ (clone UI หน้าค้นหาจาก P034 — ยังไม่เชื่อม DB)
+/* P026 — ประวัติการเงินเจ้าหนี้ (clone UI หน้าค้นหาจาก P034)
  * IIFE — window.P026PayableHistory = { mount }
- * UI: ค้นหาเจ้าหนี้ (รหัส/ชื่อ) — autocomplete + toast — placeholder ผลค้นหา
+ * Data: MAC5 — autocomplete API p026_search.php (CRE table)
+ * UI: ค้นหาเจ้าหนี้ (รหัส/ชื่อ) — autocomplete + toast — placeholder ผลค้นหา (ยังไม่เชื่อม DB)
  */
 (function () {
   "use strict";
+
+  var MAC5_CONNECTION_ID = "c1788406814359";
 
   /* ---------- helpers ---------- */
   function esc(v) {
@@ -25,6 +28,23 @@
     };
     var p = paths[name] || paths.search;
     return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p + "</svg>";
+  }
+
+  /* ---------- search (API MAC5 — autocomplete) ---------- */
+  function apiFetch(path, payload) {
+    return fetch("api/" + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); });
+  }
+
+  function suggestCreditor(q) {
+    q = String(q || "").trim();
+    if (!q) return Promise.resolve([]);
+    return apiFetch("p026_search.php", { connectionId: MAC5_CONNECTION_ID, q: q }).then(function (res) {
+      return (res && res.ok) ? (res.rows || []) : [];
+    }).catch(function () { return []; });
   }
 
   /* ---------- render (หน้าค้นหา — clone P034) ---------- */
@@ -55,24 +75,77 @@
 
     var ref = root.querySelector("#p026Ref");
     var ac = root.querySelector("#p026Ac");
+    var acIdx = -1;
+    var acItems = [];
 
-    /* autocomplete — ยังไม่เชื่อม DB (placeholder) */
-    var acTimer = null;
     function closeAc() {
       ac.innerHTML = "";
       ac.classList.remove("p026-ac-open");
+      acIdx = -1;
+      acItems = [];
     }
+
+    var acTimer = null;
+    var acSeq = 0;
     function renderAc() {
+      var q = ref.value;
       if (acTimer) clearTimeout(acTimer);
       acTimer = setTimeout(function () {
-        closeAc();
+        var seq = ++acSeq;
+        suggestCreditor(q).then(function (items) {
+          if (seq !== acSeq) return;
+          acItems = items || [];
+          acIdx = -1;
+          if (!acItems.length) { closeAc(); return; }
+          var html = "";
+          for (var i = 0; i < acItems.length; i++) {
+            var d = acItems[i];
+            html +=
+              '<div class="p026-ac-item" data-i="' + i + '">' +
+                '<span class="p026-ac-code">' + esc(d.code) + "</span>" +
+                '<span class="p026-ac-name">' + esc(d.name) + "</span>" +
+                '<span class="p026-ac-dist">(' + esc(d.groupCode || "") + ")</span>" +
+              "</div>";
+          }
+          ac.innerHTML = html;
+          ac.classList.add("p026-ac-open");
+          ac.querySelectorAll(".p026-ac-item").forEach(function (el) {
+            el.addEventListener("mousedown", function (e) {
+              e.preventDefault();
+              var it = acItems[Number(el.getAttribute("data-i"))];
+              if (it) { ref.value = it.code + " " + it.name; closeAc(); doSearch(); }
+            });
+          });
+        });
       }, 200);
     }
+
     ref.addEventListener("input", renderAc);
     ref.addEventListener("focus", renderAc);
     ref.addEventListener("blur", function () { setTimeout(closeAc, 150); });
     ref.addEventListener("keydown", function (e) {
-      if (e.key === "Enter") doSearch();
+      if (!ac.classList.contains("p026-ac-open")) {
+        if (e.key === "Enter") doSearch();
+        return;
+      }
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        var n = acItems.length;
+        if (!n) return;
+        acIdx = e.key === "ArrowDown" ? (acIdx + 1) % n : (acIdx - 1 + n) % n;
+        ac.querySelectorAll(".p026-ac-item").forEach(function (el, i) {
+          el.classList.toggle("p026-ac-active", i === acIdx);
+        });
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (acIdx >= 0 && acItems[acIdx]) {
+          ref.value = acItems[acIdx].code + " " + acItems[acIdx].name;
+          closeAc();
+          doSearch();
+        }
+      } else if (e.key === "Escape") {
+        closeAc();
+      }
     });
   }
 
