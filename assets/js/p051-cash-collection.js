@@ -1,25 +1,20 @@
 /* P051 — รายงานการเก็บเงินสด (clone demo/P051-demo.html)
  * IIFE — window.P051CashCollection = { mount }
- * Data: mock (ตาม demo — ยังไม่เชื่อม DB)
- * UI: เงื่อนไข (ทั้งหมด/เงินสด + ยอดขั้นต่ำ) + 4 สรุป cards + table (sort + quick search + select row) + footer + Print A4 landscape + Export CSV
+ * Data: MAC5 — API p051_search.php (MIH + DEB)
+ * UI: เงื่อนไข (ทั้งหมด/เงินสด + สถานะ) + table (sort + quick search + select row) + footer + Print A4 landscape + Export CSV
  */
 (function () {
   "use strict";
 
-  /* ---------- mock data (ตาม demo) ---------- */
-  var COLLECTIONS = [
-    { index: 1, document: "CODN6909-0245", date: "2026-09-30", customerCode: "10520-018", customerName: "เก่งฮาร์ดแวร์ (ตลาดระฆัง)", salesperson: "S51", amount: 28144.74, type: "cash" },
-    { index: 2, document: "CODN6910-0002", date: "2026-10-01", customerCode: "73120-026", customerName: "วงศ์เมล็ดพืชพาณิชย์ (เนตรชัยศรี)", salesperson: "S50", amount: 2328.00, type: "cash" },
-    { index: 3, document: "CODN6910-0003", date: "2026-10-01", customerCode: "74110-132", customerName: "อานพเจริญ การเกษตร (มอญ)", salesperson: "S50", amount: 4171.00, type: "cash" },
-    { index: 4, document: "CODN6910-0004", date: "2026-10-01", customerCode: "10160-099", customerName: "วิสมแคช คอร์ปอเรชั่น บจก. (บางแค)", salesperson: "G01-BK01", amount: 4306.80, type: "cash" },
-    { index: 5, document: "CODN6910-0005", date: "2026-10-01", customerCode: "73210-016", customerName: "กิจบุญนำ บจก. (สามพราน)", salesperson: "G01-BK01", amount: 1381.80, type: "cash" },
-    { index: 6, document: "CODN6910-0006", date: "2026-10-01", customerCode: "11120-055", customerName: "สมพงษ์วัสดุ (อำเภอเมือง)", salesperson: "G01-BK01", amount: 3824.90, type: "cash" },
-    { index: 7, document: "CODN6910-0007", date: "2026-10-01", customerCode: "10100-006", customerName: "ศรีตั้ง (2527) หจก. (เมืองปราจีน)", salesperson: "G01-BK02", amount: 14200.80, type: "cash" },
-    { index: 8, document: "CODN6910-0008", date: "2026-10-01", customerCode: "10530-009", customerName: "ธนัชทรัพย์ บจก. (หนองจอก)", salesperson: "S51", amount: 5121.60, type: "cash" },
-    { index: 9, document: "CODN6910-0009", date: "2026-10-01", customerCode: "10530-019", customerName: "มงคลการเกษตร (สาขา 1) (ฉะเชิงเทรา)", salesperson: "S51", amount: 3292.86, type: "cash" },
-    { index: 10, document: "CODN6910-0010", date: "2026-10-01", customerCode: "10530-004", customerName: "ส เจริญพงษ์ (หนองจอก)", salesperson: "S51", amount: 4691.46, type: "cash" },
-    { index: 11, document: "CODN6910-0011", date: "2026-10-01", customerCode: "10100-020", customerName: "บุญการเรือนเซ็นเตอร์ บจก.", salesperson: "S51", amount: 3800.00, type: "credit" }
-  ];
+  var MAC5_CONNECTION_ID = "c1788406814359";
+
+  function apiFetch(path, payload) {
+    return fetch("api/" + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); });
+  }
 
   var moneyFmt = new Intl.NumberFormat("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -36,10 +31,12 @@
   }
 
   var state = {
+    allRows: [],
     currentRows: [],
     selectedDocument: "",
     sortField: "index",
-    sortDirection: "asc"
+    sortDirection: "asc",
+    searched: false
   };
 
   function icon(name, size) {
@@ -76,9 +73,9 @@
         '<section class="p051-filter-card">' +
           "<h2>" + icon("sliders", 18) + " สถานะ</h2>" +
           '<div class="p051-field">' +
-            '<label for="p051MinAmount">ตัวอย่าง 43,44,60</label>' +
+            '<label for="p051Status">ตัวอย่าง 43,44,60</label>' +
             '<div class="p051-input-wrap">' +
-              '<input id="p051MinAmount" type="text" value="43,44,60">' +
+              '<input id="p051Status" type="text" value="43,44,60">' +
             "</div>" +
           "</div>" +
         "</section>" +
@@ -124,25 +121,24 @@
           "<div>" +
             '<div style="margin:0 auto 10px;width:52px;height:52px;color:#94a3b8">' + icon("empty", 52) + "</div>" +
             "<strong>ไม่พบรายการตามเงื่อนไข</strong>" +
-            '<p style="margin-top:5px;font-size:11px">ลองลดจำนวนยอดขั้นต่ำ หรือเปลี่ยนประเภทรายงาน</p>' +
+            '<p style="margin-top:5px;font-size:11px">ลองเปลี่ยนรหัสสถานะ หรือประเภทรายงาน แล้วค้นหาใหม่</p>' +
           "</div>" +
         "</div>" +
         '<div class="p051-table-footer">' +
           '<span id="p051FooterText">แสดง 0 รายการ</span>' +
           '<div class="p051-footer-total">ยอดรวมทั้งหมด <strong id="p051FooterAmount">฿0.00</strong></div>' +
         "</div>" +
-      "</section>";
+      "</section>" +
+      '<div id="p051Toast" class="p051-toast"></div>';
 
     var form = root.querySelector("#p051Form");
     var quick = root.querySelector("#p051QuickSearch");
-    var minInput = root.querySelector("#p051MinAmount");
 
-    form.addEventListener("submit", function (e) { e.preventDefault(); applyFilters(); });
+    form.addEventListener("submit", function (e) { e.preventDefault(); doSearch(); });
     quick.addEventListener("input", applyFilters);
     root.querySelectorAll('input[name="p051Type"]').forEach(function (inp) {
-      inp.addEventListener("change", applyFilters);
+      inp.addEventListener("change", function () { if (state.searched) doSearch(); });
     });
-    minInput.addEventListener("input", applyFilters);
     root.querySelector("#p051PreviewBtn").addEventListener("click", function () { window.print(); });
     root.querySelector("#p051ExportBtn").addEventListener("click", exportCSV);
     root.querySelectorAll("th[data-sort]").forEach(function (th) {
@@ -160,7 +156,39 @@
       });
     });
 
-    applyFilters();
+    /* ไม่ค้นหาอัตโนมัติตาม mount — รอรัดปุ่มค้นหา */
+    renderRows();
+  }
+
+  var toastTimer = null;
+  function showToast(msg, ms) {
+    var t = _root ? _root.querySelector("#p051Toast") : null;
+    if (!t) return;
+    t.textContent = msg;
+    t.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, ms || 2600);
+  }
+
+  function doSearch() {
+    var root = _root;
+    var status = String(el(root, "#p051Status").value).trim();
+    var type = currentReportType();
+
+    el(root, "#p051Badge").textContent = "ค้นหา...";
+    apiFetch("p051_search.php", { connectionId: MAC5_CONNECTION_ID, status: status, reportType: type }).then(function (res) {
+      if (!res || !res.ok) throw new Error(res && res.error ? res.error : "API error");
+      state.allRows = res.rows || [];
+      state.searched = true;
+      state.selectedDocument = "";
+      applyFilters();
+      showToast("✓ พบ " + state.currentRows.length + " รายการ");
+    }).catch(function (e) {
+      state.allRows = [];
+      state.searched = true;
+      applyFilters();
+      showToast("⚠ ค้นหาไม่สำเร็จ: " + (e && e.message ? e.message : ""), 3200);
+    });
   }
 
   function currentReportType() {
@@ -231,33 +259,24 @@
     updateSummary(root, sorted);
   }
 
-  /* parse Thai amount — "43,44,60" = 4344.60 (comma แร้งสุดหลัง = ทศนิยม, comma ก่อน = พัน — ตรง demo) */
-  function parseAmount(s) {
-    s = String(s == null ? "" : s).trim();
-    if (!s) return 0;
-    var ci = s.lastIndexOf(",");
-    if (ci < 0) return Number(s.replace(/[^\d.]/g, "")) || 0;
-    var intPart = s.substring(0, ci).replace(/,/g, "").replace(/[^\d]/g, "");
-    var decPart = s.substring(ci + 1).replace(/[^\d]/g, "");
-    return Number(intPart + (decPart ? "." + decPart : "")) || 0;
-  }
-
   function applyFilters() {
     var root = _root;
-    var minimum = parseAmount(el(root, "#p051MinAmount").value);
-    var type = currentReportType(root);
     var keyword = el(root, "#p051QuickSearch").value.trim().toLowerCase();
+    var type = currentReportType();
+    var status = String(el(root, "#p051Status").value).trim();
 
-    state.currentRows = COLLECTIONS.filter(function (it) {
-      var typeMatch = type === "all" || it.type === type;
-      var amountMatch = it.amount >= minimum;
+    state.currentRows = state.allRows.filter(function (it) {
       var text = [it.document, it.customerCode, it.customerName, it.salesperson].join(" ").toLowerCase();
-      var searchMatch = !keyword || text.indexOf(keyword) >= 0;
-      return typeMatch && amountMatch && searchMatch;
+      return !keyword || text.indexOf(keyword) >= 0;
     });
 
+    /* re-index ตามแถวที่แสดง */
+    for (var i = 0; i < state.currentRows.length; i++) {
+      state.currentRows[i].index = i + 1;
+    }
+
     var typeText = type === "cash" ? "รายการเงินสด" : "รายการทั้งหมด";
-    el(root, "#p051Subtitle").textContent = typeText + " · ยอดขั้นต่ำ " + formatMoney(minimum) + " บาท";
+    el(root, "#p051Subtitle").textContent = typeText + " · สถานะ " + (status || "ทั้งหมด");
     renderRows();
   }
 
@@ -340,6 +359,8 @@
       ".p051-footer-total strong{color:#1d4ed8}" +
       ".p051-empty-state{display:none;min-height:280px;align-items:center;justify-content:center;color:#64748b;text-align:center}" +
       ".p051-empty-state.show{display:flex}" +
+      ".p051-toast{position:fixed;right:20px;bottom:20px;z-index:210;padding:11px 14px;border-radius:11px;background:#0f172a;color:#fff;font-size:12px;box-shadow:0 16px 36px rgba(15,23,42,.28);opacity:0;visibility:hidden;transform:translateY(12px);transition:.2s}" +
+      ".p051-toast.show{opacity:1;visibility:visible;transform:translateY(0)}" +
       "@media print{" +
         "@page{size:A4 landscape;margin:8mm}" +
         "body *{visibility:hidden !important}" +
