@@ -49,13 +49,11 @@
             '<div id="p026Ac" class="p026-ac"></div>' +
           "</div>" +
         "</label>" +
-        '<button type="button" class="p026-btn-primary" id="p026Btn">' + icon("search", 15) + "<span>ค้นหา</span></button>" +
       "</div>" +
       '<div id="p026Result"></div>' +
       '<div id="p026Toast" class="p026-toast"></div>';
 
     var ref = root.querySelector("#p026Ref");
-    var btn = root.querySelector("#p026Btn");
     var ac = root.querySelector("#p026Ac");
 
     /* autocomplete — ยังไม่เชื่อม DB (placeholder) */
@@ -76,7 +74,6 @@
     ref.addEventListener("keydown", function (e) {
       if (e.key === "Enter") doSearch();
     });
-    btn.addEventListener("click", doSearch);
   }
 
   function doSearch() {
@@ -131,8 +128,6 @@
       ".p026-ac-code{font-weight:700;color:#2563eb;min-width:90px}" +
       ".p026-ac-name{color:#0f172a;flex:1}" +
       ".p026-ac-dist{color:#64748b;font-size:11px}" +
-      ".p026-btn-primary{display:inline-flex;align-items:center;gap:8px;height:40px;padding:0 20px;border:none;border-radius:10px;background:#2563eb;color:#fff;font-size:13px;font-weight:600;cursor:pointer}" +
-      ".p026-btn-primary:hover{background:#1d4ed8}" +
       ".p026-empty-state{display:flex;flex-direction:column;align-items:center;gap:10px;background:#fff;border:1px dashed #d7dee9;border-radius:14px;padding:48px 24px;margin-top:14px;color:#64748b}" +
       ".p026-empty-ic{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:16px;background:#eef4ff;color:#2563eb}" +
       ".p026-empty-title{font-size:15px;font-weight:700;color:#0f172a}" +
