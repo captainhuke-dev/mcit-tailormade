@@ -156,11 +156,11 @@
       /* A/B — table 1 คอลั่น 280pt — แสดงเส้นตาราง 1px (user spec 2026-09-30) — font THSarabunNew */
       ".p053-tbl{width:280pt;border-collapse:collapse;table-layout:fixed;color:#000;border:1px solid #000}",
       ".p053-tbl td{padding:2pt 0;vertical-align:middle;font-family:'THSarabunNew',Arial,sans-serif;border:1px solid #000}",
-      ".p053-tc-customer{font-size:22pt;font-weight:700;line-height:1.3;text-align:left;height:90pt;padding:5pt 0 0 15pt}",
-      ".p053-tc-page{font-size:40pt;font-weight:700;line-height:1.1;text-align:right;padding-right:140pt;padding-top:0;padding-bottom:0}",
-      ".p053-tc-doc{font-size:14pt;line-height:1.4;text-align:left;padding-left:20pt;padding-top:0;padding-bottom:0}",
-      ".p053-tc-fix{font-size:14pt;line-height:1.4;text-align:left;padding-left:15pt;padding-top:0;padding-bottom:0}",
-      ".p053-tc-fixb{font-size:16pt;line-height:1.4;text-align:left;padding-left:15pt;padding-top:0;padding-bottom:0}",
+      ".p053-tbl td.p053-tc-customer{font-size:22pt;font-weight:700;line-height:1.3;text-align:left;height:90pt;padding:5px 0 0 10px;vertical-align:middle}",
+      ".p053-tbl td.p053-tc-page{font-size:32pt;font-weight:700;line-height:1.1;text-align:center;padding-top:0;padding-bottom:0}",
+      ".p053-tbl td.p053-tc-doc{font-size:14pt;line-height:1.4;text-align:center;padding-top:0;padding-bottom:0}",
+      ".p053-tbl td.p053-tc-fix{font-size:14pt;line-height:1.4;text-align:left;padding:0 0 0 15pt}",
+      ".p053-tbl td.p053-tc-fixb{font-size:14pt;line-height:1.4;text-align:left;padding:0 0 0 15pt}",
       /* modal */
       ".p053-modal{position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(15,23,42,.55)}",
       ".p053-modalbox{width:400px;max-width:calc(100vw - 40px);background:#fff;border-radius:14px;box-shadow:0 24px 60px rgba(15,23,42,.35)}",
