@@ -16,15 +16,24 @@
   }
 
   var state = {
-    query: ""
+    query: "",
+    found: null
   };
+
+  function fmtBaht(n) {
+    return "฿ " + Number(n || 0).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 
   /* ---------- icons (inline SVG — เดียวกัน P034) ---------- */
   function icon(name, size) {
     var s = size || 16;
     var paths = {
       search: '<circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line>',
-      clock: '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>'
+      clock: '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
+      idCard: '<rect x="3" y="5" width="18" height="14" rx="2"></rect><circle cx="9" cy="11" r="2"></circle><path d="M15 9h4M15 13h4M6 16h6"></path>',
+      mapPin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>',
+      calendar: '<rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>',
+      money: '<rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="3"></circle><path d="M6 12h.01M18 12h.01"></path>'
     };
     var p = paths[name] || paths.search;
     return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + p + "</svg>";
@@ -156,17 +165,59 @@
       return;
     }
     state.query = String(ref.value).trim();
-    /* ยังไม่เชื่อม DB — แสดง placeholder */
+    /* input "CODE NAME" → split on first space = code */
+    var q = state.query;
+    var codePart = q;
+    var sp = q.indexOf(" ");
+    if (sp > 0) codePart = q.substring(0, sp);
+
+    state.found = null;
+    renderResult();
+    apiFetch("p026_creditor.php", { connectionId: MAC5_CONNECTION_ID, code: codePart }).then(function (res) {
+      if (!res || !res.ok) throw new Error(res && res.error ? res.error : "API error");
+      if (!res.creditor) {
+        state.found = null;
+        renderResult();
+        showToast("⚠ ไม่พบข้อมูล — ไม่มีเจ้าหนี้รหัส " + codePart, 3200);
+        return;
+      }
+      state.found = res.creditor;
+      renderResult();
+      showToast("✓ พบ " + state.found.name);
+    }).catch(function (e) {
+      state.found = null;
+      renderResult();
+      showToast("⚠ ค้นหาไม่สำเร็จ: " + (e && e.message ? e.message : ""), 3200);
+    });
+  }
+
+  function renderResult() {
     var box = root_el("#p026Result");
-    if (box) {
-      box.innerHTML =
-        '<div class="p026-empty-state">' +
-          '<div class="p026-empty-ic">' + icon("clock", 28) + "</div>" +
-          '<div class="p026-empty-title">อยู่ระหว่างเชื่อมต่อฐานข้อมูล</div>' +
-          '<div class="p026-empty-sub">ค้นหา: ' + esc(state.query) + " — หน้าผลค้นหายังไม่ได้เชื่อมต่อฐานข้อมูล</div>" +
-        "</div>";
-    }
-    showToast("✓ ค้นหา: " + state.query + " (ยังไม่เชื่อม DB)");
+    if (!box) return;
+    if (!state.found) { box.innerHTML = ""; return; }
+    var d = state.found;
+
+    var html = "";
+    // 1. creditor panel (clone P034 panel)
+    html +=
+      '<div class="p026-panel">' +
+        '<div class="p026-panel-main">' +
+          '<div class="p026-panel-top">' +
+            '<span class="p026-code">' + icon("idCard", 14) + " " + esc(d.code) + "</span>" +
+            '<span class="p026-name">' + esc(d.name) + "</span>" +
+            '<span class="p026-groupcode">(' + esc(d.groupCode) + ")</span>" +
+          "</div>" +
+        "</div>" +
+        '<div class="p026-panel-right">' +
+          "<span>" + icon("mapPin", 14) + " " + esc(d.address) + "</span>" +
+          '<span class="p026-pr-row">' +
+            "<span>" + icon("calendar", 14) + " เริ่มค้าขาย " + esc(d.since) + "</span>" +
+            "<span>" + icon("money", 14) + " วงเงิน " + fmtBaht(d.limit) + "</span>" +
+          "</span>" +
+        "</div>" +
+      "</div>";
+
+    box.innerHTML = html;
   }
 
   var toastTimer = null;
@@ -201,6 +252,16 @@
       ".p026-ac-code{font-weight:700;color:#2563eb;min-width:90px}" +
       ".p026-ac-name{color:#0f172a;flex:1}" +
       ".p026-ac-dist{color:#64748b;font-size:11px}" +
+      ".p026-panel{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;background:#fff;border:1px solid #e5eaf2;border-radius:14px;padding:16px 20px;margin-top:14px}" +
+      ".p026-panel-main{display:flex;flex-direction:column;gap:8px;min-width:280px}" +
+      ".p026-panel-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}" +
+      ".p026-groupcode{font-size:13px;font-weight:600;color:#475569}" +
+      ".p026-code{display:inline-flex;align-items:center;gap:6px;background:#eef4ff;border:1px solid #d4e2fb;border-radius:20px;padding:7px 14px;font-size:13px;font-weight:600;color:#1e3a8a}" +
+      ".p026-name{font-size:18px;font-weight:700;color:#0f172a}" +
+      ".p026-panel-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-size:12px;color:#475569}" +
+      ".p026-panel-right .p026-pr-row{display:flex;gap:20px;flex-wrap:wrap}" +
+      ".p026-panel-right span{display:inline-flex;align-items:center;gap:6px}" +
+      ".p026-panel-right svg{color:#2563eb}" +
       ".p026-empty-state{display:flex;flex-direction:column;align-items:center;gap:10px;background:#fff;border:1px dashed #d7dee9;border-radius:14px;padding:48px 24px;margin-top:14px;color:#64748b}" +
       ".p026-empty-ic{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;border-radius:16px;background:#eef4ff;color:#2563eb}" +
       ".p026-empty-title{font-size:15px;font-weight:700;color:#0f172a}" +
