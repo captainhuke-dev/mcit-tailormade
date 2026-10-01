@@ -46,7 +46,7 @@
     var s = size || 20;
     var paths = {
       table: '<path d="M4 4h16v16H4z"></path><path d="M8 8h8M8 12h8M8 16h5"></path>',
-      baht: '<path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>',
+      sliders: '<line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line>',
       search: '<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>',
       eye: '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle>',
       download: '<path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path>',
@@ -74,7 +74,7 @@
           "</div>" +
         "</section>" +
         '<section class="p051-filter-card">' +
-          "<h2>" + icon("baht", 18) + " สถานะ</h2>" +
+          "<h2>" + icon("sliders", 18) + " สถานะ</h2>" +
           '<div class="p051-field">' +
             '<label for="p051MinAmount">ตัวอย่าง 43,44,60</label>' +
             '<div class="p051-input-wrap">' +
