@@ -153,9 +153,9 @@
       /* sheet — กระดาษ 282×210pt (10×7.5cm) ขอบกระดาษ L/R 1pt, T/B 2pt (C# margins) — 1 ตั๋ว/หน้า */
       ".p053-sheet{display:grid;width:282pt;height:210pt;grid-template-columns:1fr;grid-template-rows:1fr;padding:2pt 1pt;background:#fff;box-shadow:0 22px 55px rgba(15,23,42,.3);flex:none}",
       ".p053-sticker{display:flex;min-width:0;min-height:0;align-items:center;justify-content:flex-start;flex-direction:column;color:#000;text-align:left;padding:0}",
-      /* A/B — table 280pt ขีด 4 คอลั่น (30/65/90/95) — border 0 (C# cell.Border=0) — font THSarabunNew */
-      ".p053-tbl{width:280pt;border-collapse:collapse;table-layout:fixed;color:#000}",
-      ".p053-tbl td{padding:2pt 0;vertical-align:middle;font-family:'THSarabunNew',Arial,sans-serif}",
+      /* A/B — table 1 คอลั่น 280pt — แสดงเส้นตาราง 1px (user spec 2026-09-30) — font THSarabunNew */
+      ".p053-tbl{width:280pt;border-collapse:collapse;table-layout:fixed;color:#000;border:1px solid #000}",
+      ".p053-tbl td{padding:2pt 0;vertical-align:middle;font-family:'THSarabunNew',Arial,sans-serif;border:1px solid #000}",
       ".p053-tc-customer{font-size:22pt;font-weight:700;line-height:1.3;text-align:left;height:90pt;padding:5pt 0 0 15pt}",
       ".p053-tc-page{font-size:40pt;font-weight:700;line-height:1.1;text-align:right;padding-right:140pt;padding-top:0;padding-bottom:0}",
       ".p053-tc-doc{font-size:14pt;line-height:1.4;text-align:left;padding-left:20pt;padding-top:0;padding-bottom:0}",
@@ -187,44 +187,36 @@
     ].join('\n');
   }
 
-  /* ---- sticker (ตาม C# MCIT_Frm_FaceSheetProduct_10x7 — table 4 คอลั่น 30/65/90/95 border 0) ---- */
-
-  var COLS = '<colgroup><col style="width:30pt"><col style="width:65pt"><col style="width:90pt"><col style="width:95pt"></colgroup>';
+  /* ---- sticker (user spec 2026-09-30 — table 1 คอลั่น 280pt + เส้นตาราง) ---- */
 
   function createSticker(d, i, denom) {
     var isB = state.type === 'B';
     var isCompany = (state.company || 'Company') === 'Company';
     if (!isB) {
-      // A — report ทั่วไป: r1 DEBnameT+DEBcontactT (22pt B, 90pt, padL15) · r2 spacer 40pt B
-      //   + i/total 40pt B วางขวา (ตรงกลางหน้า — C# ColumnText y=85) · r3 vnos+วันที่ 14pt padL20
-      //   · r4 A: address บริษัท 14pt padL15 (เฉพาะ type=Company) / ไม่ว่าง (NotCompany)
-      var addr = '';
-      if (isCompany) {
-        addr = '<tr><td colspan="4" class="p053-tc-fix">จาก บจก.มหาโชค มหาชัย อินเตอร์เทรด<br>โทร. 034-878366-68&nbsp;&nbsp;Line : @m-group</td></tr>';
-      } else {
-        addr = '<tr><td colspan="4" class="p053-tc-fix">&nbsp;</td></tr>';
-      }
+      // A — r1 DEBnameT+DEBcontactT · r2 i/total · r3 vnos+วันที่ · r4 address (เฉพาะ type=Company)
+      var addr = isCompany
+        ? '<tr><td class="p053-tc-fix">จาก บจก.มหาโชค มหาชัย อินเตอร์เทรด<br>โทร. 034-878366-68&nbsp;&nbsp;Line : @m-group</td></tr>'
+        : '<tr><td class="p053-tc-fix">&nbsp;</td></tr>';
       return '<article class="p053-sticker">' +
-        '<table class="p053-tbl">' + COLS +
+        '<table class="p053-tbl">' +
         '<tbody>' +
-        '<tr><td colspan="4" class="p053-tc-customer">' + esc(d.name || '') + '<br>' + esc(d.contact || '') + '</td></tr>' +
-        '<tr><td colspan="4" class="p053-tc-page">' + i + '/' + denom + '</td></tr>' +
-        '<tr><td colspan="4" class="p053-tc-doc">' + esc(d.vn || '') + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(d.date || '') + '</td></tr>' +
+        '<tr><td class="p053-tc-customer">' + esc(d.name || '') + '<br>' + esc(d.contact || '') + '</td></tr>' +
+        '<tr><td class="p053-tc-page">' + i + '/' + denom + '</td></tr>' +
+        '<tr><td class="p053-tc-doc">' + esc(d.vn || '') + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(d.date || '') + '</td></tr>' +
         addr +
         '</tbody>' +
         '</table>' +
         '</article>';
     }
-    // B (ส่งต่อ) — r1 MIHmemo (22pt B, 90pt, padL15) · r2 spacer + i/total 40pt B · r3 vnos+วันที่ 14pt
-    //   · r4 "จาก DEBnameT DEBcontactT" + "Tel : DEBtel" 16pt padL15
+    // B (ส่งต่อ) — r1 MIHmemo · r2 i/total · r3 vnos+วันที่ · r4 "จาก DEBnameT DEBcontactT / Tel : DEBtel"
     var memo = esc(String(d.memo || '').replace(/\r\n/g, ' '));
     return '<article class="p053-sticker">' +
-      '<table class="p053-tbl">' + COLS +
+      '<table class="p053-tbl">' +
       '<tbody>' +
-      '<tr><td colspan="4" class="p053-tc-customer">' + memo + '</td></tr>' +
-      '<tr><td colspan="4" class="p053-tc-page">' + i + '/' + denom + '</td></tr>' +
-      '<tr><td colspan="4" class="p053-tc-doc">' + esc(d.vn || '') + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(d.date || '') + '</td></tr>' +
-      '<tr><td colspan="4" class="p053-tc-fixb">จาก&nbsp;&nbsp;' + esc(d.name || '') + ' ' + esc(d.contact || '') + '<br>Tel : ' + esc(d.tel || '') + '</td></tr>' +
+      '<tr><td class="p053-tc-customer">' + memo + '</td></tr>' +
+      '<tr><td class="p053-tc-page">' + i + '/' + denom + '</td></tr>' +
+      '<tr><td class="p053-tc-doc">' + esc(d.vn || '') + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + esc(d.date || '') + '</td></tr>' +
+      '<tr><td class="p053-tc-fixb">จาก&nbsp;&nbsp;' + esc(d.name || '') + ' ' + esc(d.contact || '') + '<br>Tel : ' + esc(d.tel || '') + '</td></tr>' +
       '</tbody>' +
       '</table>' +
       '</article>';

@@ -169,7 +169,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p033-credit-report.js?v=20260921u"></script>
   <script src="assets/js/p035-approval-check.js?v=20260921i"></script>
   <script src="assets/js/p052-sticker.js?v=20260929u"></script>
-  <script src="assets/js/p053-sticker.js?v=20260930b"></script>
+  <script src="assets/js/p053-sticker.js?v=20260930c"></script>
   <script src="assets/js/p054-packing.js?v=20260925w"></script>
   <script src="assets/js/p092-barcode.js?v=20260926k"></script>
   <script src="assets/js/p037-inv-booking.js?v=20260928i"></script>
