@@ -36,6 +36,7 @@ $province     = isset($input["province"]) ? trim($input["province"]) : "";
 $employee     = isset($input["employee"]) ? trim($input["employee"]) : "";
 $showQr       = !empty($input["showQr"]);
 $showLastSale = !empty($input["showLastSale"]);
+$splitMonth   = !empty($input["splitMonth"]); // chk_BillBymonth — แยกบิลตามเดือน
 
 if ($connectionId === "") p008r_error("Missing connectionId");
 if (!is_array($codes) || count($codes) === 0) p008r_error("No codes");
@@ -71,6 +72,67 @@ function p008r_like($col, $prefixes) {
     $parts = [];
     foreach ($prefixes as $p) $parts[] = $col . " LIKE ?";
     return "(" . implode(" OR ", $parts) . ")";
+}
+
+// ── countMonth (clone C# countMonth_VAT/noVAT — UNION = dedup MY) ──
+function p008r_count_months($pdo, $code, $asOf103, $cfsPrefixes, $cdcPrefixes) {
+    $sql = "SELECT CONCAT(MONTH(CFSdateID),YEAR(CFSdateID)) MY FROM CFS
+        WHERE CFSclearALL = 0 AND CFSclearUSER = 0 AND CFScusID = ? AND (CFSsumREQ - CFSsumCUT1) > 0
+          AND CFSdateID <= CONVERT(DATE, ?, 103)
+          AND " . p008r_like("CFSvnosID", $cfsPrefixes) . "
+        UNION
+        SELECT CONCAT(MONTH(CDCdateID),YEAR(CDCdateID)) MY FROM CDC
+        WHERE (CDCtypeID = 'AS' OR CDCtypeID = 'BS') AND CDCcancel = 0
+          AND (CDClinkVtype2 = '' OR CDClinkVtype2 IS NULL) AND CDCcusID = ?
+          AND CDCdateID <= CONVERT(DATE, ?, 103)
+          AND " . p008r_like("CDCvnosID", $cdcPrefixes) . "
+        ORDER BY MY";
+    $params = [$code, $asOf103];
+    foreach ($cfsPrefixes as $p) $params[] = $p;
+    $params[] = $code;
+    $params[] = $asOf103;
+    foreach ($cdcPrefixes as $p) $params[] = $p;
+    $st = $pdo->prepare($sql);
+    $st->execute($params);
+    $out = [];
+    foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) $out[] = $r["MY"];
+    return $out;
+}
+
+// ── getDetailINVBody (clone C# — $month = MY เช่น "102026" | "" = ไม่ filter) ──
+function p008r_body($pdo, $code, $asOf103, $cfsPrefixes, $cdcPrefixes, $month) {
+    $mCfs = $month ? " AND CONCAT(MONTH(CFSdateID),YEAR(CFSdateID)) = ?" : "";
+    $mCdc = $month ? " AND CONCAT(MONTH(CDCdateID),YEAR(CDCdateID)) = ?" : "";
+    $sql = "SELECT CFSdateID AS dates, CFSvnosID AS vnos, bill.VK, CONVERT(VARCHAR(255), MIH.MIHdesc) AS descT,
+        CFSsumREQ AS req, CFSsumCUT1 AS cut, '' AS dis, (CFSsumREQ - CFSsumCUT1) AS balance
+        FROM CFS
+        LEFT JOIN MIH ON MIH.MIHvnos = CFS.CFSvnosID AND MIH.MIHcus = CFS.CFScusID
+        LEFT JOIN (SELECT cus, vnos, CASE WHEN Billing = 1 THEN 'V' WHEN AccruedBill = 1 THEN 'K' ELSE '' END VK
+            FROM BI_CUBE.dbo.tb_CFS_bill_status) AS bill ON CFS.CFScusID = bill.cus AND CFS.CFSvnosID = bill.vnos
+        WHERE CFSclearALL = 0 AND CFSclearUSER = 0 AND CFScusID = ? AND (CFSsumREQ - CFSsumCUT1) > 0
+          AND CFSdateID <= CONVERT(DATE, ?, 103)" . $mCfs . "
+          AND " . p008r_like("CFSvnosID", $cfsPrefixes) . "
+        UNION
+        SELECT CDCdateID AS dates, CDCvnosID AS vnos, b.VK, CONVERT(VARCHAR(255), MIH.MIHref1) AS descT,
+          '0' AS req, '0' AS cut, CDCnetSUM AS dis, '0' AS balance
+        FROM CDC
+        LEFT JOIN MIH ON MIH.MIHvnos = CDC.CDCvnosID
+        LEFT JOIN (SELECT cus, vnos, CASE WHEN Billing = 1 THEN 'V' WHEN AccruedBill = 1 THEN 'K' ELSE '' END VK
+            FROM BI_CUBE.dbo.tb_CFS_bill_status) AS b ON CDC.CDCcusID = b.cus AND CDC.CDCvnosID = b.vnos
+        WHERE (CDCtypeID = 'AS' OR CDCtypeID = 'BS') AND CDCcancel = 0 AND (CDClinkVtype2 = '' OR CDClinkVtype2 IS NULL)
+          AND CDCcusID = ? AND CDCdateID <= CONVERT(DATE, ?, 103)" . $mCdc . "
+          AND " . p008r_like("CDCvnosID", $cdcPrefixes) . "
+        ORDER BY dates, vnos ASC";
+    $params = [$code, $asOf103];
+    if ($month) $params[] = $month;
+    foreach ($cfsPrefixes as $p) $params[] = $p;
+    $params[] = $code;
+    $params[] = $asOf103;
+    if ($month) $params[] = $month;
+    foreach ($cdcPrefixes as $p) $params[] = $p;
+    $st = $pdo->prepare($sql);
+    $st->execute($params);
+    return $st->fetchAll(PDO::FETCH_ASSOC);
 }
 
 // ── Header: province + PER ──
@@ -168,65 +230,25 @@ foreach ($codes as $code) {
     $st->execute($params);
     $cust["inv"] = $st->fetchAll(PDO::FETCH_ASSOC);
 
-    // ── getDetailINVBody_VAT ──
-    $sql = "SELECT CFSdateID AS dates, CFSvnosID AS vnos, bill.VK, CONVERT(VARCHAR(255), MIH.MIHdesc) AS descT,
-        CFSsumREQ AS req, CFSsumCUT1 AS cut, '' AS dis, (CFSsumREQ - CFSsumCUT1) AS balance
-        FROM CFS
-        LEFT JOIN MIH ON MIH.MIHvnos = CFS.CFSvnosID AND MIH.MIHcus = CFS.CFScusID
-        LEFT JOIN (SELECT cus, vnos, CASE WHEN Billing = 1 THEN 'V' WHEN AccruedBill = 1 THEN 'K' ELSE '' END VK
-            FROM BI_CUBE.dbo.tb_CFS_bill_status) AS bill ON CFS.CFScusID = bill.cus AND CFS.CFSvnosID = bill.vnos
-        WHERE CFSclearALL = 0 AND CFSclearUSER = 0 AND CFScusID = ? AND (CFSsumREQ - CFSsumCUT1) > 0
-          AND CFSdateID <= CONVERT(DATE, ?, 103)
-          AND " . p008r_like("CFSvnosID", $cfsVat) . "
-        UNION
-        SELECT CDCdateID AS dates, CDCvnosID AS vnos, b.VK, CONVERT(VARCHAR(255), MIH.MIHref1) AS descT,
-          '0' AS req, '0' AS cut, CDCnetSUM AS dis, '0' AS balance
-        FROM CDC
-        LEFT JOIN MIH ON MIH.MIHvnos = CDC.CDCvnosID
-        LEFT JOIN (SELECT cus, vnos, CASE WHEN Billing = 1 THEN 'V' WHEN AccruedBill = 1 THEN 'K' ELSE '' END VK
-            FROM BI_CUBE.dbo.tb_CFS_bill_status) AS b ON CDC.CDCcusID = b.cus AND CDC.CDCvnosID = b.vnos
-        WHERE (CDCtypeID = 'AS' OR CDCtypeID = 'BS') AND CDCcancel = 0 AND (CDClinkVtype2 = '' OR CDClinkVtype2 IS NULL)
-          AND CDCcusID = ? AND CDCdateID <= CONVERT(DATE, ?, 103)
-          AND " . p008r_like("CDCvnosID", $cdcVat) . "
-        ORDER BY dates, vnos ASC";
-    $params = [$code, $asOf103];
-    foreach ($cfsVat as $p) $params[] = $p;
-    $params[] = $code;
-    $params[] = $asOf103;
-    foreach ($cdcVat as $p) $params[] = $p;
-    $st = $pdo->prepare($sql);
-    $st->execute($params);
-    $cust["vat"] = $st->fetchAll(PDO::FETCH_ASSOC);
-
-    // ── getDetailINVBody_noVAT ──
-    $sql = "SELECT CFSdateID AS dates, CFSvnosID AS vnos, bill.VK, CONVERT(VARCHAR(255), MIH.MIHdesc) AS descT,
-        CFSsumREQ AS req, CFSsumCUT1 AS cut, '' AS dis, (CFSsumREQ - CFSsumCUT1) AS balance
-        FROM CFS
-        LEFT JOIN MIH ON MIH.MIHvnos = CFS.CFSvnosID AND MIH.MIHcus = CFS.CFScusID
-        LEFT JOIN (SELECT cus, vnos, CASE WHEN Billing = 1 THEN 'V' WHEN AccruedBill = 1 THEN 'K' ELSE '' END VK
-            FROM BI_CUBE.dbo.tb_CFS_bill_status) AS bill ON CFS.CFScusID = bill.cus AND CFS.CFSvnosID = bill.vnos
-        WHERE CFSclearALL = 0 AND CFSclearUSER = 0 AND CFScusID = ? AND (CFSsumREQ - CFSsumCUT1) > 0
-          AND CFSdateID <= CONVERT(DATE, ?, 103)
-          AND " . p008r_like("CFSvnosID", $cfsNoVat) . "
-        UNION
-        SELECT CDCdateID AS dates, CDCvnosID AS vnos, b.VK, CONVERT(VARCHAR(255), MIH.MIHref1) AS descT,
-          '0' AS req, '0' AS cut, CDCnetSUM AS dis, '0' AS balance
-        FROM CDC
-        LEFT JOIN MIH ON MIH.MIHvnos = CDC.CDCvnosID
-        LEFT JOIN (SELECT cus, vnos, CASE WHEN Billing = 1 THEN 'V' WHEN AccruedBill = 1 THEN 'K' ELSE '' END VK
-            FROM BI_CUBE.dbo.tb_CFS_bill_status) AS b ON CDC.CDCcusID = b.cus AND CDC.CDCvnosID = b.vnos
-        WHERE (CDCtypeID = 'AS' OR CDCtypeID = 'BS') AND CDCcancel = 0 AND (CDClinkVtype2 = '' OR CDClinkVtype2 IS NULL)
-          AND CDCcusID = ? AND CDCdateID <= CONVERT(DATE, ?, 103)
-          AND " . p008r_like("CDCvnosID", $cdcNoVat) . "
-        ORDER BY dates, vnos ASC";
-    $params = [$code, $asOf103];
-    foreach ($cfsNoVat as $p) $params[] = $p;
-    $params[] = $code;
-    $params[] = $asOf103;
-    foreach ($cdcNoVat as $p) $params[] = $p;
-    $st = $pdo->prepare($sql);
-    $st->execute($params);
-    $cust["novat"] = $st->fetchAll(PDO::FETCH_ASSOC);
+    // ── getDetailINVBody_VAT / noVAT (clone C# — ถ้า splitMonth = countMonth → ต่อ MY) ──
+    if ($splitMonth) {
+        // chk_BillBymonth: cntRound = countMonth → ต่อ MY (ถ้าไม่มี = "" = ทั้งหมด)
+        $vatMonths = p008r_count_months($pdo, $code, $asOf103, $cfsVat, $cdcVat);
+        $noVatMonths = p008r_count_months($pdo, $code, $asOf103, $cfsNoVat, $cdcNoVat);
+        $cust["vat"] = [];
+        foreach ($vatMonths as $my) {
+            $rows = p008r_body($pdo, $code, $asOf103, $cfsVat, $cdcVat, $my);
+            foreach ($rows as $r) { $r["MY"] = $my; $cust["vat"][] = $r; }
+        }
+        $cust["novat"] = [];
+        foreach ($noVatMonths as $my) {
+            $rows = p008r_body($pdo, $code, $asOf103, $cfsNoVat, $cdcNoVat, $my);
+            foreach ($rows as $r) { $r["MY"] = $my; $cust["novat"][] = $r; }
+        }
+    } else {
+        $cust["vat"] = p008r_body($pdo, $code, $asOf103, $cfsVat, $cdcVat, "");
+        $cust["novat"] = p008r_body($pdo, $code, $asOf103, $cfsNoVat, $cdcNoVat, "");
+    }
 
     // ── getLastOrder (Last Sale — MIL + STK + STG) ──
     if ($showLastSale) {

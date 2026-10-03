@@ -564,17 +564,29 @@
       "</div>"
     );
 
-    /* ── Page 2+: ใบปะหน้า — ต่อลูกค้า × VAT(V=0)/no-VAT(V=1) × ส่งกลับบริษัท(t=0)/สำหรับลูกค้า(t=1) — 14 rows/หน้า ── */
+    /* ── Page 2+: ใบปะหน้า — ต่อลูกค้า × VAT(V=0)/no-VAT(V=1) × ส่งกลับบริษัท(t=0)/สำหรับลูกค้า(t=1) — 14 rows/หน้า
+         ถ้า splitMonth (chk_BillBymonth) = rows มาพร้อม MY → 1 จุ้ม MY = 1 รอบ cover (clone C# countMonth loop) ── */
     for (var ci = 0; ci < rep.customers.length; ci++) {
       var cust = rep.customers[ci];
       var types = [[0, cust.vat], [1, cust.novat]];
       for (var V = 0; V < 2; V++) {
-        var rows = types[V][1];
-        if (!rows.length) continue;
-        for (var t = 0; t < 2; t++) {
-          var totalPages = Math.max(1, Math.ceil(rows.length / 14));
-          for (var n = 0; n < totalPages; n++) {
-            pages.push(buildCoverPage(cust, rows, V, t, n, totalPages, params, monthName, beYear, printDate, h));
+        var allRows = types[V][1];
+        if (!allRows.length) continue;
+        /* group by MY (ถ้ามี) — ลำดับคงตาม API */
+        var groupKeys = [];
+        var groupMap = {};
+        for (var ri = 0; ri < allRows.length; ri++) {
+          var my = allRows[ri].MY || "";
+          if (!groupMap.hasOwnProperty(my)) { groupMap[my] = []; groupKeys.push(my); }
+          groupMap[my].push(allRows[ri]);
+        }
+        for (var gi = 0; gi < groupKeys.length; gi++) {
+          var rows = groupMap[groupKeys[gi]];
+          for (var t = 0; t < 2; t++) {
+            var totalPages = Math.max(1, Math.ceil(rows.length / 14));
+            for (var n = 0; n < totalPages; n++) {
+              pages.push(buildCoverPage(cust, rows, V, t, n, totalPages, params, monthName, beYear, printDate, h));
+            }
           }
         }
       }
@@ -720,7 +732,8 @@
       month: String(el(root, "#p008Month").value).trim(),
       year: String(el(root, "#p008Year").value).trim(),
       showQr: !!el(root, "#p008ShowQr").checked,
-      showLastSale: !!el(root, "#p008ShowLastSale").checked
+      showLastSale: !!el(root, "#p008ShowLastSale").checked,
+      splitMonth: !!el(root, "#p008SplitCollector").checked
     };
     var btn = el(root, "#p008PrintBtn");
     btn.disabled = true;
@@ -732,7 +745,8 @@
       province: params.province,
       employee: params.employee,
       showQr: params.showQr,
-      showLastSale: params.showLastSale
+      showLastSale: params.showLastSale,
+      splitMonth: params.splitMonth
     }).then(function (res) {
       if (!res || !res.ok) throw new Error(res && res.error ? res.error : "API error");
       if (!res.customers.length) throw new Error("ไม่มีข้อมูลลูกหนี้");
