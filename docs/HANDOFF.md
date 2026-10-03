@@ -53,11 +53,19 @@
 | P037 | ตรวจสอบของจองที่มีการเปิดบิล | ready (1 หน้า — real data MAC5 3 APIs + search วันที่/เลขที่ใบสำคัญ (คำนำหน้า LIKE)/รหัสลูกค้า (LIKE) + **ตาราง INV = เฉพาะใบแจ้งหนี้ที่มี RSV เชื่อมโยง** (LEFT JOIN subquery + RSVvnos IS NOT NULL) + **ตาราง RSV = API แยก `p037_rsv.php` ตามลูกค้าที่เลือก (exact)** — fetch ตอนคลิกแถว + **pagination 10 รายการ/หน้า (ทั้ง 2 ตาราง — pager กป๋านหัวหน้า ‹ 1 2 3 › + "หน้า X / Y" ซ้าย)** + **RSV ตัด column ชื่อลูกค้าออก + INV ตัด column No. ออก** + **ตารางเต็มกว้าง (10 แถวพอดี — ไม่มี scroll)** + click row = select 1 แถว + dblclick = modal items INV vs RSV) |
 | P047 | เช็คสถานะ Invoice | ready (1 หน้า — real data MAC5 `p047_search` — range วันที่ (default วันปัจจุบัน~วันปัจจุบัน) + สถานะ dropdown (AR_S < 63 + NOT IN — 32 สถานะ) + ตาราง Invoice (MIH IS + cancel=0 + status IN + range — วันที่/เลขที่/รหัส/ชื่อ/สถานะ badge/จำนวนพิมพ์ — เฉพาะอ่าน) + **pagination 15 รายการ/หน้า** + quick search + sort column + select row) |
 | P015 | สถานะบิลค้างรับ | ready (1 หน้า — real data MAC5 2 APIs `p015_search`/`p015_status` — ค้นหารหัสลูกหนี้ (LIKE vnos/cus/name — **ต้องมีค่า >= 1 ตัวอักษร**) + ตารางบิลค้างรับ (CFS CFSclearALL=0 + net != 0 — วันที่/เลขที่/รหัส/ชื่อ/เขต/ยอดหนี้/วางบิล/ค้างบิล/หมายเหตุ — display — หมายเหตุ 26% + wrap) + **pagination 15 รายการ/หน้า** + sort column + **ดับเบิลคลิกแถว = modal แก้ไข (checkbox วางบิล/ค้างบิล exclusive + หมายเหตุ) + บันทึกทีละแถว** (upsert `BI_CUBE.tb_CFS_bill_status`)) |
+| P051 | รายงานการเก็บเงินสด | ready (1 หน้า — real data MAC5 `p051_search` — เงื่อนไข ทั้งหมด/เงินสด (MIHdesc) + สถานะ (MIHstatus IN — ตัวอย่าง 43,44,60) + ตาราง 6 คอลั่น (เลขใบสำคัญ/วันที่/รหัสลูกค้า/ชื่อลูกค้า/ผู้แทน/ยอดเงินสุทธิ) + **pagination 15/หน้า** (ปุ่ม ‹ น.หน้า ›) + quick search + sort + row select + **export CSV = server-side `p051_export` (cp874 — Excel ไทยเป็นตาราง)** + พิมพ์ A4 landscape = ทั้งหมด) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 01-03/10 — P051 รายงานการเก็บเงินสด — **READY**
+- `assets/js/p051-cash-collection.js` (IIFE `window.P051CashCollection`) — **real data MAC5** (`api/p051_search.php`) — clone demo/P051-demo.html → เชื่อม DB
+- **API search:** POST {connectionId, status, reportType} — `MIH LEFT JOIN DEB ON DEBcode=MIHcus` — `MIHtype LIKE 'IS'` + `MIHstatus IN (?)` (status = "43,44,60" parse comma — whitelist digits) + `MIHdesc LIKE '%เงินสด%'` (reportType=cash) — `ORDER BY MIHvnos ASC` — rows: document/date/customerCode/customerName (DEBnameT+DEBcontactT)/salesperson (MIHper)/amount (MIHnetSUM)
+- **UI:** เงื่อนไข (radio ทั้งหมด/เงินสด + **สถานะ input text** = รหัสสถานะ — ไม่ใช่ยอดขั้นต่ำ!) + ปุ่มค้นหา (ไม่ค้นหาอัตโนมัติ) + **table 6 คอลั่น** (user ตัด "ลำดับ" ออก) + **pagination 15/หน้า** (ปุ่ม ‹ 1 2 … N › — active blue gradient — reset page=1 เมื่อ search/filter/sort) + quick search (client) + sort (default document) + row select + **พิมพ์ A4 landscape = ทั้งหมด** (beforeprint/afterprint _printAll)
+- **Export CSV = server-side `api/p051_export.php`** — POST {connectionId, status, reportType, keyword} — **cp874 (TIS-620) + CRLF** — Excel Windows ไทยเปิดเป็นตาราง + ไทยถูก — JS: fetch + **arrayBuffer** (ห้าม r.text()) → Blob — **3 rounds:** UTF-8 BOM (ไทยเละ) → UTF-16 LE (ไทยได้แต่ 1 คอลั่น) → cp874 ✓ — `iconv("UTF-8","TIS-620//TRANSLIT//IGNORE")` (mb_convert_encoding ไม่รับ //IGNORE)
+- test CDP: search 43,44,60 + ทั้งหมด = 24 rows · หน้า 1 = 15 rows "แสดง 1–15 จาก 24" · หน้า 2 = 9 rows · CSV cp874 decode ✓ — cache `p051-cash-collection.js?v=20261003c` — modules.php status **ready** — **21 modules ready**
 
 ### 30/09 — P053 สติ๊กเกอร์ 10x7.5 — rewrite ตาม C# `MCIT_Frm_FaceSheetProduct_10x7`
 - `api/p053_search.php` — pattern เดียวกัน P052: **total = totalCopy** (รวม MILnotes ทั้งหมด → denom = total ทั้ง A+B) + **company** (typeReport — Company/NotCompany) — test: A `IVVN6909-0001` = 21/21 Company · B `TOUB6908-0008` = count 0 (ref2 ว่าง) → modal

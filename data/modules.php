@@ -143,7 +143,7 @@ return [
                     ["id" => "P050", "name" => "ใบวางบิล", "status" => "ready"],
                     ["id" => "P013", "name" => "ใบอนุมัติวงเงินและปรับวงเงิน", "type" => "link", "status" => "ready"],
                     ["id" => "P034", "name" => "ประวัติทางการเงินลูกหนี้", "type" => "link", "status" => "ready"],
-                    ["id" => "P051", "name" => "รายงานการเก็บเงินสด"],
+                    ["id" => "P051", "name" => "รายงานการเก็บเงินสด", "status" => "ready"],
                     ["id" => "P052", "name" => "สติ๊กเกอร์ 10x10 (ใบปะ)", "status" => "ready"],
                     ["id" => "P053", "name" => "สติ๊กเกอร์ 10x7.5 (ใบปะ)", "status" => "ready"],
                     ["id" => "P054", "name" => "Packing Order/Cartonize/ใบจัดกล่อง", "status" => "ready"],
