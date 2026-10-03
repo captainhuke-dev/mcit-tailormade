@@ -1053,6 +1053,20 @@
       `;
     }
 
+    // P008: ใบปะหน้าเก็บบัญชี VAT, No VAT V2
+    if (programId === "P008") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p008Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P052: สติ๊กเกอร์ 10x10 (ใบปะ)
     if (programId === "P052") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1470,6 +1484,12 @@
     if (page.type === "program" && page.programId === "P051" && window.P051CashCollection) {
       const root = document.getElementById("p051Root");
       if (root) window.P051CashCollection.mount(root);
+    }
+
+    // P008: mount Collection V2 app
+    if (page.type === "program" && page.programId === "P008" && window.P008CollectionV2) {
+      const root = document.getElementById("p008Root");
+      if (root) window.P008CollectionV2.mount(root);
     }
 
     // P026: mount Payable History app
