@@ -33,7 +33,9 @@
     selectedCodes: {},
     sortField: "customerCode",
     sortDirection: "asc",
-    searched: false
+    searched: false,
+    groups: [],          /* [{code, desc}] จาก api/p008_groups.php */
+    selectedGroups: {}   /* {code: true} */
   };
 
   function icon(name, size) {
@@ -62,6 +64,8 @@
     state.sortField = "customerCode";
     state.sortDirection = "asc";
     state.searched = false;
+    state.groups = [];
+    state.selectedGroups = { "CRE-A": true, "CRE-F": true }; /* default ตาม C# demo */
     injectCSS();
 
     /* default = วันนี้ (clone C# _Load: month = current, year = current) */
@@ -93,9 +97,19 @@
               '<label for="p008Group">กลุ่มลูกหนี้</label>' +
               '<div class="p008-group-row">' +
                 '<div class="p008-input-wrap">' + icon("grid", 17) +
-                  '<input id="p008Group" type="text" value="\'CRE-A\',\'CRE-F\'" placeholder="เช่น \'CRE-A\',\'CRE-F\'">' +
+                  '<input id="p008Group" type="text" value="\'CRE-A\',\'CRE-F\'" readonly placeholder="เลือกกลุ่มลูกหนี้">' +
                 "</div>" +
-                '<button class="p008-inline-btn" id="p008GroupHelp" type="button" title="ช่วยกรอกกลุ่มลูกหนี้">' + icon("help", 15) + "</button>" +
+                '<button class="p008-inline-btn" id="p008GroupBtn" type="button" title="เลือกกลุ่มลูกหนี้">' + icon("help", 15) + "</button>" +
+                '<div class="p008-group-dropdown" id="p008GroupDropdown">' +
+                  '<div class="p008-gd-search">' + icon("search", 14) +
+                    '<input id="p008GroupFilter" type="text" placeholder="ค้นหา...">' +
+                  "</div>" +
+                  '<div class="p008-gd-table" id="p008GroupTable"></div>' +
+                  '<div class="p008-gd-footer">' +
+                    '<span id="p008GroupCount">0 กลุ่ม</span>' +
+                    '<button type="button" class="p008-gd-close" id="p008GroupClose">ปิด</button>' +
+                  "</div>" +
+                "</div>" +
               "</div>" +
             "</div>" +
             '<div class="p008-field">' +
@@ -196,10 +210,6 @@
     var selectAll = root.querySelector("#p008SelectAll");
 
     form.addEventListener("submit", function (e) { e.preventDefault(); doSearch(); });
-    root.querySelector("#p008GroupHelp").addEventListener("click", function () {
-      el(root, "#p008Group").value = "'CRE-A','CRE-B','CRE-C','CRE-D','CRE-E','CRE-F'";
-      doSearch();
-    });
     root.querySelector("#p008PrintBtn").addEventListener("click", function () { window.print(); });
     root.querySelector("#p008ExportBtn").addEventListener("click", exportCSV);
     selectAll.addEventListener("change", function () {
@@ -231,6 +241,82 @@
       });
     });
 
+    /* ── กลุ่มลูกหนี้ dropdown (api/p008_groups.php) ── */
+    var groupDropdown = root.querySelector("#p008GroupDropdown");
+    var groupBtn = root.querySelector("#p008GroupBtn");
+    var groupInput = root.querySelector("#p008Group");
+    var groupFilter = root.querySelector("#p008GroupFilter");
+    var groupTable = root.querySelector("#p008GroupTable");
+    var groupCount = root.querySelector("#p008GroupCount");
+
+    function groupValueText() {
+      var codes = Object.keys(state.selectedGroups).filter(function (c) { return state.selectedGroups[c]; });
+      if (!codes.length) return "";
+      return codes.map(function (c) { return "'" + c + "'"; }).join(",");
+    }
+    function syncGroupInput() {
+      groupInput.value = groupValueText();
+      var n = Object.keys(state.selectedGroups).filter(function (c) { return state.selectedGroups[c]; }).length;
+      groupCount.textContent = n + " กลุ่ม";
+    }
+    function renderGroupTable(filter) {
+      var f = (filter || "").trim().toLowerCase();
+      var html = "";
+      var shown = 0;
+      state.groups.forEach(function (g) {
+        if (f && g.code.toLowerCase().indexOf(f) < 0 && g.desc.toLowerCase().indexOf(f) < 0) return;
+        shown++;
+        var checked = !!state.selectedGroups[g.code];
+        html +=
+          '<label class="p008-gd-row' + (checked ? " p008-gd-checked" : "") + '">' +
+            '<input class="p008-gd-cb" type="checkbox" data-code="' + esc(g.code) + '"' + (checked ? " checked" : "") + ">" +
+            '<span class="p008-gd-code">' + esc(g.code) + "</span>" +
+            '<span class="p008-gd-desc" title="' + esc(g.desc) + '">' + esc(g.desc) + "</span>" +
+          "</label>";
+      });
+      groupTable.innerHTML = shown ? html : '<div class="p008-gd-empty">ไม่พบกลุ่ม</div>';
+    }
+
+    /* load groups from API on mount */
+    apiFetch("p008_groups.php", { connectionId: MAC5_CONNECTION_ID }).then(function (res) {
+      if (!res || !res.ok) return;
+      state.groups = res.groups || [];
+      renderGroupTable("");
+      syncGroupInput();
+    }).catch(function () { /* keep default */ });
+
+    renderGroupTable("");
+    syncGroupInput();
+
+    groupBtn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      groupDropdown.classList.toggle("open");
+      if (groupDropdown.classList.contains("open")) {
+        groupFilter.value = "";
+        renderGroupTable("");
+        setTimeout(function () { groupFilter.focus(); }, 30);
+      }
+    });
+    root.querySelector("#p008GroupClose").addEventListener("click", function () {
+      groupDropdown.classList.remove("open");
+    });
+    groupFilter.addEventListener("input", function () { renderGroupTable(groupFilter.value); });
+    groupTable.addEventListener("change", function (e) {
+      var cb = e.target.closest(".p008-gd-cb");
+      if (!cb) return;
+      var code = cb.getAttribute("data-code");
+      if (cb.checked) state.selectedGroups[code] = true;
+      else delete state.selectedGroups[code];
+      renderGroupTable(groupFilter.value);
+      syncGroupInput();
+    });
+    /* close on outside click */
+    document.addEventListener("click", function (e) {
+      if (!groupDropdown.contains(e.target) && e.target !== groupBtn) {
+        groupDropdown.classList.remove("open");
+      }
+    });
+
     /* ไม่ค้นหาอัตโนมัติตาม mount — รอรัดปุ่มค้นหา */
     renderRows();
   }
@@ -251,7 +337,8 @@
     var root = _root;
     var province = String(el(root, "#p008Province").value).trim();
     var employee = String(el(root, "#p008Employee").value).trim();
-    var group = String(el(root, "#p008Group").value).trim();
+    var group = Object.keys(state.selectedGroups).filter(function (c) { return state.selectedGroups[c]; })
+      .map(function (c) { return "'" + c + "'"; }).join(",");
     var asOf = String(el(root, "#p008AsOf").value).trim();
     var collector = String(el(root, "#p008Collector").value).trim();
 
@@ -389,7 +476,25 @@
       ".p008-input-wrap select{cursor:pointer;appearance:none;padding-right:32px}" +
       ".p008-input-wrap input:focus,.p008-input-wrap select:focus{border-color:#60a5fa;box-shadow:0 0 0 4px rgba(96,165,250,.14)}" +
       ".p008-input-wrap>svg:last-child{left:auto;right:12px;width:15px;height:15px}" +
-      ".p008-group-row{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:end}" +
+      ".p008-group-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:end;position:relative}" +
+      ".p008-group-dropdown{display:none;position:absolute;top:100%;left:0;z-index:60;width:360px;max-width:80vw;margin-top:6px;border:1px solid #dbe3ef;border-radius:12px;background:#fff;box-shadow:0 18px 44px rgba(15,23,42,.18);overflow:hidden}" +
+      ".p008-group-dropdown.open{display:block}" +
+      ".p008-gd-search{position:relative;padding:10px 10px 8px;border-bottom:1px solid #eef2f7}" +
+      ".p008-gd-search>svg{position:absolute;top:50%;left:20px;width:14px;height:14px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}" +
+      ".p008-gd-search input{width:100%;height:36px;padding:0 12px 0 34px;border:1px solid #dbe3ef;border-radius:9px;outline:none;font-size:12px;color:#172033;background:#f8fafc}" +
+      ".p008-gd-search input:focus{border-color:#60a5fa;background:#fff}" +
+      ".p008-gd-table{max-height:280px;overflow:auto}" +
+      ".p008-gd-row{display:grid;grid-template-columns:26px 92px minmax(0,1fr);align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid #f1f5f9;cursor:pointer;font-size:12px;transition:.12s ease}" +
+      ".p008-gd-row:hover{background:#f0f7ff}" +
+      ".p008-gd-row.p008-gd-checked{background:#eaf3ff}" +
+      ".p008-gd-cb{width:16px;height:16px;accent-color:#2563eb;cursor:pointer;justify-self:center}" +
+      ".p008-gd-code{color:#1d4ed8;font-family:Arial,sans-serif;font-weight:700;white-space:nowrap}" +
+      ".p008-gd-desc{color:#475569;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}" +
+      ".p008-gd-empty{padding:22px 12px;text-align:center;color:#94a3b8;font-size:12px}" +
+      ".p008-gd-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-top:1px solid #eef2f7;background:#f8fafc}" +
+      ".p008-gd-footer span{color:#64748b;font-size:11px;font-weight:700}" +
+      ".p008-gd-close{height:30px;padding:0 14px;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;font-size:11px;font-weight:700;cursor:pointer}" +
+      ".p008-gd-close:hover{color:#fff;border-color:#2563eb;background:#2563eb}" +
       ".p008-inline-btn{display:grid;width:42px;height:42px;place-items:center;color:#2563eb;border:0;border-radius:10px;background:#eff6ff;cursor:pointer}" +
       ".p008-inline-btn svg{width:15px;height:15px}" +
       ".p008-form-actions{margin-top:14px}" +
