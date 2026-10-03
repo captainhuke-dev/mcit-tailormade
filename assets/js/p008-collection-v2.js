@@ -1,33 +1,21 @@
-/* P008 — ใบปะหน้าเก็บบัญชี VAT, No VAT V2 (clone demo/P008-demo.html)
+/* P008 — ใบปะหน้าเก็บเงิน VAT, No VAT V2 (clone demo/P008-demo.html + C# MCIT_FrmAccountServiceGUI_VATversion_V2)
  * IIFE — window.P008CollectionV2 = { mount }
- * Data: mock (ตาม demo — ยังไม่เชื่อม DB)
- * UI: launcher (ค้นหา + actions) + table (checkbox select + sort + footer) + Print A4 landscape + Export CSV
+ * Data: real data MAC5 (api/p008_search.php — clone SQL C#: CFS + CDC + DEB + PER)
+ * UI: launcher (ค้นหา rows 4+5 + actions) + table (checkbox select + sort + footer) + Print A4 landscape + Export CSV
  */
 (function () {
   "use strict";
 
-  /* ---------- mock data (ตาม demo) ---------- */
-  var CUSTOMERS = [
-    { customerCode: "73160-010", group: "CRE-A", customerName: "ดีใจดี โฮมโปรดักส์ บจก.", district: "(กระทุ่มแบน)", province: "จ.สมุทรสาคร", amount: 2840.00, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-089", group: "CRE-A", customerName: "สัมอลมโทหะภัณฑ์", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร (30K)", amount: 14500.00, adjust: 0, employeeCode: "G01-BK01", employeeName: "BKK" },
-    { customerCode: "74000-098", group: "CRE-A", customerName: "แสงชัยอุปกรณ์สติล บจก.", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 8297.85, adjust: 0, employeeCode: "G01-BK01", employeeName: "BKK" },
-    { customerCode: "74000-100", group: "CRE-A", customerName: "จางวรวัฒน์", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 13020.00, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-116", group: "CRE-A", customerName: "บุญรุ่งเรือง หจก.", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 8210.00, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-121", group: "CRE-A", customerName: "ส.แสงชัยฮาร์ดแวร์", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 12746.00, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-126", group: "CRE-A", customerName: "สงกัณห์การไฟฟ้า", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 26838.40, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-147", group: "CRE-A", customerName: "สันใจไทย บจก.", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 6420.00, adjust: 0, employeeCode: "G01-BK01", employeeName: "BKK" },
-    { customerCode: "74000-166", group: "CRE-A", customerName: "เจ.ยู.อิ โพธิ์ทองวัสดุภัณฑ์ บจก.", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร(5K)", amount: 16715.08, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-169", group: "CRE-A", customerName: "เจมิตรฮาร์ดแวร์", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร(10K)", amount: 5505.00, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-180", group: "CRE-A", customerName: "เอ็ม.เจ.เอส.เทรดดิ้ง บจก.", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 103123.90, adjust: -3880.00, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-189", group: "CRE-A", customerName: "พันท้ายรามวัสดุ", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 19448.20, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-229", group: "CRE-A", customerName: "สายชล ค้าส่ง (SY รัตถ่อสร้าง)", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร(10K)", amount: 2100.00, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-258", group: "CRE-A", customerName: "รุ่งทรัพย์ พันธวงษ์", district: "(สมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 3010.20, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74000-263", group: "CRE-A", customerName: "สมชาย ซัปเปอร์เซ็นเตอร์ บจก.", district: "(เมืองสมุทรสาคร)", province: "จ.สมุทรสาคร", amount: 3520.00, adjust: 0, employeeCode: "G01-BK01", employeeName: "BKK" },
-    { customerCode: "74110-001", group: "CRE-A", customerName: "โค้วไก่สิ่ง", district: "(กระทุ่มแบน)", province: "จ.สมุทรสาคร", amount: 4820.00, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74110-013", group: "CRE-A", customerName: "โอธิอิ อิควิปเม้นท์ หจก.", district: "(กระทุ่มแบน)", province: "จ.สมุทรสาคร", amount: 6005.00, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74110-081", group: "CRE-A", customerName: "เอ็นใจวัสดุก่อสร้าง 2004 บจก.", district: "(กระทุ่มแบน)", province: "จ.สมุทรสาคร(20K)", amount: 810.00, adjust: 0, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" },
-    { customerCode: "74110-091", group: "CRE-A", customerName: "ทวีทรัพย์ วัสดุภัณฑ์", district: "(กระทุ่มแบน)", province: "จ.สมุทรสาคร", amount: 5095.00, adjust: -280.00, employeeCode: "S50", employeeName: "TV-ชนิษฐ์ 0817105248" }
-  ];
+  /* ---------- real data MAC5 ---------- */
+  var MAC5_CONNECTION_ID = "c1788406814359";
+
+  function apiFetch(path, payload) {
+    return fetch("api/" + path, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    }).then(function (r) { return r.json(); });
+  }
 
   var MONTHS = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
 
@@ -76,8 +64,12 @@
     state.searched = false;
     injectCSS();
 
+    /* default = วันนี้ (clone C# _Load: month = current, year = current) */
+    var now = new Date();
+    var todayISO = now.getFullYear() + "-" + String(now.getMonth() + 1).padStart(2, "0") + "-" + String(now.getDate()).padStart(2, "0");
+    var thisYear = now.getFullYear();
     var monthOptions = MONTHS.map(function (m, i) {
-      return '<option value="' + (i + 1) + '"' + (i === 9 ? " selected" : "") + ">" + m + "</option>";
+      return '<option value="' + (i + 1) + '"' + (i === now.getMonth() ? " selected" : "") + ">" + m + "</option>";
     }).join("");
 
     root.innerHTML =
@@ -109,7 +101,7 @@
             '<div class="p008-field">' +
               '<label for="p008AsOf">อ้างอิงใบแจ้งหนี้ จนถึงวันที่</label>' +
               '<div class="p008-input-wrap">' + icon("calendar", 17) +
-                '<input id="p008AsOf" type="date" value="2026-10-03">' +
+                '<input id="p008AsOf" type="date" value="' + todayISO + '">' +
               "</div>" +
             "</div>" +
           "</div>" +
@@ -129,7 +121,7 @@
             '<div class="p008-field">' +
               '<label for="p008Year">ปี</label>' +
               '<div class="p008-input-wrap">' + icon("calendar", 17) +
-                '<input id="p008Year" type="number" value="2026">' +
+                '<input id="p008Year" type="number" value="' + thisYear + '">' +
               "</div>" +
             "</div>" +
             '<div class="p008-field">' +
@@ -177,8 +169,7 @@
               '<th class="p008-sortable" data-sort="customerCode">รหัสลูกหนี้ <span class="p008-sort-mark">↕</span></th>' +
               '<th class="p008-sortable p008-center" data-sort="group">กลุ่มลูกหนี้ <span class="p008-sort-mark">↕</span></th>' +
               '<th class="p008-sortable" data-sort="customerName">ชื่อลูกหนี้ <span class="p008-sort-mark">↕</span></th>' +
-              "<th>เขต/อำเภอ</th>" +
-              "<th>จังหวัด</th>" +
+              "<th>เขต/จังหวัด</th>" +
               '<th class="p008-sortable p008-number" data-sort="amount">ยอดหนี้ <span class="p008-sort-mark">↕</span></th>' +
               '<th class="p008-sortable p008-number" data-sort="adjust">ยอดปรับหนี้ <span class="p008-sort-mark">↕</span></th>' +
               '<th class="p008-sortable p008-center" data-sort="employeeCode">รหัสพนักงาน <span class="p008-sort-mark">↕</span></th>' +
@@ -259,26 +250,35 @@
   function doSearch() {
     var root = _root;
     var province = String(el(root, "#p008Province").value).trim();
-    var employee = String(el(root, "#p008Employee").value).trim().toUpperCase();
-    var groups = parseGroupFilter(el(root, "#p008Group").value);
+    var employee = String(el(root, "#p008Employee").value).trim();
+    var group = String(el(root, "#p008Group").value).trim();
+    var asOf = String(el(root, "#p008AsOf").value).trim();
+    var collector = String(el(root, "#p008Collector").value).trim();
 
-    state.currentRows = CUSTOMERS.filter(function (it) {
-      var provinceMatch = !province || it.customerCode.indexOf(province) === 0;
-      var employeeMatch = !employee || it.employeeCode.toUpperCase().indexOf(employee) >= 0;
-      var groupMatch = !groups.length || groups.indexOf(it.group.toUpperCase()) >= 0;
-      return provinceMatch && employeeMatch && groupMatch;
+    /* validation (clone C#) */
+    if (!province) { showToast("⚠ โปรดป้อนรหัสจังหวัดที่ต้องการค้นหา", 3200); return; }
+    if (!group) { showToast("⚠ โปรดเลือกกลุ่มลูกหนี้", 3200); return; }
+    if (!employee && province !== "00") { showToast("⚠ โปรดป้อนรหัสพนักงาน", 3200); return; }
+
+    el(root, "#p008Badge").textContent = "ค้นหา...";
+    apiFetch("p008_search.php", {
+      connectionId: MAC5_CONNECTION_ID,
+      province: province,
+      employee: employee,
+      group: group,
+      asOf: asOf,
+      collector: collector
+    }).then(function (res) {
+      if (!res || !res.ok) throw new Error(res && res.error ? res.error : "API error");
+      state.currentRows = res.rows || [];
+      state.selectedCodes = {};
+      state.searched = true;
+      renderRows();
+      showToast("✓ พบ " + state.currentRows.length + " รายการ");
+    }).catch(function (err) {
+      el(root, "#p008Badge").textContent = "0 รายการ";
+      showToast("⚠ " + (err && err.message ? err.message : "Search fail"));
     });
-    state.selectedCodes = {};
-    state.searched = true;
-    renderRows();
-    showToast("✓ พบ " + state.currentRows.length + " รายการ");
-  }
-
-  function parseGroupFilter(text) {
-    return String(text || "")
-      .split(",")
-      .map(function (s) { return s.replace(/['"]/g, "").trim().toUpperCase(); })
-      .filter(Boolean);
   }
 
   function sortRows(items) {
@@ -302,14 +302,14 @@
     for (var i = 0; i < sorted.length; i++) {
       var it = sorted[i];
       var checked = !!state.selectedCodes[it.customerCode];
+      var name = esc(it.customerName) + (it.contact ? " " + esc(it.contact) : "");
       html +=
         '<tr class="' + (checked ? "p008-selected" : "") + '" data-code="' + esc(it.customerCode) + '">' +
           '<td class="p008-checkbox-cell"><input class="p008-row-checkbox" type="checkbox" data-code="' + esc(it.customerCode) + '"' + (checked ? " checked" : "") + "></td>" +
           '<td class="p008-customer-code">' + esc(it.customerCode) + "</td>" +
           '<td class="p008-center"><span class="p008-group-tag">' + esc(it.group) + "</span></td>" +
-          '<td title="' + esc(it.customerName) + '">' + esc(it.customerName) + "</td>" +
-          "<td>" + esc(it.district) + "</td>" +
-          "<td>" + esc(it.province) + "</td>" +
+          '<td title="' + name + '">' + name + "</td>" +
+          "<td>" + esc(it.zone) + "</td>" +
           '<td class="p008-number p008-amount">' + formatMoney(it.amount) + "</td>" +
           '<td class="p008-number p008-amount' + (it.adjust < 0 ? " p008-negative" : "") + '">' + formatMoney(it.adjust) + "</td>" +
           '<td class="p008-center p008-employee-code">' + esc(it.employeeCode) + "</td>" +
@@ -349,10 +349,11 @@
 
   function exportCSV() {
     if (!state.currentRows.length) { alert("ไม่พบข้อมูลสำหรับส่งออก"); return; }
-    var headers = ["รหัสลูกหนี้", "กลุ่มลูกหนี้", "ชื่อลูกหนี้", "เขต/อำเภอ", "จังหวัด", "ยอดหนี้", "ยอดปรับหนี้", "รหัสพนักงาน", "พนักงานขาย"];
+    var headers = ["รหัสลูกหนี้", "กลุ่มลูกหนี้", "ชื่อลูกหนี้", "เขต/จังหวัด", "ยอดหนี้", "ยอดปรับหนี้", "รหัสพนักงาน", "พนักงานขาย"];
     var lines = [headers];
     state.currentRows.forEach(function (it) {
-      lines.push([it.customerCode, it.group, it.customerName, it.district, it.province, Number(it.amount).toFixed(2), Number(it.adjust).toFixed(2), it.employeeCode, it.employeeName]);
+      var name = it.customerName + (it.contact ? " " + it.contact : "");
+      lines.push([it.customerCode, it.group, name, it.zone, Number(it.amount).toFixed(2), Number(it.adjust).toFixed(2), it.employeeCode, it.employeeName]);
     });
     var csv = lines.map(function (row) {
       return row.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(",");
@@ -412,7 +413,7 @@
       ".p008-panel-title p{overflow:hidden;margin-top:1px;color:#64748b;font-size:11px;text-overflow:ellipsis;white-space:nowrap}" +
       ".p008-badge{padding:5px 10px;color:#1d4ed8;border-radius:999px;background:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap}" +
       ".p008-table-container{min-height:0;flex:1;overflow:auto}" +
-      ".p008-table-container table{width:100%;min-width:1250px;border-collapse:separate;border-spacing:0;white-space:nowrap}" +
+      ".p008-table-container table{width:100%;min-width:1150px;border-collapse:separate;border-spacing:0;white-space:nowrap}" +
       ".p008-table-container th{position:sticky;top:0;z-index:2;padding:11px 12px;color:#475569;border-bottom:1px solid #dbe3ef;background:#f8fafc;font-size:12px;font-weight:700;text-align:left;user-select:none}" +
       ".p008-table-container th.p008-sortable{cursor:pointer}" +
       ".p008-table-container th.p008-sortable:hover{color:#2563eb;background:#f1f5f9}" +
