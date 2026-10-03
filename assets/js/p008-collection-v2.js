@@ -145,7 +145,7 @@
               '<label for="p008Collector">เก็บเงินโดย</label>' +
               '<div class="p008-input-wrap">' + icon("chart", 17) +
                 '<select id="p008Collector">' +
-                  '<option value="age">AGE-งวนเทน</option>' +
+                  '<option value="age">AGE-ผู้แทน</option>' +
                   '<option value="fin">FIN-สินเชื่อ</option>' +
                 "</select>" + icon("arrow", 15) +
               "</div>" +
