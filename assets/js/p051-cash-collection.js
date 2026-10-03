@@ -339,35 +339,41 @@
     renderRows();
   }
 
-  function toUTF16LE(str) {
-    var bytes = new Uint8Array(2 + str.length * 2);
-    bytes[0] = 0xFF; bytes[1] = 0xFE; /* BOM — Excel/Notepad detect */
-    for (var i = 0; i < str.length; i++) {
-      var code = str.charCodeAt(i);
-      bytes[2 + i * 2] = code & 0xFF;
-      bytes[3 + i * 2] = code >> 8;
-    }
-    return bytes;
-  }
-
   function exportCSV() {
     if (!state.currentRows.length) { alert("ไม่พบข้อมูลสำหรับส่งออก"); return; }
-    var headers = ["เลขใบสำคัญ", "วันที่", "รหัสลูกค้า", "ชื่อลูกค้า", "ผู้แทน", "ยอดเงินสุทธิ"];
-    var lines = [headers];
-    state.currentRows.forEach(function (it) {
-      lines.push([it.document, formatDate(it.date), it.customerCode, it.customerName, it.salesperson, Number(it.amount).toFixed(2)]);
+    var root = _root;
+    var btn = el(root, "#p051ExportBtn");
+    var old = btn ? btn.innerHTML : "";
+    if (btn) btn.innerHTML = "Export CSV...";
+    /* response = CSV bytes (cp874) — fetch raw text ไม่ใช่ JSON */
+    fetch("api/p051_export.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        connectionId: MAC5_CONNECTION_ID,
+        status: String(el(root, "#p051Status").value).trim(),
+        reportType: currentReportType(),
+        keyword: el(root, "#p051QuickSearch").value.trim()
+      })
+    }).then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.arrayBuffer();
+    }).then(function (buf) {
+      if (new TextDecoder("utf-8").decode(buf).indexOf("Fatal error") >= 0) throw new Error("server error");
+      /* cp874 — raw bytes (ห้าม r.text() — จะ decode UTF-8 แล้วไทยเละ) — Excel Windows ไทยเปิดเป็นตารางทันที */
+      var blob = new Blob([buf], { type: "text/csv;charset=windows-874" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "รายงานเก็บเงินสด.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("✓ Export " + state.currentRows.length + " รายการ");
+    }).catch(function (e) {
+      showToast("⚠ Export ไม่สำเร็จ: " + (e && e.message ? e.message : ""), 3200);
+    }).finally(function () {
+      if (btn) btn.innerHTML = old;
     });
-    var csv = lines.map(function (row) {
-      return row.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(",");
-    }).join("\r\n");
-    /* UTF-16 LE + BOM — Excel ทุก version อ่านไทยได้ (UTF-8 BOM = Excel ตัวเก่าเละ) */
-    var blob = new Blob([toUTF16LE(csv)], { type: "text/csv;charset=utf-16le;" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = "รายงานเก็บเงินสด.csv";
-    a.click();
-    URL.revokeObjectURL(url);
   }
 
   /* ---------- CSS (clone demo) ---------- */
