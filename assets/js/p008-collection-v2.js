@@ -35,7 +35,9 @@
     sortDirection: "asc",
     searched: false,
     groups: [],          /* [{code, desc}] จาก api/p008_groups.php */
-    selectedGroups: {}   /* {code: true} */
+    selectedGroups: {},  /* {code: true} */
+    report: null,        /* Phase 2 — {header, customers} จาก api/p008_report.php */
+    reportParams: null   /* {province, employee, asOf, round, month, year, showQr, showLastSale} */
   };
 
   function icon(name, size) {
@@ -213,7 +215,7 @@
     var selectAll = root.querySelector("#p008SelectAll");
 
     form.addEventListener("submit", function (e) { e.preventDefault(); doSearch(); });
-    root.querySelector("#p008PrintBtn").addEventListener("click", function () { window.print(); });
+    root.querySelector("#p008PrintBtn").addEventListener("click", function () { doPrint(); });
     root.querySelector("#p008ExportBtn").addEventListener("click", exportCSV);
     selectAll.addEventListener("change", function () {
       state.currentRows.forEach(function (it) {
@@ -454,6 +456,322 @@
     sa.indeterminate = !allSel && sorted.some(function (it) { return !!state.selectedCodes[it.customerCode]; });
   }
 
+  /* ════════════════════════════════════════════════════════════════
+     Phase 2 — รายงานพิมพ์ (clone C# bgWorker_DoWork)
+     Page 1: สรุป (8 คอลั่น) — Page 2+: ใบปะหน้า VAT/no-VAT × 2 ฉบับ (14 rows/หน้า)
+     + Last Sale page — A4 portrait — font THSarabunNew
+     ════════════════════════════════════════════════════════════════ */
+  var THAI_MONTHS = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
+
+  function pad2(n) { return String(n).padStart(2, "0"); }
+  /* "2026-10-01 00:00:00.000" | "2026-10-01" | "10/01/2026" → "01/10/26" (clone C# dd/MM/yyy) */
+  function fmtDate3(s) {
+    if (!s) return "";
+    var m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return m[3] + "/" + m[2] + "/" + m[1].substring(2);
+    return String(s);
+  }
+  function fmtDateFull(s) {
+    if (!s) return "";
+    var m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return m[3] + "/" + m[2] + "/" + m[1];
+    return String(s);
+  }
+  function addDays30(s) {
+    if (!s) return "";
+    var m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return String(s);
+    var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    d.setDate(d.getDate() + 30);
+    return pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + "/" + String(d.getFullYear()).substring(2);
+  }
+  function num(v) { return Number(v || 0); }
+  function fmtDateNow() {
+    var d = new Date();
+    return pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + "/" + d.getFullYear() + " " + pad2(d.getHours()) + ":" + pad2(d.getMinutes()) + ":" + pad2(d.getSeconds());
+  }
+  function fmtDateNowThai() {
+    var d = new Date();
+    return pad2(d.getDate()) + " " + THAI_MONTHS[d.getMonth()] + " " + (d.getFullYear() + 543);
+  }
+
+  function buildReportHTML(rep, params) {
+    var h = rep.header;
+    var now = new Date();
+    var printDate = fmtDateNow();
+    var beYear = Number(params.year) + 543;
+    var monthName = THAI_MONTHS[Number(params.month) - 1] || "";
+    var pages = [];
+
+    /* ── Page 1: สรุป (clone C# — table 9 คอลั่น: วันที่/เลขที่/VK/ยอดหนี้/ยอดปรับ/ยอดชำระ/ยอดคงค้าง/ครบกำหนด/พนักงาน) ── */
+    var sumAllReq = 0, sumAllBal = 0, sumAllDis = 0, sumAllCut = 0;
+    var bodyHtml = "";
+    for (var i = 0; i < rep.customers.length; i++) {
+      var c = rep.customers[i];
+      var tReq = 0, tBal = 0, tDis = 0, tCut = 0;
+      var rowsHtml = "";
+      for (var a = 0; a < c.inv.length; a++) {
+        var r = c.inv[a];
+        var req = num(r.req), dis = Math.abs(num(r.dis)), cut = num(r.cut), bal = num(r.balance);
+        tReq += req; tDis += dis; tCut += cut; tBal += bal;
+        if (dis > 0) tBal -= dis;
+        rowsHtml +=
+          "<tr>" +
+            '<td class="c">' + fmtDate3(r.dates) + "</td>" +
+            '<td class="c">' + esc(r.vnos) + "</td>" +
+            '<td class="c vk">' + esc(r.vk) + "</td>" +
+            '<td class="r">' + formatMoney(req) + "</td>" +
+            '<td class="r">' + formatMoney(dis) + "</td>" +
+            '<td class="r">' + formatMoney(cut) + "</td>" +
+            '<td class="r">' + formatMoney(dis > 0 ? -dis : bal) + "</td>" +
+            '<td class="c">' + addDays30(r.dates) + "</td>" +
+            '<td class="c">' + esc(c.perCode) + "</td>" +
+          "</tr>";
+      }
+      sumAllReq += tReq; sumAllBal += tBal; sumAllDis += tDis; sumAllCut += tCut;
+      bodyHtml +=
+        '<tr class="p008r-cust-head"><td colspan="9">' + esc(c.code) + "  " + esc(c.nameE) + "   " + esc(c.contactT) + "</td></tr>" +
+        rowsHtml +
+        '<tr class="p008r-total">' +
+          '<td colspan="2" class="c">รวม</td>' +
+          '<td colspan="2" class="r">' + formatMoney(tReq) + "</td>" +
+          "<td></td><td></td>" +
+          '<td class="r">' + formatMoney(tBal) + "</td>" +
+          '<td colspan="2"></td>' +
+        "</tr>";
+    }
+    pages.push(
+      '<div class="p008r-page">' +
+        '<div class="p008r-sum-title">' + esc(h.provinceName) + " - " + esc(h.perCode) + " " + esc(h.perName) + "</div>" +
+        '<div class="p008r-sum-line">     จนถึงวันที่  :  ' + fmtDateFull(params.asOf) + "</div>" +
+        '<div class="p008r-sum-line">     รอบที่/ประจำเดือน  :  ' + esc(params.round) + " / " + esc(monthName) + " " + beYear + "</div>" +
+        '<div class="p008r-sum-line">     วันที่พิมพ์  :  ' + printDate + "</div>" +
+        '<table class="p008r-sum">' +
+          "<thead><tr>" +
+            "<th>วันที่</th><th>เลขที่ใบสำคัญ</th><th>VK</th><th>ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th><th>ครบกำหนด</th><th>พนักงาน</th>" +
+          "</tr></thead>" +
+          "<tbody>" + bodyHtml +
+          '<tr class="p008r-grand">' +
+            '<td colspan="3" class="c">รวมทั้งสิ้น</td>' +
+            '<td class="r">' + formatMoney(sumAllReq) + "</td>" +
+            '<td class="r">' + formatMoney(sumAllDis) + "</td>" +
+            '<td class="r">' + formatMoney(sumAllCut) + "</td>" +
+            '<td class="r">' + formatMoney(sumAllBal) + "</td>" +
+            "<td></td><td></td>" +
+          "</tr>" +
+          "</tbody>" +
+        "</table>" +
+      "</div>"
+    );
+
+    /* ── Page 2+: ใบปะหน้า — ต่อลูกค้า × VAT(V=0)/no-VAT(V=1) × ส่งกลับบริษัท(t=0)/สำหรับลูกค้า(t=1) — 14 rows/หน้า ── */
+    for (var ci = 0; ci < rep.customers.length; ci++) {
+      var cust = rep.customers[ci];
+      var types = [[0, cust.vat], [1, cust.novat]];
+      for (var V = 0; V < 2; V++) {
+        var rows = types[V][1];
+        if (!rows.length) continue;
+        for (var t = 0; t < 2; t++) {
+          var totalPages = Math.max(1, Math.ceil(rows.length / 14));
+          for (var n = 0; n < totalPages; n++) {
+            pages.push(buildCoverPage(cust, rows, V, t, n, totalPages, params, monthName, beYear, printDate, h));
+          }
+        }
+      }
+      /* ── Last Sale page ── */
+      if (params.showLastSale && cust.lastSale.length) {
+        var lsHtml = "";
+        for (var li = 0; li < cust.lastSale.length; li++) {
+          var ls = cust.lastSale[li];
+          lsHtml += "<tr><td>" + esc(ls.STKgroup) + "</td><td>" + esc(ls.stgdescT) + "</td><td class=\"c\">" + fmtDateFull(ls.lastdate) + "</td></tr>";
+        }
+        pages.push(
+          '<div class="p008r-page">' +
+            '<table class="p008r-last">' +
+              '<tr class="p008r-last-title"><td colspan="3">รายงาน (ROP) Last Sale</td></tr>' +
+              "<tr><th>รหัสกลุ่มสินค้า</th><th>ชื่อกลุ่มสินค้า</th><th>Last Date</th></tr>" +
+              lsHtml +
+            "</table>" +
+          "</div>"
+        );
+      }
+    }
+    return pages.join("");
+  }
+
+  function buildCoverPage(cust, rows, V, t, n, totalPages, params, monthName, beYear, printDate, h) {
+    /* header: logo/MCIT + barcode *code* / บริษัท + ส่งกลับบริษัท/สำหรับลูกค้า */
+    var headLeft, headMid;
+    if (V === 0) {
+      headLeft = '<div class="p008r-logo"><img src="assets/images/p008/LOGO_MCIT.png" alt="MCIT"></div>';
+    } else {
+      headLeft = '<div class="p008r-mcit">MCIT</div>';
+    }
+    if (t === 0) {
+      headMid = '<div class="p008r-barcode" data-code="' + esc(cust.code) + '"></div>';
+    } else if (V === 0) {
+      headMid = '<div class="p008r-company">บริษัท มหาโชค มหาชัย อินเตอร์เทรด จำกัด เลขผู้เสียภาษี 0745561001837<br>58/9 หมู่ 6 ต.คลองมะเดื่อ อ.กระทุ่มแบน จ.สมุทรสาคร 74110</div>';
+    } else {
+      headMid = '<div class="p008r-company">เอ็มซีไอที<br>58/9 หมู่ 6 ต.คลองมะเดื่อ อ.กระทุ่มแบน จ.สมุทรสาคร 74110</div>';
+    }
+    var headRight = t === 0 ? '<div class="p008r-copy p008r-copy0">ส่งกลับบริษัท</div>' : '<div class="p008r-copy p008r-copy1">สำหรับลูกค้า</div>';
+
+    /* addr box: DEB (rowspan 2) + QR + PER */
+    var addr = cust.code + " (" + cust.grade + ")<br>" + esc(cust.nameE) + "  " + esc(cust.contactT) + "<br>" +
+      esc(cust.addr1) + "<br>" + esc(cust.addr2) + "<br>" + esc(cust.addr3) + "  " + esc(cust.addr3E) + "<br>" +
+      "โทร. " + esc(cust.tel) + " แฟ็กซ์. " + esc(cust.fax);
+    var perBox = "พนักงาน : " + esc(h.perCode) + " " + esc(h.perName) + "<br>โทรศัพท์ : " + esc(h.perTel) + "<br>" + fmtDateNowThai() + "<br><br>เดือน : " + esc(monthName) + "     ปี : " + beYear;
+    var qrBox = (t === 1 && cust.qr) ? '<div class="p008r-qr" data-qr="' + esc(cust.qr) + '"><span>Map</span></div>' : "";
+
+    /* body 14 rows */
+    var start = n * 14;
+    var end = Math.min(start + 14, rows.length);
+    var tBal = 0;
+    var bodyRows = "";
+    for (var y = start; y < end; y++) {
+      var r = rows[y];
+      var req = num(r.req), dis = Math.abs(num(r.dis)), cut = num(r.cut), bal = num(r.balance);
+      tBal += bal;
+      if (dis > 0) tBal -= dis;
+      var desc = t === 0 ? esc(r.VK) : "";
+      bodyRows +=
+        "<tr>" +
+          '<td class="c">' + fmtDate3(r.dates) + "</td>" +
+          '<td class="c">' + esc(r.vnos) + "</td>" +
+          '<td>' + desc + "</td>" +
+          '<td class="r">' + formatMoney(req) + "</td>" +
+          '<td class="r">' + formatMoney(dis) + "</td>" +
+          '<td class="r">' + formatMoney(cut) + "</td>" +
+          '<td class="r">' + formatMoney(dis > 0 ? -dis : bal) + "</td>" +
+        "</tr>";
+    }
+    var isLastPage = n === totalPages - 1;
+    var totalRow = isLastPage
+      ? '<tr class="p008r-cov-total"><td colspan="2"></td><td class="c">รวม</td><td colspan="2"></td><td colspan="2" class="r">' + formatMoney(tBal) + "</td></tr>"
+      : "";
+
+    var html =
+      '<div class="p008r-page">' +
+        '<table class="p008r-cov-head">' +
+          "<tr><td class=\"p008r-h-left\">" + headLeft + "</td>" +
+          "<td class=\"p008r-h-mid\">" + headMid + "</td>" +
+          "<td class=\"p008r-h-right\">" + headRight + "</td></tr>" +
+        "</table>" +
+        '<table class="p008r-addr">' +
+          "<tr>" +
+            '<td class="p008r-addr-deb">' + addr + "</td>" +
+            "<td class=\"p008r-addr-qr\">" + qrBox + "</td>" +
+            '<td class="p008r-addr-per">' + perBox + "</td>" +
+          "</tr>" +
+          "<tr><td></td><td></td><td></td></tr>" +
+        "</table>" +
+        '<table class="p008r-cov">' +
+          "<thead><tr><th>วันที่</th><th>เลขที่บิล</th><th>รายละเอียด</th><th>ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th></tr></thead>" +
+          "<tbody>" + bodyRows + totalRow + "</tbody>" +
+        "</table>";
+
+    if (t === 0) {
+      /* ตัวข้อ (clone C#) */
+      html +=
+        '<div class="p008r-cheque">' +
+          "<div>เช็คธนาคาร : 1.....................................เลขที่ :......................................วันที่ :.................................จำนวนเงิน.....................................</div>" +
+          "<div>เช็คธนาคาร : 2.....................................เลขที่ :......................................วันที่ :.................................จำนวนเงิน.....................................</div>" +
+          "<div>เช็คธนาคาร : 3.....................................เลขที่ :......................................วันที่ :.................................จำนวนเงิน.....................................</div>" +
+          "<div>เช็คธนาคาร : 4.....................................เลขที่ :......................................วันที่ :.................................จำนวนเงิน.....................................</div>" +
+          "<div>เงินสด ......................................................ส่วนลด............................................... [ ] ผิดราคา ..........................................................</div>" +
+          "<div>วันที่ส่งมอบ....................................................เวลา.................................................. น. ผู้ส่งมอบ........................................................</div>" +
+          "<div>[ ] รับคืนสินค้า......................................................................... [ ] วางบิล.......................................................................................</div>" +
+          "<div>[ ] ค้างบิล.......................................................................สาเหตุการค้างบิล.........................................................................................</div>" +
+        "</div>" +
+        '<div class="p008r-note">กรุณาเรียกใบรับเงินทุกครั้งที่ท่านชำระเงินกับผู้แทนขาย เพื่อเป็นหลักฐานในการชำระเงิน</div>' +
+        '<table class="p008r-foot">' +
+          "<tr>" +
+            "<td>[BLV] ใบรายงานเก็บบัญชี</td>" +
+            '<td colspan="2">เอกสารสร้างโดย  ' + esc(navigator.onLine ? "PORTAL" : "") + "  วันที่ " + printDate + "</td>" +
+            '<td class="c">Page ' + (n + 1) + "/" + totalPages + "</td>" +
+          "</tr>" +
+        "</table>";
+    } else {
+      /* ใบเสร็จรับเงิน (clone C#) */
+      html +=
+        '<table class="p008r-receipt">' +
+          '<tr class="p008r-rc-title"><td colspan="3">ใบเสร็จรับเงิน</td><td rowspan="6" class="p008r-rc-img"><img src="assets/images/p008/paymentMCIT_vertical3.jpg" alt="payment"></td></tr>' +
+          '<tr class="p008r-rc-hd"><td colspan="2">รายการ</td><td>จำนวนเงิน</td></tr>' +
+          '<tr><td colspan="2" class="p008r-rc-lines">.......................................................................<br>.......................................................................<br>.......................................................................<br>.......................................................................<br>.......................................................................<br>.......................................................................</td>' +
+          '<td class="p008r-rc-lines">........................<br>........................<br>........................<br>........................<br>........................<br>........................</td></tr>' +
+          '<tr><td class="p008r-rc-sign">-----------------------------<br>ผู้รับชำระเงิน</td>' +
+          '<td colspan="2" class="p008r-rc-remark"><b>หมายเหตุ </b>..........................................................<br>.....................................................................</td></tr>' +
+          '<tr><td></td><td colspan="2" class="c">_____/_____/_____</td></tr>' +
+          '<tr><td colspan="3" class="p008r-rc-note">*กรุณาเรียกรับใบเสร็จทุกครั้งเมื่อมีการชำระเงินกับพนักงานขาย</td></tr>' +
+        "</table>";
+    }
+    return html + "</div>";
+  }
+
+  function doPrint() {
+    var root = _root;
+    var codes = Object.keys(state.selectedCodes).filter(function (c) { return state.selectedCodes[c]; });
+    if (!codes.length) { showToast("⚠ โปรดเลือกลูกหนี้ (checkbox) ก่อนพิมพ์รายงาน", 3200); return; }
+    var params = {
+      province: String(el(root, "#p008Province").value).trim(),
+      employee: String(el(root, "#p008Employee").value).trim(),
+      asOf: String(el(root, "#p008AsOf").value).trim(),
+      round: String(el(root, "#p008Round").value).trim(),
+      month: String(el(root, "#p008Month").value).trim(),
+      year: String(el(root, "#p008Year").value).trim(),
+      showQr: !!el(root, "#p008ShowQr").checked,
+      showLastSale: !!el(root, "#p008ShowLastSale").checked
+    };
+    var btn = el(root, "#p008PrintBtn");
+    btn.disabled = true;
+    btn.textContent = "สร้างรายงาน...";
+    apiFetch("p008_report.php", {
+      connectionId: MAC5_CONNECTION_ID,
+      codes: codes,
+      asOf: params.asOf,
+      province: params.province,
+      employee: params.employee,
+      showQr: params.showQr,
+      showLastSale: params.showLastSale
+    }).then(function (res) {
+      if (!res || !res.ok) throw new Error(res && res.error ? res.error : "API error");
+      if (!res.customers.length) throw new Error("ไม่มีข้อมูลลูกหนี้");
+      state.report = res;
+      state.reportParams = params;
+      renderReport();
+    }).catch(function (err) {
+      showToast("⚠ " + (err && err.message ? err.message : "Report fail"), 4000);
+    }).finally(function () {
+      btn.disabled = false;
+      btn.innerHTML = icon("print", 17) + " Print";
+    });
+  }
+
+  function renderReport(noPrint) {
+    var wrap = document.getElementById("p008Report");
+    if (!wrap) return;
+    wrap.innerHTML = buildReportHTML(state.report, state.reportParams);
+    /* barcodes (JsBarcode CODE128 — clone C# *code*) */
+    wrap.querySelectorAll(".p008r-barcode").forEach(function (el) {
+      try {
+        if (window.JsBarcode) {
+          var canvas = document.createElement("canvas");
+          el.appendChild(canvas);
+          window.JsBarcode(canvas, el.getAttribute("data-code"), { format: "CODE128", width: 2, height: 40, displayValue: true, fontSize: 14, margin: 0 });
+        } else {
+          el.textContent = "*" + el.getAttribute("data-code") + "*";
+        }
+      } catch (e) { el.textContent = "*" + el.getAttribute("data-code") + "*"; }
+    });
+    /* QR codes (qrcode.min.js) */
+    wrap.querySelectorAll(".p008r-qr").forEach(function (el) {
+      try {
+        if (window.QRCode) new window.QRCode(el, { text: el.getAttribute("data-qr"), width: 56, height: 56, correctLevel: window.QRCode.CorrectLevel.M });
+      } catch (e) { /* no QR */ }
+    });
+    if (!noPrint) window.print();
+  }
+
   function exportCSV() {
     if (!state.currentRows.length) { alert("ไม่พบข้อมูลสำหรับส่งออก"); return; }
     var headers = ["รหัสลูกหนี้", "กลุ่มลูกหนี้", "ชื่อลูกหนี้", "เขต/จังหวัด", "ยอดหนี้", "ยอดปรับหนี้", "รหัสพนักงาน", "พนักงานขาย"];
@@ -566,12 +884,71 @@
       ".p008-empty-state.show{display:flex}" +
       ".p008-toast{position:fixed;right:20px;bottom:20px;z-index:210;padding:11px 14px;border-radius:11px;background:#0f172a;color:#fff;font-size:12px;box-shadow:0 16px 36px rgba(15,23,42,.28);opacity:0;visibility:hidden;transform:translateY(12px);transition:.2s}" +
       ".p008-toast.show{opacity:1;visibility:visible;transform:translateY(0)}" +
+      /* ── Phase 2 report styles ── */
+      "#p008Report{display:none}" +
+      ".p008r-page{width:186mm;min-height:277mm;box-sizing:border-box;margin:0 auto;padding:8mm 12mm;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always}" +
+      ".p008r-page:last-child{page-break-after:auto}" +
+      ".p008r-sum-title{text-align:center;font-size:18px;font-weight:700;margin-bottom:4px}" +
+      ".p008r-sum-line{font-size:15px;margin:2px 0}" +
+      ".p008r-sum{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
+      ".p008r-sum th{border:1px solid #333;font-size:13px;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
+      ".p008r-sum td{border:1px solid #333;font-size:12px;padding:3px 4px}" +
+      ".p008r-sum td.c,.p008r-sum th.c{text-align:center}" +
+      ".p008r-sum td.r{text-align:right;font-family:Arial,sans-serif;font-variant-numeric:tabular-nums}" +
+      ".p008r-sum td.vk{border-left:1px solid #333;border-right:1px solid #333}" +
+      ".p008r-cust-head td{font-size:14px;font-weight:700;background:#fafafa}" +
+      ".p008r-total td{font-size:13px;font-weight:700;background:#f5f5f5}" +
+      ".p008r-grand td{font-size:14px;font-weight:700;background:#eee}" +
+      ".p008r-cov-head{width:100%;border-collapse:collapse;table-layout:fixed}" +
+      ".p008r-cov-head td{vertical-align:middle;padding:2px 0}" +
+      ".p008r-h-left{width:70px;text-align:center}" +
+      ".p008r-h-mid{width:auto;text-align:center}" +
+      ".p008r-h-right{width:110px;text-align:center}" +
+      ".p008r-logo img{width:70px;height:40px;object-fit:contain}" +
+      ".p008r-mcit{font-size:20px;font-weight:700}" +
+      ".p008r-barcode svg,.p008r-barcode canvas{max-width:220px;height:52px}" +
+      ".p008r-company{font-size:13px;line-height:1.5}" +
+      ".p008r-copy{font-size:15px;font-weight:700;padding-top:8px}" +
+      ".p008r-addr{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:6px}" +
+      ".p008r-addr-deb{width:290px;border:1px solid #333;border-bottom:none;font-size:14px;line-height:1.45;vertical-align:top;padding:5px 7px}" +
+      ".p008r-addr-qr{width:70px;border-top:1px solid #333;border-bottom:none;text-align:center;vertical-align:middle;font-size:11px}" +
+      ".p008r-addr-qr .p008r-qr{display:inline-block}" +
+      ".p008r-addr-qr canvas,.p008r-addr-qr img{width:56px;height:56px}" +
+      ".p008r-addr-per{width:auto;border:1px solid #333;border-bottom:none;font-size:14px;line-height:1.45;vertical-align:top;padding:5px 7px}" +
+      ".p008r-addr tr:last-child td{border-bottom:1px solid #333;height:10px}" +
+      ".p008r-cov{width:100%;border-collapse:collapse;margin-top:4px;table-layout:fixed}" +
+      ".p008r-cov th{border:1px solid #333;font-size:13px;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
+      ".p008r-cov td{border:none;font-size:13px;padding:4px 4px}" +
+      ".p008r-cov td.c{text-align:center}" +
+      ".p008r-cov td.r{text-align:right;font-family:Arial,sans-serif;font-variant-numeric:tabular-nums}" +
+      ".p008r-cov-total td{font-size:14px;font-weight:700}" +
+      ".p008r-cheque{margin-top:10px;font-size:13px;line-height:1.9}" +
+      ".p008r-note{text-align:center;font-size:15px;font-weight:700;margin-top:10px}" +
+      ".p008r-foot{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
+      ".p008r-foot td{font-size:12px;padding:3px 4px}" +
+      ".p008r-foot td:first-child{width:160px}" +
+      ".p008r-foot td:last-child{width:60px;border:1px solid #333;text-align:right;padding-right:6px}" +
+      ".p008r-foot td.c{text-align:center}" +
+      ".p008r-receipt{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
+      ".p008r-rc-title td{font-size:14px;font-weight:700;text-align:center;padding:4px 0}" +
+      ".p008r-rc-img{width:188px;text-align:center;vertical-align:middle}" +
+      ".p008r-rc-img img{width:170px;height:auto}" +
+      ".p008r-rc-hd td{font-size:12px;text-align:center;background:#f5f5f5;padding:4px 0}" +
+      ".p008r-rc-lines{font-size:16px;line-height:1.55}" +
+      ".p008r-rc-sign{font-size:12px;text-align:center;vertical-align:bottom;border-top:1px solid #333;border-left:1px solid #333;border-right:1px solid #333;height:44px;padding:3px}" +
+      ".p008r-rc-remark{font-size:12px;border-top:1px solid #333;border-left:1px solid #333;border-right:1px solid #333;height:44px;padding:3px 5px}" +
+      ".p008r-rc-note{font-size:11px;text-align:center;border-bottom:1px solid #333;border-left:1px solid #333;border-right:1px solid #333;padding:3px}" +
+      ".p008r-rc-lines + td,.p008r-receipt tr:nth-child(3) td:last-child{border-left:none}" +
+      ".p008r-last{width:100%;border-collapse:collapse;table-layout:fixed}" +
+      ".p008r-last-title td{font-size:16px;font-weight:700;text-align:center;padding:8px 0}" +
+      ".p008r-last th{border:1px solid #333;font-size:14px;font-weight:700;padding:5px;text-align:center;background:#f2f2f2}" +
+      ".p008r-last td{border:1px solid #333;font-size:13px;padding:4px 6px}" +
+      ".p008r-last td.c{text-align:center}" +
       "@media print{" +
-        "@page{size:A4 landscape;margin:8mm}" +
+        "@page{size:A4 portrait;margin:0}" +
         "body *{visibility:hidden !important}" +
-        "#p008PrintTable,#p008PrintTable *{visibility:visible !important}" +
-        "#p008PrintTable{position:absolute;top:0;left:0;width:281mm;border-collapse:collapse}" +
-        "#p008PrintTable th,#p008PrintTable td{padding:4px;border:1px solid #888;font-size:8px}" +
+        "#p008Report,#p008Report *{visibility:visible !important}" +
+        "#p008Report{display:block !important;position:absolute;top:0;left:0;width:210mm}" +
         ".p008-checkbox-cell{display:none}" +
       "}" +
       "@media (max-width:1100px){.p008-launcher{grid-template-columns:1fr}}";
