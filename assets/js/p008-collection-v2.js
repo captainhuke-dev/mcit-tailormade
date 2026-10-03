@@ -165,7 +165,7 @@
           '<div class="p008-option-list">' +
             '<label class="p008-checkbox-option"><input id="p008ShowLastSale" type="checkbox"> แสดง Last Sale</label>' +
             '<label class="p008-checkbox-option"><input id="p008ShowQr" type="checkbox" checked> แสดง QR code Location</label>' +
-            '<label class="p008-checkbox-option"><input id="p008SplitCollector" type="checkbox"> แยกบิลตามเก็บ (ทดสอบ)</label>' +
+            '<label class="p008-checkbox-option"><input id="p008SplitCollector" type="checkbox"> แยกบิลตามเดือน (ทดสอบ)</label>' +
           "</div>" +
         "</aside>" +
       "</section>" +
