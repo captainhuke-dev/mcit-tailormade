@@ -65,7 +65,7 @@
     state.sortDirection = "asc";
     state.searched = false;
     state.groups = [];
-    state.selectedGroups = { "CRE-A": true, "CRE-F": true }; /* default ตาม C# demo */
+    state.selectedGroups = {}; /* เริ่มต้นว่าง (user spec) */
     injectCSS();
 
     /* default = วันนี้ (clone C# _Load: month = current, year = current) */
@@ -84,20 +84,20 @@
             '<div class="p008-field">' +
               '<label for="p008Province">รหัสจังหวัด</label>' +
               '<div class="p008-input-wrap">' + icon("pin", 17) +
-                '<input id="p008Province" type="text" value="74" placeholder="เช่น 74">' +
+                '<input id="p008Province" type="text" value="" maxlength="2" placeholder="เช่น 74">' +
               "</div>" +
             "</div>" +
             '<div class="p008-field">' +
               '<label for="p008Employee">รหัสพนักงานขาย</label>' +
               '<div class="p008-input-wrap">' + icon("user", 17) +
-                '<input id="p008Employee" type="text" value="S50" placeholder="เช่น S50">' +
+                '<input id="p008Employee" type="text" value="" placeholder="เช่น S50">' +
               "</div>" +
             "</div>" +
             '<div class="p008-field">' +
               '<label for="p008Group">กลุ่มลูกหนี้</label>' +
               '<div class="p008-group-row">' +
                 '<div class="p008-input-wrap">' + icon("grid", 17) +
-                  '<input id="p008Group" type="text" value="\'CRE-A\',\'CRE-F\'" readonly placeholder="เลือกกลุ่มลูกหนี้">' +
+                  '<input id="p008Group" type="text" value="" readonly placeholder="เลือกกลุ่มลูกหนี้">' +
                 "</div>" +
                 '<button class="p008-inline-btn" id="p008GroupBtn" type="button" title="เลือกกลุ่มลูกหนี้">' + icon("help", 15) + "</button>" +
                 '<div class="p008-group-dropdown" id="p008GroupDropdown">' +
@@ -317,6 +317,10 @@
       syncGroupInput();
     });
     groupFilter.addEventListener("input", function () { renderGroupTable(groupFilter.value); });
+    /* รหัสจังหวัด = ตัวเลข 2 ตัวเท่านั้น */
+    root.querySelector("#p008Province").addEventListener("input", function () {
+      this.value = this.value.replace(/[^0-9]/g, "").substring(0, 2);
+    });
     groupTable.addEventListener("change", function (e) {
       var cb = e.target.closest(".p008-gd-cb");
       if (!cb) return;
