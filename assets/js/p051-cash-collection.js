@@ -339,6 +339,17 @@
     renderRows();
   }
 
+  function toUTF16LE(str) {
+    var bytes = new Uint8Array(2 + str.length * 2);
+    bytes[0] = 0xFF; bytes[1] = 0xFE; /* BOM — Excel/Notepad detect */
+    for (var i = 0; i < str.length; i++) {
+      var code = str.charCodeAt(i);
+      bytes[2 + i * 2] = code & 0xFF;
+      bytes[3 + i * 2] = code >> 8;
+    }
+    return bytes;
+  }
+
   function exportCSV() {
     if (!state.currentRows.length) { alert("ไม่พบข้อมูลสำหรับส่งออก"); return; }
     var headers = ["เลขใบสำคัญ", "วันที่", "รหัสลูกค้า", "ชื่อลูกค้า", "ผู้แทน", "ยอดเงินสุทธิ"];
@@ -348,8 +359,9 @@
     });
     var csv = lines.map(function (row) {
       return row.map(function (v) { return '"' + String(v).replace(/"/g, '""') + '"'; }).join(",");
-    }).join("\n");
-    var blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    }).join("\r\n");
+    /* UTF-16 LE + BOM — Excel ทุก version อ่านไทยได้ (UTF-8 BOM = Excel ตัวเก่าเละ) */
+    var blob = new Blob([toUTF16LE(csv)], { type: "text/csv;charset=utf-16le;" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = url;
