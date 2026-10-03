@@ -84,7 +84,7 @@
       '<section class="p008-launcher">' +
         '<form class="p008-filter-card" id="p008Form">' +
           "<h2>" + icon("search", 19) + " ค้นหา</h2>" +
-          '<div class="p008-filter-grid">' +
+          '<div class="p008-filter-row p008-row-3">' +
             '<div class="p008-field">' +
               '<label for="p008Province">รหัสจังหวัด</label>' +
               '<div class="p008-input-wrap">' + icon("pin", 17) +
@@ -97,7 +97,7 @@
                 '<input id="p008Employee" type="text" value="S50" placeholder="เช่น S50">' +
               "</div>" +
             "</div>" +
-            '<div class="p008-field full">' +
+            '<div class="p008-field">' +
               '<label for="p008Group">กลุ่มลูกหนี้</label>' +
               '<div class="p008-group-row">' +
                 '<div class="p008-input-wrap">' + icon("grid", 17) +
@@ -106,7 +106,9 @@
                 '<button class="p008-inline-btn" id="p008GroupHelp" type="button" title="ช่วยกรอกกลุ่มลูกหนี้">' + icon("help", 15) + "</button>" +
               "</div>" +
             "</div>" +
-            '<div class="p008-field full">' +
+          "</div>" +
+          '<div class="p008-filter-row p008-row-4">' +
+            '<div class="p008-field">' +
               '<label for="p008AsOf">อ้างอิงใบแจ้งหนี้ จนถึงวันที่</label>' +
               '<div class="p008-input-wrap">' + icon("calendar", 17) +
                 '<input id="p008AsOf" type="date" value="2026-10-03">' +
@@ -124,14 +126,16 @@
                 '<select id="p008Month">' + monthOptions + "</select>" + icon("arrow", 15) +
               "</div>" +
             "</div>" +
-            '<div class="p008-field full">' +
+            '<div class="p008-field">' +
               '<label for="p008Year">ปี</label>' +
               '<div class="p008-input-wrap">' + icon("calendar", 17) +
                 '<input id="p008Year" type="number" value="2026">' +
               "</div>" +
             "</div>" +
-            '<div class="p008-field full">' +
-              '<label for="p008Collector">เก็บบัญชีโดย</label>' +
+          "</div>" +
+          '<div class="p008-filter-row p008-row-2">' +
+            '<div class="p008-field">' +
+              '<label for="p008Collector">เก็บเงินโดย</label>' +
               '<div class="p008-input-wrap">' + icon("chart", 17) +
                 '<select id="p008Collector">' +
                   '<option value="age">AGE-งวนเทน</option>' +
@@ -139,9 +143,10 @@
                 "</select>" + icon("arrow", 15) +
               "</div>" +
             "</div>" +
-          "</div>" +
-          '<div class="p008-form-actions">' +
-            '<button class="p008-search-btn" type="submit">' + icon("search", 16) + " ค้นหา</button>" +
+            '<div class="p008-field">' +
+              '<label>&nbsp;</label>' +
+              '<button class="p008-search-btn" type="submit">' + icon("search", 16) + " ค้นหา</button>" +
+            "</div>" +
           "</div>" +
         "</form>" +
 
@@ -373,9 +378,12 @@
       ".p008-filter-card{padding:16px;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(15,23,42,.04)}" +
       ".p008-filter-card h2{display:flex;align-items:center;gap:8px;margin-bottom:14px;font-size:14px;color:#172033}" +
       ".p008-filter-card h2 svg{width:19px;height:19px;color:#2563eb;flex:0 0 auto}" +
-      ".p008-filter-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:11px}" +
+      ".p008-filter-row{display:grid;gap:11px;margin-bottom:11px}" +
+      ".p008-filter-row:last-child{margin-bottom:0}" +
+      ".p008-row-3{grid-template-columns:repeat(3,1fr)}" +
+      ".p008-row-4{grid-template-columns:repeat(4,1fr)}" +
+      ".p008-row-2{grid-template-columns:1fr 1fr}" +
       ".p008-field{min-width:0}" +
-      ".p008-field.full{grid-column:1/-1}" +
       ".p008-field label{display:block;margin-bottom:6px;color:#64748b;font-size:11px;font-weight:700}" +
       ".p008-input-wrap{position:relative}" +
       ".p008-input-wrap>svg{position:absolute;top:50%;left:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}" +
@@ -387,7 +395,7 @@
       ".p008-inline-btn{display:grid;width:42px;height:42px;place-items:center;color:#2563eb;border:0;border-radius:10px;background:#eff6ff;cursor:pointer}" +
       ".p008-inline-btn svg{width:15px;height:15px}" +
       ".p008-form-actions{margin-top:14px}" +
-      ".p008-search-btn{display:inline-flex;width:100%;height:42px;align-items:center;justify-content:center;gap:7px;padding:0 18px;color:#fff;border:0;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);box-shadow:0 8px 18px rgba(37,99,235,.22);font-size:13px;font-weight:700;white-space:nowrap;transition:.16s ease;cursor:pointer}" +
+      ".p008-search-btn{display:inline-flex;height:42px;align-items:center;justify-content:center;gap:7px;padding:0 18px;color:#fff;border:0;border-radius:10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);box-shadow:0 8px 18px rgba(37,99,235,.22);font-size:13px;font-weight:700;white-space:nowrap;transition:.16s ease;cursor:pointer}" +
       ".p008-search-btn:hover{transform:translateY(-1px);filter:brightness(1.06)}" +
       ".p008-action-card{display:flex;flex-direction:column;gap:10px;padding:16px;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(15,23,42,.04)}" +
       ".p008-action-btn{display:inline-flex;height:44px;align-items:center;justify-content:center;gap:8px;padding:0 20px;border:1px solid #dbe3ef;border-radius:11px;background:#f8fafc;font-size:13px;font-weight:700;white-space:nowrap;transition:.16s ease;cursor:pointer}" +
