@@ -107,7 +107,10 @@
                   '<div class="p008-gd-table" id="p008GroupTable"></div>' +
                   '<div class="p008-gd-footer">' +
                     '<span id="p008GroupCount">0 กลุ่ม</span>' +
-                    '<button type="button" class="p008-gd-close" id="p008GroupClose">ปิด</button>' +
+                    '<div class="p008-gd-btns">' +
+                      '<button type="button" class="p008-gd-selectall" id="p008GroupSelectAll">เลือกทั้งหมด</button>' +
+                      '<button type="button" class="p008-gd-close" id="p008GroupClose">ปิด</button>' +
+                    "</div>" +
                   "</div>" +
                 "</div>" +
               "</div>" +
@@ -299,6 +302,19 @@
     });
     root.querySelector("#p008GroupClose").addEventListener("click", function () {
       groupDropdown.classList.remove("open");
+    });
+    root.querySelector("#p008GroupSelectAll").addEventListener("click", function () {
+      var f = (groupFilter.value || "").trim().toLowerCase();
+      var visible = state.groups.filter(function (g) {
+        return !f || g.code.toLowerCase().indexOf(f) >= 0 || g.desc.toLowerCase().indexOf(f) >= 0;
+      });
+      var allSelected = visible.length > 0 && visible.every(function (g) { return !!state.selectedGroups[g.code]; });
+      visible.forEach(function (g) {
+        if (allSelected) delete state.selectedGroups[g.code];
+        else state.selectedGroups[g.code] = true;
+      });
+      renderGroupTable(groupFilter.value);
+      syncGroupInput();
     });
     groupFilter.addEventListener("input", function () { renderGroupTable(groupFilter.value); });
     groupTable.addEventListener("change", function (e) {
@@ -493,8 +509,10 @@
       ".p008-gd-empty{padding:22px 12px;text-align:center;color:#94a3b8;font-size:12px}" +
       ".p008-gd-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 12px;border-top:1px solid #eef2f7;background:#f8fafc}" +
       ".p008-gd-footer span{color:#64748b;font-size:11px;font-weight:700}" +
-      ".p008-gd-close{height:30px;padding:0 14px;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;font-size:11px;font-weight:700;cursor:pointer}" +
-      ".p008-gd-close:hover{color:#fff;border-color:#2563eb;background:#2563eb}" +
+      ".p008-gd-btns{display:flex;gap:6px}" +
+      ".p008-gd-selectall,.p008-gd-close{height:30px;padding:0 12px;border:1px solid #bfdbfe;border-radius:8px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:700;cursor:pointer}" +
+      ".p008-gd-selectall:hover,.p008-gd-close:hover{color:#fff;border-color:#2563eb;background:#2563eb}" +
+      ".p008-gd-close{background:#fff}" +
       ".p008-inline-btn{display:grid;width:42px;height:42px;place-items:center;color:#2563eb;border:0;border-radius:10px;background:#eff6ff;cursor:pointer}" +
       ".p008-inline-btn svg{width:15px;height:15px}" +
       ".p008-form-actions{margin-top:14px}" +
