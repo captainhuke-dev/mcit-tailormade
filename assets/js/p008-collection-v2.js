@@ -84,7 +84,7 @@
       '<section class="p008-launcher">' +
         '<form class="p008-filter-card" id="p008Form">' +
           "<h2>" + icon("search", 19) + " ค้นหา</h2>" +
-          '<div class="p008-filter-row p008-row-3">' +
+          '<div class="p008-filter-row p008-row-4">' +
             '<div class="p008-field">' +
               '<label for="p008Province">รหัสจังหวัด</label>' +
               '<div class="p008-input-wrap">' + icon("pin", 17) +
@@ -106,14 +106,14 @@
                 '<button class="p008-inline-btn" id="p008GroupHelp" type="button" title="ช่วยกรอกกลุ่มลูกหนี้">' + icon("help", 15) + "</button>" +
               "</div>" +
             "</div>" +
-          "</div>" +
-          '<div class="p008-filter-row p008-row-4">' +
             '<div class="p008-field">' +
               '<label for="p008AsOf">อ้างอิงใบแจ้งหนี้ จนถึงวันที่</label>' +
               '<div class="p008-input-wrap">' + icon("calendar", 17) +
                 '<input id="p008AsOf" type="date" value="2026-10-03">' +
               "</div>" +
             "</div>" +
+          "</div>" +
+          '<div class="p008-filter-row p008-row-5">' +
             '<div class="p008-field">' +
               '<label for="p008Round">รอบที่/รายงานรอบต่อ</label>' +
               '<div class="p008-input-wrap">' + icon("refresh", 17) +
@@ -132,8 +132,6 @@
                 '<input id="p008Year" type="number" value="2026">' +
               "</div>" +
             "</div>" +
-          "</div>" +
-          '<div class="p008-filter-row p008-row-2">' +
             '<div class="p008-field">' +
               '<label for="p008Collector">เก็บเงินโดย</label>' +
               '<div class="p008-input-wrap">' + icon("chart", 17) +
@@ -380,9 +378,8 @@
       ".p008-filter-card h2 svg{width:19px;height:19px;color:#2563eb;flex:0 0 auto}" +
       ".p008-filter-row{display:grid;gap:11px;margin-bottom:11px}" +
       ".p008-filter-row:last-child{margin-bottom:0}" +
-      ".p008-row-3{grid-template-columns:repeat(3,1fr)}" +
       ".p008-row-4{grid-template-columns:repeat(4,1fr)}" +
-      ".p008-row-2{grid-template-columns:1fr 1fr}" +
+      ".p008-row-5{grid-template-columns:repeat(4,1fr) auto}" +
       ".p008-field{min-width:0}" +
       ".p008-field label{display:block;margin-bottom:6px;color:#64748b;font-size:11px;font-weight:700}" +
       ".p008-input-wrap{position:relative}" +
