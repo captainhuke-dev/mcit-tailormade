@@ -7,6 +7,7 @@
   "use strict";
 
   var MAC5_CONNECTION_ID = "c1788406814359";
+  var PER_PAGE = 15;
 
   function apiFetch(path, payload) {
     return fetch("api/" + path, {
@@ -36,6 +37,7 @@
     selectedDocument: "",
     sortField: "document",
     sortDirection: "asc",
+    page: 1,
     searched: false
   };
 
@@ -125,6 +127,7 @@
         "</div>" +
         '<div class="p051-table-footer">' +
           '<span id="p051FooterText">แสดง 0 รายการ</span>' +
+          '<div class="p051-pagination" id="p051Pagination"></div>' +
           '<div class="p051-footer-total">ยอดรวมทั้งหมด <strong id="p051FooterAmount">฿0.00</strong></div>' +
         "</div>" +
       "</section>" +
@@ -151,12 +154,28 @@
         }
         root.querySelectorAll(".p051-sort-mark").forEach(function (m) { m.textContent = "↕"; });
         th.querySelector(".p051-sort-mark").textContent = state.sortDirection === "asc" ? "↑" : "↓";
+        state.page = 1;
         renderRows();
       });
     });
 
     /* ไม่ค้นหาอัตโนมัติตาม mount — รอรัดปุ่มค้นหา */
     renderRows();
+
+    /* พิมพ์ = ทั้งหมด (กลับหน้าเดิมหลังพิมพ์) */
+    window.addEventListener("beforeprint", function () {
+      if (!state.searched || !state.currentRows.length) return;
+      state._printBackup = state.page;
+      state._printAll = true;
+      state.page = 1;
+      renderRows();
+    });
+    window.addEventListener("afterprint", function () {
+      if (!state._printAll) return;
+      state._printAll = false;
+      state.page = state._printBackup || 1;
+      renderRows();
+    });
   }
 
   var toastTimer = null;
@@ -180,11 +199,13 @@
       state.allRows = res.rows || [];
       state.searched = true;
       state.selectedDocument = "";
+      state.page = 1;
       applyFilters();
       showToast("✓ พบ " + state.currentRows.length + " รายการ");
     }).catch(function (e) {
       state.allRows = [];
       state.searched = true;
+      state.page = 1;
       applyFilters();
       showToast("⚠ ค้นหาไม่สำเร็จ: " + (e && e.message ? e.message : ""), 3200);
     });
@@ -222,13 +243,19 @@
     var tbody = el(root, "#p051Rows");
     var sorted = sortRows(state.currentRows);
 
-    if (sorted.length && !sorted.some(function (it) { return it.document === state.selectedDocument; })) {
-      state.selectedDocument = sorted[0].document;
+    var totalPages = Math.max(1, Math.ceil(sorted.length / (state._printAll ? sorted.length || 1 : PER_PAGE)));
+    if (state.page > totalPages) state.page = totalPages;
+    var pageSize = state._printAll ? sorted.length : PER_PAGE;
+    var start = (state.page - 1) * pageSize;
+    var pageRows = sorted.slice(start, start + pageSize);
+
+    if (pageRows.length && !pageRows.some(function (it) { return it.document === state.selectedDocument; })) {
+      state.selectedDocument = pageRows[0].document;
     }
 
     var html = "";
-    for (var i = 0; i < sorted.length; i++) {
-      var it = sorted[i];
+    for (var i = 0; i < pageRows.length; i++) {
+      var it = pageRows[i];
       var sel = it.document === state.selectedDocument ? " p051-selected" : "";
       html +=
         '<tr class="' + sel.trim() + '" data-doc="' + esc(it.document) + '">' +
@@ -253,8 +280,46 @@
     el(root, ".p051-table-container").style.display = hasRows ? "block" : "none";
     el(root, "#p051Empty").classList.toggle("show", !hasRows);
     el(root, "#p051Badge").textContent = sorted.length + " รายการ";
-    el(root, "#p051FooterText").textContent = "แสดง " + sorted.length + " รายการ";
+    el(root, "#p051FooterText").textContent = "แสดง " + (start + 1) + "–" + (start + pageRows.length) + " จาก " + sorted.length + " รายการ";
+    renderPagination(root, totalPages);
     updateSummary(root, sorted);
+  }
+
+  function pageBtnHtml(p, label, active, disabled) {
+    return '<button type="button" class="p051-page-btn' + (active ? " active" : "") + '"' +
+      (disabled ? " disabled" : "") + ' data-page="' + p + '">' + label + "</button>";
+  }
+
+  function renderPagination(root, totalPages) {
+    var box = el(root, "#p051Pagination");
+    if (totalPages <= 1) { box.innerHTML = ""; return; }
+    var p = state.page;
+    var html = "";
+    html += pageBtnHtml(p - 1, "‹", false, p <= 1);
+    /* page numbers: first, last, current ±1, ellipsis */
+    var nums = [];
+    var i;
+    for (i = 1; i <= totalPages; i++) {
+      if (i === 1 || i === totalPages || (i >= p - 1 && i <= p + 1)) nums.push(i);
+    }
+    var prev = 0;
+    for (i = 0; i < nums.length; i++) {
+      if (nums[i] - prev > 1) html += '<span class="p051-page-ellipsis">…</span>';
+      html += pageBtnHtml(nums[i], String(nums[i]), nums[i] === p, false);
+      prev = nums[i];
+    }
+    html += pageBtnHtml(p + 1, "›", false, p >= totalPages);
+    box.innerHTML = html;
+    box.querySelectorAll("button[data-page]").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var np = Number(b.getAttribute("data-page"));
+        if (np >= 1 && np <= totalPages && np !== state.page) {
+          state.page = np;
+          renderRows();
+          el(root, ".p051-table-container").scrollTop = 0;
+        }
+      });
+    });
   }
 
   function applyFilters() {
@@ -267,6 +332,7 @@
       var text = [it.document, it.customerCode, it.customerName, it.salesperson].join(" ").toLowerCase();
       return !keyword || text.indexOf(keyword) >= 0;
     });
+    state.page = 1;
 
     var typeText = type === "cash" ? "รายการเงินสด" : "รายการทั้งหมด";
     el(root, "#p051Subtitle").textContent = typeText + " · สถานะ " + (status || "ทั้งหมด");
@@ -348,6 +414,12 @@
       ".p051-code{color:#334155;font-family:Arial,sans-serif;font-weight:700}" +
       ".p051-amount{color:#0f172a;font-family:Arial,sans-serif;font-variant-numeric:tabular-nums;font-weight:700}" +
       ".p051-table-footer{display:flex;min-height:52px;align-items:center;justify-content:space-between;gap:12px;padding:8px 15px;color:#64748b;border-top:1px solid #dbe3ef;background:#f8fafc;font-size:12px}" +
+      ".p051-pagination{display:flex;align-items:center;gap:5px}" +
+      ".p051-page-btn{display:grid;min-width:32px;height:32px;place-items:center;padding:0 8px;color:#475569;border:1px solid #dbe3ef;border-radius:9px;background:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:.14s ease}" +
+      ".p051-page-btn:hover:not(:disabled):not(.active){color:#1d4ed8;border-color:#93c5fd;background:#eff6ff}" +
+      ".p051-page-btn.active{color:#fff;border-color:#2563eb;background:linear-gradient(135deg,#3b82f6,#1d4ed8);box-shadow:0 4px 10px rgba(37,99,235,.25)}" +
+      ".p051-page-btn:disabled{opacity:.35;cursor:default}" +
+      ".p051-page-ellipsis{padding:0 2px;color:#94a3b8;font-size:12px}" +
       ".p051-footer-total{display:flex;align-items:center;gap:8px;padding:6px 11px;color:#172033;border:1px solid #dbe3ef;border-radius:9px;background:#fff}" +
       ".p051-footer-total strong{color:#1d4ed8}" +
       ".p051-empty-state{display:none;min-height:280px;align-items:center;justify-content:center;color:#64748b;text-align:center}" +
