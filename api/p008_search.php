@@ -128,19 +128,18 @@ if ($province !== "00") {
     $params[] = $province;
 }
 
+// เก็บเงินโดย: Odoo res_partner.billing_by (clone C# — OPENQUERY ODOO_DB)
+//   age = 'by_agent' · fin = 'by_finance'
+if ($collector === "age" || $collector === "fin") {
+    $billingBy = ($collector === "age") ? "by_agent" : "by_finance";
+    $sql .= " AND (SELECT partner.billing_by FROM (SELECT * FROM OPENQUERY(ODOO_DB, 'SELECT company_registry,billing_by FROM res_partner WHERE active = ''t'' AND parent_id is null AND billing_by IS NOT NULL AND company_registry is not null')) AS partner WHERE partner.company_registry = A.DEBcode) = ?";
+    $params[] = $billingBy;
+}
+
 // group: DEBgroup IN (?, ...)
 $in = str_repeat("?,", count($groups) - 1) . "?";
 $sql .= " AND DEBgroup IN (" . $in . ")";
 foreach ($groups as $g) $params[] = $g;
-
-// employee: DEBsalesP = ? (C# validation required ยกเว้น 00 — filter ที่ยังไม่เคยใส่ — ใช้ตาม intent)
-if ($employee !== "") {
-    $sql .= " AND DEBsalesP = ?";
-    $params[] = $employee;
-}
-
-// collector: Odoo res_partner.billing_by — PENDING (ไม่มี OPENQUERY ODOO_DB ที่นี่)
-// ถ้ามี = " AND (SELECT partner.billing_by FROM (SELECT * FROM OPENQUERY(ODOO_DB,'...')) AS partner WHERE partner.company_registry = A.DEBcode) = 'by_agent'"
 
 $sql .= " ORDER BY A.DEBcode ASC";
 
