@@ -783,7 +783,25 @@
         if (window.QRCode) new window.QRCode(el, { text: el.getAttribute("data-qr"), width: 56, height: 56, correctLevel: window.QRCode.CorrectLevel.M });
       } catch (e) { /* no QR */ }
     });
-    if (!noPrint) window.print();
+    /* wait frame + images (logo/payment) — preview เก่า = หน้าแรก blank */
+    if (!noPrint) {
+      var imgs = Array.prototype.slice.call(wrap.querySelectorAll("img"));
+      var waitImgs = new Promise(function (resolve) {
+        if (!imgs.length) return resolve();
+        var left = imgs.length;
+        var done = function () { if (--left <= 0) resolve(); };
+        imgs.forEach(function (im) {
+          if (im.complete) done();
+          else { im.addEventListener("load", done); im.addEventListener("error", done); }
+        });
+        setTimeout(resolve, 5000);
+      });
+      waitImgs.then(function () {
+        requestAnimationFrame(function () {
+          setTimeout(function () { window.print(); }, 80);
+        });
+      });
+    }
   }
 
   function exportCSV() {
