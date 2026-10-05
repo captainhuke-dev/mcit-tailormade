@@ -485,6 +485,22 @@
     d.setDate(d.getDate() + 30);
     return pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + "/" + String(d.getFullYear()).substring(2);
   }
+  /* "2026-10-01..." → "01/10/2569" (dd/MM/yyyy พ.ศ. — 2026-10-05 user) */
+  function fmtDateBE(s) {
+    if (!s) return "";
+    var m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return m[3] + "/" + m[2] + "/" + (Number(m[1]) + 543);
+    return String(s);
+  }
+  /* +30 วัน → dd/MM/yyyy พ.ศ. */
+  function addDays30BE(s) {
+    if (!s) return "";
+    var m = String(s).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!m) return String(s);
+    var d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    d.setDate(d.getDate() + 30);
+    return pad2(d.getDate()) + "/" + pad2(d.getMonth() + 1) + "/" + (d.getFullYear() + 543);
+  }
   function num(v) { return Number(v || 0); }
   function fmtDateNow() {
     var d = new Date();
@@ -528,14 +544,14 @@
         if (dis > 0) tBal -= dis;
         rowsHtml +=
           "<tr>" +
-            '<td class="c">' + fmtDate3(r.dates) + "</td>" +
+            '<td class="c">' + fmtDateBE(r.dates) + "</td>" +
             '<td class="c">' + esc(r.vnos) + "</td>" +
             '<td class="c vk">' + esc(r.vk) + "</td>" +
             '<td class="r">' + formatMoney(req) + "</td>" +
             '<td class="r">' + formatMoney(dis) + "</td>" +
             '<td class="r">' + formatMoney(cut) + "</td>" +
             '<td class="r">' + formatMoney(dis > 0 ? -dis : bal) + "</td>" +
-            '<td class="c">' + addDays30(r.dates) + "</td>" +
+            '<td class="c">' + addDays30BE(r.dates) + "</td>" +
             '<td class="c">' + esc(c.perCode) + "</td>" +
           "</tr>";
       }
