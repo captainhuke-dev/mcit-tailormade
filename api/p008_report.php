@@ -2,8 +2,8 @@
 /**
  * P008 — Report data (Phase 2 — clone C# bgWorker_DoWork + getDetailINV + getDetailINVBody_VAT/noVAT
  *       + getDetailDEB + GetDetailPER + GetProvince + GetPerName + getQR + getLastOrder)
- * POST {connectionId, codes: [DEBcode...], asOf, province, employee, round, month, year,
- *       showQr, showLastSale}
+ * POST {connectionId, codes: [DEBcode...], asOf, province, round, month, year,
+ *       showQr, showLastSale, splitMonth}  (employee ตัดออก 2026-10-05)
  * Return:
  *   {ok, header: {provinceName, perCode, perName}, customers: [{
  *       code, nameE, contactT, grade, addr1..3, tel, fax, perCode,
@@ -33,7 +33,6 @@ $connectionId = isset($input["connectionId"]) ? trim($input["connectionId"]) : "
 $codes        = isset($input["codes"]) ? $input["codes"] : [];
 $asOf         = isset($input["asOf"]) ? trim($input["asOf"]) : "";
 $province     = isset($input["province"]) ? trim($input["province"]) : "";
-$employee     = isset($input["employee"]) ? trim($input["employee"]) : "";
 $showQr       = !empty($input["showQr"]);
 $showLastSale = !empty($input["showLastSale"]);
 $splitMonth   = !empty($input["splitMonth"]); // chk_BillBymonth — แยกบิลตามเดือน
@@ -143,15 +142,9 @@ if ($province !== "" && $province !== "00") {
     $row = $st->fetch(PDO::FETCH_ASSOC);
     if ($row) $provinceName = $row["ZONdescT"] . " (" . $province . ")";
 }
-$perCode = $employee;
+$perCode = "";
 $perName = "";
 $perTel  = "";
-if ($perCode !== "") {
-    $st = $pdo->prepare("SELECT PERnameT, PERtel FROM PER WHERE PERcode = ?");
-    $st->execute([$perCode]);
-    $row = $st->fetch(PDO::FETCH_ASSOC);
-    if ($row) { $perName = $row["PERnameT"]; $perTel = $row["PERtel"]; }
-}
 
 $customers = [];
 $codesIn = implode(",", array_fill(0, count($codes), "?"));

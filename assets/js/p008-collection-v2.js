@@ -90,12 +90,6 @@
               "</div>" +
             "</div>" +
             '<div class="p008-field">' +
-              '<label for="p008Employee">รหัสพนักงานขาย</label>' +
-              '<div class="p008-input-wrap">' + icon("user", 17) +
-                '<input id="p008Employee" type="text" value="" placeholder="เช่น S50">' +
-              "</div>" +
-            "</div>" +
-            '<div class="p008-field">' +
               '<label for="p008Group">กลุ่มลูกหนี้</label>' +
               '<div class="p008-group-row">' +
                 '<div class="p008-input-wrap">' + icon("grid", 17) +
@@ -358,22 +352,19 @@
   function doSearch() {
     var root = _root;
     var province = String(el(root, "#p008Province").value).trim();
-    var employee = String(el(root, "#p008Employee").value).trim();
     var group = Object.keys(state.selectedGroups).filter(function (c) { return state.selectedGroups[c]; })
       .map(function (c) { return "'" + c + "'"; }).join(",");
     var asOf = String(el(root, "#p008AsOf").value).trim();
     var collector = String(el(root, "#p008Collector").value).trim();
 
-    /* validation (clone C#) */
+    /* validation */
     if (!province) { showToast("⚠ โปรดป้อนรหัสจังหวัดที่ต้องการค้นหา", 3200); return; }
     if (!group) { showToast("⚠ โปรดเลือกกลุ่มลูกหนี้", 3200); return; }
-    if (!employee && province !== "00") { showToast("⚠ โปรดป้อนรหัสพนักงาน", 3200); return; }
 
     el(root, "#p008Badge").textContent = "ค้นหา...";
     apiFetch("p008_search.php", {
       connectionId: MAC5_CONNECTION_ID,
       province: province,
-      employee: employee,
       group: group,
       asOf: asOf,
       collector: collector
@@ -542,7 +533,7 @@
     }
     pages.push(
       '<div class="p008r-page">' +
-        '<div class="p008r-sum-title">' + esc(h.provinceName) + " - " + esc(h.perCode) + " " + esc(h.perName) + "</div>" +
+        '<div class="p008r-sum-title">' + esc(h.provinceName || params.province) + "</div>" +
         '<div class="p008r-sum-line">     จนถึงวันที่  :  ' + fmtDateFull(params.asOf) + "</div>" +
         '<div class="p008r-sum-line">     รอบที่/ประจำเดือน  :  ' + esc(params.round) + " / " + esc(monthName) + " " + beYear + "</div>" +
         '<div class="p008r-sum-line">     วันที่พิมพ์  :  ' + printDate + "</div>" +
@@ -632,7 +623,9 @@
     var addr = cust.code + " (" + cust.grade + ")<br>" + esc(cust.nameE) + "  " + esc(cust.contactT) + "<br>" +
       esc(cust.addr1) + "<br>" + esc(cust.addr2) + "<br>" + esc(cust.addr3) + "  " + esc(cust.addr3E) + "<br>" +
       "โทร. " + esc(cust.tel) + " แฟ็กซ์. " + esc(cust.fax);
-    var perBox = "พนักงาน : " + esc(h.perCode) + " " + esc(h.perName) + "<br>โทรศัพท์ : " + esc(h.perTel) + "<br>" + fmtDateNowThai() + "<br><br>เดือน : " + esc(monthName) + "     ปี : " + beYear;
+    var perBox = h.perCode
+      ? "พนักงาน : " + esc(h.perCode) + " " + esc(h.perName) + "<br>โทรศัพท์ : " + esc(h.perTel) + "<br>" + fmtDateNowThai() + "<br><br>เดือน : " + esc(monthName) + "     ปี : " + beYear
+      : "เดือน : " + esc(monthName) + "     ปี : " + beYear;
     var qrBox = (t === 1 && cust.qr) ? '<div class="p008r-qr" data-qr="' + esc(cust.qr) + '"><span>Map</span></div>' : "";
 
     /* body 14 rows */
@@ -726,7 +719,6 @@
     if (!codes.length) { showToast("⚠ โปรดเลือกลูกหนี้ (checkbox) ก่อนพิมพ์รายงาน", 3200); return; }
     var params = {
       province: String(el(root, "#p008Province").value).trim(),
-      employee: String(el(root, "#p008Employee").value).trim(),
       asOf: String(el(root, "#p008AsOf").value).trim(),
       round: String(el(root, "#p008Round").value).trim(),
       month: String(el(root, "#p008Month").value).trim(),
@@ -743,7 +735,6 @@
       codes: codes,
       asOf: params.asOf,
       province: params.province,
-      employee: params.employee,
       showQr: params.showQr,
       showLastSale: params.showLastSale,
       splitMonth: params.splitMonth

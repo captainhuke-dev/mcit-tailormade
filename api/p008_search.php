@@ -1,11 +1,11 @@
 <?php
 /**
  * P008 — Search (ใบปะหน้าเก็บบัญชี VAT, No VAT V2)
- * POST {connectionId, province, employee, group, asOf, collector}
+ * POST {connectionId, province, group, asOf, collector}
  * SQL: clone C# MCIT_FrmAccountServiceGUI_VATversion_V2
  *   - ยอดหนี้ = SUM(CFSsumREQ - CFSsumCUT1) FROM CFS (CFSclearALL=0, CFSclearUSER=0, (req-cut)!=0, date<=asOf, vnos LIKE 40+ prefixes)
  *   - ยอดปรับหนี้ = SUM(CDCnetSUM) FROM CDC (typeID AS/BS, cancel=0, linkVtype2 ว่าง, vnos LIKE DNN/DNR/DNV/CNN/CNV/1DNN/1DN7/1CNN/1CN7)
- *   - FROM DEB LEFT JOIN PER — DEBcode IN (CFS subquery) + province (SUBSTRING DEBzone) + group IN + employee (DEBsalesP)
+ *   - FROM DEB LEFT JOIN PER — DEBcode IN (CFS subquery) + province (SUBSTRING DEBzone) + group IN (employee ตัดออก 2026-10-05)
  *   - collector = Odoo res_partner.billing_by (by_agent/by_finance) — PENDING (ถ้าไม่มี OPENQUERY ODOO_DB)
  */
 header("Content-Type: application/json; charset=utf-8");
@@ -23,7 +23,6 @@ if (!$input) p008_error("Invalid JSON");
 
 $connectionId = isset($input["connectionId"]) ? trim($input["connectionId"]) : "";
 $province     = isset($input["province"]) ? trim($input["province"]) : "";
-$employee     = isset($input["employee"]) ? trim($input["employee"]) : "";
 $groupText    = isset($input["group"]) ? trim($input["group"]) : "";
 $asOf         = isset($input["asOf"]) ? trim($input["asOf"]) : "";
 $collector    = isset($input["collector"]) ? trim($input["collector"]) : "";
@@ -31,8 +30,6 @@ $collector    = isset($input["collector"]) ? trim($input["collector"]) : "";
 if ($connectionId === "") p008_error("Missing connectionId");
 if ($province === "") p008_error("Missing province");
 if ($groupText === "") p008_error("Missing group");
-// C#: employee required ยกเว้น province = "00"
-if ($employee === "" && $province !== "00") p008_error("Missing employee");
 if (!preg_match("/^\d{4}-\d{2}-\d{2}$/", $asOf)) p008_error("Invalid asOf (yyyy-mm-dd)");
 
 // ── Parse group: 'CRE-A','CRE-F' → [CRE-A, CRE-F] ──
