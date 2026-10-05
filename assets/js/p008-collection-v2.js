@@ -947,7 +947,8 @@
       ".p008p-btn.close{background:#334155;color:#e2e8f0}" +
       ".p008p-btn.close:hover{background:#475569}" +
       ".p008p-body{flex:1;overflow:auto;padding:18px;background:#e5e7eb}" +
-      ".p008p-body .p008r-page{box-shadow:0 4px 18px rgba(15,23,42,.25);background:#fff}" +
+      ".p008p-body .p008r-page{box-shadow:0 4px 18px rgba(15,23,42,.25);background:#fff;margin-bottom:20px}" +
+      ".p008p-body .p008r-page:last-child{margin-bottom:0}" +
       ".p008r-page{width:186mm;min-height:277mm;box-sizing:border-box;margin:0 auto;padding:8mm 12mm;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always}" +
       ".p008r-page:last-child{page-break-after:auto}" +
       ".p008r-sum-title{text-align:center;font-size:18px;font-weight:700;margin-bottom:4px}" +
@@ -1013,7 +1014,7 @@
         "#p008PrintModal,.p008p-dialog,.p008p-body{display:block !important;position:static !important;overflow:visible !important;height:auto !important;max-height:none !important;padding:0 !important;margin:0 !important;border:none !important;border-radius:0 !important;background:none !important;box-shadow:none !important}" +
         "#p008Report,#p008Report *{visibility:visible !important}" +
         "#p008Report{display:block !important;position:absolute;top:0;left:0;width:210mm}" +
-        ".p008p-body .p008r-page{box-shadow:none !important}" +
+        ".p008p-body .p008r-page{box-shadow:none !important;margin:0 auto !important}" +
         ".p008-checkbox-cell{display:none}" +
       "}" +
       "@media (max-width:1100px){.p008-launcher{grid-template-columns:1fr}}";
