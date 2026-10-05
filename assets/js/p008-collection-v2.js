@@ -503,9 +503,14 @@
     var monthName = THAI_MONTHS[Number(params.month) - 1] || "";
     var pages = [];
 
-    /* ── Page 1: สรุป (clone C# — table 9 คอลั่น: วันที่/เลขที่/VK/ยอดหนี้/ยอดปรับ/ยอดชำระ/ยอดคงค้าง/ครบกำหนด/พนักงาน) ── */
+    /* ── Page 1: สรุป — Table 1 = หัวตาราง 9 คอลั่น · Table 2+ = 1 ตารางต่อ 1 ลูกหนี้ (แถวแรก colspan 9 ไม่มีเส้น) — ห่างกัน 10px ── */
     var sumAllReq = 0, sumAllBal = 0, sumAllDis = 0, sumAllCut = 0;
-    var bodyHtml = "";
+    var sumHead =
+      "<thead><tr>" +
+        "<th>วันที่</th><th>เลขที่ใบสำคัญ</th><th>VK</th><th>ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th><th>ครบกำหนด</th><th>พนักงาน</th>" +
+      "</tr></thead>";
+    var sumTables = "";
+    sumTables += '<table class="p008r-sum">' + sumHead + "</table>";
     for (var i = 0; i < rep.customers.length; i++) {
       var c = rep.customers[i];
       var tReq = 0, tBal = 0, tDis = 0, tCut = 0;
@@ -529,16 +534,29 @@
           "</tr>";
       }
       sumAllReq += tReq; sumAllBal += tBal; sumAllDis += tDis; sumAllCut += tCut;
-      bodyHtml +=
-        '<tr class="p008r-cust-head"><td colspan="9">' + esc(c.code) + "  " + esc(c.nameE) + "   " + esc(c.contactT) + "</td></tr>" +
-        rowsHtml +
-        '<tr class="p008r-total">' +
-          '<td colspan="2" class="c">รวม</td>' +
-          '<td colspan="2" class="r">' + formatMoney(tReq) + "</td>" +
-          "<td></td><td></td>" +
-          '<td class="r">' + formatMoney(tBal) + "</td>" +
-          '<td colspan="2"></td>' +
-        "</tr>";
+      var isLast = i === rep.customers.length - 1;
+      sumTables +=
+        '<table class="p008r-sum"><tbody>' +
+          '<tr class="p008r-cust-head"><td colspan="9">' + esc(c.code) + "  " + esc(c.nameE) + "   " + esc(c.contactT) + "</td></tr>" +
+          rowsHtml +
+          '<tr class="p008r-total">' +
+            '<td colspan="2" class="c">รวม</td>' +
+            '<td colspan="2" class="r">' + formatMoney(tReq) + "</td>" +
+            "<td></td><td></td>" +
+            '<td class="r">' + formatMoney(tBal) + "</td>" +
+            '<td colspan="2"></td>' +
+          "</tr>" +
+          (isLast
+            ? '<tr class="p008r-grand">' +
+                '<td colspan="3" class="c">รวมทั้งสิ้น</td>' +
+                '<td class="r">' + formatMoney(sumAllReq) + "</td>" +
+                '<td class="r">' + formatMoney(sumAllDis) + "</td>" +
+                '<td class="r">' + formatMoney(sumAllCut) + "</td>" +
+                '<td class="r">' + formatMoney(sumAllBal) + "</td>" +
+                "<td></td><td></td>" +
+              "</tr>"
+            : "") +
+        "</tbody></table>";
     }
     pages.push(
       '<div class="p008r-page">' +
@@ -546,21 +564,7 @@
         '<div class="p008r-sum-line">     จนถึงวันที่  :  ' + fmtDateFull(params.asOf) + "</div>" +
         '<div class="p008r-sum-line">     รอบที่/ประจำเดือน  :  ' + esc(params.round) + " / " + esc(monthName) + " " + beYear + "</div>" +
         '<div class="p008r-sum-line">     วันที่พิมพ์  :  ' + printDate + "</div>" +
-        '<table class="p008r-sum">' +
-          "<thead><tr>" +
-            "<th>วันที่</th><th>เลขที่ใบสำคัญ</th><th>VK</th><th>ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th><th>ครบกำหนด</th><th>พนักงาน</th>" +
-          "</tr></thead>" +
-          "<tbody>" + bodyHtml +
-          '<tr class="p008r-grand">' +
-            '<td colspan="3" class="c">รวมทั้งสิ้น</td>' +
-            '<td class="r">' + formatMoney(sumAllReq) + "</td>" +
-            '<td class="r">' + formatMoney(sumAllDis) + "</td>" +
-            '<td class="r">' + formatMoney(sumAllCut) + "</td>" +
-            '<td class="r">' + formatMoney(sumAllBal) + "</td>" +
-            "<td></td><td></td>" +
-          "</tr>" +
-          "</tbody>" +
-        "</table>" +
+        sumTables +
       "</div>"
     );
 
@@ -948,13 +952,13 @@
       ".p008r-page:last-child{page-break-after:auto}" +
       ".p008r-sum-title{text-align:center;font-size:18px;font-weight:700;margin-bottom:4px}" +
       ".p008r-sum-line{font-size:15px;margin:2px 0}" +
-      ".p008r-sum{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
+      ".p008r-sum{width:100%;border-collapse:collapse;margin-bottom:10px;table-layout:fixed}" +
       ".p008r-sum th{border:1px solid #333;font-size:13px;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
       ".p008r-sum td{border:1px solid #333;font-size:12px;padding:3px 4px}" +
       ".p008r-sum td.c,.p008r-sum th.c{text-align:center}" +
       ".p008r-sum td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
       ".p008r-sum td.vk{border-left:1px solid #333;border-right:1px solid #333}" +
-      ".p008r-cust-head td{font-size:14px;font-weight:700;background:#fafafa}" +
+      ".p008r-cust-head td{font-size:14px;font-weight:700;border:none;background:none;padding:0 4px}" +
       ".p008r-total td{font-size:13px;font-weight:700;background:#f5f5f5}" +
       ".p008r-grand td{font-size:14px;font-weight:700;background:#eee}" +
       ".p008r-cov-head{width:100%;border-collapse:collapse;table-layout:fixed}" +
