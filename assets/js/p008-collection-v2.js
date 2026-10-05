@@ -684,6 +684,11 @@
         "</tr>";
     }
     var isLastPage = n === totalPages - 1;
+    /* เติมแถวว่างให้ครบ 14 แถว (2026-10-05 user) */
+    while (end - start < 14) {
+      bodyRows += "<tr>" + '<td class="c"></td><td class="c"></td><td></td><td class="r"></td><td class="r"></td><td class="r"></td><td class="r"></td>' + "</tr>";
+      end++;
+    }
     var totalRow = isLastPage
       ? '<tr class="p008r-cov-total"><td colspan="2"></td><td class="c">รวม</td><td colspan="2"></td><td colspan="2" class="r">' + formatMoney(tBal) + "</td></tr>"
       : "";
@@ -998,7 +1003,7 @@
       ".p008r-total td{font-size:14pt;font-weight:700;background:#f5f5f5}" +
       ".p008r-grand td{font-size:14pt;font-weight:700;background:#eee}" +
       ".p008r-cov-head{width:100%;border-collapse:collapse;table-layout:fixed}" +
-      ".p008r-cov-head td{vertical-align:middle;padding:2px 0}" +
+      ".p008r-cov-head td{vertical-align:middle;padding:2px 0;border:1px solid #333}" +
       ".p008r-h-left{width:12.727%;text-align:center}" +
       ".p008r-h-mid{width:auto;text-align:center}" +
       ".p008r-h-right{width:18.182%;text-align:center}" +
