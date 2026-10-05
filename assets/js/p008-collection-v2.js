@@ -571,8 +571,7 @@
           (isLast
             ? '<tr class="p008r-grand">' +
                 '<td colspan="2" class="c">รวมทั้งสิ้น</td>' +
-                '<td class="r">' + formatMoney(sumAllReq) + "</td>" +
-                "<td></td>" +
+                '<td colspan="2" class="r nol">' + formatMoney(sumAllReq) + "</td>" +
                 '<td class="r">' + formatMoney(sumAllDis) + "</td>" +
                 '<td class="r">' + formatMoney(sumAllCut) + "</td>" +
                 '<td class="r">' + formatMoney(sumAllBal) + "</td>" +
