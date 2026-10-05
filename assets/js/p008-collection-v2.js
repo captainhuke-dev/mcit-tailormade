@@ -609,7 +609,7 @@
         for (var gi = 0; gi < groupKeys.length; gi++) {
           var rows = groupMap[groupKeys[gi]];
           for (var t = 0; t < 2; t++) {
-            var totalPages = Math.max(1, Math.ceil(rows.length / 14));
+            var totalPages = Math.max(1, Math.ceil(rows.length / 12));
             for (var n = 0; n < totalPages; n++) {
               pages.push(buildCoverPage(cust, rows, V, t, n, totalPages, params, monthName, beYear, printDate, h));
             }
@@ -661,9 +661,9 @@
     var perBox = "พนักงาน : " + esc(h.perCode) + " " + esc(h.perName) + "<br>โทรศัพท์ : " + esc(h.perTel) + "<br>" + fmtDateNowThai() + "<br><br>เดือน : " + esc(monthName) + "     ปี : " + beYear;
     var qrBox = (t === 1 && cust.qr) ? '<div class="p008r-qr" data-qr="' + esc(cust.qr) + '"><span>Map</span></div>' : "";
 
-    /* body 14 rows */
-    var start = n * 14;
-    var end = Math.min(start + 14, rows.length);
+    /* body 12 rows/หน้า (2026-10-05 user) */
+    var start = n * 12;
+    var end = Math.min(start + 12, rows.length);
     var tBal = 0;
     var bodyRows = "";
     for (var y = start; y < end; y++) {
@@ -674,7 +674,7 @@
       var desc = t === 0 ? esc(r.VK) : "";
       bodyRows +=
         "<tr>" +
-          '<td class="c">' + fmtDate3(r.dates) + "</td>" +
+          '<td class="c">' + fmtDateBE(r.dates) + "</td>" +
           '<td class="c">' + esc(r.vnos) + "</td>" +
           '<td>' + desc + "</td>" +
           '<td class="r">' + formatMoney(req) + "</td>" +
@@ -704,6 +704,7 @@
           "<tr><td></td><td></td><td></td></tr>" +
         "</table>" +
         '<table class="p008r-cov">' +
+          '<colgroup><col style="width:12.364%"><col style="width:14.909%"><col style="width:29.091%"><col style="width:10.909%"><col style="width:10.909%"><col style="width:10.909%"><col style="width:10.909%"></colgroup>' +
           "<thead><tr><th>วันที่</th><th>เลขที่บิล</th><th>รายละเอียด</th><th>ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th></tr></thead>" +
           "<tbody>" + bodyRows + totalRow + "</tbody>" +
         "</table>";
@@ -806,7 +807,7 @@
     /* QR codes (qrcode.min.js) */
     wrap.querySelectorAll(".p008r-qr").forEach(function (el) {
       try {
-        if (window.QRCode) new window.QRCode(el, { text: el.getAttribute("data-qr"), width: 56, height: 56, correctLevel: window.QRCode.CorrectLevel.M });
+        if (window.QRCode) new window.QRCode(el, { text: el.getAttribute("data-qr"), width: 50, height: 50, correctLevel: window.QRCode.CorrectLevel.M });
       } catch (e) { /* no QR */ }
     });
     /* wait frame + images (logo/payment) — แล้วเปิด modal ตัวอย่างก่อนพิมพ์ */
@@ -998,19 +999,19 @@
       ".p008r-grand td{font-size:14pt;font-weight:700;background:#eee}" +
       ".p008r-cov-head{width:100%;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-cov-head td{vertical-align:middle;padding:2px 0}" +
-      ".p008r-h-left{width:70px;text-align:center}" +
+      ".p008r-h-left{width:12.727%;text-align:center}" +
       ".p008r-h-mid{width:auto;text-align:center}" +
-      ".p008r-h-right{width:110px;text-align:center}" +
+      ".p008r-h-right{width:18.182%;text-align:center}" +
       ".p008r-logo img{width:70px;height:40px;object-fit:contain}" +
       ".p008r-mcit{font-size:20px;font-weight:700}" +
       ".p008r-barcode svg,.p008r-barcode canvas{max-width:220px;height:52px}" +
       ".p008r-company{font-size:13px;line-height:1.5}" +
       ".p008r-copy{font-size:15px;font-weight:700;padding-top:8px}" +
       ".p008r-addr{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:6px}" +
-      ".p008r-addr-deb{width:290px;border:1px solid #333;border-bottom:none;font-size:14px;line-height:1.45;vertical-align:top;padding:5px 7px}" +
-      ".p008r-addr-qr{width:70px;border-top:1px solid #333;border-bottom:none;text-align:center;vertical-align:middle;font-size:11px}" +
+      ".p008r-addr-deb{width:52.727%;border:1px solid #333;border-bottom:none;font-size:14px;line-height:1.45;vertical-align:top;padding:5px 7px}" +
+      ".p008r-addr-qr{width:10.909%;border-top:1px solid #333;border-bottom:none;text-align:center;vertical-align:middle;font-size:11px}" +
       ".p008r-addr-qr .p008r-qr{display:inline-block}" +
-      ".p008r-addr-qr canvas,.p008r-addr-qr img{width:56px;height:56px}" +
+      ".p008r-addr-qr canvas,.p008r-addr-qr img{width:50px;height:50px}" +
       ".p008r-addr-per{width:auto;border:1px solid #333;border-bottom:none;font-size:14px;line-height:1.45;vertical-align:top;padding:5px 7px}" +
       ".p008r-addr tr:last-child td{border-bottom:1px solid #333;height:10px}" +
       ".p008r-cov{width:100%;border-collapse:collapse;margin-top:4px;table-layout:fixed}" +
