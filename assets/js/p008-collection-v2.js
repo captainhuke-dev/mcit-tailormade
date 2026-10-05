@@ -529,7 +529,7 @@
       '</colgroup>';
     var sumHead =
       "<thead><tr>" +
-        "<th>วันที่</th><th>เลขที่ใบสำคัญ</th><th>VK</th><th>ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th><th>ครบกำหนด</th><th>พนักงาน</th>" +
+        "<th>วันที่</th><th>เลขที่ใบสำคัญ</th><th class=\"nb\">VK</th><th class=\"nol\">ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th><th>ครบกำหนด</th><th>พนักงาน</th>" +
       "</tr></thead>";
     var sumTables = "";
     sumTables += '<table class="p008r-sum">' + sumCols + sumHead + "</table>";
@@ -547,7 +547,7 @@
             '<td class="c">' + fmtDateBE(r.dates) + "</td>" +
             '<td class="c">' + esc(r.vnos) + "</td>" +
             '<td class="c vk">' + esc(r.vk) + "</td>" +
-            '<td class="r">' + formatMoney(req) + "</td>" +
+            '<td class="r nol">' + formatMoney(req) + "</td>" +
             '<td class="r">' + formatMoney(dis) + "</td>" +
             '<td class="r">' + formatMoney(cut) + "</td>" +
             '<td class="r">' + formatMoney(dis > 0 ? -dis : bal) + "</td>" +
@@ -563,15 +563,15 @@
           rowsHtml +
           '<tr class="p008r-total">' +
             '<td colspan="2" class="c">รวม</td>' +
-            '<td colspan="2" class="r">' + formatMoney(tReq) + "</td>" +
+            '<td colspan="2" class="r nol">' + formatMoney(tReq) + "</td>" +
             "<td></td><td></td>" +
             '<td class="r">' + formatMoney(tBal) + "</td>" +
             '<td colspan="2"></td>' +
           "</tr>" +
           (isLast
             ? '<tr class="p008r-grand">' +
-                '<td colspan="3" class="c">รวมทั้งสิ้น</td>' +
-                '<td class="r">' + formatMoney(sumAllReq) + "</td>" +
+                '<td colspan="3" class="c nb">รวมทั้งสิ้น</td>' +
+                '<td class="r nol">' + formatMoney(sumAllReq) + "</td>" +
                 '<td class="r">' + formatMoney(sumAllDis) + "</td>" +
                 '<td class="r">' + formatMoney(sumAllCut) + "</td>" +
                 '<td class="r">' + formatMoney(sumAllBal) + "</td>" +
@@ -990,7 +990,9 @@
       ".p008r-sum td{border:1px solid #333;font-size:12pt;padding:3px 4px}" +
       ".p008r-sum td.c,.p008r-sum th.c{text-align:center}" +
       ".p008r-sum td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
-      ".p008r-sum td.vk{border-left:1px solid #333;border-right:1px solid #333}" +
+      ".p008r-sum td.vk{border-left:1px solid #333;border-right:none}" +
+      ".p008r-sum td.nol,.p008r-sum th.nol{border-left:none}" +
+      ".p008r-sum td.nb,.p008r-sum th.nb{border-right:none}" +
       ".p008r-cust-head td{font-size:14pt;font-weight:700;border:none;background:none;padding:0 4px}" +
       ".p008r-total td{font-size:14pt;font-weight:700;background:#f5f5f5}" +
       ".p008r-grand td{font-size:14pt;font-weight:700;background:#eee}" +
