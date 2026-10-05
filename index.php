@@ -35,7 +35,19 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
 </head>
 
 <body>
-  <div id="p008Report"></div>
+  <div id="p008PrintModal" style="display:none">
+    <div class="p008p-backdrop"></div>
+    <div class="p008p-dialog">
+      <div class="p008p-head">
+        <strong>ตัวอย่างรายงานก่อนพิมพ์</strong>
+        <div class="p008p-actions">
+          <button id="p008PrintGoBtn" type="button" class="p008p-btn go">พิมพ์</button>
+          <button id="p008PrintCloseBtn" type="button" class="p008p-btn close">ปิด</button>
+        </div>
+      </div>
+      <div class="p008p-body"><div id="p008Report"></div></div>
+    </div>
+  </div>
   <div class="app">
     <aside class="sidebar" id="sidebar">
       <div class="brand">
@@ -178,7 +190,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p047-invoice-status.js?v=20260929d"></script>
   <script src="assets/js/p015-bill-status.js?v=20260929g"></script>
   <script src="assets/js/p051-cash-collection.js?v=20261003c"></script>
-  <script src="assets/js/p008-collection-v2.js?v=20261003p"></script>
+  <script src="assets/js/p008-collection-v2.js?v=20261005a"></script>
   <script src="assets/js/p026-payable-history.js?v=20261001e"></script>
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>

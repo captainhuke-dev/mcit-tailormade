@@ -783,7 +783,7 @@
         if (window.QRCode) new window.QRCode(el, { text: el.getAttribute("data-qr"), width: 56, height: 56, correctLevel: window.QRCode.CorrectLevel.M });
       } catch (e) { /* no QR */ }
     });
-    /* wait frame + images (logo/payment) — preview เก่า = หน้าแรก blank */
+    /* wait frame + images (logo/payment) — แล้วเปิด modal ตัวอย่างก่อนพิมพ์ */
     if (!noPrint) {
       var imgs = Array.prototype.slice.call(wrap.querySelectorAll("img"));
       var waitImgs = new Promise(function (resolve) {
@@ -798,10 +798,23 @@
       });
       waitImgs.then(function () {
         requestAnimationFrame(function () {
-          setTimeout(function () { window.print(); }, 80);
+          setTimeout(function () { openPrintModal(); }, 60);
         });
       });
     }
+  }
+
+  function openPrintModal() {
+    var m = document.getElementById("p008PrintModal");
+    if (!m) { window.print(); return; }
+    m.style.display = "flex";
+    document.body.style.overflow = "hidden";
+  }
+
+  function closePrintModal() {
+    var m = document.getElementById("p008PrintModal");
+    if (m) m.style.display = "none";
+    document.body.style.overflow = "";
   }
 
   function exportCSV() {
@@ -917,7 +930,20 @@
       ".p008-toast{position:fixed;right:20px;bottom:20px;z-index:210;padding:11px 14px;border-radius:11px;background:#0f172a;color:#fff;font-size:12px;box-shadow:0 16px 36px rgba(15,23,42,.28);opacity:0;visibility:hidden;transform:translateY(12px);transition:.2s}" +
       ".p008-toast.show{opacity:1;visibility:visible;transform:translateY(0)}" +
       /* ── Phase 2 report styles ── */
-      "#p008Report{display:none}" +
+      "#p008Report{display:block}" +
+      /* ── Print preview modal ── */
+      "#p008PrintModal{position:fixed;inset:0;z-index:300;display:none;align-items:flex-start;justify-content:center}" +
+      ".p008p-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.62)}" +
+      ".p008p-dialog{position:relative;z-index:1;width:min(1100px,96vw);height:94vh;margin:2vh 0;display:flex;flex-direction:column;background:#e5e7eb;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.45);overflow:hidden}" +
+      ".p008p-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#0f172a;color:#fff;font-size:13px}" +
+      ".p008p-actions{display:flex;gap:8px}" +
+      ".p008p-btn{height:36px;padding:0 18px;border-radius:9px;border:1px solid transparent;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}" +
+      ".p008p-btn.go{background:#2563eb;color:#fff}" +
+      ".p008p-btn.go:hover{background:#1d4ed8}" +
+      ".p008p-btn.close{background:#334155;color:#e2e8f0}" +
+      ".p008p-btn.close:hover{background:#475569}" +
+      ".p008p-body{flex:1;overflow:auto;padding:18px;background:#e5e7eb}" +
+      ".p008p-body .p008r-page{box-shadow:0 4px 18px rgba(15,23,42,.25);background:#fff}" +
       ".p008r-page{width:186mm;min-height:277mm;box-sizing:border-box;margin:0 auto;padding:8mm 12mm;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always}" +
       ".p008r-page:last-child{page-break-after:auto}" +
       ".p008r-sum-title{text-align:center;font-size:18px;font-weight:700;margin-bottom:4px}" +
@@ -979,8 +1005,11 @@
       "@media print{" +
         "@page{size:A4 portrait;margin:0}" +
         "body *{visibility:hidden !important}" +
+        ".p008p-backdrop,.p008p-head{display:none !important}" +
+        "#p008PrintModal,.p008p-dialog,.p008p-body{display:block !important;position:static !important;overflow:visible !important;height:auto !important;max-height:none !important;padding:0 !important;margin:0 !important;border:none !important;border-radius:0 !important;background:none !important;box-shadow:none !important}" +
         "#p008Report,#p008Report *{visibility:visible !important}" +
         "#p008Report{display:block !important;position:absolute;top:0;left:0;width:210mm}" +
+        ".p008p-body .p008r-page{box-shadow:none !important}" +
         ".p008-checkbox-cell{display:none}" +
       "}" +
       "@media (max-width:1100px){.p008-launcher{grid-template-columns:1fr}}";
@@ -993,6 +1022,20 @@
     _root = root;
     _mount(root);
   }
+
+  /* ── Print preview modal (static ใน index.php — bind 1 ครั้ง) ── */
+  (function () {
+    var m = document.getElementById("p008PrintModal");
+    if (!m) return;
+    var go = m.querySelector("#p008PrintGoBtn");
+    var close = m.querySelector("#p008PrintCloseBtn");
+    if (go) go.addEventListener("click", function () { window.print(); });
+    if (close) close.addEventListener("click", function () { closePrintModal(); });
+    m.querySelector(".p008p-backdrop").addEventListener("click", function () { closePrintModal(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && m.style.display === "flex") closePrintModal();
+    });
+  })();
 
   window.P008CollectionV2 = { mount: mountWithRoot };
 })();
