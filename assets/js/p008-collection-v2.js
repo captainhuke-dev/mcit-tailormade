@@ -1021,7 +1021,7 @@
       ".p008r-cov{width:100%;border-collapse:collapse;margin-top:4px;table-layout:fixed}" +
       ".p008r-cov th{border:1px solid #333;font-size:13pt;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
       ".p008r-cov td{border:1px solid #333;font-size:13pt;padding:2px 4px;line-height:1}" +
-      ".p008r-cov tbody td{border-left:none;border-right:none;border-top:none}" +
+      ".p008r-cov tbody td{border-left:none;border-right:none;border-top:none;border-bottom:none}" +
       ".p008r-cov tbody td:first-child{border-left:1px solid #333}" +
       ".p008r-cov tbody td:last-child{border-right:1px solid #333}" +
       ".p008r-cov tbody tr:last-child td{border-bottom:1px solid #333}" +
