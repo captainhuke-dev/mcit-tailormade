@@ -504,12 +504,12 @@
     var pages = [];
 
     /* ── Page 1: สรุป — Table 1 = หัวตาราง 9 คอลั่น · Table 2+ = 1 ตารางต่อ 1 ลูกหนี้ (แถวแรก colspan 9 ไม่มีเส้น) — ห่างกัน 10px
-         คอลั่น (f): 60, 80, 10, 80, 65, 65, 70, 60, 60 (รวม 550) ── */
+         คอลั่น (f): 60, 80, 20, 80, 65, 65, 70, 60, 50 (รวม 550) ── */
     var sumAllReq = 0, sumAllBal = 0, sumAllDis = 0, sumAllCut = 0;
     var sumCols =
       '<colgroup>' +
-        '<col style="width:10.909%"><col style="width:14.545%"><col style="width:1.818%"><col style="width:14.545%">' +
-        '<col style="width:11.818%"><col style="width:11.818%"><col style="width:12.727%"><col style="width:10.909%"><col style="width:10.909%">' +
+        '<col style="width:10.909%"><col style="width:14.545%"><col style="width:3.636%"><col style="width:14.545%">' +
+        '<col style="width:11.818%"><col style="width:11.818%"><col style="width:12.727%"><col style="width:10.909%"><col style="width:9.091%">' +
       '</colgroup>';
     var sumHead =
       "<thead><tr>" +
