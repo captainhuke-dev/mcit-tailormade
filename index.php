@@ -41,6 +41,11 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
       <div class="p008p-head">
         <strong>ตัวอย่างรายงานก่อนพิมพ์</strong>
         <div class="p008p-actions">
+          <div class="p008p-zoom">
+            <button id="p008ZoomOut" type="button" class="p008p-zoom-btn" title="ย่อ">−</button>
+            <span id="p008ZoomPct">100%</span>
+            <button id="p008ZoomIn" type="button" class="p008p-zoom-btn" title="ขยาย">+</button>
+          </div>
           <button id="p008PrintGoBtn" type="button" class="p008p-btn go">พิมพ์</button>
           <button id="p008PrintCloseBtn" type="button" class="p008p-btn close">ปิด</button>
         </div>
@@ -190,7 +195,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p047-invoice-status.js?v=20260929d"></script>
   <script src="assets/js/p015-bill-status.js?v=20260929g"></script>
   <script src="assets/js/p051-cash-collection.js?v=20261003c"></script>
-  <script src="assets/js/p008-collection-v2.js?v=20261005g"></script>
+  <script src="assets/js/p008-collection-v2.js?v=20261005h"></script>
   <script src="assets/js/p026-payable-history.js?v=20261001e"></script>
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>

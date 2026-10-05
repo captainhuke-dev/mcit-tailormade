@@ -811,6 +811,8 @@
   function openPrintModal() {
     var m = document.getElementById("p008PrintModal");
     if (!m) { window.print(); return; }
+    _zoom = 1;
+    applyZoom();
     m.style.display = "flex";
     document.body.style.overflow = "hidden";
   }
@@ -819,6 +821,10 @@
     var m = document.getElementById("p008PrintModal");
     if (m) m.style.display = "none";
     document.body.style.overflow = "";
+    var rpt = document.getElementById("p008Report");
+    if (rpt) rpt.style.zoom = "";
+    var pct = document.getElementById("p008ZoomPct");
+    if (pct) pct.textContent = "100%";
   }
 
   function exportCSV() {
@@ -940,7 +946,11 @@
       ".p008p-backdrop{position:absolute;inset:0;background:rgba(15,23,42,.62)}" +
       ".p008p-dialog{position:relative;z-index:1;width:min(1100px,96vw);height:94vh;margin:2vh 0;display:flex;flex-direction:column;background:#e5e7eb;border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.45);overflow:hidden}" +
       ".p008p-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;background:#0f172a;color:#fff;font-size:13px}" +
-      ".p008p-actions{display:flex;gap:8px}" +
+      ".p008p-actions{display:flex;gap:8px;align-items:center}" +
+      ".p008p-zoom{display:flex;align-items:center;gap:2px;background:#1e293b;border-radius:9px;padding:2px 6px}" +
+      ".p008p-zoom-btn{width:28px;height:28px;border:none;border-radius:7px;background:#334155;color:#fff;font-size:15px;font-weight:700;cursor:pointer;display:grid;place-items:center;line-height:1}" +
+      ".p008p-zoom-btn:hover{background:#475569}" +
+      "#p008ZoomPct{min-width:44px;text-align:center;font-size:12px;font-weight:700;color:#e2e8f0}" +
       ".p008p-btn{height:36px;padding:0 18px;border-radius:9px;border:1px solid transparent;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:6px}" +
       ".p008p-btn.go{background:#2563eb;color:#fff}" +
       ".p008p-btn.go:hover{background:#1d4ed8}" +
@@ -1013,7 +1023,7 @@
         ".p008p-backdrop,.p008p-head{display:none !important}" +
         "#p008PrintModal,.p008p-dialog,.p008p-body{display:block !important;position:static !important;overflow:visible !important;height:auto !important;max-height:none !important;padding:0 !important;margin:0 !important;border:none !important;border-radius:0 !important;background:none !important;box-shadow:none !important}" +
         "#p008Report,#p008Report *{visibility:visible !important}" +
-        "#p008Report{display:block !important;position:absolute;top:0;left:0;width:210mm}" +
+        "#p008Report{display:block !important;position:absolute;top:0;left:0;width:210mm;zoom:1 !important}" +
         ".p008p-body .p008r-page{box-shadow:none !important;margin:0 auto !important}" +
         ".p008-checkbox-cell{display:none}" +
       "}" +
@@ -1028,6 +1038,17 @@
     _mount(root);
   }
 
+  /* ── Zoom ย่อ/ขยาย (CSS zoom — 50%~150% ขั้น 10%) ── */
+  var _zoom = 1;
+  function applyZoom() {
+    var rpt = document.getElementById("p008Report");
+    if (rpt) rpt.style.zoom = String(_zoom);
+    var pct = document.getElementById("p008ZoomPct");
+    if (pct) pct.textContent = Math.round(_zoom * 100) + "%";
+  }
+  function zoomIn() { _zoom = Math.min(1.5, _zoom + 0.1); applyZoom(); }
+  function zoomOut() { _zoom = Math.max(0.5, _zoom - 0.1); applyZoom(); }
+
   /* ── Print preview modal (static ใน index.php — bind 1 ครั้ง) ── */
   (function () {
     var m = document.getElementById("p008PrintModal");
@@ -1040,6 +1061,10 @@
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && m.style.display === "flex") closePrintModal();
     });
+    var zin = m.querySelector("#p008ZoomIn");
+    var zout = m.querySelector("#p008ZoomOut");
+    if (zin) zin.addEventListener("click", zoomIn);
+    if (zout) zout.addEventListener("click", zoomOut);
   })();
 
   window.P008CollectionV2 = { mount: mountWithRoot };
