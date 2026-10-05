@@ -967,17 +967,17 @@
       ".p008p-body .p008r-page:last-child{margin-bottom:0}" +
       ".p008r-page{width:186mm;min-height:277mm;box-sizing:border-box;margin:0 auto;padding:8mm 12mm;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always}" +
       ".p008r-page:last-child{page-break-after:auto}" +
-      ".p008r-sum-title{text-align:center;font-size:18px;font-weight:700;margin-bottom:4px}" +
-      ".p008r-sum-line{font-size:15px;margin:2px 0}" +
+      ".p008r-sum-title{text-align:center;font-size:18pt;font-weight:700;margin-bottom:4px}" +
+      ".p008r-sum-line{font-size:16pt;margin:2px 0}" +
       ".p008r-sum{width:100%;border-collapse:collapse;margin-bottom:10px;table-layout:fixed}" +
-      ".p008r-sum th{border:1px solid #333;font-size:13px;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
-      ".p008r-sum td{border:1px solid #333;font-size:12px;padding:3px 4px}" +
+      ".p008r-sum th{border:1px solid #333;font-size:14pt;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
+      ".p008r-sum td{border:1px solid #333;font-size:12pt;padding:3px 4px}" +
       ".p008r-sum td.c,.p008r-sum th.c{text-align:center}" +
       ".p008r-sum td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
       ".p008r-sum td.vk{border-left:1px solid #333;border-right:1px solid #333}" +
-      ".p008r-cust-head td{font-size:14px;font-weight:700;border:none;background:none;padding:0 4px}" +
-      ".p008r-total td{font-size:13px;font-weight:700;background:#f5f5f5}" +
-      ".p008r-grand td{font-size:14px;font-weight:700;background:#eee}" +
+      ".p008r-cust-head td{font-size:14pt;font-weight:700;border:none;background:none;padding:0 4px}" +
+      ".p008r-total td{font-size:14pt;font-weight:700;background:#f5f5f5}" +
+      ".p008r-grand td{font-size:14pt;font-weight:700;background:#eee}" +
       ".p008r-cov-head{width:100%;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-cov-head td{vertical-align:middle;padding:2px 0}" +
       ".p008r-h-left{width:70px;text-align:center}" +
