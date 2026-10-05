@@ -1015,7 +1015,7 @@
       ".p008r-addr tr:last-child td{border-bottom:1px solid #333;height:10px}" +
       ".p008r-cov{width:100%;border-collapse:collapse;margin-top:4px;table-layout:fixed}" +
       ".p008r-cov th{border:1px solid #333;font-size:13px;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
-      ".p008r-cov td{border:none;font-size:13px;padding:4px 4px}" +
+      ".p008r-cov td{border:1px solid #333;font-size:13px;padding:4px 4px}" +
       ".p008r-cov td.c{text-align:center}" +
       ".p008r-cov td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
       ".p008r-cov-total td{font-size:14px;font-weight:700}" +
