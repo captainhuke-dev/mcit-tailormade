@@ -1026,7 +1026,7 @@
       ".p008r-cov tbody tr{height:26px}" +
       ".p008r-cov td.c{text-align:center}" +
       ".p008r-cov td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
-      ".p008r-cov-total td{font-size:14px;font-weight:700}" +
+      ".p008r-cov-total td{font-size:14px;font-weight:700;padding:3px 4px}" +
       ".p008r-cheque{margin-top:10px;font-size:13px;line-height:1.9}" +
       ".p008r-note{text-align:center;font-size:15px;font-weight:700;margin-top:10px}" +
       ".p008r-foot{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
