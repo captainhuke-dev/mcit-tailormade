@@ -952,7 +952,7 @@
       ".p008r-sum th{border:1px solid #333;font-size:13px;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
       ".p008r-sum td{border:1px solid #333;font-size:12px;padding:3px 4px}" +
       ".p008r-sum td.c,.p008r-sum th.c{text-align:center}" +
-      ".p008r-sum td.r{text-align:right;font-family:Arial,sans-serif;font-variant-numeric:tabular-nums}" +
+      ".p008r-sum td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
       ".p008r-sum td.vk{border-left:1px solid #333;border-right:1px solid #333}" +
       ".p008r-cust-head td{font-size:14px;font-weight:700;background:#fafafa}" +
       ".p008r-total td{font-size:13px;font-weight:700;background:#f5f5f5}" +
@@ -978,7 +978,7 @@
       ".p008r-cov th{border:1px solid #333;font-size:13px;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
       ".p008r-cov td{border:none;font-size:13px;padding:4px 4px}" +
       ".p008r-cov td.c{text-align:center}" +
-      ".p008r-cov td.r{text-align:right;font-family:Arial,sans-serif;font-variant-numeric:tabular-nums}" +
+      ".p008r-cov td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
       ".p008r-cov-total td{font-size:14px;font-weight:700}" +
       ".p008r-cheque{margin-top:10px;font-size:13px;line-height:1.9}" +
       ".p008r-note{text-align:center;font-size:15px;font-weight:700;margin-top:10px}" +
