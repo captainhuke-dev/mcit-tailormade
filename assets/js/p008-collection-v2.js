@@ -503,14 +503,20 @@
     var monthName = THAI_MONTHS[Number(params.month) - 1] || "";
     var pages = [];
 
-    /* ── Page 1: สรุป — Table 1 = หัวตาราง 9 คอลั่น · Table 2+ = 1 ตารางต่อ 1 ลูกหนี้ (แถวแรก colspan 9 ไม่มีเส้น) — ห่างกัน 10px ── */
+    /* ── Page 1: สรุป — Table 1 = หัวตาราง 9 คอลั่น · Table 2+ = 1 ตารางต่อ 1 ลูกหนี้ (แถวแรก colspan 9 ไม่มีเส้น) — ห่างกัน 10px
+         คอลั่น (f): 60, 80, 10, 80, 65, 65, 70, 60, 60 (รวม 560) ── */
     var sumAllReq = 0, sumAllBal = 0, sumAllDis = 0, sumAllCut = 0;
+    var sumCols =
+      '<colgroup>' +
+        '<col style="width:10.714%"><col style="width:14.286%"><col style="width:1.786%"><col style="width:14.286%">' +
+        '<col style="width:11.607%"><col style="width:11.607%"><col style="width:12.5%"><col style="width:10.714%"><col style="width:10.714%">' +
+      '</colgroup>';
     var sumHead =
       "<thead><tr>" +
         "<th>วันที่</th><th>เลขที่ใบสำคัญ</th><th>VK</th><th>ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th><th>ครบกำหนด</th><th>พนักงาน</th>" +
       "</tr></thead>";
     var sumTables = "";
-    sumTables += '<table class="p008r-sum">' + sumHead + "</table>";
+    sumTables += '<table class="p008r-sum">' + sumCols + sumHead + "</table>";
     for (var i = 0; i < rep.customers.length; i++) {
       var c = rep.customers[i];
       var tReq = 0, tBal = 0, tDis = 0, tCut = 0;
@@ -536,7 +542,7 @@
       sumAllReq += tReq; sumAllBal += tBal; sumAllDis += tDis; sumAllCut += tCut;
       var isLast = i === rep.customers.length - 1;
       sumTables +=
-        '<table class="p008r-sum"><tbody>' +
+        '<table class="p008r-sum">' + sumCols + "<tbody>" +
           '<tr class="p008r-cust-head"><td colspan="9">' + esc(c.code) + "  " + esc(c.nameE) + "   " + esc(c.contactT) + "</td></tr>" +
           rowsHtml +
           '<tr class="p008r-total">' +
