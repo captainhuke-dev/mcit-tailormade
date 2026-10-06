@@ -729,10 +729,14 @@
         "</div>" +
         '<div class="p008r-note">กรุณาเรียกใบรับเงินทุกครั้งที่ท่านชำระเงินกับผู้แทนขาย เพื่อเป็นหลักฐานในการชำระเงิน</div>' +
         '<table class="p008r-foot">' +
+          '<colgroup><col style="width:36.364%"><col style="width:63.636%"></colgroup>' +
           "<tr>" +
             "<td>[BLV] ใบรายงานเก็บบัญชี</td>" +
-            '<td colspan="2">เอกสารสร้างโดย  ' + esc(navigator.onLine ? "PORTAL" : "") + "  วันที่ " + printDate + "</td>" +
-            '<td class="c">Page ' + (n + 1) + "/" + totalPages + "</td>" +
+            "<td>เอกสารสร้างโดย : system  วันที่ " + printDate + "</td>" +
+          "</tr>" +
+          "<tr>" +
+            "<td>SALE-SYS-EX-15-6201</td>" +
+            "<td>พิมพ์โดย : system  วันที่ " + printDate + "</td>" +
           "</tr>" +
         "</table>";
     } else {
@@ -1029,13 +1033,10 @@
       ".p008r-cov td.c{text-align:center}" +
       ".p008r-cov td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
       ".p008r-cov-total td{font-size:13pt;font-weight:700;padding:2px 4px;line-height:1}" +
-      ".p008r-cheque{margin-top:10px;font-size:13px;line-height:1.9}" +
-      ".p008r-note{text-align:center;font-size:15px;font-weight:700;margin-top:10px}" +
+      ".p008r-cheque{margin-top:10px;font-size:14pt;line-height:1.9}" +
+      ".p008r-note{text-align:center;font-size:14pt;font-weight:700;margin-top:10px}" +
       ".p008r-foot{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
-      ".p008r-foot td{font-size:12px;padding:3px 4px}" +
-      ".p008r-foot td:first-child{width:160px}" +
-      ".p008r-foot td:last-child{width:60px;border:1px solid #333;text-align:right;padding-right:6px}" +
-      ".p008r-foot td.c{text-align:center}" +
+      ".p008r-foot td{font-size:13pt;padding:3px 4px}" +
       ".p008r-receipt{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
       ".p008r-rc-title td{font-size:14px;font-weight:700;text-align:center;padding:4px 0}" +
       ".p008r-rc-img{width:188px;text-align:center;vertical-align:middle}" +
