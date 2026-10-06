@@ -665,12 +665,16 @@
     var start = n * 12;
     var end = Math.min(start + 12, rows.length);
     var tBal = 0;
+    for (var z = 0; z < rows.length; z++) {
+      var rz = rows[z];
+      var zBal = num(rz.balance), zDis = Math.abs(num(rz.dis));
+      tBal += zBal;
+      if (zDis > 0) tBal -= zDis;
+    }
     var bodyRows = "";
     for (var y = start; y < end; y++) {
       var r = rows[y];
       var req = num(r.req), dis = Math.abs(num(r.dis)), cut = num(r.cut), bal = num(r.balance);
-      tBal += bal;
-      if (dis > 0) tBal -= dis;
       var desc = t === 0 ? esc(r.VK) : "";
       bodyRows +=
         "<tr>" +
