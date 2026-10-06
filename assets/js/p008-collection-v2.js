@@ -994,7 +994,7 @@
       ".p008p-body .p008r-page{box-shadow:0 4px 18px rgba(15,23,42,.25);background:#fff;margin-bottom:20px}" +
       ".p008p-body .p008r-page:last-child{margin-bottom:0}" +
       ".p008r-page{width:210mm;min-height:297mm;box-sizing:border-box;margin:0 auto;padding:20mm;position:relative;display:flex;flex-direction:column;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always;page-break-inside:auto}" +
-      ".p008r-page-foot{position:absolute;left:20mm;right:20mm;bottom:5mm}" +
+      ".p008r-page-foot{position:absolute;left:20mm;right:20mm;bottom:15mm}" +
       ".p008r-sum{page-break-inside:auto}" +
       ".p008r-sum tr{page-break-inside:avoid}" +
       ".p008r-page:last-child{page-break-after:auto}" +
