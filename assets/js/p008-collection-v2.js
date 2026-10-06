@@ -531,19 +531,19 @@
       "<thead><tr>" +
         "<th>วันที่</th><th>เลขที่ใบสำคัญ</th><th class=\"nb\">VK</th><th class=\"nol\">ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th><th>ครบกำหนด</th><th>พนักงาน</th>" +
       "</tr></thead>";
-    var sumTables = "";
-    sumTables += '<table class="p008r-sum">' + sumCols + sumHead + "</table>";
+    /* ── JS pagination (2026-10-06): Chrome ไม่แตก absolute/flow page ที่ยาว → pack rows เป็น A4 ด้วย JS ── */
+    var sumItems = [];
     for (var i = 0; i < rep.customers.length; i++) {
       var c = rep.customers[i];
       var tReq = 0, tBal = 0, tDis = 0, tCut = 0;
-      var rowsHtml = "";
       for (var a = 0; a < c.inv.length; a++) {
         var r = c.inv[a];
         var req = num(r.req), dis = Math.abs(num(r.dis)), cut = num(r.cut), bal = num(r.balance);
         tReq += req; tDis += dis; tCut += cut; tBal += bal;
         if (dis > 0) tBal -= dis;
-        rowsHtml +=
-          "<tr>" +
+        sumItems.push({
+          h: 23,
+          html: "<tr>" +
             '<td class="c">' + fmtDateBE(r.dates) + "</td>" +
             '<td class="c">' + esc(r.vnos) + "</td>" +
             '<td class="c vk">' + esc(r.vk) + "</td>" +
@@ -553,32 +553,57 @@
             '<td class="r">' + formatMoney(dis > 0 ? -dis : bal) + "</td>" +
             '<td class="c">' + addDays30BE(r.dates) + "</td>" +
             '<td class="c">' + esc(c.perCode) + "</td>" +
-          "</tr>";
+          "</tr>"
+        });
       }
       sumAllReq += tReq; sumAllBal += tBal; sumAllDis += tDis; sumAllCut += tCut;
       var isLast = i === rep.customers.length - 1;
-      sumTables +=
-        '<table class="p008r-sum">' + sumCols + "<tbody>" +
-          '<tr class="p008r-cust-head"><td colspan="9">' + esc(c.code) + "  " + esc(c.nameE) + "   " + esc(c.contactT) + "</td></tr>" +
-          rowsHtml +
-          '<tr class="p008r-total">' +
-            '<td colspan="2" class="c">รวม</td>' +
-            '<td colspan="2" class="r nol">' + formatMoney(tReq) + "</td>" +
-            "<td></td><td></td>" +
-            '<td class="r">' + formatMoney(tBal) + "</td>" +
+      sumItems.push({
+        h: 24,
+        html: '<tr class="p008r-cust-head"><td colspan="9">' + esc(c.code) + "  " + esc(c.nameE) + "   " + esc(c.contactT) + "</td></tr>"
+      });
+      sumItems.push({
+        h: 23,
+        html: '<tr class="p008r-total">' +
+          '<td colspan="2" class="c">รวม</td>' +
+          '<td colspan="2" class="r nol">' + formatMoney(tReq) + "</td>" +
+          "<td></td><td></td>" +
+          '<td class="r">' + formatMoney(tBal) + "</td>" +
+          '<td colspan="2"></td>' +
+        "</tr>"
+      });
+      if (isLast) {
+        sumItems.push({
+          h: 23,
+          html: '<tr class="p008r-grand">' +
+            '<td colspan="2" class="c">รวมทั้งสิ้น</td>' +
+            '<td colspan="2" class="r nol">' + formatMoney(sumAllReq) + "</td>" +
+            '<td class="r">' + formatMoney(sumAllDis) + "</td>" +
+            '<td class="r">' + formatMoney(sumAllCut) + "</td>" +
+            '<td class="r">' + formatMoney(sumAllBal) + "</td>" +
             '<td colspan="2"></td>' +
-          "</tr>" +
-          (isLast
-            ? '<tr class="p008r-grand">' +
-                '<td colspan="2" class="c">รวมทั้งสิ้น</td>' +
-                '<td colspan="2" class="r nol">' + formatMoney(sumAllReq) + "</td>" +
-                '<td class="r">' + formatMoney(sumAllDis) + "</td>" +
-                '<td class="r">' + formatMoney(sumAllCut) + "</td>" +
-                '<td class="r">' + formatMoney(sumAllBal) + "</td>" +
-                '<td colspan="2"></td>' +
-              "</tr>"
-            : "") +
-        "</tbody></table>";
+          "</tr>"
+        });
+      }
+    }
+    /* pack: page 1 = header block (~150px) + rows · page 2+ = rows เต็มหน้า (257mm ≈ 974px) */
+    var sumPageH = 974;
+    var sumPages = [];
+    var curH = 150, curRows = "";
+    for (var si = 0; si < sumItems.length; si++) {
+      var it = sumItems[si];
+      if (curH + it.h > sumPageH && curRows) {
+        sumPages.push(curRows);
+        curH = 0;
+        curRows = "";
+      }
+      curH += it.h;
+      curRows += it.html;
+    }
+    sumPages.push(curRows);
+    var sumTables = "";
+    for (var sp = 0; sp < sumPages.length; sp++) {
+      sumTables += '<table class="p008r-sum">' + sumCols + sumHead + "<tbody>" + sumPages[sp] + "</tbody></table>";
     }
     pages.push(
       '<div class="p008r-page p008r-page-flow">' +
