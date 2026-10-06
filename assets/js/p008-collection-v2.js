@@ -754,7 +754,7 @@
           '<tr><td colspan="2"></td><td></td></tr>' +
           '<tr><td colspan="2"></td><td></td></tr>' +
           '<tr><td colspan="2"></td><td></td></tr>' +
-          '<tr><td class="p008r-rc-sign">..........<br>ผู้รับชำระเงิน<br>...../..../....</td><td colspan="2" class="p008r-rc-remark"><b>หมายเหตุ</b> .............<br>........<br>*กรุณาเรียกรับใบเสร็จทุกครั้งเมื่อมีการชำระเงินกับพนักงานขาย</td></tr>' +
+          '<tr><td class="p008r-rc-sign"><br>.....................................<br>ผู้รับชำระเงิน<br>............./.........../............</td><td colspan="2" class="p008r-rc-remark"><b>หมายเหตุ</b> ....................................................................................................<br>.....................................................................................................<br>*กรุณาเรียกรับใบเสร็จทุกครั้งเมื่อมีการชำระเงินกับพนักงานขาย</td></tr>' +
         "</table>";
     }
     return html + "</div>";
@@ -1048,10 +1048,10 @@
       ".p008r-receipt td{border:1px solid #333;font-size:12pt;padding:3px 4px}" +
       ".p008r-receipt tr:nth-child(n+3):nth-child(-n+8){height:22px}" +
       ".p008r-rc-title td{font-size:14pt;font-weight:700;text-align:center}" +
-      ".p008r-rc-img{text-align:center;vertical-align:middle;padding:4px}" +
-      ".p008r-rc-img img{width:150px;height:auto}" +
+      ".p008r-rc-img{text-align:center;vertical-align:middle;padding:2px}" +
+      ".p008r-rc-img img{width:100%;height:auto}" +
       ".p008r-rc-hd td{text-align:center;background:#f5f5f5}" +
-      ".p008r-rc-sign{vertical-align:top}" +
+      ".p008r-rc-sign{text-align:center;vertical-align:top}" +
       ".p008r-rc-remark{vertical-align:top}" +
       ".p008r-last{width:100%;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-last-title td{font-size:16px;font-weight:700;text-align:center;padding:8px 0}" +
