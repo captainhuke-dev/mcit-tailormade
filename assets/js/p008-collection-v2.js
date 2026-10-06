@@ -709,7 +709,7 @@
           "</tr>" +
         "</table>" +
         '<table class="p008r-cov">' +
-          '<colgroup><col style="width:12.364%"><col style="width:14.909%"><col style="width:29.091%"><col style="width:10.909%"><col style="width:10.909%"><col style="width:10.909%"><col style="width:10.909%"></colgroup>' +
+          '<colgroup><col style="width:12.132%"><col style="width:15.598%"><col style="width:27.210%"><col style="width:12.132%"><col style="width:10.399%"><col style="width:10.399%"><col style="width:12.132%"></colgroup>' +
           "<thead><tr><th>วันที่</th><th>เลขที่บิล</th><th>รายละเอียด</th><th>ยอดหนี้</th><th>ยอดปรับหนี้</th><th>ยอดชำระ</th><th>ยอดคงค้าง</th></tr></thead>" +
           "<tbody>" + bodyRows + totalRow + fillRows + "</tbody>" +
         "</table>";
@@ -729,7 +729,7 @@
         "</div>" +
         '<div class="p008r-note">กรุณาเรียกใบรับเงินทุกครั้งที่ท่านชำระเงินกับผู้แทนขาย เพื่อเป็นหลักฐานในการชำระเงิน</div>' +
         '<table class="p008r-foot">' +
-          '<colgroup><col style="width:36.364%"><col style="width:63.636%"></colgroup>' +
+          '<colgroup><col style="width:34.662%"><col style="width:65.338%"></colgroup>' +
           "<tr>" +
             "<td>[BLV] ใบรายงานเก็บบัญชี</td>" +
             "<td>เอกสารสร้างโดย : system  วันที่ " + printDate + "</td>" +
@@ -1008,23 +1008,23 @@
       ".p008r-cust-head td{font-size:14pt;font-weight:700;border:none;background:none;padding:0 4px}" +
       ".p008r-total td{font-size:14pt;font-weight:700;background:#f5f5f5}" +
       ".p008r-grand td{font-size:14pt;font-weight:700;background:#eee}" +
-      ".p008r-cov-head{width:162mm;margin:0 auto;border-collapse:collapse;table-layout:fixed}" +
+      ".p008r-cov-head{width:170mm;margin:0 auto;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-cov-head td{vertical-align:middle;padding:2px 0;border:1px solid #333}" +
-      ".p008r-h-left{width:12.727%;text-align:center}" +
+      ".p008r-h-left{width:13.865%;text-align:center}" +
       ".p008r-h-mid{width:auto;text-align:center}" +
-      ".p008r-h-right{width:18.182%;text-align:center}" +
+      ".p008r-h-right{width:17.331%;text-align:center}" +
       ".p008r-logo img{width:70px;height:40px;object-fit:contain}" +
       ".p008r-mcit{font-size:20pt;font-weight:700}" +
       ".p008r-barcode svg,.p008r-barcode canvas{max-width:220px;height:52px}" +
       ".p008r-company{font-size:15pt;line-height:1.5;text-align:left}" +
       ".p008r-copy{font-size:16pt;font-weight:700;padding-top:8px}" +
-      ".p008r-addr{width:162mm;margin:6px auto 10px;border-collapse:collapse;table-layout:fixed}" +
-      ".p008r-addr-deb{width:52.727%;border:1px solid #333;border-right:none;font-size:14pt;line-height:1.1;vertical-align:top;padding:5px 7px}" +
-      ".p008r-addr-qr{width:10.909%;border-top:1px solid #333;border-bottom:1px solid #333;text-align:center;vertical-align:top;padding-top:3px;font-size:11px}" +
+      ".p008r-addr{width:170mm;margin:6px auto 10px;border-collapse:collapse;table-layout:fixed}" +
+      ".p008r-addr-deb{width:54.939%;border:1px solid #333;border-right:none;font-size:14pt;line-height:1.1;vertical-align:top;padding:5px 7px}" +
+      ".p008r-addr-qr{width:10.399%;border-top:1px solid #333;border-bottom:1px solid #333;text-align:center;vertical-align:top;padding-top:3px;font-size:11px}" +
       ".p008r-addr-qr .p008r-qr{display:inline-block}" +
       ".p008r-addr-qr canvas,.p008r-addr-qr img{width:50px;height:50px}" +
       ".p008r-addr-per{width:auto;border:1px solid #333;font-size:14pt;line-height:1.1;vertical-align:top;padding:5px 7px}" +
-      ".p008r-cov{width:162mm;margin:4px auto 0;border-collapse:collapse;table-layout:fixed}" +
+      ".p008r-cov{width:170mm;margin:4px auto 0;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-cov th{border:1px solid #333;font-size:13pt;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
       ".p008r-cov td{border:1px solid #333;font-size:13pt;padding:2px 4px;line-height:1}" +
       ".p008r-cov tbody td{border-left:none;border-right:none;border-top:none;border-bottom:none}" +
@@ -1035,9 +1035,9 @@
       ".p008r-cov td.c{text-align:center}" +
       ".p008r-cov td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
       ".p008r-cov-total td{font-size:13pt;font-weight:700;padding:2px 4px;line-height:1}" +
-      ".p008r-cheque{margin-top:10px;font-size:12pt;line-height:1.9}" +
+      ".p008r-cheque{margin-top:10px;font-size:14pt;line-height:1.9}" +
       ".p008r-note{text-align:center;font-size:14pt;font-weight:700;margin-top:10px}" +
-      ".p008r-foot{width:162mm;margin:10px auto 0;border-collapse:collapse;table-layout:fixed}" +
+      ".p008r-foot{width:170mm;margin:10px auto 0;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-foot td{font-size:13pt;padding:3px 4px}" +
       ".p008r-receipt{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
       ".p008r-rc-title td{font-size:14px;font-weight:700;text-align:center;padding:4px 0}" +
