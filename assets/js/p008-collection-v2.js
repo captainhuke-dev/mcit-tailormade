@@ -991,11 +991,11 @@
       ".p008p-body{flex:1;overflow:auto;padding:18px;background:#e5e7eb}" +
       ".p008p-body .p008r-page{box-shadow:0 4px 18px rgba(15,23,42,.25);background:#fff;margin-bottom:20px}" +
       ".p008p-body .p008r-page:last-child{margin-bottom:0}" +
-      ".p008r-page{width:186mm;min-height:277mm;box-sizing:border-box;margin:0 auto;padding:8mm 12mm;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always}" +
+      ".p008r-page{width:210mm;min-height:297mm;box-sizing:border-box;margin:0 auto;padding:4.4mm;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always}" +
       ".p008r-page:last-child{page-break-after:auto}" +
       ".p008r-sum-title{text-align:center;font-size:18pt;font-weight:700;margin-bottom:4px}" +
       ".p008r-sum-line{font-size:16pt;margin:2px 0}" +
-      ".p008r-sum{width:100%;border-collapse:collapse;margin-bottom:10px;table-layout:fixed}" +
+      ".p008r-sum{width:162mm;border-collapse:collapse;margin:0 auto 10px;table-layout:fixed}" +
       ".p008r-sum th{border:1px solid #333;font-size:14pt;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
       ".p008r-sum td{border:1px solid #333;font-size:12pt;padding:3px 4px}" +
       ".p008r-sum td.c,.p008r-sum th.c{text-align:center}" +
@@ -1006,7 +1006,7 @@
       ".p008r-cust-head td{font-size:14pt;font-weight:700;border:none;background:none;padding:0 4px}" +
       ".p008r-total td{font-size:14pt;font-weight:700;background:#f5f5f5}" +
       ".p008r-grand td{font-size:14pt;font-weight:700;background:#eee}" +
-      ".p008r-cov-head{width:100%;border-collapse:collapse;table-layout:fixed}" +
+      ".p008r-cov-head{width:162mm;margin:0 auto;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-cov-head td{vertical-align:middle;padding:2px 0;border:1px solid #333}" +
       ".p008r-h-left{width:12.727%;text-align:center}" +
       ".p008r-h-mid{width:auto;text-align:center}" +
@@ -1022,7 +1022,7 @@
       ".p008r-addr-qr .p008r-qr{display:inline-block}" +
       ".p008r-addr-qr canvas,.p008r-addr-qr img{width:50px;height:50px}" +
       ".p008r-addr-per{width:auto;border:1px solid #333;font-size:14pt;line-height:1.1;vertical-align:top;padding:5px 7px}" +
-      ".p008r-cov{width:100%;border-collapse:collapse;margin-top:4px;table-layout:fixed}" +
+      ".p008r-cov{width:162mm;margin:4px auto 0;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-cov th{border:1px solid #333;font-size:13pt;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
       ".p008r-cov td{border:1px solid #333;font-size:13pt;padding:2px 4px;line-height:1}" +
       ".p008r-cov tbody td{border-left:none;border-right:none;border-top:none;border-bottom:none}" +
@@ -1033,9 +1033,9 @@
       ".p008r-cov td.c{text-align:center}" +
       ".p008r-cov td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
       ".p008r-cov-total td{font-size:13pt;font-weight:700;padding:2px 4px;line-height:1}" +
-      ".p008r-cheque{margin-top:10px;font-size:14pt;line-height:1.9}" +
+      ".p008r-cheque{margin-top:10px;font-size:12pt;line-height:1.9}" +
       ".p008r-note{text-align:center;font-size:14pt;font-weight:700;margin-top:10px}" +
-      ".p008r-foot{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
+      ".p008r-foot{width:162mm;margin:10px auto 0;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-foot td{font-size:13pt;padding:3px 4px}" +
       ".p008r-receipt{width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed}" +
       ".p008r-rc-title td{font-size:14px;font-weight:700;text-align:center;padding:4px 0}" +
@@ -1059,6 +1059,7 @@
         "#p008PrintModal,.p008p-dialog,.p008p-body{display:block !important;position:static !important;overflow:visible !important;height:auto !important;max-height:none !important;padding:0 !important;margin:0 !important;border:none !important;border-radius:0 !important;background:none !important;box-shadow:none !important}" +
         "#p008Report,#p008Report *{visibility:visible !important}" +
         "#p008Report{display:block !important;position:absolute;top:0;left:0;width:210mm;zoom:1 !important}" +
+        ".p008r-page{width:210mm !important}" +
         ".p008p-body .p008r-page{box-shadow:none !important;margin:0 auto !important}" +
         ".p008-checkbox-cell{display:none}" +
       "}" +
