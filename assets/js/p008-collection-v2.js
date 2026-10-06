@@ -1018,7 +1018,7 @@
       ".p008r-barcode svg,.p008r-barcode canvas{max-width:220px;height:52px}" +
       ".p008r-company{font-size:15pt;line-height:1.5;text-align:left}" +
       ".p008r-copy{font-size:16pt;font-weight:700;padding-top:8px}" +
-      ".p008r-addr{width:100%;border-collapse:collapse;table-layout:fixed;margin-top:6px;margin-bottom:10px}" +
+      ".p008r-addr{width:162mm;margin:6px auto 10px;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-addr-deb{width:52.727%;border:1px solid #333;border-right:none;font-size:14pt;line-height:1.1;vertical-align:top;padding:5px 7px}" +
       ".p008r-addr-qr{width:10.909%;border-top:1px solid #333;border-bottom:1px solid #333;text-align:center;vertical-align:top;padding-top:3px;font-size:11px}" +
       ".p008r-addr-qr .p008r-qr{display:inline-block}" +
