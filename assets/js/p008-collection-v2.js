@@ -1049,7 +1049,7 @@
       ".p008r-receipt tr:nth-child(n+3):nth-child(-n+8){height:26px}" +
       ".p008r-rc-title td{font-size:14pt;font-weight:700;text-align:center}" +
       ".p008r-rc-img{text-align:center;vertical-align:middle;padding:2px}" +
-      ".p008r-rc-img img{width:208.7px;height:199.8px;object-fit:contain}" +
+      ".p008r-rc-img img{width:100%;height:100%;object-fit:contain}" +
       ".p008r-rc-hd td{text-align:center;background:#f5f5f5}" +
       ".p008r-rc-sign{text-align:center;vertical-align:top;padding-top:30px}" +
       ".p008r-rc-remark{vertical-align:top;padding-top:30px}" +
