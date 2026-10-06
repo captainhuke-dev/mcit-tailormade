@@ -581,7 +581,7 @@
         "</tbody></table>";
     }
     pages.push(
-      '<div class="p008r-page">' +
+      '<div class="p008r-page p008r-page-flow">' +
         '<div class="p008r-sum-title">' + esc(h.provinceName) + " - " + esc(h.perCode) + " " + esc(h.perName) + "</div>" +
         '<div class="p008r-sum-line">     จนถึงวันที่  :  ' + fmtDateFull(params.asOf) + "</div>" +
         '<div class="p008r-sum-line">     รอบที่/ประจำเดือน  :  ' + esc(params.round) + " / " + esc(monthName) + " " + beYear + "</div>" +
@@ -991,7 +991,9 @@
       ".p008p-body{flex:1;overflow:auto;padding:18px;background:#e5e7eb}" +
       ".p008p-body .p008r-page{box-shadow:0 4px 18px rgba(15,23,42,.25);background:#fff;margin-bottom:20px}" +
       ".p008p-body .p008r-page:last-child{margin-bottom:0}" +
-      ".p008r-page{width:210mm;min-height:297mm;box-sizing:border-box;margin:0 auto;padding:4.4mm;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always}" +
+      ".p008r-page{width:210mm;min-height:297mm;box-sizing:border-box;margin:0 auto;padding:4.4mm;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always;page-break-inside:auto}" +
+      ".p008r-sum{page-break-inside:auto}" +
+      ".p008r-sum tr{page-break-inside:avoid}" +
       ".p008r-page:last-child{page-break-after:auto}" +
       ".p008r-sum-title{text-align:center;font-size:18pt;font-weight:700;margin-bottom:4px}" +
       ".p008r-sum-line{font-size:16pt;margin:2px 0}" +
@@ -1059,7 +1061,10 @@
         "#p008PrintModal,.p008p-dialog,.p008p-body{display:block !important;position:static !important;overflow:visible !important;height:auto !important;max-height:none !important;padding:0 !important;margin:0 !important;border:none !important;border-radius:0 !important;background:none !important;box-shadow:none !important}" +
         "#p008Report,#p008Report *{visibility:visible !important}" +
         "#p008Report{display:block !important;position:absolute;top:0;left:0;width:210mm;zoom:1 !important}" +
-        ".p008r-page{width:210mm !important}" +
+        ".p008r-page{width:210mm !important;height:297mm !important;overflow:hidden !important;page-break-after:always !important}" +
+        ".p008r-page:last-child{page-break-after:auto !important}" +
+        ".p008r-page-flow{height:auto !important;min-height:0 !important;overflow:visible !important;padding:4.4mm 4.4mm 0 !important;page-break-after:always !important}" +
+        ".p008r-page-flow .p008r-sum:last-child{margin-bottom:0 !important}" +
         ".p008p-body .p008r-page{box-shadow:none !important;margin:0 auto !important}" +
         ".p008-checkbox-cell{display:none}" +
       "}" +
