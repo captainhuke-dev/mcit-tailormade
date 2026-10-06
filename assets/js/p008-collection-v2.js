@@ -727,6 +727,7 @@
           "<div>[ ] รับคืนสินค้า......................................................................... [ ] วางบิล.......................................................................................</div>" +
           "<div>[ ] ค้างบิล.......................................................................สาเหตุการค้างบิล.........................................................................................</div>" +
         "</div>" +
+        '<div class="p008r-cover-foot">' +
         '<div class="p008r-note">กรุณาเรียกใบรับเงินทุกครั้งที่ท่านชำระเงินกับผู้แทนขาย เพื่อเป็นหลักฐานในการชำระเงิน</div>' +
         '<table class="p008r-foot">' +
           '<colgroup><col style="width:34.662%"><col style="width:65.338%"></colgroup>' +
@@ -738,7 +739,8 @@
             "<td>SALE-SYS-EX-15-6201</td>" +
             "<td>พิมพ์โดย : system  วันที่ " + printDate + "</td>" +
           "</tr>" +
-        "</table>";
+        "</table>" +
+        "</div>";
     } else {
       /* ใบเสร็จรับเงิน (clone C#) */
       html +=
@@ -991,7 +993,8 @@
       ".p008p-body{flex:1;overflow:auto;padding:18px;background:#e5e7eb}" +
       ".p008p-body .p008r-page{box-shadow:0 4px 18px rgba(15,23,42,.25);background:#fff;margin-bottom:20px}" +
       ".p008p-body .p008r-page:last-child{margin-bottom:0}" +
-      ".p008r-page{width:210mm;min-height:297mm;box-sizing:border-box;margin:0 auto;padding:20mm;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always;page-break-inside:auto}" +
+      ".p008r-page{width:210mm;min-height:297mm;box-sizing:border-box;margin:0 auto;padding:20mm;position:relative;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always;page-break-inside:auto}" +
+      ".p008r-cover-foot{position:absolute;left:20mm;right:20mm;bottom:20mm}" +
       ".p008r-sum{page-break-inside:auto}" +
       ".p008r-sum tr{page-break-inside:avoid}" +
       ".p008r-page:last-child{page-break-after:auto}" +
@@ -1035,7 +1038,7 @@
       ".p008r-cov td.c{text-align:center}" +
       ".p008r-cov td.r{text-align:right;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;font-variant-numeric:tabular-nums}" +
       ".p008r-cov-total td{font-size:13pt;font-weight:700;padding:2px 4px;line-height:1}" +
-      ".p008r-cheque{margin-top:10px;font-size:14pt;line-height:1.9}" +
+      ".p008r-cheque{margin-top:10px;font-size:14pt;line-height:1.7}" +
       ".p008r-note{text-align:center;font-size:14pt;font-weight:700;margin-top:10px}" +
       ".p008r-foot{width:170mm;margin:10px auto 0;border-collapse:collapse;table-layout:fixed}" +
       ".p008r-foot td{font-size:13pt;padding:3px 4px}" +
