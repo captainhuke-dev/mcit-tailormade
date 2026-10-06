@@ -727,7 +727,7 @@
           "<div>[ ] รับคืนสินค้า......................................................................... [ ] วางบิล.......................................................................................</div>" +
           "<div>[ ] ค้างบิล.......................................................................สาเหตุการค้างบิล.........................................................................................</div>" +
         "</div>" +
-        '<div class="p008r-cover-foot">' +
+        '<div class="p008r-page-foot">' +
         '<div class="p008r-note">กรุณาเรียกใบรับเงินทุกครั้งที่ท่านชำระเงินกับผู้แทนขาย เพื่อเป็นหลักฐานในการชำระเงิน</div>' +
         '<table class="p008r-foot">' +
           '<colgroup><col style="width:34.662%"><col style="width:65.338%"></colgroup>' +
@@ -993,8 +993,8 @@
       ".p008p-body{flex:1;overflow:auto;padding:18px;background:#e5e7eb}" +
       ".p008p-body .p008r-page{box-shadow:0 4px 18px rgba(15,23,42,.25);background:#fff;margin-bottom:20px}" +
       ".p008p-body .p008r-page:last-child{margin-bottom:0}" +
-      ".p008r-page{width:210mm;min-height:297mm;box-sizing:border-box;margin:0 auto;padding:20mm;position:relative;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always;page-break-inside:auto}" +
-      ".p008r-cover-foot{position:absolute;left:20mm;right:20mm;bottom:20mm}" +
+      ".p008r-page{width:210mm;min-height:297mm;box-sizing:border-box;margin:0 auto;padding:20mm;position:relative;display:flex;flex-direction:column;font-family:'THSarabunNew','Sarabun',Tahoma,sans-serif;color:#000;page-break-after:always;page-break-inside:auto}" +
+      ".p008r-page-foot{margin-top:auto}" +
       ".p008r-sum{page-break-inside:auto}" +
       ".p008r-sum tr{page-break-inside:avoid}" +
       ".p008r-page:last-child{page-break-after:auto}" +
