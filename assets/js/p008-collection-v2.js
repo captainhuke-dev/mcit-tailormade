@@ -585,6 +585,12 @@
             '<td colspan="2"></td>' +
           "</tr>"
         });
+      } else {
+        /* ระยะห่างระหว่างตาราง loop = 15px (2026-10-06 user) */
+        sumItems.push({
+          h: 15,
+          html: '<tr class="p008r-spacer"><td colspan="9"></td></tr>'
+        });
       }
     }
     /* pack หลัง render (2026-10-06): #p008Report = hidden → วัด row height จริงใน temp container visible แล้ว pack เป็น A4 */
@@ -1075,6 +1081,7 @@
       ".p008r-sum-title{text-align:center;font-size:18pt;font-weight:700;margin-bottom:4px}" +
       ".p008r-sum-line{font-size:16pt;margin:2px 0}" +
       ".p008r-sum{width:170mm;border-collapse:collapse;margin:0 auto 15px;table-layout:fixed}" +
+      ".p008r-sum tr.p008r-spacer td{border:none;background:none;padding:0;height:15px}" +
       ".p008r-sum th{border:1px solid #333;font-size:14pt;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
       ".p008r-sum td{border:1px solid #333;font-size:12pt;padding:3px 4px}" +
       ".p008r-sum td.c,.p008r-sum th.c{text-align:center}" +
