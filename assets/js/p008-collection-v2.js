@@ -524,8 +524,8 @@
     var sumAllReq = 0, sumAllBal = 0, sumAllDis = 0, sumAllCut = 0;
     var sumCols =
       '<colgroup>' +
-        '<col style="width:10.399%"><col style="width:14.731%"><col style="width:3.466%"><col style="width:13.865%">' +
-        '<col style="width:12.132%"><col style="width:12.132%"><col style="width:13.865%"><col style="width:10.399%"><col style="width:9.012%">' +
+        '<col style="width:10.772%"><col style="width:15.260%"><col style="width:3.591%"><col style="width:14.363%">' +
+        '<col style="width:12.567%"><col style="width:12.567%"><col style="width:14.363%"><col style="width:10.772%"><col style="width:9.336%">' +
       '</colgroup>';
     var sumHead =
       "<thead><tr>" +
@@ -542,7 +542,7 @@
         tReq += req; tDis += dis; tCut += cut; tBal += bal;
         if (dis > 0) tBal -= dis;
         sumItems.push({
-          h: 23,
+          h: 25,
           html: "<tr>" +
             '<td class="c">' + fmtDateBE(r.dates) + "</td>" +
             '<td class="c">' + esc(r.vnos) + "</td>" +
@@ -559,11 +559,11 @@
       sumAllReq += tReq; sumAllBal += tBal; sumAllDis += tDis; sumAllCut += tCut;
       var isLast = i === rep.customers.length - 1;
       sumItems.push({
-        h: 24,
+        h: 30,
         html: '<tr class="p008r-cust-head"><td colspan="9">' + esc(c.code) + "  " + esc(c.nameE) + "   " + esc(c.contactT) + "</td></tr>"
       });
       sumItems.push({
-        h: 23,
+        h: 27,
         html: '<tr class="p008r-total">' +
           '<td colspan="2" class="c">รวม</td>' +
           '<td colspan="2" class="r nol">' + formatMoney(tReq) + "</td>" +
@@ -574,7 +574,7 @@
       });
       if (isLast) {
         sumItems.push({
-          h: 23,
+          h: 27,
           html: '<tr class="p008r-grand">' +
             '<td colspan="2" class="c">รวมทั้งสิ้น</td>' +
             '<td colspan="2" class="r nol">' + formatMoney(sumAllReq) + "</td>" +
@@ -586,32 +586,16 @@
         });
       }
     }
-    /* pack: page 1 = header block (~150px) + rows · page 2+ = rows เต็มหน้า (257mm ≈ 974px) */
-    var sumPageH = 974;
-    var sumPages = [];
-    var curH = 150, curRows = "";
-    for (var si = 0; si < sumItems.length; si++) {
-      var it = sumItems[si];
-      if (curH + it.h > sumPageH && curRows) {
-        sumPages.push(curRows);
-        curH = 0;
-        curRows = "";
-      }
-      curH += it.h;
-      curRows += it.html;
-    }
-    sumPages.push(curRows);
-    var sumTables = "";
-    for (var sp = 0; sp < sumPages.length; sp++) {
-      sumTables += '<table class="p008r-sum">' + sumCols + sumHead + "<tbody>" + sumPages[sp] + "</tbody></table>";
-    }
+    /* pack หลัง render (2026-10-06): #p008Report = hidden → วัด row height จริงใน temp container visible แล้ว pack เป็น A4 */
+    var sumAllRows = "";
+    for (var si = 0; si < sumItems.length; si++) sumAllRows += sumItems[si].html;
     pages.push(
-      '<div class="p008r-page p008r-page-flow">' +
+      '<div class="p008r-page p008r-sum-page">' +
         '<div class="p008r-sum-title">' + esc(h.provinceName) + " - " + esc(h.perCode) + " " + esc(h.perName) + "</div>" +
         '<div class="p008r-sum-line">     จนถึงวันที่  :  ' + fmtDateFull(params.asOf) + "</div>" +
         '<div class="p008r-sum-line">     รอบที่/ประจำเดือน  :  ' + esc(params.round) + " / " + esc(monthName) + " " + beYear + "</div>" +
         '<div class="p008r-sum-line">     วันที่พิมพ์  :  ' + printDate + "</div>" +
-        sumTables +
+        '<table class="p008r-sum">' + sumCols + sumHead + "<tbody>" + sumAllRows + "</tbody></table>" +
       "</div>"
     );
 
@@ -789,6 +773,62 @@
     return html + "</div>";
   }
 
+  function splitSummaryPage() {
+    var wrap = document.getElementById("p008Report");
+    if (!wrap) return;
+    var sumPage = wrap.querySelector(".p008r-sum-page");
+    if (!sumPage) return;
+    var table = sumPage.querySelector("table.p008r-sum");
+    if (!table) return;
+    /* วัด row height จริง — #p008Report = hidden → clone ไป temp visible (A4 content width) */
+    var holder = document.createElement("div");
+    holder.style.cssText = "position:absolute;left:-100000px;top:0;width:210mm;background:#fff;font-family:'THSarabunNew','Sarabun',sans-serif";
+    document.body.appendChild(holder);
+    var clone = sumPage.cloneNode(true);
+    holder.appendChild(clone);
+    var cTable = clone.querySelector("table.p008r-sum");
+    var headBlock = 0;
+    var hs = clone.querySelectorAll(".p008r-sum-title,.p008r-sum-line");
+    for (var i = 0; i < hs.length; i++) headBlock += hs[i].getBoundingClientRect().height;
+    var theadH = (cTable.tHead && cTable.tHead.offsetHeight) || 29;
+    var cRows = Array.prototype.slice.call(cTable.querySelector("tbody").querySelectorAll("tr"));
+    var heights = cRows.map(function (r) { return r.getBoundingClientRect().height || 25; });
+    document.body.removeChild(holder);
+    /* pack: page 1 = header block + thead + rows · page 2+ = thead + rows (A4 content 257mm ≈ 974px) */
+    var pageH = 974;
+    var pages = [];
+    var cur = headBlock + theadH, curIdx = 0;
+    while (curIdx < cRows.length) {
+      while (curIdx < cRows.length && cur + heights[curIdx] <= pageH) { cur += heights[curIdx]; curIdx++; }
+      if (curIdx === cRows.length) break;
+      pages.push(curIdx);
+      cur = theadH;
+    }
+    pages.push(cRows.length);
+    var rows = Array.prototype.slice.call(table.querySelector("tbody").querySelectorAll("tr"));
+    var headHtml = "";
+    if (sumPage.querySelector(".p008r-sum-title")) headHtml += sumPage.querySelector(".p008r-sum-title").outerHTML;
+    var ls0 = sumPage.querySelectorAll(".p008r-sum-line");
+    for (var k0 = 0; k0 < ls0.length; k0++) headHtml += ls0[k0].outerHTML;
+    var newPages = "";
+    for (var p = 0; p < pages.length; p++) {
+      var from = p === 0 ? 0 : pages[p - 1];
+      var to = pages[p];
+      var rowsHtml = "";
+      for (var j = from; j < to; j++) rowsHtml += rows[j].outerHTML;
+      newPages +=
+        '<div class="p008r-page">' +
+          (p === 0 ? headHtml : "") +
+          '<table class="p008r-sum">' + (table.querySelector("colgroup") ? table.querySelector("colgroup").outerHTML : "") + table.tHead.outerHTML + "<tbody>" + rowsHtml + "</tbody></table>" +
+        "</div>";
+    }
+    var frag = document.createDocumentFragment();
+    var tmpDiv = document.createElement("div");
+    tmpDiv.innerHTML = newPages;
+    while (tmpDiv.firstChild) frag.appendChild(tmpDiv.firstChild);
+    sumPage.parentNode.replaceChild(frag, sumPage);
+  }
+
   function doPrint() {
     var root = _root;
     var codes = Object.keys(state.selectedCodes).filter(function (c) { return state.selectedCodes[c]; });
@@ -834,6 +874,8 @@
     var wrap = document.getElementById("p008Report");
     if (!wrap) return;
     wrap.innerHTML = buildReportHTML(state.report, state.reportParams);
+    /* หน้า 1 — วัด row height จริง + แตกหน้า A4 (Chrome ไม่แตก absolute) */
+    splitSummaryPage();
     /* barcodes (JsBarcode CODE128 — clone C# *code*) */
     wrap.querySelectorAll(".p008r-barcode").forEach(function (el) {
       try {
@@ -1093,7 +1135,7 @@
         ".p008p-backdrop,.p008p-head{display:none !important}" +
         "#p008PrintModal,.p008p-dialog,.p008p-body{display:block !important;position:static !important;overflow:visible !important;height:auto !important;max-height:none !important;padding:0 !important;margin:0 !important;border:none !important;border-radius:0 !important;background:none !important;box-shadow:none !important}" +
         "#p008Report,#p008Report *{visibility:visible !important}" +
-        "#p008Report{display:block !important;position:absolute;top:0;left:0;width:210mm;zoom:1 !important}" +
+        "#p008Report{display:block !important;position:static !important;width:210mm;zoom:1 !important}" +
         ".p008r-page{width:210mm !important;height:297mm !important;overflow:hidden !important;page-break-after:always !important}" +
         ".p008r-page:last-child{page-break-after:auto !important}" +
         ".p008r-page-flow{height:auto !important;min-height:0 !important;overflow:visible !important;padding:20mm 20mm 0 !important;page-break-after:always !important}" +
