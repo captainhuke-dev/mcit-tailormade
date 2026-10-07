@@ -913,6 +913,20 @@
       `;
     }
 
+    // P129: Print Invoice KTV (BKK) — หน้าแอป (clone P063 + flag BKK)
+    if (programId === "P129") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p129Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P115: TMS View Picture V3 — หน้าค้นหา+ดูเอกสาร (skeleton — mock data)
     if (programId === "P115") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1436,6 +1450,12 @@
     if (page.type === "program" && page.programId === "P064" && window.P064InvoiceMCIT) {
       const root = document.getElementById("p064Root");
       if (root) window.P064InvoiceMCIT.mount(root);
+    }
+
+    // P129: mount Print Invoice KTV (BKK) app
+    if (page.type === "program" && page.programId === "P129" && window.P129InvoiceKTVBKK) {
+      const root = document.getElementById("p129Root");
+      if (root) window.P129InvoiceKTVBKK.mount(root);
     }
 
     // P115: mount TMS View Picture (ฝ่ายขาย) app
