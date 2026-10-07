@@ -536,6 +536,11 @@
     for (var i = 0; i < rep.customers.length; i++) {
       var c = rep.customers[i];
       var tReq = 0, tBal = 0, tDis = 0, tCut = 0;
+      /* ชื่อลูกหนี้ = แถวแรกบนตาราง (2026-10-06 user) */
+      sumItems.push({
+        h: 30,
+        html: '<tr class="p008r-cust-head"><td colspan="9">' + esc(c.code) + "  " + esc(c.nameE) + "   " + esc(c.contactT) + "</td></tr>"
+      });
       for (var a = 0; a < c.inv.length; a++) {
         var r = c.inv[a];
         var req = num(r.req), dis = Math.abs(num(r.dis)), cut = num(r.cut), bal = num(r.balance);
@@ -558,10 +563,6 @@
       }
       sumAllReq += tReq; sumAllBal += tBal; sumAllDis += tDis; sumAllCut += tCut;
       var isLast = i === rep.customers.length - 1;
-      sumItems.push({
-        h: 30,
-        html: '<tr class="p008r-cust-head"><td colspan="9">' + esc(c.code) + "  " + esc(c.nameE) + "   " + esc(c.contactT) + "</td></tr>"
-      });
       sumItems.push({
         h: 27,
         html: '<tr class="p008r-total">' +
