@@ -238,6 +238,10 @@
   .rep-tot-del tr:nth-child(2) td { border-top: 0; }
   /* ใบแจ้งหนี้ (หน้า 1+3) — font 12pt */
   .rep-inv table.rep-totalsbox { width: 100%; border-collapse: collapse; font-size: 16px; }
+  /* T4 — col 3+4: แถวละ 28px (28 = lh15 + padding 3 + border 1) */
+  .rep-inv table.rep-totalsbox td { height: 28px; box-sizing: border-box; line-height: 15px; }
+  /* QR ชำระเงิน — 60×60 ชิดซ้ายบนของช่อง */
+  .rep-inv table.rep-totalsbox .rep-qrpaycell { padding: 0; }
   .rep-totalsbox td { padding: 3px 8px; }
   /* แถวเงิน (จำนวนเงิน/ส่วนลด/ยอดหลังหัก/มัดจำ/ชำระ) — ลดความสูงแถวละ 3px (padding 3→1.5px) */
   .rep-totalsbox tr.rep-mrow td { padding: 1.5px 8px; }
@@ -291,7 +295,7 @@
     height: 60px;
   }
   .rep-qrpay img { display: block; width: 100%; height: 100%; }
-  .rep-qrpaycell { text-align: center; }
+  .rep-qrpaycell { text-align: left; }
 
   /* ---------- print ---------- */
   @page { size: A4; margin: 0; }
