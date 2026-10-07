@@ -65,6 +65,8 @@
     border-collapse: collapse;
     font-size: 12px;
   }
+  /* T1 ใบแจ้งหนี้ — base 12pt (16px) — ค่าที่มี font-size เฉพาะของตัวเองจะ override */
+  table.rep-header { font-size: 16px; }
   table.rep-table th, table.rep-table td {
     border: 1px solid var(--line);
     padding: 5px 8px;
@@ -85,14 +87,14 @@
   .rep-dochead .rep-company {
     grid-column: 2;
     text-align: center;
-    font-size: 24px;
+    font-size: 42.67px;
     font-weight: 800;
     letter-spacing: 1px;
   }
   .rep-dochead .rep-pageno {
     grid-column: 3;
     justify-self: end;
-    font-size: 13px;
+    font-size: 18.67px;
     font-weight: 700;
     text-decoration: underline;
   }
@@ -116,21 +118,20 @@
   .rep-titleflex .rep-title-left { text-align: left; margin-left: 20px; }
   .rep-titleflex .rep-title-sub { margin-left: 10px; }
   .rep-titleflex .rep-qrwrap { margin-top: 0; margin-right: 3px; }
-  .rep-title { font-size: 20px; font-weight: 800; line-height: 1.3; }
-  .rep-title-sub { font-size: 13px; font-weight: 400; color: var(--muted); }
+  .rep-title { font-size: 24px; font-weight: 800; line-height: 1.3; }
+  .rep-title-sub { font-size: 18.67px; font-weight: 400; color: var(--muted); }
   .rep-customer { font-weight: 800; }
-  .rep-ship { font-size: 11.5px; height: 50px; }
-  /* ค่า "อ้างอิงใบสั่งซื้อ" + "ขนส่ง" — ขนาด 10px (label ยังขนาดเดิม) */
-  .rep-refval { font-size: 10px; }
-  /* ค่า "ขนส่ง" — 10px (label ยัง 11.5px) */
-  .rep-shipval { font-size: 10px; }
+  .rep-ship { font-size: 16px; height: 50px; }
+  /* ค่า "อ้างอิงใบสั่งซื้อ" — 12pt */
+  .rep-refval { font-size: 16px; }
+  /* ค่า "ขนส่ง" — 12pt */
+  .rep-shipval { font-size: 16px; }
   /* header layout ใหม่ (เฉพาะหน้า 1): padding ตามตัวอย่าง (font เดิม — ไม่เปลี่ยน) */
   .rep-header-new td { padding: 10px; }
   /* บังคับแถวบน 2 แถว (เลขที่/วันที่ + barcode/title rowspan) สูงรวม 82px ทุกหน้า */
   .rep-header-new tr.rep-hdr-top td { height: 41px; }
-  /* เลขที่เอกสาร / วันที่เอกสาร — เพิ่มขนาด font 2px (12 → 14px)
-     title/sub ไม่ได้รับผลกระทบ — มี font-size ของตัวเอง (.rep-title 20px, .rep-title-sub 13px) */
-  .rep-header-new tr.rep-hdr-top td { font-size: 14px; }
+  /* เลขที่เอกสาร / วันที่เอกสาร — 14pt */
+  .rep-header-new tr.rep-hdr-top td { font-size: 18.67px; }
   .rep-barcodecell { text-align: center; vertical-align: middle !important; }
   .rep-barcodecell .rep-barcode-svg {
     height: 60px;
@@ -190,13 +191,17 @@
     border: 0;
     border-left: 1px solid var(--line);
   }
+  /* T2 ใบแจ้งหนี้ — หัวคอลั่น = 12pt B (16px) · รายการ = 12pt (16px) ทุก mode · normal mode = รายการ 12pt B */
+  table.rep-items:not(.rep-del) th { font-size: 16px; font-weight: 700; }
+  table.rep-items:not(.rep-del) td { font-size: 16px; }
+  table.rep-items:not(.rep-del):not(.dense):not(.compact) td { font-weight: 700; }
   /* T2 ใบแจ้งหนี้ — แสดงเส้นตารางแนวนอน (border ล่างทุกแถว) */
   table.rep-items:not(.rep-del) td { border-bottom: 1px solid var(--line); }
   table.rep-items th:first-child, table.rep-items td:first-child { border-left: 1px solid var(--line); }
   table.rep-items th:last-child, table.rep-items td:last-child { border-right: 1px solid var(--line); }
   table.rep-items thead th { background: #f1f5f9; border-bottom: 1px solid var(--line); }
-  table.rep-items.dense th, table.rep-items.dense td { font-size: 11px; padding: 3px 6px; }
-  table.rep-items.compact th, table.rep-items.compact td { font-size: 10px; padding: 2px 5px; }
+  table.rep-items.dense th, table.rep-items.dense td { font-size: 16px; padding: 3px 6px; }
+  table.rep-items.compact th, table.rep-items.compact td { font-size: 16px; padding: 2px 5px; }
   table.rep-items .desc { word-break: break-word; }
   /* หน้า 1: แถวว่าง (rep-blank) — สูง 43px เหมือนแถวสินค้า (หน้า 2 ไม่ใช้ rep-blank) */
   table.rep-items:not(.rep-del) tr.rep-blank { height: 43px; }
