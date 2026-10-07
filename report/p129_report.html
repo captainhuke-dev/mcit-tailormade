@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>รายงาน Invoice — P129 (KTV-BKK)</title>
+<link rel="stylesheet" href="../assets/css/fonts.css?v=20261001a" />
 <style>
   :root {
     --line: #334155;
@@ -13,7 +14,7 @@
   * { box-sizing: border-box; }
   body {
     margin: 0;
-    font-family: "Noto Sans Thai", "Sarabun", Tahoma, Arial, sans-serif;
+    font-family: "THSarabunNew", "Sarabun", Tahoma, Arial, sans-serif;
     color: var(--text);
     background: #e2e8f0;
   }
@@ -72,7 +73,7 @@
   }
   table.rep-table thead th { background: #f1f5f9; }
   td.num, th.num { text-align: right; white-space: nowrap; }
-  td.code { font-family: ui-monospace, Menlo, monospace; white-space: nowrap; }
+  td.code { white-space: nowrap; }
 
   /* ---------- หัวเอกสาร: MCIT อยู่ตรงกลาง + หน้า N ขวา ---------- */
   .rep-dochead {
@@ -139,12 +140,10 @@
     margin: 0 auto;
   }
   .rep-barcodecell .barcode-fallback {
-    font-family: ui-monospace, Menlo, monospace;
     font-size: 11px;
     letter-spacing: 2px;
   }
   .rep-barcodecell .barcode-text {
-    font-family: ui-monospace, Menlo, monospace;
     font-size: 11px;
     letter-spacing: 2px;
     margin-top: 2px;
