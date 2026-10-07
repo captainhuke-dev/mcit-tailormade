@@ -201,34 +201,6 @@ try {
     unset($row);
 }
 
-// ── BKK: Map QR — Odoo lat/lng ของลูกค้า (via OPENQUERY) — C# getLatLang ──
-//    (P129 = KTV-BKK — flag BKK = true — QR Google Maps ของที่อยู่ลูกค้า)
-try {
-    $mapSql = "SELECT partner_latitude, partner_longitude FROM OPENQUERY(ODOO_DB,
-        'SELECT company_registry, partner_latitude, partner_longitude FROM res_partner WHERE company_registry IS NOT NULL')
-        WHERE company_registry = ?";
-    $mapStmt = $pdo->prepare($mapSql);
-    foreach ($rows as &$row) {
-        $mapStmt->execute(array($row['MIHcus']));
-        $mrow = $mapStmt->fetch(PDO::FETCH_ASSOC);
-        $row['mapQr'] = '';
-        if ($mrow) {
-            $lat = (float) str_replace(".000000", "", $mrow["partner_latitude"]);
-            $lng = (float) str_replace(".000000", "", $mrow["partner_longitude"]);
-            if ($lat > 0 && $lng > 0) {
-                $row['mapQr'] = "https://www.google.com/maps/search/?api=1&query=" . $lat . "," . $lng;
-            }
-        }
-    }
-    unset($row);
-} catch (Exception $e) {
-    // ไม่ fail ทั้งรายงานถ้า query Map QR พลาด — ให้ mapQr ว่าง
-    foreach ($rows as &$row) {
-        $row['mapQr'] = '';
-    }
-    unset($row);
-}
-
 // map invoice ที่ไม่พบ
 $found = array();
 foreach ($rows as $row) {

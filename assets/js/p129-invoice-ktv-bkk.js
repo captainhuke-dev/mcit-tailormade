@@ -104,15 +104,6 @@
     .p129-filter-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
     .p129-field { display: grid; gap: 7px; }
     .p129-field > label { color: var(--p129-text-secondary); font-size: 13px; font-weight: 700; }
-    .p129-fieldlabel { color: var(--p129-text-secondary); font-size: 13px; font-weight: 700; }
-    .p129-check {
-      display: flex; align-items: center; gap: 10px;
-      min-height: 42px; padding: 0 12px; cursor: pointer;
-      border: 1px solid var(--p129-border); border-radius: 9px;
-      color: var(--p129-text); background: var(--p129-surface); font-size: 14px;
-    }
-    .p129-check:hover { border-color: var(--p129-border-hover); }
-    .p129-check input { width: 17px; height: 17px; margin: 0; cursor: pointer; accent-color: var(--p129-primary); }
     .p129-field input, .p129-field select {
       width: 100%; height: 42px; padding: 0 12px;
       border: 1px solid var(--p129-border); border-radius: 9px;
@@ -449,7 +440,6 @@
     document.getElementById("p129SalesCode").value = "";
     document.getElementById("p129Doctype").value = DOCTYPE_LIST[0];
     document.getElementById("p129Status").value = Object.keys(STATUS_LIST)[0];
-    document.getElementById("p129ShowMapQr").checked = true;
   }
 
   /* ---------- รายงานจากที่เลือก (modal + iframe: report/p129_report.html) ---------- */
@@ -468,9 +458,7 @@
       return;
     }
     var ids = items.map(item => item.id);
-    var showMap = document.getElementById("p129ShowMapQr");
-    var mapParam = (showMap && showMap.checked) ? "1" : "0";
-    p129ReportUrl = "report/p129_report.html?ids=" + ids.join(",") + "&conn=" + encodeURIComponent(mac5Id) + "&mapqr=" + mapParam;
+    p129ReportUrl = "report/p129_report.html?ids=" + ids.join(",") + "&conn=" + encodeURIComponent(mac5Id);
 
     var overlay = document.getElementById("p129ReportOverlay");
     if (!overlay) {
@@ -635,14 +623,6 @@
             <div class="p129-field">
               <label for="p129Status">Status Invoice <span style="color:#dc2626">*</span></label>
               <select id="p129Status">${statusOptions}</select>
-            </div>
-
-            <div class="p129-field">
-              <span class="p129-fieldlabel">QR code Location</span>
-              <label class="p129-check" for="p129ShowMapQr">
-                <input id="p129ShowMapQr" type="checkbox" checked>
-                <span>แสดง QR code Location (Google Maps ที่อยู่ลูกค้า) บนรายงาน</span>
-              </label>
             </div>
 
             <div class="p129-filter-actions">

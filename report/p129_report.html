@@ -320,8 +320,6 @@
   var params = new URLSearchParams(window.location.search);
   var invoiceIds = (params.get("ids") || "").split(",").map(function (s) { return s.trim(); }).filter(Boolean);
   var connectionId = params.get("conn") || "c1788406814359"; // default MAC5
-  // BKK: checkbox "แสดง QR code Location" (default on — mapqr=1)
-  var showMapQr = (params.get("mapqr") || "1") === "1";
 
   /* ---------- บันทึกจำนวนพิมพ์ (MIHprintN +1) แล้วเปิด print dialog ---------- */
   window.onPrintClick = function () {
@@ -462,7 +460,7 @@
    * qrHtml = บล็อก QR code + label (เฉพาะหน้า 3 Invoice — วางในเซลล์ชื่อเอกสาร ด้านบนขวา)
    * layout = "new" (เฉพาะหน้า 1): เลขที่/วันที่ แยก 2 บรรทัด + barcode/title rowspan 2 (34/28/38%)
    *            "old" (หน้า 2+3): เลขที่+วันที่ บรรทัดเดียวกัน (224/224/270px) */
-  function headerBlock(row, h, titleMain, titleSub, pageNo, barcode, qrHtml, layout, mapQrHtml) {
+  function headerBlock(row, h, titleMain, titleSub, pageNo, barcode, qrHtml, layout) {
     var newLayout = layout === "new";
     // BKK: COD → การชำระเงิน = ว่าง (ไม่แสดงจำนวนวัน) — C# L1084/L1680
     var isCod = String(row.MIHvnos || "").substring(0, 3) === "COD";
@@ -907,17 +905,10 @@
     }
     var denseClass = items.length > 16 ? " compact" : (items.length > 8 ? " dense" : "");
     var barcode = barcodeSvg(row.MIHvnos);
-    // BKK: Map QR (location — Odoo lat/lng) — header หน้า 2 (Delivery Order) — C# PageHeaderDoc7
-    //      (เฉพาะลูกค้าที่มี lat/lng — ถ้าว่าง = ไม่แสดง QR — C# strLocation == "")
-    var mapQrHtml = (showMapQr && row.mapQr)
-      ? '<div class="rep-qrwrap">' +
-        '<div class="rep-qr" id="qr-map-' + pageNo + '"></div>' +
-        '<div class="rep-qr-label">Map</div></div>'
-      : "";
 
     return `
     <div class="report-page">
-      ${headerBlock(row, h, "ใบส่งสินค้า", "( Delivery Order )", pageNo, barcode, mapQrHtml, "new")}
+      ${headerBlock(row, h, "ใบส่งสินค้า", "( Delivery Order )", pageNo, barcode, null, "new")}
 
       <!-- body: รายการสินค้า (ใบส่งสินค้า) — 7 คอลัม 40/70/40/335/65/65/100, barcode ต่อแถว (MILstk) -->
       <table class="rep-table rep-items rep-del${denseClass}">
@@ -1029,24 +1020,6 @@
         pages.push(renderInvoiceCopy(row, pages.length + 1));
       });
       container.innerHTML = pages.join("");
-      // BKK: QR Map (location — Google Maps) — header หน้า 2 (Delivery Order) — ข้อมูล = URL maps จาก Odoo lat/lng
-      (data.reports || []).forEach(function (row) {
-        if (!row.mapQr) return;
-        var idx = (data.reports || []).indexOf(row);
-        var pageNo = idx * 3 + 2; // หน้า 2 ของ invoice นั้น (Delivery Order)
-        var el = document.getElementById("qr-map-" + pageNo);
-        if (!el) return;
-        try {
-          new QRCode(el, {
-            text: row.mapQr,
-            width: 45,
-            height: 45,
-            correctLevel: QRCode.CorrectLevel.M
-          });
-        } catch (qErr) {
-          el.textContent = "(QR Map)";
-        }
-      });
       // QR code หน้า 3 (Invoice) — ข้อมูล "เลขที่invoice|ยอดชำระ" เช่น IVVN6909-0528|0.00
       (data.reports || []).forEach(function (row) {
         var idx = (data.reports || []).indexOf(row);
