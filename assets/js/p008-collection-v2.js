@@ -1074,7 +1074,7 @@
       ".p008r-page:last-child{page-break-after:auto}" +
       ".p008r-sum-title{text-align:center;font-size:18pt;font-weight:700;margin-bottom:4px}" +
       ".p008r-sum-line{font-size:16pt;margin:2px 0}" +
-      ".p008r-sum{width:170mm;border-collapse:collapse;margin:0 auto 10px;table-layout:fixed}" +
+      ".p008r-sum{width:170mm;border-collapse:collapse;margin:0 auto 15px;table-layout:fixed}" +
       ".p008r-sum th{border:1px solid #333;font-size:14pt;font-weight:700;padding:4px 3px;text-align:center;background:#f2f2f2}" +
       ".p008r-sum td{border:1px solid #333;font-size:12pt;padding:3px 4px}" +
       ".p008r-sum td.c,.p008r-sum th.c{text-align:center}" +
