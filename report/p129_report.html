@@ -190,6 +190,8 @@
     border: 0;
     border-left: 1px solid var(--line);
   }
+  /* T2 ใบแจ้งหนี้ — แสดงเส้นตารางแนวนอน (border ล่างทุกแถว) */
+  table.rep-items:not(.rep-del) td { border-bottom: 1px solid var(--line); }
   table.rep-items th:first-child, table.rep-items td:first-child { border-left: 1px solid var(--line); }
   table.rep-items th:last-child, table.rep-items td:last-child { border-right: 1px solid var(--line); }
   table.rep-items thead th { background: #f1f5f9; border-bottom: 1px solid var(--line); }
