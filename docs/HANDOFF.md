@@ -54,11 +54,21 @@
 | P047 | เช็คสถานะ Invoice | ready (1 หน้า — real data MAC5 `p047_search` — range วันที่ (default วันปัจจุบัน~วันปัจจุบัน) + สถานะ dropdown (AR_S < 63 + NOT IN — 32 สถานะ) + ตาราง Invoice (MIH IS + cancel=0 + status IN + range — วันที่/เลขที่/รหัส/ชื่อ/สถานะ badge/จำนวนพิมพ์ — เฉพาะอ่าน) + **pagination 15 รายการ/หน้า** + quick search + sort column + select row) |
 | P015 | สถานะบิลค้างรับ | ready (1 หน้า — real data MAC5 2 APIs `p015_search`/`p015_status` — ค้นหารหัสลูกหนี้ (LIKE vnos/cus/name — **ต้องมีค่า >= 1 ตัวอักษร**) + ตารางบิลค้างรับ (CFS CFSclearALL=0 + net != 0 — วันที่/เลขที่/รหัส/ชื่อ/เขต/ยอดหนี้/วางบิล/ค้างบิล/หมายเหตุ — display — หมายเหตุ 26% + wrap) + **pagination 15 รายการ/หน้า** + sort column + **ดับเบิลคลิกแถว = modal แก้ไข (checkbox วางบิล/ค้างบิล exclusive + หมายเหตุ) + บันทึกทีละแถว** (upsert `BI_CUBE.tb_CFS_bill_status`)) |
 | P051 | รายงานการเก็บเงินสด | ready (1 หน้า — real data MAC5 `p051_search` — เงื่อนไข ทั้งหมด/เงินสด (MIHdesc) + สถานะ (MIHstatus IN — ตัวอย่าง 43,44,60) + ตาราง 6 คอลั่น (เลขใบสำคัญ/วันที่/รหัสลูกค้า/ชื่อลูกค้า/ผู้แทน/ยอดเงินสุทธิ) + **pagination 15/หน้า** (ปุ่ม ‹ น.หน้า ›) + quick search + sort + row select + **export CSV = server-side `p051_export` (cp874 — Excel ไทยเป็นตาราง)** + พิมพ์ A4 landscape = ทั้งหมด) |
+| P008 | ใบปะหน้าเก็บบัญชี VAT, No VAT V2 | ready (2 phases — real data MAC5 3 APIs `p008_search`/`p008_groups`/`p008_report` — clone C# MCIT_FrmAccountServiceGUI_VATversion_V2 — หน้า 1 สรุป (JS pagination A4 + ชื่อลูกหนี้บนตาราง + spacer 15px) + หน้า 2 ส่งกลับบริษัท + หน้า 3 สำหรับลูกค้า (T4 ใบเสร็จรับเงิน) + modal ตัวอย่างก่อนพิมพ์ + zoom + แยกบิลตามเดือน — cache v=20261006g) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 05-06/10 — P008 ใบปะหน้าเก็บบัญชี VAT, No VAT V2 — **READY**
+- `assets/js/p008-collection-v2.js` (IIFE `window.P008CollectionV2`) — **real data MAC5 3 APIs** (`p008_search`/`p008_groups` 30 กลุ่ม/`p008_report`) — clone C# `MCIT_FrmAccountServiceGUI_VATversion_V2.cs` — **cache v=20261006g**
+- **Phase 1:** search (จังหวัด/พนักงานขาย/กลุ่ม/วันที่) + checkbox ลูกหนี้ · **Phase 2:** report 3 หน้า
+- **หน้า 1 (สรุป):** A4 margin 20mm — ตาราง 170mm (557f — 60/85/20/80/70/70/80/60/52f) — **ชื่อลูกหนี้ (cust-head) = แถวแรกบนตาราง** — แถว "รวม" ต่อลูกหนี้ + "รวมทั้งสิ้น" (grand) — **ระยะห่างตาราง loop = 15px (spacer row)** — **JS pagination:** clone วัด row height จริง → pack 974px/A4 → แตกหลาย `.p008r-page` (Chrome ไม่แตก absolute — print CSS `#p008Report` = static) — **Pitfall: table หน้าใหม่ต้องก๊อป colgroup + thead**
+- **หน้า 2 (ส่งกลับบริษัท):** T1 80/397/100f · T2 317/60/200f · T3 70/90/157/70/60/60/70f (12 แถว/หน้า) · T4 200/377f — footer absolute bottom 15mm (note + T4) — **แถวรวม = บวก rows ทั้งหมด (ไม่ใช่แค่หน้าสุดท้าย)**
+- **หน้า 3 (สำหรับลูกค้า):** T1-T3 เหมือนหน้า 2 + **T4 ใบเสร็จรับเงิน 107/160/90/220f** — ภาพ rowspan 9 เต็มช่อง (object-fit:contain) — row 3-8 สูง 26px — row สุดท้าย padding-top 30px
+- **Font:** THSarabunNew ทั้งหมด — หน้า 1: title 18B/line 16/th 14B/td 12/รวม 14B pt · หน้า 2: T1 20B/15/16B · T3 th 13B/td 13 · cheque 14 · note 14B
+- **Flow:** Print → POST → render → **modal ตัวอย่าง** (zoom) → ปุ่ม "พิมพ์" = window.print() — test CDP: 74110-176 = สรุป 2 หน้า + cover 6 หน้า · PDF ทุกหน้า 1123px ✓ — **22 modules ready**
 
 ### 01-03/10 — P051 รายงานการเก็บเงินสด — **READY**
 - `assets/js/p051-cash-collection.js` (IIFE `window.P051CashCollection`) — **real data MAC5** (`api/p051_search.php`) — clone demo/P051-demo.html → เชื่อม DB
