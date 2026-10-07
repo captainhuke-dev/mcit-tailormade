@@ -282,23 +282,16 @@
   .rep-footer.rep-foot-del { margin-top: 8px; }
   .rep-footer .rep-syscode { font-weight: 700; color: var(--text); }
 
-  /* ---------- BKK: payment block (footer invoice pages — C# BKK flag) ---------- */
-  table.rep-payblock {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 6px;
-    font-size: 16px;
-    page-break-inside: avoid;
-  }
-  table.rep-payblock td { border: 0; padding: 0; vertical-align: middle; }
-  .rep-payblock .rep-paytext { line-height: 1.5; }
-  .rep-payblock .rep-paytitle { font-size: 18.67px; font-weight: 700; }
-  .rep-payblock .rep-qrpay {
+  /* ---------- BKK: ช่องทางชำระเงิน (อยู่ใน T4 — C# BKK flag) ---------- */
+  .rep-totalsbox .rep-paytext { line-height: 1.5; }
+  .rep-totalsbox .rep-paytitle { font-size: 18.67px; font-weight: 700; }
+  .rep-qrpay {
     display: inline-block;
     width: 60px;
     height: 60px;
   }
-  .rep-payblock .rep-qrpay img { display: block; width: 100%; height: 100%; }
+  .rep-qrpay img { display: block; width: 100%; height: 100%; }
+  .rep-qrpaycell { text-align: center; }
 
   /* ---------- print ---------- */
   @page { size: A4; margin: 0; }
@@ -429,6 +422,14 @@
   function text(value) {
     var v = String(value ?? "").trim();
     return v === "" || v === "." ? "—" : v;
+  }
+
+  /* ส่วนลดท้ายบิล x% — C# L677-686: disEndbill = MIHdiscHT1 + MIHdiscHT2 (>0 → "x%") */
+  function discHt(row) {
+    var d1 = parseFloat(row.MIHdiscHT1) || 0;
+    var d2 = parseFloat(row.MIHdiscHT2) || 0;
+    var total = d1 + d2;
+    return total > 0 ? total + "%" : "";
   }
 
   // ตัดคำตั้งแต่ @ เป็นต้นไป (ถ้าไม่มี @ ก็ข้าม) + ตัด suffix (B) (CL) (X) (J) (C)
@@ -578,27 +579,6 @@
     return svgPart;
   }
 
-  /* ---------- BKK: payment block (footer invoice pages — C# BKK flag) ----------
-   * ช่องทางการชำระเงิน + บัญชี + QR ชำระเงิน (TTB) — ปรากฏเฉพาะหน้าใบแจ้งหนี้ (1 + 3)
-   * วางหลังตารางยอดรวม — C# L704-764 */
-  function paymentBlock() {
-    return `
-      <table class="rep-payblock">
-        <colgroup><col style="width:55%" /><col style="width:45%" /></colgroup>
-        <tr>
-          <td class="rep-paytext">
-            <div class="rep-paytitle">ช่องทางการชำระเงิน</div>
-            <div>สามารถชำระเงินผ่าน mobile banking ได้จากทุกธนาคาร</div>
-            <div>ชื่อบัญชี : บจก. มหาโชค มหาชัย อินเตอร์เทรด</div>
-            <div>Biller ID : 010753700001716</div>
-          </td>
-          <td style="text-align:left;padding-left:10px">
-            <span class="rep-qrpay"><img src="../assets/images/TTB_QR_Payment.jpg" alt="QR ชำระเงิน"></span>
-          </td>
-        </tr>
-      </table>`;
-  }
-
   /* ---------- render รายงาน 1 ใบ (layout ตามต้นฉบับหน้า 1 — ใบแจ้งหนี้ สำหรับลูกค้า) ---------- */
   function renderReport(row, pageNo) {
     var h = computeHeader(row);
@@ -658,7 +638,7 @@
         </tbody>
       </table>
 
-      <!-- หมายเหตุ + ยอดรวม (ต่อท้ายตาราง body — 4 คอลัม 335/130/173/80px, หมายเหตุ+รวมหน่วยบรรจุ rowspan 5) -->
+      <!-- หมายเหตุ + ยอดรวม + ช่องทางชำระเงิน (BKK — 7 แถว: หมายเหตุ/รวมหน่วยบรรจุ rowspan 3 + payment rowspan 4) -->
       <table class="rep-table rep-totalsbox">
         <colgroup>
           <col style="width:335px"/>
@@ -667,13 +647,13 @@
           <col style="width:80px"/>
         </colgroup>
         <tr class="rep-mrow">
-          <td rowspan="5" class="rep-notes" style="vertical-align:top"><b>หมายเหตุ :</b> ${esc(text(row.MIHnotes))}</td>
-          <td rowspan="5" style="vertical-align:top"><b>รวมหน่วยบรรจุ :</b> ${Number(row.totalUnits) || 0}</td>
+          <td rowspan="3" class="rep-notes" style="vertical-align:top"><b>หมายเหตุ :</b> ${esc(text(row.MIHnotes))}</td>
+          <td rowspan="3" style="vertical-align:top"><b>รวมหน่วยบรรจุ :</b> ${Number(row.totalUnits) || 0}</td>
           <td>จำนวนเงิน</td>
           <td class="num">${money(row.MIHnetSUM)}</td>
         </tr>
         <tr class="rep-mrow">
-          <td>ส่วนลดท้ายบิล</td>
+          <td>ส่วนลดท้ายบิล ${discHt(row)}</td>
           <td class="num">${money(row.MIHdisc)}</td>
         </tr>
         <tr class="rep-mrow">
@@ -681,6 +661,15 @@
           <td class="num">${money(row.AfterDisc)}</td>
         </tr>
         <tr class="rep-mrow">
+          <td rowspan="4" class="rep-paytext" style="vertical-align:top">
+            <div class="rep-paytitle">ช่องทางการชำระเงิน</div>
+            <div>สามารถชำระเงินผ่าน mobile banking ได้จากทุกธนาคาร</div>
+            <div>ชื่อบัญชี : บจก. มหาโชค มหาชัย อินเตอร์เทรด</div>
+            <div>Biller ID : 010753700001716</div>
+          </td>
+          <td rowspan="4" class="rep-qrpaycell" style="vertical-align:top">
+            <span class="rep-qrpay"><img src="../assets/images/TTB_QR_Payment.jpg" alt="QR ชำระเงิน"></span>
+          </td>
           <td>ยอดมัดจำ</td>
           <td class="num">${money(row.MIHextraSUM)}</td>
         </tr>
@@ -688,10 +677,9 @@
           <td>ยอดชำระ</td>
           <td class="num">${money(row.AfterDisc)}</td>
         </tr>
+        <tr class="rep-mrow"><td></td><td class="num"></td></tr>
+        <tr class="rep-mrow"><td></td><td class="num"></td></tr>
       </table>
-
-      <!-- BKK: payment block (footer invoice — ช่องทางชำระเงิน + QR TTB) -->
-      ${paymentBlock()}
 
       <!-- ช่องลงนาม (2 ช่อง — ตามต้นฉบับหน้า 1) -->
       <div class="rep-signatures">
@@ -782,7 +770,7 @@
         </tbody>
       </table>
 
-      <!-- หมายเหตุ + ยอดรวม (copy หน้า 1 — 4 คอลัม 335/130/173/80px) -->
+      <!-- หมายเหตุ + ยอดรวม + ช่องทางชำระเงิน (BKK — 7 แถว: หมายเหตุ/รวมหน่วยบรรจุ rowspan 3 + payment rowspan 4) -->
       <table class="rep-table rep-totalsbox">
         <colgroup>
           <col style="width:335px"/>
@@ -791,13 +779,13 @@
           <col style="width:80px"/>
         </colgroup>
         <tr class="rep-mrow">
-          <td rowspan="5" class="rep-notes" style="vertical-align:top"><b>หมายเหตุ :</b> ${esc(text(row.MIHnotes))}</td>
-          <td rowspan="5" style="vertical-align:top"><b>รวมหน่วยบรรจุ :</b> ${Number(row.totalUnits) || 0}</td>
+          <td rowspan="3" class="rep-notes" style="vertical-align:top"><b>หมายเหตุ :</b> ${esc(text(row.MIHnotes))}</td>
+          <td rowspan="3" style="vertical-align:top"><b>รวมหน่วยบรรจุ :</b> ${Number(row.totalUnits) || 0}</td>
           <td>จำนวนเงิน</td>
           <td class="num">${money(row.MIHnetSUM)}</td>
         </tr>
         <tr class="rep-mrow">
-          <td>ส่วนลดท้ายบิล</td>
+          <td>ส่วนลดท้ายบิล ${discHt(row)}</td>
           <td class="num">${money(row.MIHdisc)}</td>
         </tr>
         <tr class="rep-mrow">
@@ -805,6 +793,15 @@
           <td class="num">${money(row.AfterDisc)}</td>
         </tr>
         <tr class="rep-mrow">
+          <td rowspan="4" class="rep-paytext" style="vertical-align:top">
+            <div class="rep-paytitle">ช่องทางการชำระเงิน</div>
+            <div>สามารถชำระเงินผ่าน mobile banking ได้จากทุกธนาคาร</div>
+            <div>ชื่อบัญชี : บจก. มหาโชค มหาชัย อินเตอร์เทรด</div>
+            <div>Biller ID : 010753700001716</div>
+          </td>
+          <td rowspan="4" class="rep-qrpaycell" style="vertical-align:top">
+            <span class="rep-qrpay"><img src="../assets/images/TTB_QR_Payment.jpg" alt="QR ชำระเงิน"></span>
+          </td>
           <td>ยอดมัดจำ</td>
           <td class="num">${money(row.MIHextraSUM)}</td>
         </tr>
@@ -812,10 +809,9 @@
           <td>ยอดชำระ</td>
           <td class="num">${money(row.AfterDisc)}</td>
         </tr>
+        <tr class="rep-mrow"><td></td><td class="num"></td></tr>
+        <tr class="rep-mrow"><td></td><td class="num"></td></tr>
       </table>
-
-      <!-- BKK: payment block (footer invoice copy — ช่องทางชำระเงิน + QR TTB) -->
-      ${paymentBlock()}
 
       <!-- ช่องลงนาม (4 ช่อง — ตามรายงานตัวอย่างหน้า 3) -->
       <div class="rep-signatures rep-sign-4">
