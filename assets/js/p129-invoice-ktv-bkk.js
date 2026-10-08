@@ -5,7 +5,7 @@
  * - ไม่ auto search — กดปุ่ม "⌕ ค้นหา" เอง
  * - Doctype + Status = required (ไม่มีตัวเลือก "ทั้งหมด") default = ตัวเลือกแรกสุด
  * - วันที่ default = วันที่ปัจจุบัน
- * - แบ่งหน้า 10 รายการ/หน้า, checkbox เลือกแถว (หัวตาราง = หน้าปัจจุบัน)
+ * - แบ่งหน้า 15 รายการ/หน้า, checkbox เลือกแถว (หัวตาราง = หน้าปัจจุบัน)
  * - การเลือกคงอยู่ข้ามหน้า — นับจำนวนที่เลือกด้านล่าง (ไม่มียอดรวม)
  * - รองรับธีม Dark / UI Scale (ใช้ CSS variables ของ portal)
  */
@@ -13,7 +13,7 @@
   "use strict";
 
   var STYLE_ID = "p129-invoice-ktv-bkk-style";
-  var PAGE_SIZE = 10;
+  var PAGE_SIZE = 15;
 
   // ธีม: light/dark — variables p129-* (กำหนดตาม data-theme ของ <html>)
   var CSS_VARS = `

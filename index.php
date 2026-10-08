@@ -175,7 +175,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   </script>
   <script src="assets/js/p063-invoice-ktv.js"></script>
   <script src="assets/js/p064-invoice-mcit.js"></script>
-  <script src="assets/js/p129-invoice-ktv-bkk.js?v=20261007b"></script>
+  <script src="assets/js/p129-invoice-ktv-bkk.js?v=20261007c"></script>
   <script src="assets/js/p115-view-picture.js"></script>
   <script src="assets/js/p128-view-picture.js"></script>
   <script src="assets/js/p022-billing-doc.js"></script>
