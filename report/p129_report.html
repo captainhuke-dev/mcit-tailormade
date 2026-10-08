@@ -199,8 +199,7 @@
   table.rep-items:not(.rep-del) th { font-size: 16px; font-weight: 700; }
   table.rep-items:not(.rep-del) td { font-size: 16px; }
   table.rep-items:not(.rep-del):not(.dense):not(.compact) td { font-weight: 700; }
-  /* T2 ใบแจ้งหนี้ — แสดงเส้นตารางแนวนอน (border ล่างทุกแถว) */
-  table.rep-items:not(.rep-del) td { border-bottom: 1px solid var(--line); }
+  /* T2 ใบแจ้งหนี้ — ไม่มีเส้นตาราง (user spec 2026-10-07 — ยกเลิก border-bottom ที่เพิ่มไว้) */
   table.rep-items th:first-child, table.rep-items td:first-child { border-left: 1px solid var(--line); }
   table.rep-items th:last-child, table.rep-items td:last-child { border-right: 1px solid var(--line); }
   table.rep-items thead th { background: #f1f5f9; border-bottom: 1px solid var(--line); }
@@ -243,15 +242,18 @@
   /* T4 — col 3+4: แถวละ 28px (28 = lh15 + padding 3 + border 1) */
   .rep-inv table.rep-totalsbox td { height: 28px; box-sizing: border-box; line-height: 15px; }
   /* QR ชำระเงิน — 90×90 ชิดซ้ายบนของช่อง */
-  .rep-inv table.rep-totalsbox .rep-qrpaycell { padding: 0; }
   /* T4 — ช่องทางชำระเงิน: เอาเส้นตารางออก */
   .rep-inv table.rep-totalsbox .rep-paytext { border: 0; }
+  /* T4 — QR ชำระเงิน: เอาเส้นตารางออก */
+  .rep-inv table.rep-totalsbox .rep-qrpaycell { border: 0; }
   /* T4 — row 6,7 คอลัม 3,4: เอาเส้นตารางออก (ต้องลบทั้ง 2 ฝั่ง — border-collapse) */
   .rep-inv table.rep-totalsbox tr:nth-child(6) td,
   .rep-inv table.rep-totalsbox tr:nth-child(7) td { border: 0; }
   .rep-totalsbox td { padding: 3px 8px; }
   /* แถวเงิน (จำนวนเงิน/ส่วนลด/ยอดหลังหัก/มัดจำ/ชำระ) — ลดความสูงแถวละ 3px (padding 3→1.5px) */
   .rep-totalsbox tr.rep-mrow td { padding: 1.5px 8px; }
+  /* T4 — padding-top 10px ทุกช่อง (specificity (0,2,2) — อยู่หลัง mrow (0,2,2) → ชนะ) */
+  .rep-inv .rep-totalsbox tr td { padding-top: 10px; }
   .rep-totalsbox td.num { text-align: right; white-space: nowrap; }
   .rep-totalsbox .rep-total-row td {
     border-top: 2px solid #0f172a;
