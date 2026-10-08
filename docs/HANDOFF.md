@@ -56,11 +56,19 @@
 | P051 | รายงานการเก็บเงินสด | ready (1 หน้า — real data MAC5 `p051_search` — เงื่อนไข ทั้งหมด/เงินสด (MIHdesc) + สถานะ (MIHstatus IN — ตัวอย่าง 43,44,60) + ตาราง 6 คอลั่น (เลขใบสำคัญ/วันที่/รหัสลูกค้า/ชื่อลูกค้า/ผู้แทน/ยอดเงินสุทธิ) + **pagination 15/หน้า** (ปุ่ม ‹ น.หน้า ›) + quick search + sort + row select + **export CSV = server-side `p051_export` (cp874 — Excel ไทยเป็นตาราง)** + พิมพ์ A4 landscape = ทั้งหมด) |
 | P008 | ใบปะหน้าเก็บบัญชี VAT, No VAT V2 | ready (2 phases — real data MAC5 3 APIs `p008_search`/`p008_groups`/`p008_report` — clone C# MCIT_FrmAccountServiceGUI_VATversion_V2 — หน้า 1 สรุป (JS pagination A4 + ชื่อลูกหนี้บนตาราง + spacer 15px) + หน้า 2 ส่งกลับบริษัท + หน้า 3 สำหรับลูกค้า (T4 ใบเสร็จรับเงิน) + modal ตัวอย่างก่อนพิมพ์ + zoom + แยกบิลตามเดือน — cache v=20261006g) |
 | P129 | Print Invoice KTV (BKK) | ready (clone P063 + flag BKK — 3 APIs `p129_invoices`/`p129_report`/`p129_markprint` — หน้าค้นหา 15/หน้า + รายงาน 3 หน้า (ใบแจ้งหนี้ สำหรับลูกค้า / ใบส่งสินค้า / Invoice copy) — font THSarabunNew — T4 + ช่องทางชำระเงิน + QR TTB 90×90 — cache v=20261007c) |
+| P130 | Print Invoice MCIT (BKK) | encore (clone P064 + flag BKK — 3 APIs `p130_invoices`/`p130_report`/`p130_markprint` — รายงาน 3 หน้า — font THSarabunNew — T4 7 แถว + ช่องทางชำระเงิน + QR TTB 90×90 (หน้า 1+3) + COD blank payterm — cache v=20261008a) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 08/10 — P130 Print Invoice MCIT (BKK) — **ENCORE**
+- `assets/js/p130-invoice-mcit-bkk.js` (IIFE `window.P130InvoiceMCITBKK`) — **clone P064 + flag BKK** — 3 APIs `p130_invoices`/`p130_report`/`p130_markprint` — C# `MCIT_FrmPrintInvoiceMCTGUI.cs` — **cache v=20261008a** — menu แยกจาก P064 (กลุ่ม Print Invoice BKK)
+- **Flag BKK (3 จุด):** T4 = 7 แถว (หน้า 1+3 — หมายเหตุ/รวมหน่วยบรรจุ rowspan 3 + จำนวนเงิน/ส่วนลดท้ายบิล x% `discHt`/ยอดหลังหัก + ช่องทางชำระเงิน rowspan 4 ไม่มีเส้นตาราง + QR TTB 90×90 ชิดซ้ายบน rowspan 4 + ยอดมัดจำ/ยอดชำระ/ว่าง 2 แถว) · COD → การชำระเงิน = ว่าง · ค่ายอดคง P064 (จำนวนเงิน = `MIHcog` · ยอดชำระ = `MIHnetSUM`)
+- **Font THSarabunNew ทั้งหมด** (fonts.css + ตัด monospace — pattern P129) — CDP: fonts loaded 4 weights · body/td.code = THSarabunNew ✓
+- **รายงาน 3 หน้า/ใบ:** 1 ใบแจ้งหนี้ (สำหรับลูกค้า — `.rep-inv`) · 2 ใบส่งสินค้า (`.rep-del-page`) · 3 Invoice copy (`.rep-inv` + QR Invoice)
+- **Test data:** IVV7 + status 65 = 7 rows · status BKK (4/5/44/45) = 0 rows · IVVN = 0 (SQL `MIHtype='IS'` — IVVN ใช้กับ P129 เท่านั้น) — CDP flow PASS: 3 pages · payText 2 · qrImg 2 · t4rows 7
 
 ### 07/10 — P129 Print Invoice KTV (BKK) — **READY**
 - `assets/js/p129-invoice-ktv-bkk.js` (IIFE `window.P129InvoiceKTVBKK`) — **clone P063 + flag BKK** — real data MAC5 3 APIs (`p129_invoices`/`p129_report`/`p129_markprint`) — C# `MCIT_FrmPrintInvoiceKTVGUI.cs` — **cache v=20261007c**
