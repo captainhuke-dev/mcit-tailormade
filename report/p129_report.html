@@ -313,10 +313,15 @@
 
   /* หน้า 2 (delivery) — T2 font 12pt (16px) */
   .rep-del-page table.rep-items th, .rep-del-page table.rep-items td { font-size: 16px; }
-  /* หน้า 2 (delivery) — T2 แสดงเส้นตารางแนวนอน (border ล่างทุกแถว) */
-  .rep-del-page table.rep-items td { border-bottom: 1px solid var(--line); }
-  /* หน้า 2 (delivery) — แถวรายการสูง 40px */
-  .rep-del-page table.rep-items tbody tr { height: 40px; }
+  /* หน้า 2 (delivery) — แถวรายการสูง 43px + ไม่มีเส้นแถว (user spec 2026-10-07) */
+  .rep-del-page table.rep-items tbody tr { height: 43px; }
+  .rep-del-page table.rep-items td { border-bottom: 0; }
+  /* หน้า 2 (delivery) — หัวคอลั่น (thead) สูง 28px valign=middle */
+  .rep-del-page table.rep-items thead th { height: 28px; vertical-align: middle; }
+  /* หน้า 2 (delivery) — T3 (หมายเหตุ+ยอดรวม) font 12pt */
+  .rep-del-page .rep-totalsbox { font-size: 16px; }
+  /* หน้า 2 (delivery) — ลงนาม → พิมพ์วันที่ = footer (ดันลงสุดหน้า) */
+  .rep-del-page .rep-signatures { margin-top: auto; }
   /* หน้า 2 (delivery) — ลงนาม → พิมพ์วันที่ 12pt */
   .rep-del-page .rep-signatures { font-size: 16px; }
   .rep-del-page .rep-footer { font-size: 16px; }
