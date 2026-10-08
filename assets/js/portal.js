@@ -913,6 +913,20 @@
       `;
     }
 
+    // P130: Print Invoice MCIT (BKK) — หน้าแอป (clone P064 + flag BKK)
+    if (programId === "P130") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p130Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P129: Print Invoice KTV (BKK) — หน้าแอป (clone P063 + flag BKK)
     if (programId === "P129") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1450,6 +1464,12 @@
     if (page.type === "program" && page.programId === "P064" && window.P064InvoiceMCIT) {
       const root = document.getElementById("p064Root");
       if (root) window.P064InvoiceMCIT.mount(root);
+    }
+
+    // P130: mount Print Invoice MCIT (BKK) app
+    if (page.type === "program" && page.programId === "P130" && window.P130InvoiceMCITBKK) {
+      const root = document.getElementById("p130Root");
+      if (root) window.P130InvoiceMCITBKK.mount(root);
     }
 
     // P129: mount Print Invoice KTV (BKK) app

@@ -176,6 +176,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p063-invoice-ktv.js"></script>
   <script src="assets/js/p064-invoice-mcit.js"></script>
   <script src="assets/js/p129-invoice-ktv-bkk.js?v=20261007c"></script>
+  <script src="assets/js/p130-invoice-mcit-bkk.js?v=20261008a"></script>
   <script src="assets/js/p115-view-picture.js"></script>
   <script src="assets/js/p128-view-picture.js"></script>
   <script src="assets/js/p022-billing-doc.js"></script>
@@ -201,6 +202,6 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20261007a"></script>
+  <script src="assets/js/portal.js?v=20261008a"></script>
 </body>
 </html>
