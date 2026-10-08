@@ -55,11 +55,22 @@
 | P015 | สถานะบิลค้างรับ | ready (1 หน้า — real data MAC5 2 APIs `p015_search`/`p015_status` — ค้นหารหัสลูกหนี้ (LIKE vnos/cus/name — **ต้องมีค่า >= 1 ตัวอักษร**) + ตารางบิลค้างรับ (CFS CFSclearALL=0 + net != 0 — วันที่/เลขที่/รหัส/ชื่อ/เขต/ยอดหนี้/วางบิล/ค้างบิล/หมายเหตุ — display — หมายเหตุ 26% + wrap) + **pagination 15 รายการ/หน้า** + sort column + **ดับเบิลคลิกแถว = modal แก้ไข (checkbox วางบิล/ค้างบิล exclusive + หมายเหตุ) + บันทึกทีละแถว** (upsert `BI_CUBE.tb_CFS_bill_status`)) |
 | P051 | รายงานการเก็บเงินสด | ready (1 หน้า — real data MAC5 `p051_search` — เงื่อนไข ทั้งหมด/เงินสด (MIHdesc) + สถานะ (MIHstatus IN — ตัวอย่าง 43,44,60) + ตาราง 6 คอลั่น (เลขใบสำคัญ/วันที่/รหัสลูกค้า/ชื่อลูกค้า/ผู้แทน/ยอดเงินสุทธิ) + **pagination 15/หน้า** (ปุ่ม ‹ น.หน้า ›) + quick search + sort + row select + **export CSV = server-side `p051_export` (cp874 — Excel ไทยเป็นตาราง)** + พิมพ์ A4 landscape = ทั้งหมด) |
 | P008 | ใบปะหน้าเก็บบัญชี VAT, No VAT V2 | ready (2 phases — real data MAC5 3 APIs `p008_search`/`p008_groups`/`p008_report` — clone C# MCIT_FrmAccountServiceGUI_VATversion_V2 — หน้า 1 สรุป (JS pagination A4 + ชื่อลูกหนี้บนตาราง + spacer 15px) + หน้า 2 ส่งกลับบริษัท + หน้า 3 สำหรับลูกค้า (T4 ใบเสร็จรับเงิน) + modal ตัวอย่างก่อนพิมพ์ + zoom + แยกบิลตามเดือน — cache v=20261006g) |
+| P129 | Print Invoice KTV (BKK) | ready (clone P063 + flag BKK — 3 APIs `p129_invoices`/`p129_report`/`p129_markprint` — หน้าค้นหา 15/หน้า + รายงาน 3 หน้า (ใบแจ้งหนี้ สำหรับลูกค้า / ใบส่งสินค้า / Invoice copy) — font THSarabunNew — T4 + ช่องทางชำระเงิน + QR TTB 90×90 — cache v=20261007c) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 07/10 — P129 Print Invoice KTV (BKK) — **READY**
+- `assets/js/p129-invoice-ktv-bkk.js` (IIFE `window.P129InvoiceKTVBKK`) — **clone P063 + flag BKK** — real data MAC5 3 APIs (`p129_invoices`/`p129_report`/`p129_markprint`) — C# `MCIT_FrmPrintInvoiceKTVGUI.cs` — **cache v=20261007c**
+- **Flag BKK (3 จุด):** ช่องทางชำระเงิน + QR TTB 90×90 ใน T4 (หน้า 1+3) · footer rowspan 3 · COD → การชำระเงิน = ว่าง — QR Location ตัดออกแล้ว
+- **หน้าค้นหา:** 6 filter fields · **pagination 15 รายการ/หน้า** · row select ข้ามหน้า · สร้างรายงาน = modal
+- **รายงาน 3 หน้า/ใบ:** 1 ใบแจ้งหนี้ (สำหรับลูกค้า) · 2 ใบส่งสินค้า (Delivery Order) · 3 copy ใบแจ้งหนี้ (Invoice + QR)
+- **Font THSarabunNew ทั้งหมด** (fonts.css + ตัด monospace) — หน้า 1+3: T1 MCIT 32B/หน้า N 14/เลขที่-วันที่ 14/ชื่อ 18B/ย่อย 14/ลูกค้า 14 800/ที่อยู่-Tel 14/อ้างอิง-ขนส่ง 12 · T2 หัว 12B/รายการ 12 (normal 12B) แถว 26px ไม่มีเส้นแถว · T4 12pt แถว 28px padding-top 10 (ช่องทางชำระเงิน+QR row 4-7 ไม่มีเส้นตาราง) · paytitle 14B · ช่องลงนาม+footer 12pt (margin-top:auto — ดันลงสุดหน้า)
+- **หน้า 2 (delivery):** class `rep-del-page` — T2 font 12pt · thead 28px middle · แถว 43px ไม่มีเส้นแถว · T3 12pt · ช่องลงนาม+footer 12pt (margin-top:auto)
+- **T4 = 7 แถว (หน้า 1+3):** หมายเหตุ/รวมหน่วยบรรจุ rowspan 3 + จำนวนเงิน/ส่วนลดท้ายบิล x% (discHt = MIHdiscHT1+MIHdiscHT2)/ยอดหลังหัก · ช่องทางชำระเงิน (rowspan 4 ไม่มีเส้นตาราง) + QR TTB 90×90 ชิดซ้ายบน (rowspan 4 ไม่มีเส้นตาราง) + ยอดมัดจำ/ยอดชำระ/ว่าง 2 แถว — T4 margin-top -1px ชิด T2
+- **MCIT ชิด T1** (margin-bottom 0) — test CDP: ทุกค่า computed ตรง spec ✓ — modules.php status **ready** — **23 modules ready**
 
 ### 05-06/10 — P008 ใบปะหน้าเก็บบัญชี VAT, No VAT V2 — **READY**
 - `assets/js/p008-collection-v2.js` (IIFE `window.P008CollectionV2`) — **real data MAC5 3 APIs** (`p008_search`/`p008_groups` 30 กลุ่ม/`p008_report`) — clone C# `MCIT_FrmAccountServiceGUI_VATversion_V2.cs` — **cache v=20261006g**

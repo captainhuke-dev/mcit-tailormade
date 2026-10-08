@@ -189,7 +189,7 @@ return [
                 "name"        => "Print Invoice BKK",
                 "description" => "พิมพ์ Invoice สาขากทม.",
                 "programs"   => [
-                    ["id" => "P129", "name" => "KTV (BKK)"],
+                    ["id" => "P129", "name" => "KTV (BKK)", "status" => "ready"],
                     ["id" => "P064", "name" => "MCIT", "status" => "ready"],
                     ["id" => "P069", "name" => "Drop Ship"],
                     ["id" => "P072", "name" => "รับเอง"],
