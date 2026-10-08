@@ -281,7 +281,12 @@
   }
   /* ใบแจ้งหนี้ (หน้า 1+3) — ช่องลงนาม 12pt (clone P129) */
   .rep-inv .rep-signatures { font-size: 16px; }
+  /* ใบแจ้งหนี้ — footer = ส่วนล่างหน้า (ลงนาม → พิมพ์วันที่) — ดันลงสุดหน้า + ชิดกัน (clone P129) */
+  .rep-inv .rep-signatures { margin-top: auto; }
+  .rep-inv .rep-footer { margin-top: 2px; padding-top: 4px; }
   .rep-sign-box { padding-top: 28px; }
+  /* ใบแจ้งหนี้ — ช่องลงนามชิดกับเส้นขีด (clone P129) */
+  .rep-inv .rep-sign-box { padding-top: 2px; }
   .rep-sign-line { border-top: 1px dotted #475569; margin-bottom: 6px; }
   .rep-sign-date { margin-top: 10px; color: var(--muted); }
   /* 4 ช่องลายเซ็น (หน้า 2 ใบส่งสินค้า) */
@@ -307,6 +312,8 @@
   .rep-del-page .rep-totalsbox { font-size: 16px; }
   .rep-del-page .rep-signatures { font-size: 16px; }
   .rep-del-page .rep-footer { font-size: 16px; }
+  /* หน้า 2 (delivery) — ลงนาม → พิมพ์วันที่ = footer (ดันลงสุดหน้า — clone P129) */
+  .rep-del-page .rep-signatures { margin-top: auto; }
 
   /* ---------- print ---------- */
   @page { size: A4; margin: 0; }
