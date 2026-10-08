@@ -70,7 +70,7 @@
 - **Font THSarabunNew ทั้งหมด** (fonts.css + ตัด monospace) — หน้า 1+3: T1 MCIT 32B/หน้า N 14/เลขที่-วันที่ 14/ชื่อ 18B/ย่อย 14/ลูกค้า 14 800/ที่อยู่-Tel 14/อ้างอิง-ขนส่ง 12 · T2 หัว 12B/รายการ 12 (normal 12B) แถว 26px ไม่มีเส้นแถว · T4 12pt แถว 28px padding-top 10 (ช่องทางชำระเงิน+QR row 4-7 ไม่มีเส้นตาราง) · paytitle 14B · ช่องลงนาม+footer 12pt (margin-top:auto — ดันลงสุดหน้า)
 - **หน้า 2 (delivery):** class `rep-del-page` — T2 font 12pt · thead 28px middle · แถว 43px ไม่มีเส้นแถว · T3 12pt · ช่องลงนาม+footer 12pt (margin-top:auto)
 - **T4 = 7 แถว (หน้า 1+3):** หมายเหตุ/รวมหน่วยบรรจุ rowspan 3 + จำนวนเงิน/ส่วนลดท้ายบิล x% (discHt = MIHdiscHT1+MIHdiscHT2)/ยอดหลังหัก · ช่องทางชำระเงิน (rowspan 4 ไม่มีเส้นตาราง) + QR TTB 90×90 ชิดซ้ายบน (rowspan 4 ไม่มีเส้นตาราง) + ยอดมัดจำ/ยอดชำระ/ว่าง 2 แถว — T4 margin-top -1px ชิด T2
-- **MCIT ชิด T1** (margin-bottom 0) — test CDP: ทุกค่า computed ตรง spec ✓ — modules.php status **ready** — **23 modules ready**
+- **MCIT ชิด T1** (margin-bottom 0) — test CDP: ทุกค่า computed ตรง spec ✓ — modules.php status **ready** — **24 modules ready** (unique)
 
 ### 05-06/10 — P008 ใบปะหน้าเก็บบัญชี VAT, No VAT V2 — **READY**
 - `assets/js/p008-collection-v2.js` (IIFE `window.P008CollectionV2`) — **real data MAC5 3 APIs** (`p008_search`/`p008_groups` 30 กลุ่ม/`p008_report`) — clone C# `MCIT_FrmAccountServiceGUI_VATversion_V2.cs` — **cache v=20261006g**
