@@ -311,6 +311,12 @@
   .rep-qrpay img { display: block; width: 100%; height: 100%; }
   .rep-qrpaycell { text-align: left; }
 
+  /* หน้า 2 (delivery) — T2 font 12pt (16px) */
+  .rep-del-page table.rep-items th, .rep-del-page table.rep-items td { font-size: 16px; }
+  /* หน้า 2 (delivery) — ลงนาม → พิมพ์วันที่ 12pt */
+  .rep-del-page .rep-signatures { font-size: 16px; }
+  .rep-del-page .rep-footer { font-size: 16px; }
+
   /* ---------- print ---------- */
   @page { size: A4; margin: 0; }
   @media print {
@@ -936,7 +942,7 @@
     var barcode = barcodeSvg(row.MIHvnos);
 
     return `
-    <div class="report-page">
+    <div class="report-page rep-del-page">
       ${headerBlock(row, h, "ใบส่งสินค้า", "( Delivery Order )", pageNo, barcode, null, "new")}
 
       <!-- body: รายการสินค้า (ใบส่งสินค้า) — 7 คอลัม 40/70/40/335/65/65/100, barcode ต่อแถว (MILstk) -->
