@@ -56,12 +56,20 @@
 | P051 | รายงานการเก็บเงินสด | ready (1 หน้า — real data MAC5 `p051_search` — เงื่อนไข ทั้งหมด/เงินสด (MIHdesc) + สถานะ (MIHstatus IN — ตัวอย่าง 43,44,60) + ตาราง 6 คอลั่น (เลขใบสำคัญ/วันที่/รหัสลูกค้า/ชื่อลูกค้า/ผู้แทน/ยอดเงินสุทธิ) + **pagination 15/หน้า** (ปุ่ม ‹ น.หน้า ›) + quick search + sort + row select + **export CSV = server-side `p051_export` (cp874 — Excel ไทยเป็นตาราง)** + พิมพ์ A4 landscape = ทั้งหมด) |
 | P008 | ใบปะหน้าเก็บบัญชี VAT, No VAT V2 | ready (2 phases — real data MAC5 3 APIs `p008_search`/`p008_groups`/`p008_report` — clone C# MCIT_FrmAccountServiceGUI_VATversion_V2 — หน้า 1 สรุป (JS pagination A4 + ชื่อลูกหนี้บนตาราง + spacer 15px) + หน้า 2 ส่งกลับบริษัท + หน้า 3 สำหรับลูกค้า (T4 ใบเสร็จรับเงิน) + modal ตัวอย่างก่อนพิมพ์ + zoom + แยกบิลตามเดือน — cache v=20261006g) |
 | P129 | Print Invoice KTV (BKK) | ready (clone P063 + flag BKK — 3 APIs `p129_invoices`/`p129_report`/`p129_markprint` — หน้าค้นหา 15/หน้า + รายงาน 3 หน้า (ใบแจ้งหนี้ สำหรับลูกค้า / ใบส่งสินค้า / Invoice copy) — font THSarabunNew — T4 + ช่องทางชำระเงิน + QR TTB 90×90 — cache v=20261007c) |
+| P019 | เช็คสถานะส่ง Invoice | encore (clone demo/P019-demo + C# frm_CheckStatusInvoiceGUI — 2 APIs `p019_invoices`/`p019_status` (AR_S) — วันที่ from–to + สถานะ dropdown 62/63/65/67/68/70 + table 6 คอลั่น sort/quick/row select + pagination 15 — cache v=20261008a) |
 | P130 | Print Invoice MCIT (BKK) | ready (clone P064 + flag BKK — 3 APIs `p130_invoices`/`p130_report`/`p130_markprint` — รายงาน 3 หน้า — font THSarabunNew — T4 7 แถว + ช่องทางชำระเงิน + QR TTB 90×90 (หน้า 1+3) + COD blank payterm — หน้า 2 thead 28px + แถว 40px — cache v=20261008a) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 08/10 — P019 เช็คสถานะส่ง Invoice — **ENCORE**
+- `assets/js/p019-invoice-status.js` (IIFE `window.P019InvoiceStatus`) — **clone demo/P019-demo.html + C# `frm_CheckStatusInvoiceGUI.cs` (AppCheckStatusInvoice)** — real data MAC5 2 APIs — **cache v=20261008a**
+- **API:** `p019_invoices` (search — SQL clone C# L110-115: `MIH LEFT JOIN DEB ON DEBcode=MIHcus` + `MIHcancel=0 AND MIHtype='IS' AND MIHstatus IN (...)` + วันที่ range — ORDER BY MIHdate) + `p019_status` (สถานะจาก `AR_S` — `AR_Scode IN (62,63,65,67,68,70)` — clone C# L68)
+- **UI ตาม demo:** วันที่ from–to (default 1 แห่งเดือนก่อน → วันนี้-3 — clone C# L48-51) + **สถานะ = dropdown multi-select** (checkbox 62 ADS ส่ง ACC / 63 รับเอง / 65 WH / 67 NOT SHIP / 68 SHIP / 70 LOG — check ทั้งหมดด้วย + ปุ่ม "สลับทั้งหมด") + ปุ่มค้นหา + quick search
+- **ตาราง 6 คอลั่น:** วันที่ / เลขใบสำคัญ / รหัสลูกค้า / ชื่อลูกค้า / สถานะ (badge สี: green=68, orange=65, red=67, blue=70, purple=62, gray=63) / พนักงาน — sortable + row select + **pagination 15 รายการ/หน้า** + footer "แสดง X รายการ" + "สถานะที่เลือก N"
+- **Test data:** 01/09–08/10/2026 = **74 rows** (API = 483 rows — range กว้าง) — CDP: rows 15 (page 1) · foot "แสดง 74 รายการ" · sum "เลือก 6 สถานะ" ✓
 
 ### 08/10 — P130 Print Invoice MCIT (BKK) — **READY**
 - `assets/js/p130-invoice-mcit-bkk.js` (IIFE `window.P130InvoiceMCITBKK`) — **clone P064 + flag BKK** — 3 APIs `p130_invoices`/`p130_report`/`p130_markprint` — C# `MCIT_FrmPrintInvoiceMCTGUI.cs` — **cache v=20261008a** — menu แยกจาก P064 (กลุ่ม Print Invoice BKK)
