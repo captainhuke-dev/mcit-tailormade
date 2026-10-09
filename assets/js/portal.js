@@ -1221,6 +1221,20 @@
       `;
     }
 
+    // P006: Print Invoice เช็คคืน
+    if (programId === "P006") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p006Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P013: ใบอนุมัติวงเงินและปรับวงเงิน
     if (programId === "P013") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1622,6 +1636,12 @@
     if (page.type === "program" && page.programId === "P013" && window.P013Approval) {
       const root = document.getElementById("p013Root");
       if (root) window.P013Approval.mount(root);
+    }
+
+    // P006: mount Print Invoice app
+    if (page.type === "program" && page.programId === "P006" && window.P006PrintInvoice) {
+      const root = document.getElementById("p006Root");
+      if (root) window.P006PrintInvoice.mount(root);
     }
 
     // P106: mount Print Barcode app
