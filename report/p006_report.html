@@ -119,9 +119,9 @@
     margin: 0 auto;
   }
   .rep-barcodecell .barcode-fallback { font-size: 11px; letter-spacing: 2px; }
-  .rep-customer { font-weight: 800; font-size: 21.33px; } /* 16pt */
+  .rep-customer { font-weight: 800; font-size: 16px; } /* 12pt — T1 ทั้งหมด 12pt (ยกเว้น DEBgrade) */
   .rep-custaddr { font-size: 16px; }
-  .rep-ship { font-size: 20px; font-weight: 700; } /* 15pt B */
+  .rep-ship { font-size: 16px; font-weight: 700; } /* 12pt */
   .rep-shipval { font-size: 16px; font-weight: 400; }
   .label { font-weight: 700; }
 
@@ -422,12 +422,12 @@
     }
     var colgroup, thead;
     if (chk) {
-      // C# widths 50/260/50/50/50/30/60 (total 550)
-      colgroup = '<colgroup><col style="width:50px" /><col style="width:260px" /><col style="width:50px" /><col style="width:50px" /><col style="width:50px" /><col style="width:30px" /><col style="width:60px" /></colgroup>';
+      // widths 50/250/50/50/50/40/60 (total 550)
+      colgroup = '<colgroup><col style="width:50px" /><col style="width:250px" /><col style="width:50px" /><col style="width:50px" /><col style="width:50px" /><col style="width:40px" /><col style="width:60px" /></colgroup>';
       thead = "<tr><th>รหัสสินค้า</th><th>รายละเอียดสินค้า</th><th></th><th>จำนวน</th><th>หน่วยละ</th><th>ลด %</th><th>รวม</th></tr>";
     } else {
-      // C# widths 310/50/50/50/30/60 (total 550)
-      colgroup = '<colgroup><col style="width:310px" /><col style="width:50px" /><col style="width:50px" /><col style="width:50px" /><col style="width:30px" /><col style="width:60px" /></colgroup>';
+      // widths 300/50/50/50/40/60 (total 550)
+      colgroup = '<colgroup><col style="width:300px" /><col style="width:50px" /><col style="width:50px" /><col style="width:50px" /><col style="width:40px" /><col style="width:60px" /></colgroup>';
       thead = "<tr><th>รายละเอียดสินค้า</th><th></th><th>จำนวน</th><th>หน่วยละ</th><th>ลด %</th><th>รวม</th></tr>";
     }
     return `
