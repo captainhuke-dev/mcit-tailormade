@@ -56,7 +56,8 @@
 | P051 | รายงานการเก็บเงินสด | ready (1 หน้า — real data MAC5 `p051_search` — เงื่อนไข ทั้งหมด/เงินสด (MIHdesc) + สถานะ (MIHstatus IN — ตัวอย่าง 43,44,60) + ตาราง 6 คอลั่น (เลขใบสำคัญ/วันที่/รหัสลูกค้า/ชื่อลูกค้า/ผู้แทน/ยอดเงินสุทธิ) + **pagination 15/หน้า** (ปุ่ม ‹ น.หน้า ›) + quick search + sort + row select + **export CSV = server-side `p051_export` (cp874 — Excel ไทยเป็นตาราง)** + พิมพ์ A4 landscape = ทั้งหมด) |
 | P008 | ใบปะหน้าเก็บบัญชี VAT, No VAT V2 | ready (2 phases — real data MAC5 3 APIs `p008_search`/`p008_groups`/`p008_report` — clone C# MCIT_FrmAccountServiceGUI_VATversion_V2 — หน้า 1 สรุป (JS pagination A4 + ชื่อลูกหนี้บนตาราง + spacer 15px) + หน้า 2 ส่งกลับบริษัท + หน้า 3 สำหรับลูกค้า (T4 ใบเสร็จรับเงิน) + modal ตัวอย่างก่อนพิมพ์ + zoom + แยกบิลตามเดือน — cache v=20261006g) |
 | P129 | Print Invoice KTV (BKK) | ready (clone P063 + flag BKK — 3 APIs `p129_invoices`/`p129_report`/`p129_markprint` — หน้าค้นหา 15/หน้า + รายงาน 3 หน้า (ใบแจ้งหนี้ สำหรับลูกค้า / ใบส่งสินค้า / Invoice copy) — font THSarabunNew — T4 + ช่องทางชำระเงิน + QR TTB 90×90 — cache v=20261007c) |
-| P019 | เช็คสถานะส่ง Invoice | encore (clone demo/P019-demo + C# frm_CheckStatusInvoiceGUI — 2 APIs `p019_invoices`/`p019_status` (AR_S) — วันที่ from–to + สถานะ dropdown 62/63/65/67/68/70 + table 6 คอลั่น sort/quick/row select + pagination 15 — cache v=20261008a) |
+| P019 | เช็คสถานะส่ง Invoice | ready (clone demo/P019-demo + C# frm_CheckStatusInvoiceGUI — 2 APIs `p019_invoices`/`p019_status` (AR_S) — วันที่ from–to (default วันนี้) + สถานะ dropdown 62/63/65/67/68/70 + table 6 คอลั่น sort/quick/row select + pagination 15 (เลข 5 ปุ่ม) — cache v=20261008a) |
+| P006 | Print Invoice เช็คคืน | encore (clone demo/P006-demo.html — UI ครบ — mock 8 rows — TODO: ต่อ API — C# source ยังไม่มี — cache v=20261009a) |
 | P130 | Print Invoice MCIT (BKK) | ready (clone P064 + flag BKK — 3 APIs `p130_invoices`/`p130_report`/`p130_markprint` — รายงาน 3 หน้า — font THSarabunNew — T4 7 แถว + ช่องทางชำระเงิน + QR TTB 90×90 (หน้า 1+3) + COD blank payterm — หน้า 2 thead 28px + แถว 40px — cache v=20261008a) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
@@ -64,7 +65,16 @@
 
 ## 2. รายงานรายวัน
 
-### 08/10 — P019 เช็คสถานะส่ง Invoice — **ENCORE**
+### 09/10 — P006 Print Invoice เช็คคืน — **ENCORE**
+- `assets/js/p006-print-invoice.js` (IIFE `window.P006PrintInvoice`) — **clone demo/P006-demo.html** — **cache v=20261009a** — commit `77684f7`
+- **UI ครบตาม demo:** launcher 6 field (วันที่ Invoice / วันที่สร้างเอกสาร / ผู้สร้างเอกสาร / รหัสผู้แทน / คำนำหน้า 1CBN·CODN·IVVN / สถานะ 25·26·27) + ปุ่มค้นหา + Print Preview
+- **ตาราง 9 คอลั่น:** checkbox select (select all + row click toggle) / ลำดับ / เลขที่ใบสำคัญ / รหัสลูกค้า / ชื่อลูกค้า / พื้นที่ / ยอดรวม / หมายเหตุ / จำนวนที่พิมพ์ (badge zero/printed) — sortable 6 คอลั่น + quick search + footer (แสดง N รายการ + ยอดที่เลือก + ยอดรวมทั้งหมด)
+- **Modal Print Preview:** กระดาษ A4 landscape (บริษัท เอ็มซีไอที จำกัด + meta 4 cell + table 6 คอลั่น + total row + ลายเซ็น 3 แถว) — ปุ่มพิมพ์ (markAsPrinted + window.print) + ปิด + Escape + click backdrop — `@media print` = พิมพ์เฉพาะ #p006Paper
+- **Mock data 8 rows** (ตาม demo — status/creator/salesperson เพิ่มสำหรับ filter) — **TODO: ต่อ API (SQL ตาม C#)**
+- **C# source: ยังไม่มี** — ต้องหา `frm` ของ P006 ก่อนต่อ API
+- **CDP:** 8 rows · "8 รายการ" · "แสดง 8 รายการ" · ฿255,971.00 · modal ✓ · 0 JS errors ✓
+
+### 08/10 — P019 เช็คสถานะส่ง Invoice — **READY** (user ยืนยัน 2026-10-09 — **26 modules ready**)
 - `assets/js/p019-invoice-status.js` (IIFE `window.P019InvoiceStatus`) — **clone demo/P019-demo.html + C# `frm_CheckStatusInvoiceGUI.cs` (AppCheckStatusInvoice)** — real data MAC5 2 APIs — **cache v=20261008a**
 - **API:** `p019_invoices` (search — SQL clone C# L110-115: `MIH LEFT JOIN DEB ON DEBcode=MIHcus` + `MIHcancel=0 AND MIHtype='IS' AND MIHstatus IN (...)` + วันที่ range — ORDER BY MIHdate) + `p019_status` (สถานะจาก `AR_S` — `AR_Scode IN (62,63,65,67,68,70)` — clone C# L68)
 - **UI ตาม demo:** วันที่ from–to (default 1 แห่งเดือนก่อน → วันนี้-3 — clone C# L48-51) + **สถานะ = dropdown multi-select** (checkbox 62 ADS ส่ง ACC / 63 รับเอง / 65 WH / 67 NOT SHIP / 68 SHIP / 70 LOG — check ทั้งหมดด้วย + ปุ่ม "สลับทั้งหมด") + ปุ่มค้นหา + quick search
