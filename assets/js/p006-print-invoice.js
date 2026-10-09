@@ -1,12 +1,35 @@
-/* P006 — Print Invoice เช็คคืน (clone demo/P006-demo.html)
+/* P006 — Print Invoice เช็คคืน (clone demo/P006-demo.html + C# MCIT_FrmPrintChqueReturnGUI.cs)
  * IIFE — window.P006PrintInvoice = { mount }
- * Data: MOCK 8 รายการ (ตาม demo) — TODO: ต่อ API
+ * Data: API p006_search.php (SQL clone C# L112-122 — MIH LEFT JOIN DEB, MIHtype='IS')
  * UI: launcher (วันที่ Invoice + วันที่สร้างเอกสาร + ผู้สร้าง + รหัสผู้แทน + คำนำหน้า + สถานะ)
- *     + table (checkbox select + sort + quick search + footer ยอดที่เลือก/ยอดรวม)
- *     + modal Print Preview (A4 landscape) + toast
+ *     + table (checkbox select + sort + quick search + footer ยอดที่เลือก/ยอดรวม + row แดง cnt>=11)
+ *     + report overlay (iframe report/p006_report.html — 2 หน้า/ใบ A4 portrait — clone P130 pattern)
  */
 (function () {
   "use strict";
+
+  var MAC5_CONNECTION_ID = "c1788406814359";
+
+  /* clone C# cb_status (L62-75) — 14 สถานะ hardcoded */
+  var STATUS_LIST = [
+    { code: "0", name: "0" },
+    { code: "2", name: "2-ค่าขนส่งสินค้า" },
+    { code: "3", name: "3-VAT" },
+    { code: "6", name: "6-รายได้อื่นๆ" },
+    { code: "8", name: "8-ด่วน" },
+    { code: "9", name: "9-ติดท้ายรถ" },
+    { code: "12", name: "12-รอทำ Packing List" },
+    { code: "13", name: "13-ออก Packing แล้ว-รอส่ง" },
+    { code: "14", name: "14-รอระบุเลขขนส่ง" },
+    { code: "16", name: "16-นัดโอน" },
+    { code: "18", name: "18-ใส่ Packing แล้ว" },
+    { code: "19", name: "19-ใส่ Packing ด่วน" },
+    { code: "22", name: "22-ใส่ Packing กทม" },
+    { code: "25", name: "25-แจ้งหนี้เช็คคืน" }
+  ];
+
+  /* clone C# cbb_FristVnos (Designer L128-148) — คำนำหน้า 18 ค่า */
+  var PREFIX_LIST = ["IVN", "IVV", "FAN", "AGN", "FAV", "AGV", "CIV", "CBN", "CBV", "CBX", "IVVN", "IVV7", "DSVN", "AGVN", "DSV7", "AGV7", "1CBN", "2CB7"];
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>\"']/g, function (c) {
@@ -25,23 +48,22 @@
   }
   function el(id) { return document.getElementById(id); }
 
-  /* MOCK — ตาม demo/P006-demo.html (status/creator/salesperson เพิ่มให้ filter ใช้งานได้ — ต่อ API แล้วจะแทน) */
-  var invoices = [
-    { index: 1, document: "1CBN6910-0001", customerCode: "10150-141", customerName: "", area: "จ.กรุงเทพฯ", amount: 4000.00, note: "ตั๋วหนี้เช็ค เลขที่ 10020066/0921004 ลงวันที่ 29/09/2569", printCount: 0, date: "2026-10-01", createDate: "2026-10-01", status: 25, creator: "S01", salesperson: "S01" },
-    { index: 2, document: "1CBN6910-0002", customerCode: "21120-001", customerName: "", area: "จ.ระยอง", amount: 94575.00, note: "ตั๋วหนี้เช็ค เลขที่ 88405348/083113 ลงวันที่ 30/09/2569", printCount: 0, date: "2026-10-01", createDate: "2026-10-01", status: 25, creator: "S01", salesperson: "S01" },
-    { index: 3, document: "1CBN6910-0003", customerCode: "80000-091", customerName: "", area: "จ.นครศรีธรรมราช", amount: 46192.00, note: "ตั๋วหนี้เช็ค เลขที่ 26228266/0916003 ลงวันที่ 01/10/2569", printCount: 0, date: "2026-10-01", createDate: "2026-10-01", status: 25, creator: "S01", salesperson: "S01" },
-    { index: 4, document: "1CBN6910-0004", customerCode: "80000-091", customerName: "", area: "จ.นครศรีธรรมราช", amount: 50100.00, note: "ตั๋วหนี้เช็ค เลขที่ 26228268/0916004 ลงวันที่ 05/10/2569", printCount: 0, date: "2026-10-02", createDate: "2026-10-02", status: 25, creator: "S01", salesperson: "S01" },
-    { index: 5, document: "1CBN6910-0005", customerCode: "48130-011", customerName: "", area: "จ.นครพนม", amount: 12024.00, note: "ตั๋วหนี้เช็ค เลขที่ 00475819/091516 ลงวันที่ 03/10/2569", printCount: 0, date: "2026-10-03", createDate: "2026-10-03", status: 25, creator: "S01", salesperson: "S01" },
-    { index: 6, document: "1CBN6910-0006", customerCode: "48140-008", customerName: "", area: "จ.นครพนม", amount: 36733.00, note: "ตั๋วหนี้เช็ค เลขที่ 00258724/091803 ลงวันที่ 03/10/2569", printCount: 0, date: "2026-10-03", createDate: "2026-10-03", status: 25, creator: "S01", salesperson: "S01" },
-    { index: 7, document: "1CBN6910-0007", customerCode: "85000-011", customerName: "", area: "จ.ระนอง", amount: 4197.00, note: "ตั๋วหนี้เช็ค เลขที่ 02659458/091107 ลงวันที่ 06/10/2569", printCount: 0, date: "2026-10-06", createDate: "2026-10-06", status: 25, creator: "S01", salesperson: "S01" },
-    { index: 8, document: "1CBN6910-0008", customerCode: "62150-004", customerName: "", area: "จ.กำแพงเพชร", amount: 8150.00, note: "ตั๋วหนี้เช็ค เลขที่ 11458812/091209 ลงวันที่ 07/10/2569", printCount: 1, date: "2026-10-07", createDate: "2026-10-07", status: 25, creator: "S01", salesperson: "S01" }
-  ];
+  function apiFetch(file, body) {
+    return fetch("api/" + file, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    }).then(function (r) { return r.json(); });
+  }
 
   var state = {
-    filteredItems: [],
+    items: [],
     selectedDocs: {},
     sortField: "document",
     sortDirection: "asc",
+    searching: false,
+    reportUrl: "",
+    escBound: false,
     toastTimer: null
   };
 
@@ -55,7 +77,6 @@
       search: '<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.35-4.35"></path>',
       eye: '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle>',
       refresh: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8"></path><path d="M3 3v5h5"></path>',
-      file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12"></path><path d="M14 2v6h6M8 13h8M8 17h5"></path>',
       print: '<path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16"></path><rect x="6" y="14" width="12" height="8"></rect>',
       check: '<path d="M20 6 9 17l-5-5"></path>'
     };
@@ -69,7 +90,7 @@
     el("p006ToastMessage").textContent = message;
     clearTimeout(state.toastTimer);
     toast.classList.add("show");
-    state.toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 1800);
+    state.toastTimer = setTimeout(function () { toast.classList.remove("show"); }, 2200);
   }
 
   function sortItems(items) {
@@ -87,7 +108,17 @@
   }
 
   function getSelectedItems() {
-    return invoices.filter(function (item) { return !!state.selectedDocs[item.document]; });
+    return state.items.filter(function (item) { return !!state.selectedDocs[item.document]; });
+  }
+
+  function visibleItems() {
+    var qs = el("p006QuickSearch");
+    var keyword = qs ? qs.value.trim().toLowerCase() : "";
+    if (!keyword) return state.items;
+    return state.items.filter(function (item) {
+      var text = [item.document, item.customerCode, item.customerName, item.area, item.note].join(" ").toLowerCase();
+      return text.indexOf(keyword) !== -1;
+    });
   }
 
   function updateSummary(items) {
@@ -103,12 +134,14 @@
     if (t) t.textContent = "฿" + formatMoney(amount);
     var selectAll = el("p006SelectAll");
     if (!selectAll) return;
-    var all = state.filteredItems.length > 0 && state.filteredItems.every(function (i) { return state.selectedDocs[i.document]; });
+    var visible = visibleItems();
+    var all = visible.length > 0 && visible.every(function (i) { return state.selectedDocs[i.document]; });
     selectAll.checked = all;
-    selectAll.indeterminate = !all && state.filteredItems.some(function (i) { return state.selectedDocs[i.document]; });
+    selectAll.indeterminate = !all && visible.some(function (i) { return state.selectedDocs[i.document]; });
   }
 
-  function renderRows(items) {
+  function renderRows() {
+    var items = visibleItems();
     var sorted = sortItems(items);
     var tbody = el("p006Rows");
     if (!tbody) return;
@@ -119,10 +152,20 @@
     if (footerText) footerText.textContent = "แสดง " + sorted.length + " รายการ";
     updateSummary(sorted);
 
+    if (sorted.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#64748b;padding:32px">' +
+        (state.items.length === 0 ? "ยังไม่มีข้อมูล — กดปุ่ม \"ค้นหา\" เพื่อค้นหาใบสำคัญ" : "ไม่พบข้อมูลตามเงื่อนไขที่ค้นหา") +
+        "</td></tr>";
+      updateSelectionInfo();
+      return;
+    }
+
     sorted.forEach(function (item) {
       var checked = !!state.selectedDocs[item.document];
+      /* clone C# Grid1_DataBindingComplete (L1534-1549): cnt >= 11 → LightCoral */
       var tr = document.createElement("tr");
       if (checked) tr.classList.add("selected");
+      if (Number(item.cnt || 0) >= 11) tr.classList.add("p006-row-warn");
       tr.innerHTML =
         '<td class="p006-checkbox-cell"><input class="p006-row-checkbox" type="checkbox" data-document="' + esc(item.document) + '"' + (checked ? " checked" : "") + '></td>' +
         '<td class="center">' + esc(item.index) + '</td>' +
@@ -147,88 +190,177 @@
   function toggleDocument(documentNumber, checked) {
     if (checked) state.selectedDocs[documentNumber] = true;
     else delete state.selectedDocs[documentNumber];
-    renderRows(state.filteredItems);
+    renderRows();
   }
 
-  function applyFilters(showMessage) {
-    var invoiceFrom = el("p006InvoiceDateFrom").value;
-    var invoiceTo = el("p006InvoiceDateTo").value;
-    var createFrom = el("p006CreateDateFrom").value;
-    var createTo = el("p006CreateDateTo").value;
-    var creator = el("p006CreatorInput").value.trim().toLowerCase();
-    var salesperson = el("p006SalespersonInput").value.trim().toLowerCase();
-    var prefix = el("p006PrefixSelect").value;
-    var status = el("p006StatusSelect").value;
-    var keyword = el("p006QuickSearch").value.trim().toLowerCase();
-
-    state.filteredItems = invoices.filter(function (item) {
-      var matchInvoiceDate = (!invoiceFrom || item.date >= invoiceFrom) && (!invoiceTo || item.date <= invoiceTo);
-      var matchCreateDate = (!createFrom || item.createDate >= createFrom) && (!createTo || item.createDate <= createTo);
-      var matchPrefix = prefix === "all" || item.document.indexOf(prefix) === 0;
-      var matchStatus = status === "all" || String(item.status) === status;
-      var matchCreator = !creator || String(item.creator || "").toLowerCase().indexOf(creator) !== -1;
-      var matchSales = !salesperson || String(item.salesperson || "").toLowerCase().indexOf(salesperson) !== -1;
-      var text = [item.document, item.customerCode, item.area, item.note].join(" ").toLowerCase();
-      var matchKeyword = !keyword || text.indexOf(keyword) !== -1;
-      return matchInvoiceDate && matchCreateDate && matchPrefix && matchStatus && matchCreator && matchSales && matchKeyword;
-    });
-
+  /* ---------- ค้นหา (clone C# bt_search_Click L106-142) ---------- */
+  function search(showMessage) {
+    if (state.searching) return;
+    var dateFrom = el("p006InvoiceDateFrom").value;
+    var dateTo = el("p006InvoiceDateTo").value;
+    if (!dateFrom || !dateTo) {
+      showToast("กรุณาระบุช่วงวันที่ Invoice");
+      return;
+    }
+    var body = {
+      connectionId: MAC5_CONNECTION_ID,
+      dateFrom: dateFrom,
+      dateTo: dateTo,
+      keyFrom: el("p006CreateDateFrom").value,
+      keyTo: el("p006CreateDateTo").value,
+      prefix: el("p006PrefixSelect").value,
+      perCode: el("p006SalespersonInput").value.trim(),
+      status: el("p006StatusSelect").value,
+      keyUser: el("p006CreatorInput").value.trim()
+    };
+    state.searching = true;
+    var btn = el("p006BtnSearch");
+    if (btn) { btn.disabled = true; btn.style.opacity = "0.6"; }
     var periodText = el("p006PeriodText");
-    if (periodText) periodText.textContent = "วันที่ Invoice " + formatDate(invoiceFrom) + " ถึง " + formatDate(invoiceTo);
-    renderRows(state.filteredItems);
-    if (showMessage) showToast("พบข้อมูล " + state.filteredItems.length + " รายการ");
+    if (periodText) periodText.textContent = "กำลังค้นหา...";
+
+    apiFetch("p006_search.php", body).then(function (data) {
+      if (!data.ok) throw new Error(data.error || "ค้นหาไม่สำเร็จ");
+      state.items = data.rows.map(function (r, i) {
+        r.index = i + 1;
+        return r;
+      });
+      state.selectedDocs = {};
+      if (periodText) periodText.textContent = "วันที่ Invoice " + formatDate(dateFrom) + " ถึง " + formatDate(dateTo);
+      renderRows();
+      if (showMessage) showToast("พบข้อมูล " + data.count + " รายการ");
+    }).catch(function (err) {
+      state.items = [];
+      renderRows();
+      showToast("ค้นหาไม่สำเร็จ: " + err.message);
+    }).then(function () {
+      state.searching = false;
+      if (btn) { btn.disabled = false; btn.style.opacity = ""; }
+    });
   }
 
-  function renderPreview() {
-    var selected = sortItems(getSelectedItems());
-    var rowsHtml = selected.map(function (item, i) {
-      return '<tr><td class="center">' + (i + 1) + "</td><td>" + esc(item.document) + "</td><td>" + esc(item.customerCode) + "</td><td>" + esc(item.area) + '</td><td class="number">' + formatMoney(item.amount) + "</td><td>" + esc(item.note) + "</td></tr>";
-    }).join("");
-    var total = selected.reduce(function (s, i) { return s + Number(i.amount || 0); }, 0);
-    rowsHtml += '<tr class="total-row"><td class="center" colspan="4">ยอดรวมทั้งสิ้น</td><td class="number">' + formatMoney(total) + "</td><td></td></tr>";
-    el("p006PaperRows").innerHTML = rowsHtml;
-    el("p006PreviewSubtitle").textContent = "เลือกเอกสาร " + selected.length + " รายการ";
-    el("p006PaperCount").textContent = selected.length + " รายการ";
-    var prefixSel = el("p006PrefixSelect");
-    el("p006PaperPrefix").textContent = prefixSel.selectedOptions[0].textContent;
-    el("p006PaperPeriod").textContent = formatDate(el("p006InvoiceDateFrom").value) + " - " + formatDate(el("p006InvoiceDateTo").value);
-    el("p006PaperPrintDate").textContent = new Date().toLocaleDateString("th-TH");
-  }
-
-  function openPreview() {
-    if (!Object.keys(state.selectedDocs).length) {
+  /* ---------- รายงาน (clone P130 pattern — overlay + iframe report/p006_report.html) ---------- */
+  function createReport() {
+    var items = getSelectedItems();
+    if (items.length === 0) {
       showToast("กรุณาเลือกเอกสารอย่างน้อย 1 รายการ");
       return;
     }
-    renderPreview();
-    el("p006Modal").classList.add("show");
+    if (items.length > 50) {
+      showToast("เลือกพิมพ์ได้สูงสุด 50 รายการต่อครั้ง");
+      return;
+    }
+    var ids = items.map(function (item) { return item.document; });
+    state.reportUrl = "report/p006_report.html?ids=" + ids.join(",") + "&conn=" + encodeURIComponent(MAC5_CONNECTION_ID);
+
+    var overlay = el("p006ReportOverlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "p006ReportOverlay";
+      overlay.className = "p006-rep-overlay";
+      overlay.innerHTML =
+        '<div class="p006-rep-modal">' +
+          '<div class="p006-rep-head">' +
+            '<div class="p006-rep-headtxt">' +
+              '<div class="p006-rep-title">▤ รายงาน Invoice เช็คคืน (MCIT)</div>' +
+              '<div class="p006-rep-sub" id="p006RepSub"></div>' +
+            "</div>" +
+            '<div class="p006-rep-btns">' +
+              '<button class="p006-rep-btn" type="button" id="p006RepNewWin" title="เปิดหน้าต่างใหม่">↗</button>' +
+              '<button class="p006-rep-btn" type="button" id="p006RepClose" title="ปิด (Esc)">✕</button>' +
+            "</div>" +
+          "</div>" +
+          '<div class="p006-rep-body"><iframe id="p006RepFrame" title="รายงาน Invoice เช็คคืน"></iframe></div>' +
+          '<div class="p006-rep-foot">' +
+            '<div class="p006-rep-hint">รายงาน A4 — 2 หน้าต่อ 1 ใบ (สำหรับลูกค้า + Invoice) — พิมพ์จากหน้านี้ได้โดยตรง</div>' +
+            '<button class="p006-rep-btn p006-rep-btn-primary" type="button" id="p006RepPrint">' + icon("print", 14) + " พิมพ์</button>" +
+          "</div>" +
+        "</div>";
+      document.body.appendChild(overlay);
+      overlay.addEventListener("click", function (e) {
+        if (e.target === overlay) closeReport();
+      });
+      overlay.querySelector("#p006RepClose").addEventListener("click", closeReport);
+      overlay.querySelector("#p006RepNewWin").addEventListener("click", function () {
+        if (state.reportUrl) window.open(state.reportUrl, "_blank", "width=900,height=1200");
+      });
+      overlay.querySelector("#p006RepPrint").addEventListener("click", function () {
+        var f = el("p006RepFrame");
+        if (f && f.contentWindow) {
+          try {
+            f.contentWindow.focus();
+            if (typeof f.contentWindow.onPrintClick === "function") {
+              f.contentWindow.onPrintClick();
+              return;
+            }
+            f.contentWindow.print();
+            return;
+          } catch (err) { /* ignore */ }
+        }
+        showToast("พิมพ์จาก iframe ไม่ได้ — กด ↗ เพื่อเปิดหน้าต่างใหม่แล้วพิมพ์จากนั้น");
+      });
+      if (!state.escBound) {
+        state.escBound = true;
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape") closeReport();
+        });
+      }
+    }
+    overlay.querySelector("#p006RepSub").textContent =
+      "เลือกเอกสาร " + items.length + " รายการ — " + new Date().toLocaleDateString("th-TH", { day: "numeric", month: "short", year: "numeric" });
+    var f = overlay.querySelector("#p006RepFrame");
+    f.src = state.reportUrl;
+    overlay.classList.add("show");
     document.body.style.overflow = "hidden";
   }
 
-  function closePreview() {
-    var m = el("p006Modal");
-    if (m) m.classList.remove("show");
+  function closeReport() {
+    var overlay = el("p006ReportOverlay");
+    if (!overlay) return;
+    overlay.classList.remove("show");
+    var f = overlay.querySelector("#p006RepFrame");
+    if (f) f.src = "about:blank";
     document.body.style.overflow = "";
+    /* refresh จำนวนที่พิมพ์ (MIHprintN +1 จากหน้า report) */
+    if (state.items.length > 0) search(false);
   }
 
-  function markAsPrinted() {
-    invoices.forEach(function (item) {
-      if (state.selectedDocs[item.document]) item.printCount += 1;
+  function bindEvents() {
+    el("p006Form").addEventListener("submit", function (event) {
+      event.preventDefault();
+      search(true);
     });
-    renderRows(state.filteredItems);
-  }
-
-  var escapeBound = false;
-  function bindEscape() {
-    if (escapeBound) return;
-    escapeBound = true;
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") closePreview();
+    el("p006QuickSearch").addEventListener("input", function () { renderRows(); });
+    el("p006Rows").addEventListener("change", function (event) {
+      var cb = event.target.closest(".p006-row-checkbox");
+      if (!cb) return;
+      toggleDocument(cb.getAttribute("data-document"), cb.checked);
     });
+    el("p006SelectAll").addEventListener("change", function () {
+      var checked = el("p006SelectAll").checked;
+      visibleItems().forEach(function (item) {
+        if (checked) state.selectedDocs[item.document] = true;
+        else delete state.selectedDocs[item.document];
+      });
+      renderRows();
+    });
+    document.querySelectorAll("#p006Root th[data-sort]").forEach(function (header) {
+      header.addEventListener("click", function () {
+        var field = header.getAttribute("data-sort");
+        if (state.sortField === field) {
+          state.sortDirection = state.sortDirection === "asc" ? "desc" : "asc";
+        } else {
+          state.sortField = field;
+          state.sortDirection = "asc";
+        }
+        renderRows();
+      });
+    });
+    el("p006PreviewButton").addEventListener("click", createReport);
   }
 
   function injectCSS() {
-    if (document.getElementById("p006css")) return;
+    if (el("p006css")) return;
     var style = document.createElement("style");
     style.id = "p006css";
     style.textContent = [
@@ -273,6 +405,9 @@
       ".p006-table tbody tr:nth-child(even){background:#fbfdff}",
       ".p006-table tbody tr:hover{background:#fef2f2}",
       ".p006-table tbody tr.selected{background:#eaf3ff;box-shadow:inset 4px 0 #2563eb}",
+      ".p006-table tbody tr.p006-row-warn{background:#fca5a5 !important}",
+      ".p006-table tbody tr.p006-row-warn:hover{background:#fca5a5 !important}",
+      ".p006-table tbody tr.p006-row-warn.selected{background:#fdba74 !important;box-shadow:inset 4px 0 #2563eb}",
       ".p006-checkbox-cell{width:40px;text-align:center}",
       ".p006-row-checkbox,.p006-select-all{width:17px;height:17px;accent-color:#2563eb;cursor:pointer}",
       ".p006-document-number{color:#1d4ed8;font-weight:700}",
@@ -286,65 +421,53 @@
       ".p006-footer-totals{display:flex;gap:8px}",
       ".p006-footer-total{display:flex;align-items:center;gap:7px;padding:6px 11px;color:#172033;border:1px solid #dbe3ef;border-radius:9px;background:#fff}",
       ".p006-footer-total strong{color:#dc2626}",
-      ".p006-modal-backdrop{position:fixed;inset:0;z-index:100;display:none;padding:20px;place-items:center;background:rgba(15,23,42,.52);backdrop-filter:blur(4px)}",
-      ".p006-modal-backdrop.show{display:grid}",
-      ".p006-modal{display:flex;width:min(1150px,100%);max-height:92vh;flex-direction:column;overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 28px 75px rgba(15,23,42,.36)}",
-      ".p006-modal-header{display:flex;min-height:64px;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid #dbe3ef}",
-      ".p006-modal-heading{display:flex;align-items:center;gap:10px}",
-      ".p006-modal-heading-icon{display:grid;width:38px;height:38px;place-items:center;color:#dc2626;border-radius:11px;background:#fef2f2}",
-      ".p006-modal-heading h3{font-size:15px;margin:0}",
-      ".p006-modal-heading p{color:#64748b;font-size:10px;margin:0}",
-      ".p006-modal-tools{display:flex;align-items:center;gap:6px}",
-      ".p006-modal-tool,.p006-modal-close{display:inline-flex;height:36px;align-items:center;justify-content:center;gap:6px;padding:0 11px;color:#64748b;border:1px solid #dbe3ef;border-radius:9px;background:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit}",
-      ".p006-modal-tool.print{color:#fff;border-color:#dc2626;background:#dc2626}",
-      ".p006-modal-close{width:36px;padding:0;font-size:20px}",
-      ".p006-modal-close:hover{color:#dc2626;border-color:#fecaca;background:#fef2f2}",
-      ".p006-preview-area{position:relative;min-height:0;flex:1;overflow:auto;background-color:#d7dde5;background-image:linear-gradient(45deg,#cdd4dd 25%,transparent 25%),linear-gradient(-45deg,#cdd4dd 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#cdd4dd 75%),linear-gradient(-45deg,transparent 75%,#cdd4dd 75%);background-position:0 0,0 10px,10px -10px,-10px 0;background-size:20px 20px}",
-      ".p006-preview-stage{display:grid;min-width:100%;min-height:100%;place-items:center;padding:40px}",
-      ".p006-report-paper{width:1000px;min-height:650px;padding:44px 46px;color:#111827;background:#fff;box-shadow:0 20px 52px rgba(15,23,42,.32)}",
-      ".p006-paper-company{text-align:center}",
-      ".p006-paper-company h2{font-size:19px;margin:0}",
-      ".p006-paper-company p{margin:3px 0 0;font-size:10px}",
-      ".p006-paper-title{margin:20px 0 14px;font-size:20px;text-align:center}",
-      ".p006-paper-meta{display:grid;grid-template-columns:repeat(2,1fr);margin-bottom:14px;border-top:1px solid #334155;border-left:1px solid #334155}",
-      ".p006-paper-meta div{min-height:42px;padding:7px 9px;border-right:1px solid #334155;border-bottom:1px solid #334155;font-size:11px}",
-      ".p006-paper-meta span{display:block;color:#64748b;font-size:9px}",
-      ".p006-paper-meta strong{display:block;margin-top:2px}",
-      ".p006-paper-table{width:100%;border-collapse:collapse;table-layout:fixed}",
-      ".p006-paper-table th{padding:7px 6px;color:#111827;border:1px solid #475569;background:#e2e8f0;font-size:10px;text-align:left}",
-      ".p006-paper-table td{padding:7px 6px;border:1px solid #94a3b8;font-size:10px;vertical-align:top;overflow-wrap:anywhere}",
-      ".p006-paper-table .number{text-align:right}",
-      ".p006-paper-table .center{text-align:center}",
-      ".p006-paper-table tr.total-row td{background:#e2e8f0;font-weight:700}",
-      ".p006-paper-signature{display:grid;grid-template-columns:repeat(3,1fr);gap:46px;margin-top:68px}",
-      ".p006-signature-box{padding-top:10px;border-top:1px solid #475569;font-size:10px;text-align:center}",
       ".p006-toast{position:fixed;right:20px;bottom:20px;z-index:200;display:flex;visibility:hidden;align-items:center;gap:8px;padding:11px 14px;color:#fff;border-radius:11px;opacity:0;background:#0f172a;box-shadow:0 16px 36px rgba(15,23,42,.28);font-size:11px;transform:translateY(12px);transition:.2s ease}",
       ".p006-toast.show{visibility:visible;opacity:1;transform:translateY(0)}",
       ".p006-toast svg{width:17px;height:17px;color:#34d399}",
+      ".p006-rep-overlay{display:none;position:fixed;inset:0;z-index:900;align-items:center;justify-content:center;background:rgba(2,6,23,.8);padding:18px}",
+      ".p006-rep-overlay.show{display:flex}",
+      ".p006-rep-modal{display:flex;width:min(1100px,100%);height:94vh;flex-direction:column;overflow:hidden;border-radius:18px;background:#fff;box-shadow:0 30px 80px rgba(15,23,42,.35)}",
+      ".p006-rep-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid #dbe3ef}",
+      ".p006-rep-headtxt{display:flex;flex-direction:column;gap:2px;min-width:0}",
+      ".p006-rep-title{font-size:15px;font-weight:700;color:#172033}",
+      ".p006-rep-sub{font-size:12px;color:#64748b}",
+      ".p006-rep-btns{display:flex;gap:8px;flex-shrink:0}",
+      ".p006-rep-btn{display:inline-flex;min-width:34px;height:34px;align-items:center;justify-content:center;gap:6px;color:#64748b;border:1px solid #dbe3ef;border-radius:9px;background:transparent;cursor:pointer;font-size:13px;font-weight:600;font-family:inherit;transition:.15s}",
+      ".p006-rep-btn:hover{color:#172033;border-color:#2563eb}",
+      ".p006-rep-body{flex:1;min-height:0;background:#e2e8f0;display:flex;justify-content:center;overflow:auto;padding:18px}",
+      ".p006-rep-body iframe{width:100%;height:100%;border:1px solid #dbe3ef;border-radius:10px;background:#fff}",
+      ".p006-rep-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 18px;border-top:1px solid #dbe3ef}",
+      ".p006-rep-hint{font-size:12px;color:#64748b}",
+      ".p006-rep-btn-primary{height:38px;padding:0 18px;background:#2563eb;color:#fff;border-color:#2563eb;font-weight:700;font-size:13px}",
+      ".p006-rep-btn-primary:hover{filter:brightness(1.08);color:#fff}",
       "@media (max-width:1100px){.p006-launcher-grid{grid-template-columns:repeat(2,1fr)}}",
-      "@media (max-width:680px){.p006-launcher-grid{grid-template-columns:1fr}.p006-date-range{grid-template-columns:1fr}.p006-date-separator{display:none}.p006-launcher-actions{flex-direction:column}.p006-btn{width:100%}}",
-      "@media print{@page{size:A4 landscape;margin:8mm}body *{visibility:hidden !important}#p006Paper,#p006Paper *{visibility:visible !important}#p006Paper{position:absolute;top:0;left:0;width:281mm;min-height:0;padding:4mm;box-shadow:none}.p006-paper-table th,.p006-paper-table td{padding:4px;font-size:8px}}"
+      "@media (max-width:680px){.p006-launcher-grid{grid-template-columns:1fr}.p006-date-range{grid-template-columns:1fr}.p006-date-separator{display:none}.p006-launcher-actions{flex-direction:column}.p006-btn{width:100%}}"
     ].join("\n");
     document.head.appendChild(style);
   }
 
   function mount(root) {
     if (!root) return;
-    state.filteredItems = [];
+    state.items = [];
     state.selectedDocs = {};
     state.sortField = "document";
     state.sortDirection = "asc";
-    /* ลบ modal/toast เก่าจาก body (ถ้ามี) */
-    document.querySelectorAll(".p006-modal-backdrop").forEach(function (e) { e.remove(); });
+    document.querySelectorAll(".p006-rep-overlay").forEach(function (e) { e.remove(); });
     document.querySelectorAll(".p006-toast").forEach(function (e) { e.remove(); });
     injectCSS();
 
-    /* default — clone demo: 1 แห่งเดือนก่อนหน้า → วันนี้ */
-    var now = new Date();
-    var fromISO = isoDate(new Date(now.getFullYear(), now.getMonth() - 1, 1));
-    var toISO = isoDate(new Date(now.getFullYear(), now.getMonth(), now.getDate()));
+    /* default — วันปัจจุบัน (pattern P019) + 1CBN + 25 (clone demo) */
+    var todayISO = isoDate(new Date());
 
     var selectArrow = '<svg class="p006-select-arrow" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="m6 9 6 6 6-6"></path></svg>';
+
+    var prefixOptions = PREFIX_LIST.map(function (p) {
+      return '<option value="' + esc(p) + '"' + (p === "1CBN" ? " selected" : "") + ">" + esc(p) + "</option>";
+    }).join("");
+
+    var statusOptions = STATUS_LIST.map(function (s) {
+      return '<option value="' + esc(s.code) + '"' + (s.code === "25" ? " selected" : "") + ">" + esc(s.name) + "</option>";
+    }).join("");
 
     root.innerHTML =
       '<form class="p006-launcher" id="p006Form">' +
@@ -352,17 +475,17 @@
           '<div class="p006-field">' +
             "<label>วันที่ Invoice</label>" +
             '<div class="p006-date-range">' +
-              '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006InvoiceDateFrom" type="date" value="' + fromISO + '"></div>' +
+              '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006InvoiceDateFrom" type="date" value="' + todayISO + '"></div>' +
               '<span class="p006-date-separator">ถึง</span>' +
-              '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006InvoiceDateTo" type="date" value="' + toISO + '"></div>' +
+              '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006InvoiceDateTo" type="date" value="' + todayISO + '"></div>' +
             "</div>" +
           "</div>" +
           '<div class="p006-field">' +
             "<label>วันที่สร้างเอกสาร</label>" +
             '<div class="p006-date-range">' +
-              '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006CreateDateFrom" type="date" value="' + fromISO + '"></div>' +
+              '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006CreateDateFrom" type="date" value="' + todayISO + '"></div>' +
               '<span class="p006-date-separator">ถึง</span>' +
-              '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006CreateDateTo" type="date" value="' + toISO + '"></div>' +
+              '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006CreateDateTo" type="date" value="' + todayISO + '"></div>' +
             "</div>" +
           "</div>" +
           '<div class="p006-field">' +
@@ -376,30 +499,20 @@
           '<div class="p006-field">' +
             '<label for="p006PrefixSelect">คำนำหน้าใบสำคัญ</label>' +
             '<div class="p006-input-wrap">' + icon("grid", 17) +
-              '<select id="p006PrefixSelect">' +
-                '<option value="all">ทั้งหมด</option>' +
-                '<option value="1CBN" selected>1CBN</option>' +
-                '<option value="CODN">CODN</option>' +
-                '<option value="IVVN">IVVN</option>' +
-              "</select>" +
+              '<select id="p006PrefixSelect">' + prefixOptions + "</select>" +
               selectArrow +
             "</div>" +
           "</div>" +
           '<div class="p006-field">' +
             '<label for="p006StatusSelect">สถานะ Invoice</label>' +
             '<div class="p006-input-wrap">' + icon("chart", 17) +
-              '<select id="p006StatusSelect">' +
-                '<option value="all">ทั้งหมด</option>' +
-                '<option value="25" selected>25 · แจ้งหนี้เช็คคืน</option>' +
-                '<option value="26">26 · รอดำเนินการ</option>' +
-                '<option value="27">27 · ดำเนินการแล้ว</option>' +
-              "</select>" +
+              '<select id="p006StatusSelect">' + statusOptions + "</select>" +
               selectArrow +
             "</div>" +
           "</div>" +
         "</div>" +
         '<div class="p006-launcher-actions">' +
-          '<button class="p006-btn primary" type="submit">' + icon("search", 16) + " ค้นหา</button>" +
+          '<button class="p006-btn primary" type="submit" id="p006BtnSearch">' + icon("search", 16) + " ค้นหา</button>" +
           '<button class="p006-btn secondary" id="p006PreviewButton" type="button">' + icon("eye", 16) + " Print Preview</button>" +
         "</div>" +
       "</form>" +
@@ -443,110 +556,14 @@
         "</div>" +
       "</section>";
 
-    /* modal print preview — append ไป body (position:fixed) */
-    var modal = document.createElement("div");
-    modal.className = "p006-modal-backdrop";
-    modal.id = "p006Modal";
-    modal.innerHTML =
-      '<section class="p006-modal" role="dialog" aria-modal="true">' +
-        '<div class="p006-modal-header">' +
-          '<div class="p006-modal-heading">' +
-            '<div class="p006-modal-heading-icon">' + icon("file", 18) + "</div>" +
-            "<div>" +
-              "<h3>ตัวอย่างรายงานเช็คคืน</h3>" +
-              '<p id="p006PreviewSubtitle">เลือกเอกสาร 0 รายการ</p>' +
-            "</div>" +
-          "</div>" +
-          '<div class="p006-modal-tools">' +
-            '<button class="p006-modal-tool print" id="p006PrintButton" type="button">' + icon("print", 14) + " พิมพ์</button>" +
-            '<button class="p006-modal-close" id="p006CloseModal" type="button" aria-label="ปิด">×</button>' +
-          "</div>" +
-        "</div>" +
-        '<div class="p006-preview-area">' +
-          '<div class="p006-preview-stage">' +
-            '<article class="p006-report-paper" id="p006Paper">' +
-              '<header class="p006-paper-company">' +
-                "<h2>บริษัท เอ็มซีไอที จำกัด</h2>" +
-                "<p>รายงานใบสำคัญ Invoice เช็คคืน</p>" +
-              "</header>" +
-              '<h1 class="p006-paper-title">รายงาน Print Invoice เช็คคืน</h1>' +
-              '<section class="p006-paper-meta">' +
-                '<div><span>ช่วงวันที่ Invoice</span><strong id="p006PaperPeriod">-</strong></div>' +
-                '<div><span>จำนวนเอกสาร</span><strong id="p006PaperCount">0 รายการ</strong></div>' +
-                '<div><span>คำนำหน้าใบสำคัญ</span><strong id="p006PaperPrefix">1CBN</strong></div>' +
-                '<div><span>วันที่พิมพ์</span><strong id="p006PaperPrintDate">-</strong></div>' +
-              "</section>" +
-              '<table class="p006-paper-table">' +
-                "<thead><tr>" +
-                  '<th class="center" style="width:6%">ลำดับ</th>' +
-                  '<th style="width:17%">เลขที่ใบสำคัญ</th>' +
-                  '<th style="width:12%">รหัสลูกค้า</th>' +
-                  '<th style="width:20%">พื้นที่</th>' +
-                  '<th class="number" style="width:13%">ยอดรวม</th>' +
-                  '<th style="width:32%">หมายเหตุ</th>' +
-                "</tr></thead>" +
-                '<tbody id="p006PaperRows"></tbody>' +
-              "</table>" +
-              '<section class="p006-paper-signature">' +
-                '<div class="p006-signature-box">ผู้จัดทำเอกสาร</div>' +
-                '<div class="p006-signature-box">ผู้ตรวจสอบ</div>' +
-                '<div class="p006-signature-box">ผู้อนุมัติ</div>' +
-              "</section>" +
-            "</article>" +
-          "</div>" +
-        "</div>" +
-      "</section>";
-    document.body.appendChild(modal);
-
     var toast = document.createElement("div");
     toast.className = "p006-toast";
     toast.id = "p006Toast";
     toast.innerHTML = icon("check", 17) + '<span id="p006ToastMessage"></span>';
     document.body.appendChild(toast);
 
-    /* events */
-    el("p006Form").addEventListener("submit", function (event) {
-      event.preventDefault();
-      applyFilters(true);
-    });
-    el("p006QuickSearch").addEventListener("input", function () { applyFilters(false); });
-    el("p006Rows").addEventListener("change", function (event) {
-      var cb = event.target.closest(".p006-row-checkbox");
-      if (!cb) return;
-      toggleDocument(cb.getAttribute("data-document"), cb.checked);
-    });
-    el("p006SelectAll").addEventListener("change", function () {
-      var checked = el("p006SelectAll").checked;
-      state.filteredItems.forEach(function (item) {
-        if (checked) state.selectedDocs[item.document] = true;
-        else delete state.selectedDocs[item.document];
-      });
-      renderRows(state.filteredItems);
-    });
-    root.querySelectorAll("th[data-sort]").forEach(function (header) {
-      header.addEventListener("click", function () {
-        var field = header.getAttribute("data-sort");
-        if (state.sortField === field) {
-          state.sortDirection = state.sortDirection === "asc" ? "desc" : "asc";
-        } else {
-          state.sortField = field;
-          state.sortDirection = "asc";
-        }
-        renderRows(state.filteredItems);
-      });
-    });
-    el("p006PreviewButton").addEventListener("click", openPreview);
-    el("p006CloseModal").addEventListener("click", closePreview);
-    modal.addEventListener("click", function (event) {
-      if (event.target === modal) closePreview();
-    });
-    el("p006PrintButton").addEventListener("click", function () {
-      markAsPrinted();
-      window.print();
-    });
-    bindEscape();
-
-    applyFilters(false);
+    bindEvents();
+    renderRows();
   }
 
   window.P006PrintInvoice = { mount: mount };

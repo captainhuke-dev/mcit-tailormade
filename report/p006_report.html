@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>รายงาน Invoice เช็คคืน — P006 (MCIT)</title>
+<link rel="stylesheet" href="../assets/css/fonts.css?v=20261001a" />
+<style>
+  :root {
+    --line: #334155;
+    --text: #0f172a;
+    --muted: #475569;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "THSarabunNew", "Sarabun", Tahoma, Arial, sans-serif;
+    color: var(--text);
+    background: #e2e8f0;
+  }
+
+  /* ---------- toolbar (ไม่ถูก print) ---------- */
+  .toolbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    background: #0f172a;
+    color: #fff;
+  }
+  .toolbar button {
+    padding: 9px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: #2563eb;
+    color: #fff;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .toolbar button:hover { background: #1d4ed8; }
+  .toolbar .toolbar-info { margin-left: auto; font-size: 13px; color: #cbd5e1; }
+
+  /* ---------- A4 portrait page (clone P130) ---------- */
+  .report-page {
+    width: 210mm;
+    height: 297mm;
+    margin: 16px auto;
+    padding: 8mm 10mm;
+    background: #fff;
+    box-shadow: 0 2px 12px rgb(0 0 0 / 20%);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    page-break-after: always;
+  }
+  .report-page:last-child { page-break-after: auto; }
+
+  /* ---------- ตาราง base ---------- */
+  table.rep-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+  table.rep-table th, table.rep-table td {
+    border: 1px solid var(--line);
+    padding: 5px 8px;
+    vertical-align: top;
+    line-height: 1.6;
+  }
+  table.rep-table thead th { background: #f1f5f9; }
+  td.num, th.num { text-align: right; white-space: nowrap; }
+  td.code { white-space: nowrap; }
+
+  /* ---------- หัวเอกสาร: MCIT/พาราเทค ตรงกลาง + หน้า N ขวา ---------- */
+  .rep-dochead {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+  .rep-dochead .rep-company {
+    grid-column: 2;
+    justify-self: center;
+    font-size: 48px; /* 36pt B — C# font36B */
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+  .rep-dochead .rep-pageno {
+    grid-column: 3;
+    justify-self: end;
+    font-size: 16px; /* 12pt — C# font12 */
+    font-weight: 700;
+    text-decoration: underline;
+  }
+  /* DEBgrade — 18pt B ตรงกลาง (C# L285) */
+  .rep-grade {
+    text-align: center;
+    font-size: 24px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+
+  /* ---------- header cells (3 คอลั่น — clone C# 183/183/184 ≈ 33/33/34%) ---------- */
+  .rep-header { table-layout: fixed; font-size: 16px; }
+  .rep-titlecell { text-align: center; vertical-align: middle !important; }
+  .rep-title { font-size: 24px; font-weight: 800; line-height: 1.3; } /* 18pt B */
+  .rep-title-sub { font-size: 16px; font-weight: 400; color: var(--muted); }
+  .rep-hdr-top td { font-size: 18.67px; height: 34px; } /* 14pt — เลขที่/วันที่ */
+  .rep-hdr-top .rep-docno { font-size: 24px; font-weight: 800; } /* 18pt B */
+  .rep-barcodecell { text-align: center; vertical-align: middle !important; }
+  .rep-barcodecell .rep-barcode-svg {
+    height: 60px;
+    width: auto;
+    max-width: 100%;
+    display: block;
+    margin: 0 auto;
+  }
+  .rep-barcodecell .barcode-fallback { font-size: 11px; letter-spacing: 2px; }
+  .rep-customer { font-weight: 800; font-size: 21.33px; } /* 16pt */
+  .rep-custaddr { font-size: 16px; }
+  .rep-ship { font-size: 20px; font-weight: 700; } /* 15pt B */
+  .rep-shipval { font-size: 16px; font-weight: 400; }
+  .label { font-weight: 700; }
+
+  /* ---------- body: รายการสินค้า (C# 7/6 คอลั่น — nested table 330px) ---------- */
+  table.rep-items {
+    flex: 0 0 auto;
+    min-height: 330px;
+    table-layout: fixed;
+    border: 0;
+    font-size: 16px; /* 12pt B header / 14pt item — C# font12B/font14 */
+  }
+  table.rep-items tbody tr { height: 26px; }
+  table.rep-items tbody td { line-height: 15px; font-size: 18.67px; } /* 14pt */
+  table.rep-items th, table.rep-items td {
+    padding: 5px 8px;
+    border: 0;
+    border-left: 1px solid var(--line);
+  }
+  table.rep-items th:first-child, table.rep-items td:first-child { border-left: 1px solid var(--line); }
+  table.rep-items th:last-child, table.rep-items td:last-child { border-right: 1px solid var(--line); }
+  table.rep-items thead th {
+    background: #f1f5f9;
+    border-bottom: 1px solid var(--line);
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+  }
+  table.rep-items .desc { word-break: break-word; }
+  table.rep-items tr.rep-blank { height: 26px; }
+
+  /* ---------- ยอดรวม (C# 4 คอลั่น 250/110/110/80) ---------- */
+  .rep-totalsbox { margin: 0; font-size: 16px; } /* 12pt */
+  .rep-totalsbox td { padding: 3px 8px; }
+  .rep-totalsbox td.num { text-align: right; white-space: nowrap; }
+  .rep-notes { white-space: pre-wrap; }
+
+  /* ---------- ช่องลงนาม ---------- */
+  .rep-signatures {
+    display: grid;
+    gap: 16px;
+    margin-top: auto;
+    text-align: center;
+    font-size: 16px; /* 12pt */
+    page-break-inside: avoid;
+  }
+  .rep-sign-2 { grid-template-columns: repeat(4, 1fr); } /* C# 4 คอลั่น 137.5 — หน้า 1 = ส่ง + ว่าง colspan 2 + รับ */
+  .rep-sign-2 .rep-sign-box:nth-child(2) { visibility: hidden; }
+  .rep-sign-4 { grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .rep-sign-box { padding-top: 2px; }
+  .rep-sign-line { border-top: 1px dotted #475569; margin-bottom: 6px; }
+  .rep-sign-date { margin-top: 10px; color: var(--muted); }
+
+  /* ---------- footer ---------- */
+  .rep-footer {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+    font-size: 16px; /* 12pt */
+    color: var(--muted);
+    line-height: 1.6;
+    page-break-inside: avoid;
+  }
+  .rep-footer .rep-syscode { font-weight: 700; color: var(--text); }
+
+  /* ---------- print ---------- */
+  @media print {
+    body { background: #fff; }
+    .toolbar { display: none !important; }
+    .report-page {
+      width: 210mm;
+      height: 297mm;
+      margin: 0;
+      box-shadow: none;
+      overflow: hidden;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="toolbar">
+    <button type="button" onclick="window.close()">✕ ปิด</button>
+    <button type="button" onclick="onPrintClick()">🖨 พิมพ์ทั้งหมด</button>
+    <span class="toolbar-info" id="toolbarInfo">กำลังโหลดข้อมูล...</span>
+  </div>
+
+  <div id="reports"></div>
+
+<script src="../assets/js/JsBarcode.all.min.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ---------- params: ids=ID1,ID2&conn=ID ---------- */
+  var params = new URLSearchParams(window.location.search);
+  var invoiceIds = (params.get("ids") || "").split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+  var connectionId = params.get("conn") || "c1788406814359"; // default MAC5
+
+  /* ---------- บันทึกจำนวนพิมพ์ (MIHprintN +1) แล้วเปิด print dialog ---------- */
+  window.onPrintClick = function () {
+    if (invoiceIds.length === 0) {
+      window.print();
+      return;
+    }
+    fetch("../api/p006_markprint.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ connectionId: connectionId, invoiceIds: invoiceIds })
+    }).catch(function () {
+      // API ผิดพลาด — ไม่บล็อกการพิมพ์
+    });
+    window.print();
+  };
+
+  /* ---------- Barcode Code 128 (clone P130) ---------- */
+  function barcodeSvg(text) {
+    try {
+      if (typeof JsBarcode !== "function") {
+        return '<div class="barcode-fallback">' + esc(text) + "</div>";
+      }
+      var el = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      JsBarcode(el, String(text), {
+        format: "CODE128",
+        width: 1.0,
+        height: 60,
+        displayValue: false,
+        margin: 0,
+        lineColor: "#000000",
+        background: "#ffffff"
+      });
+      el.setAttribute("class", "rep-barcode-svg");
+      return el.outerHTML;
+    } catch (e) {
+      return '<div class="barcode-fallback">' + esc(text) + "</div>";
+    }
+  }
+
+  function esc(value) {
+    return String(value == null ? "" : value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  // วันที่จากฟิลด์แยก day/month/year (ค.ศ.) → dd/mm/พ.ศ.
+  function dateFromParts(row) {
+    var dd = String(row.MIHday || "").padStart(2, "0");
+    var mm = String(row.MIHmonth || "").padStart(2, "0");
+    var yyyy = parseInt(row.MIHyear, 10);
+    if (!yyyy) return "";
+    return dd + "/" + mm + "/" + (yyyy + 543);
+  }
+
+  // วันที่ ISO → dd/mm/พ.ศ. HH:MM
+  function toBuddhistTime(dateStr) {
+    var d = new Date(dateStr);
+    if (isNaN(d.getTime())) return String(dateStr || "");
+    var dd = String(d.getDate()).padStart(2, "0");
+    var mm = String(d.getMonth() + 1).padStart(2, "0");
+    var yyyy = d.getFullYear() + 543;
+    var hh = String(d.getHours()).padStart(2, "0");
+    var mi = String(d.getMinutes()).padStart(2, "0");
+    return dd + "/" + mm + "/" + yyyy + " " + hh + ":" + mi;
+  }
+
+  function thaiDate(value) {
+    var s = String(value == null ? "" : value).trim().slice(0, 10);
+    var m = s.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (!m) return s === "" ? "" : s;
+    var y = parseInt(m[1], 10);
+    return m[3] + "/" + m[2] + "/" + (y + 543);
+  }
+
+  function money(value) {
+    var num = parseFloat(value);
+    if (isNaN(num)) return "—";
+    return num.toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function text(value) {
+    var v = String(value == null ? "" : value).trim();
+    return v === "" || v === "." ? "— " : v;
+  }
+
+  // ส่วนลดท้ายบิล x% — C# L469-479: disEndbill = MIHdiscHT1 + MIHdiscHT2 (>0 → "x%")
+  function discHt(row) {
+    var d1 = parseFloat(row.MIHdiscHT1) || 0;
+    var d2 = parseFloat(row.MIHdiscHT2) || 0;
+    var total = d1 + d2;
+    return total > 0 ? total + "%" : "";
+  }
+
+  // ตัด suffix (B) (X) (J) (C) (CL) + \r\n → space — clone C# L386-390
+  function cleanDesc(value) {
+    var s = String(value == null ? "" : value);
+    s = s.replace(/\((B|X|J|C|CL)\)/g, "");
+    s = s.replace(/\r\n/g, " ");
+    s = s.replace(/\s{2,}/g, " ").trim();
+    return s;
+  }
+
+  /* ---------- คำนวณข้อมูล header (clone C# PdfPageHeader L653-824) ---------- */
+  function computeHeader(row) {
+    var contact = String(row.DEBcontactT || "").trim();
+    var customerName = text(row.DEBnameE) + (contact !== "" ? " " + contact : "");
+    var address = [text(row.DEBadd1AT), text(row.DEBadd2AT), text(row.DEBadd3AT)].join(" ") +
+      (row.DEBadd3AE ? " " + text(row.DEBadd3AE) : "");
+    var telFax = "Tel : " + (row.DEBtel ? text(row.DEBtel) : "—") +
+      (row.DEBfax ? "    FAX : " + text(row.DEBfax) : "");
+    // อ้างอิงใบสั่งซื้อ — C# get_refSO: MIHref1 (บรรทัดบน) + MILvnos(dd/mm/พ.ศ.) (บรรทัดล่าง)
+    var refs = Array.isArray(row.refs) ? row.refs : [];
+    var refsParts = refs.map(function (r) {
+      var vn = String(r.MILvnos == null ? "" : r.MILvnos).trim();
+      var dt = thaiDate(r.MILdate);
+      if (vn === "") return "";
+      return dt !== "" && dt !== "—" ? vn + "(" + dt + ")" : vn;
+    }).filter(Boolean);
+    var refBase = String(row.MIHref1 == null ? "" : row.MIHref1).trim();
+    var refDisplay = [refBase].concat(refsParts).filter(Boolean).join("\n") || "—";
+    return { customerName: customerName, address: address, telFax: telFax, refDisplay: refDisplay };
+  }
+
+  /* ---------- header block (clone C# PdfPageHeader — 3 คอลั่น 33/33/34%) ----------
+   * titleMain/titleSub = "ใบแจ้งหนี้" + "( สำหรับลูกค้า )" / "( Invoice )"
+   * chk = chkHeaderReportType (C# ChekSTK) — true = MCIT + [รหัสลูกค้า] + ผู้ขาย */
+  function headerBlock(row, h, titleMain, titleSub, pageNo, barcode, chk) {
+    var payTerm = text(row.DEBcreditTerm) === "—" ? "— " : (text(row.DEBcreditTerm) + " วัน");
+    return `
+      <!-- หัวเอกสาร: MCIT/พาราเทค 36pt B + หน้า N + DEBgrade 18pt B -->
+      <div class="rep-dochead">
+        <span class="rep-company">${chk ? "MCIT" : "พาราเทค"}</span>
+        <span class="rep-pageno">หน้า ${pageNo}</span>
+      </div>
+      <div class="rep-grade">${esc(text(row.DEBgrade))}</div>
+
+      <table class="rep-table rep-header">
+        <colgroup><col style="width:33%" /><col style="width:33%" /><col style="width:34%" /></colgroup>
+        <tr class="rep-hdr-top">
+          <td><div><b>เลขที่เอกสาร&nbsp;:</b> <span class="rep-docno">${esc(row.MIHvnos)}</span></div></td>
+          <td rowspan="2" class="rep-barcodecell">${barcode}</td>
+          <td rowspan="2" class="rep-titlecell">
+            <div class="rep-title">${titleMain}</div>
+            <div class="rep-title-sub">${titleSub}</div>
+          </td>
+        </tr>
+        <tr class="rep-hdr-top">
+          <td><div><b>วันที่เอกสาร&nbsp;:</b> ${esc(dateFromParts(row))}</div></td>
+        </tr>
+        <tr>
+          <td colspan="2" style="padding-top:15px">
+            <div><b>ชื่อลูกค้า :</b> <span class="rep-customer">${esc(h.customerName)}</span>${chk ? " <b>[" + esc(row.MIHcus) + "]</b>" : ""}</div>
+            <div class="rep-custaddr">${esc(h.address)}</div>
+            <div>${esc(h.telFax)}</div>
+          </td>
+          <td style="height:80px">
+            <div class="rep-ship">กำหนดส่งของ</div>
+            <div><b>การชำระเงิน :</b> ${payTerm}</div>
+            <div><b>อ้างอิงใบสั่งซื้อ :</b> <span>${esc(h.refDisplay).replace(/\n/g, "<br>")}</span></div>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2" style="height:50px">
+            <div><span class="label">เขตดูแล :</span></div>
+            <div><span class="label">ผู้ขาย :</span> ${esc(text(row.PERnameT))}</div>
+          </td>
+          <td style="height:50px"></td>
+        </tr>
+        <tr>
+          <td colspan="3" style="height:46px"><span class="label">ขนส่ง&nbsp;&nbsp;:</span> <span class="rep-shipval">${esc(text(row.JOBdescT))}</span></td>
+        </tr>
+      </table>`;
+  }
+
+  /* ---------- item table (clone C# L306-436 — 7 คอลั่น MCIT / 6 คอลั่น พาราเทค) ---------- */
+  function itemsTable(row, chk) {
+    var items = Array.isArray(row.items) ? row.items : [];
+    var MIN_ROWS = 12; // C# cntPage = 12
+    var n = items.length;
+    var pad = chk ? 7 : 6;
+    var itemsRows = items.length === 0
+      ? '<tr><td colspan="' + pad + '" style="text-align:center;color:#64748b;padding:14px">(ไม่พบรายการสินค้า)</td></tr>'
+      : items.map(function (it) {
+          var desc = cleanDesc(it.descT);
+          var serial = it.serial ? " (" + esc(it.serial) + ")" : "";
+          var cells = "";
+          if (chk) {
+            cells += '<td class="code" style="text-align:center">' + esc(String(it.MILstk == null ? "" : it.MILstk)) + "</td>";
+          }
+          cells += "<td>" + (desc === "" ? "(ไม่ระบุ)" : esc(desc)) + serial + "</td>";
+          cells += "<td>" + esc(String(it.MILnotes == null ? "" : it.MILnotes).trim()) + "</td>";
+          cells += '<td style="text-align:center">' + esc(String(it.quan == null ? "" : it.quan)) + "</td>";
+          cells += '<td class="num">' + money(it.MILuprice) + "</td>";
+          cells += '<td class="num">' + money(it.MILdiscA) + "</td>";
+          cells += '<td class="num">' + money(it.MILsum) + "</td>";
+          return "<tr>" + cells + "</tr>";
+        }).join("");
+    while (n < MIN_ROWS) {
+      itemsRows += "<tr class=\"rep-blank\">" + new Array(pad + 1).join("<td></td>") + "</tr>";
+      n++;
+    }
+    var colgroup, thead;
+    if (chk) {
+      // C# widths 50/260/50/50/50/30/60 (total 550)
+      colgroup = '<colgroup><col style="width:50px" /><col style="width:260px" /><col style="width:50px" /><col style="width:50px" /><col style="width:50px" /><col style="width:30px" /><col style="width:60px" /></colgroup>';
+      thead = "<tr><th>รหัสสินค้า</th><th>รายละเอียดสินค้า</th><th></th><th>จำนวน</th><th>หน่วยละ</th><th>ลด %</th><th>รวม</th></tr>";
+    } else {
+      // C# widths 310/50/50/50/30/60 (total 550)
+      colgroup = '<colgroup><col style="width:310px" /><col style="width:50px" /><col style="width:50px" /><col style="width:50px" /><col style="width:30px" /><col style="width:60px" /></colgroup>';
+      thead = "<tr><th>รายละเอียดสินค้า</th><th></th><th>จำนวน</th><th>หน่วยละ</th><th>ลด %</th><th>รวม</th></tr>";
+    }
+    return `
+      <table class="rep-table rep-items">
+        ${colgroup}
+        <thead>${thead}</thead>
+        <tbody>${itemsRows}</tbody>
+      </table>`;
+  }
+
+  /* ---------- footer totals (clone C# L441-521 — 4 คอลั่น 250/110/110/80) ---------- */
+  function totalsBox(row) {
+    return `
+      <table class="rep-table rep-totalsbox">
+        <colgroup><col style="width:250px" /><col style="width:110px" /><col style="width:110px" /><col style="width:80px" /></colgroup>
+        <tr>
+          <td rowspan="5" class="rep-notes" style="vertical-align:top"><b>หมายเหตุ :</b> ${esc(text(row.MIHnotes))}</td>
+          <td rowspan="5" style="vertical-align:top"><b>รวมหน่วยบรรจุ :</b> ${Number(row.totalUnits) || 0}</td>
+          <td>จำนวนเงิน</td>
+          <td class="num">${money(row.MIHcog)}</td>
+        </tr>
+        <tr>
+          <td>ส่วนลดท้ายบิล ${discHt(row)}</td>
+          <td class="num">${money(row.MIHdisc)}</td>
+        </tr>
+        <tr>
+          <td>ยอดเงินหลังหักส่วนลด</td>
+          <td class="num">${money(row.AfterDisc)}</td>
+        </tr>
+        <tr>
+          <td>ยอดมัดจำ</td>
+          <td class="num">${money(row.MIHextraSUM)}</td>
+        </tr>
+        <tr>
+          <td>ยอดชำระ</td>
+          <td class="num">${money(row.MIHnetSUM)}</td>
+        </tr>
+      </table>`;
+  }
+
+  /* ---------- ช่องลงนาม (clone C# L526-586) ----------
+   * หน้า 1 (r=1): ผู้ส่งสินค้า + ว่าง colspan 2 + ผู้รับสินค้า
+   * หน้า 2 (r=2): ผู้ส่งสินค้า + ผู้ตรวจสอบ + ผู้อนุมัติ + ผู้รับสินค้า */
+  function signatures(pageNo) {
+    if (pageNo === 1) {
+      return `
+        <div class="rep-signatures rep-sign-2">
+          <div class="rep-sign-box"><div class="rep-sign-line"></div>ผู้ส่งสินค้า<div class="rep-sign-date">วันที่ ........../........../...............</div></div>
+          <div class="rep-sign-box"></div>
+          <div class="rep-sign-box"></div>
+          <div class="rep-sign-box"><div class="rep-sign-line"></div>ผู้รับสินค้า<div class="rep-sign-date">วันที่ ........../........../...............</div></div>
+        </div>`;
+    }
+    return `
+      <div class="rep-signatures rep-sign-4">
+        <div class="rep-sign-box"><div class="rep-sign-line"></div>ผู้ส่งสินค้า<div class="rep-sign-date">วันที่ ........../........../...............</div></div>
+        <div class="rep-sign-box"><div class="rep-sign-line"></div>ผู้ตรวจสอบ<div class="rep-sign-date">วันที่ ........../........../...............</div></div>
+        <div class="rep-sign-box"><div class="rep-sign-line"></div>ผู้อนุมัติ<div class="rep-sign-date">วันที่ ........../........../...............</div></div>
+        <div class="rep-sign-box"><div class="rep-sign-line"></div>ผู้รับสินค้า<div class="rep-sign-date">วันที่ ........../........../...............</div></div>
+      </div>`;
+  }
+
+  /* ---------- footer row (clone C# L588-631 — เฉล่า chkHeaderReportType) ---------- */
+  function footerRow(row) {
+    var now = new Date();
+    var nowStr = toBuddhistTime(now.toISOString());
+    return `
+      <div class="rep-footer">
+        [${esc(row.MIHvnos)}] ใบแจ้งหนี้&nbsp;&nbsp;|&nbsp;&nbsp;เอกสารสร้างโดย ${esc(text(row.MIHkeyUser))}
+        วันที่ ${esc(toBuddhistTime(row.MIHkeyDate))}&nbsp;&nbsp;|&nbsp;&nbsp;
+        <span class="rep-syscode">SALE-SYS-EX-14-5601</span>&nbsp;&nbsp;|&nbsp;&nbsp;
+        พิมพ์โดย&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; วันที่ ${esc(nowStr)}
+      </div>`;
+  }
+
+  /* ---------- render 1 หน้า (clone C# Doc13 — 2 หน้าต่อ 1 ใบ) ---------- */
+  function renderPage(row, pageNo, chk) {
+    var h = computeHeader(row);
+    var barcode = barcodeSvg(row.MIHvnos);
+    // C# L242-243: strHead[1] = "ใบแจ้งหนี้" (สำหรับลูกค้า) / strHead[2] = "ใบแจ้งหนี้" (Invoice)
+    var titleMain = "ใบแจ้งหนี้";
+    var titleSub = pageNo === 1 ? "( สำหรับลูกค้า )" : "( Invoice )";
+    return `
+    <div class="report-page rep-inv">
+      ${headerBlock(row, h, titleMain, titleSub, pageNo, barcode, chk)}
+      ${itemsTable(row, chk)}
+      ${totalsBox(row)}
+      ${signatures(pageNo)}
+      ${chk ? footerRow(row) : ""}
+    </div>`;
+  }
+
+  /* ---------- load ---------- */
+  async function load() {
+    var info = document.getElementById("toolbarInfo");
+    try {
+      var res = await fetch("../api/p006_report.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ connectionId: connectionId, invoiceIds: invoiceIds })
+      });
+      var data = await res.json();
+      if (!data.ok) {
+        info.textContent = "ผิดพลาด: " + (data.message || "ไม่ทราบสาเหตุ");
+        return;
+      }
+      var pages = [];
+      var pageNo = 0;
+      (data.reports || []).forEach(function (row) {
+        var chk = row.chkHeaderReportType !== false;
+        pageNo++;
+        pages.push(renderPage(row, pageNo, chk));      // หน้า 1 — สำหรับลูกค้า
+        pageNo++;
+        pages.push(renderPage(row, pageNo, chk));      // หน้า 2 — Invoice
+      });
+      document.getElementById("reports").innerHTML = pages.length
+        ? pages.join("")
+        : '<div style="padding:40px;text-align:center;color:#64748b">ไม่พบข้อมูลรายงาน</div>';
+      info.textContent = "เอกสาร " + (data.reports || []).length + " รายการ — " +
+        (data.missing && data.missing.length ? "ไม่พบ: " + data.missing.join(", ") : "ครบทั้งหมด");
+    } catch (err) {
+      info.textContent = "โหลดข้อมูลไม่สำเร็จ: " + err.message;
+    }
+  }
+
+  load();
+})();
+</script>
+</body>
+</html>
