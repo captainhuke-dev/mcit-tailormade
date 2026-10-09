@@ -1,7 +1,7 @@
 /* P006 — Print Invoice เช็คคืน (clone demo/P006-demo.html + C# MCIT_FrmPrintChqueReturnGUI.cs)
  * IIFE — window.P006PrintInvoice = { mount }
  * Data: API p006_search.php (SQL clone C# L112-122 — MIH LEFT JOIN DEB, MIHtype='IS')
- * UI: launcher (วันที่ Invoice + ผู้สร้าง + รหัสผู้แทน + คำนำหน้า + สถานะ)
+ * UI: launcher (วันที่ Invoice + ผู้สร้าง + คำนำหน้า + สถานะ)
  *     + table (checkbox select + sort + quick search + footer ยอดที่เลือก/ยอดรวม + row แดง cnt>=11)
  *     + report overlay (iframe report/p006_report.html — 2 หน้า/ใบ A4 portrait — clone P130 pattern)
  */
@@ -207,7 +207,6 @@
       dateFrom: dateFrom,
       dateTo: dateTo,
       prefix: el("p006PrefixSelect").value,
-      perCode: el("p006SalespersonInput").value.trim(),
       status: el("p006StatusSelect").value,
       keyUser: el("p006CreatorInput").value.trim()
     };
@@ -481,10 +480,6 @@
           '<div class="p006-field">' +
             '<label for="p006CreatorInput">ผู้สร้างเอกสาร</label>' +
             '<div class="p006-input-wrap">' + icon("user", 17) + '<input id="p006CreatorInput" type="text" placeholder="ระบุผู้สร้างเอกสาร" autocomplete="off"></div>' +
-          "</div>" +
-          '<div class="p006-field">' +
-            '<label for="p006SalespersonInput">รหัสผู้แทน</label>' +
-            '<div class="p006-input-wrap">' + icon("user", 17) + '<input id="p006SalespersonInput" type="text" placeholder="ระบุรหัสผู้แทน" autocomplete="off"></div>' +
           "</div>" +
           '<div class="p006-field">' +
             '<label for="p006PrefixSelect">คำนำหน้าใบสำคัญ</label>' +
