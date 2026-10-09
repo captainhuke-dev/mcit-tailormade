@@ -4,6 +4,10 @@
  * ข้อมูล modules อ่านจาก data/modules.php
  * (อนาคต: เปลี่ยนเป็นอ่านจาก MySQL ได้โดยแก้เพียงไฟล์เดียว)
  */
+// SPA shell — module data (status ready) อยู่ในหน้านี้ → ห้าม cache
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
 
 $modules = require __DIR__ . '/data/modules.php';
 
@@ -204,6 +208,6 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20261008b"></script>
+  <script src="assets/js/portal.js?v=20261009a"></script>
 </body>
 </html>
