@@ -57,7 +57,7 @@
 | P008 | ใบปะหน้าเก็บบัญชี VAT, No VAT V2 | ready (2 phases — real data MAC5 3 APIs `p008_search`/`p008_groups`/`p008_report` — clone C# MCIT_FrmAccountServiceGUI_VATversion_V2 — หน้า 1 สรุป (JS pagination A4 + ชื่อลูกหนี้บนตาราง + spacer 15px) + หน้า 2 ส่งกลับบริษัท + หน้า 3 สำหรับลูกค้า (T4 ใบเสร็จรับเงิน) + modal ตัวอย่างก่อนพิมพ์ + zoom + แยกบิลตามเดือน — cache v=20261006g) |
 | P129 | Print Invoice KTV (BKK) | ready (clone P063 + flag BKK — 3 APIs `p129_invoices`/`p129_report`/`p129_markprint` — หน้าค้นหา 15/หน้า + รายงาน 3 หน้า (ใบแจ้งหนี้ สำหรับลูกค้า / ใบส่งสินค้า / Invoice copy) — font THSarabunNew — T4 + ช่องทางชำระเงิน + QR TTB 90×90 — cache v=20261007c) |
 | P019 | เช็คสถานะส่ง Invoice | ready (clone demo/P019-demo + C# frm_CheckStatusInvoiceGUI — 2 APIs `p019_invoices`/`p019_status` (AR_S) — วันที่ from–to (default วันนี้) + สถานะ dropdown 62/63/65/67/68/70 + table 6 คอลั่น sort/quick/row select + pagination 15 (เลข 5 ปุ่ม) — cache v=20261008a) |
-| P006 | Print Invoice เช็คคืน | encore (clone demo/P006-demo.html — UI ครบ — mock 8 rows — TODO: ต่อ API — C# source ยังไม่มี — cache v=20261009a) |
+| P006 | Print Invoice เช็คคืน | ready (clone demo/P006-demo + C# MCIT_FrmPrintChqueReturnGUI — 3 APIs `p006_search`/`p006_report`/`p006_markprint` — launcher 6 field (status 14, prefix 18) + table 9 คอลั่น (row แดง cnt>=11) + report 2 หน้า/ใบ A4 portrait (header MCIT/พาราเทค ตาม ChekSTK) — cache v=20261009b) |
 | P130 | Print Invoice MCIT (BKK) | ready (clone P064 + flag BKK — 3 APIs `p130_invoices`/`p130_report`/`p130_markprint` — รายงาน 3 หน้า — font THSarabunNew — T4 7 แถว + ช่องทางชำระเงิน + QR TTB 90×90 (หน้า 1+3) + COD blank payterm — หน้า 2 thead 28px + แถว 40px — cache v=20261008a) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
@@ -65,7 +65,15 @@
 
 ## 2. รายงานรายวัน
 
-### 09/10 — P006 Print Invoice เช็คคืน — **ENCORE**
+### 09/10 — P006 Print Invoice เช็คคืน — **READY** (ต่อ API จริงจาก C# — 27 modules ready)
+- `assets/js/p006-print-invoice.js` (IIFE `window.P006PrintInvoice`) — **clone demo/P006-demo.html + C# `MCIT_FrmPrintChqueReturnGUI.cs` (MCIT/PrintChqueReturn)** — real data MAC5 3 APIs — **cache v=20261009b** — commit `77684f7` (UI mock) + `HEAD` (API)
+- **API:** `p006_search` (search — SQL clone C# L112-122: `MIH LEFT JOIN DEB ON DEBcode=MIHcus` + `MIHtype='IS'` + วันที่ range (invoice จาก `MIHday/month/year`, key จาก `MIHkeyDate`) + `MIHvnos LIKE 'prefix%'` + `MIHper LIKE` + `MIHstatus=` + `MIHkeyUser LIKE` — ORDER BY MIHvnos) + `p006_report` (report — clone C# `headerANDfooter`/`ChekSTK`/`detailInvoice`/`serial`/`countUnit`/`get_refSO` — **2 หน้า/ใบ** A4 portrait: หน้า 1 "ใบแจ้งหนี้ (สำหรับลูกค้า)" + หน้า 2 "ใบแจ้งหนี้ (Invoice)" — header type: มีสินค้า `STKnotCompany='1'` → พาราเทค 6 คอลั่น / ไม่มี → MCIT 7 คอลั่น + รหัสลูกค้า + ผู้ขาย + SALE-SYS-EX-14-5601) + `p006_markprint` (clone P130 — `MIHprintN +1`, max 50)
+- **UI clone demo:** launcher 6 field (วันที่ Invoice / วันที่สร้างเอกสาร / ผู้สร้างเอกสาร / รหัสผู้แทน / **คำนำหน้า 18 ค่า clone C# Designer** (default 1CBN) / **สถานะ 14 ค่า clone C# cb_status** (default 25-แจ้งหนี้เช็คคืน)) + ปุ่มค้นหา + Print Preview — default วันที่ = วันนี้ (pattern P019)
+- **ตาราง 9 คอลั่น:** checkbox select (select all + row click toggle) / ลำดับ / เลขที่ใบสำคัญ / รหัสลูกค้า / ชื่อลูกค้า / พื้นที่ / ยอดรวม / หมายเหตุ / จำนวนที่พิมพ์ (badge zero/printed) — sortable + quick search + footer (แสดง N รายการ + ยอดที่เลือก + ยอดรวมทั้งหมด) — **row แดง (LightCoral) ถ้า `cnt >= 11`** clone C# `Grid1_DataBindingComplete` L1534-1549
+- **Report:** overlay + iframe `report/p006_report.html` (clone P130 pattern) — A4 portrait 2 หน้า/ใบ — font THSarabunNew — toolbar (ปิด/พิมพ์/↗ หน้าต่างใหม่) — ปิด overlay → refresh จำนวนที่พิมพ์
+- **CDP:** 20 rows (01/09–08/10, status 25, 1CBN) · "20 รายการ" · ฿559,486.00 · report overlay ✓ (MCIT header, หน้า 1 สำหรับลูกค้า) · 0 JS errors ✓
+
+### 09/10 — P006 Print Invoice เช็คคืน — **ENCORE** (UI mock — ถูกแทนที่ด้วย READY ข้างบน)
 - `assets/js/p006-print-invoice.js` (IIFE `window.P006PrintInvoice`) — **clone demo/P006-demo.html** — **cache v=20261009a** — commit `77684f7`
 - **UI ครบตาม demo:** launcher 6 field (วันที่ Invoice / วันที่สร้างเอกสาร / ผู้สร้างเอกสาร / รหัสผู้แทน / คำนำหน้า 1CBN·CODN·IVVN / สถานะ 25·26·27) + ปุ่มค้นหา + Print Preview
 - **ตาราง 9 คอลั่น:** checkbox select (select all + row click toggle) / ลำดับ / เลขที่ใบสำคัญ / รหัสลูกค้า / ชื่อลูกค้า / พื้นที่ / ยอดรวม / หมายเหตุ / จำนวนที่พิมพ์ (badge zero/printed) — sortable 6 คอลั่น + quick search + footer (แสดง N รายการ + ยอดที่เลือก + ยอดรวมทั้งหมด)
@@ -333,7 +341,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ## 4. สถานะปัจจุบัน + สิ่งที่ทำต่อได้
 
-### เสร็จแล้ว (ready): P063, P064, P115, P128, P022, P031, P032, P111, P050, P034, P013, P033, P035, P053, P054, P092, P037, P047, P015, P052
+### เสร็จแล้ว (ready): P006, P008, P013, P015, P019, P022, P031, P032, P033, P034, P035, P037, P047, P050, P051, P052, P053, P054, P063, P064, P092, P106, P111, P115, P128, P129, P130
 
 ### ทำต่อได้
 - P036+ (บัญชี), P112, P113-P119 ฯลฯ — placeholders

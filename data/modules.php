@@ -40,7 +40,7 @@ return [
                 "programs"   => [
                     ["id" => "P004", "name" => "ใบปะหน้าเก็บบัญชี (พาราเทค)"],
                     ["id" => "P005", "name" => "ใบปะหน้าเก็บบัญชีห้าง"],
-                    ["id" => "P006", "name" => "Print Invoice เช็คคืน"],
+                    ["id" => "P006", "name" => "Print Invoice เช็คคืน", "status" => "ready"],
                     ["id" => "P007", "name" => "ใบปะหน้าเก็บบัญชี VAT, No VAT"],
                     ["id" => "P008", "name" => "ใบปะหน้าเก็บบัญชี VAT, No VAT V2", "status" => "ready"],
                     ["id" => "P009", "name" => "ใบปะหน้าเก็บบัญชี VAT, No VAT V2-BKK"],
@@ -60,7 +60,7 @@ return [
                     ["id" => "P016", "name" => "ตรวจสอบส่วนลดการจ่าย"],
                     ["id" => "P017", "name" => "บิลเงินสดที่ยังไม่รับเงิน"],
                     ["id" => "P018", "name" => "รับบิลที่ส่งของแล้ว", "badge" => "Status"],
-                    ["id" => "P019", "name" => "เช็คสถานะส่ง Invoice"],
+                    ["id" => "P019", "name" => "เช็คสถานะส่ง Invoice", "status" => "ready"],
                     ["id" => "P020", "name" => "Update Payment MarketPlace"],
                     ["id" => "P021", "name" => "ตรวจสอบ Payment MarketPlace"],
                     ["id" => "P022", "name" => "View Billing Document", "status" => "ready"],
