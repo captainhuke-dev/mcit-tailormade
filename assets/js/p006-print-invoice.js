@@ -363,7 +363,7 @@
     style.textContent = [
       ".p006-launcher{padding:16px;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 5px 18px rgba(15,23,42,.04)}",
       ".p006-launcher-grid{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:12px}",
-      ".p006-grid-break{grid-column:1/-1;height:0}",
+      ".p006-field.span2{grid-column:span 2}",
       ".p006-field label{display:block;margin-bottom:7px;color:#64748b;font-size:11px;font-weight:700}",
       ".p006-date-range{display:grid;grid-template-columns:1fr auto 1fr;gap:7px;align-items:center}",
       ".p006-date-separator{color:#64748b;font-size:12px;font-weight:700}",
@@ -470,7 +470,7 @@
     root.innerHTML =
       '<form class="p006-launcher" id="p006Form">' +
         '<div class="p006-launcher-grid">' +
-          '<div class="p006-field">' +
+          '<div class="p006-field span2">' +
             "<label>วันที่ Invoice</label>" +
             '<div class="p006-date-range">' +
               '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006InvoiceDateFrom" type="date" value="' + todayISO + '"></div>' +
@@ -478,19 +478,18 @@
               '<div class="p006-input-wrap">' + icon("calendar", 17) + '<input id="p006InvoiceDateTo" type="date" value="' + todayISO + '"></div>' +
             "</div>" +
           "</div>" +
-          '<div class="p006-field">' +
+          '<div class="p006-field span2">' +
             '<label for="p006CreatorInput">ผู้สร้างเอกสาร</label>' +
             '<div class="p006-input-wrap">' + icon("user", 17) + '<input id="p006CreatorInput" type="text" placeholder="ระบุผู้สร้างเอกสาร" autocomplete="off"></div>' +
           "</div>" +
-          '<div class="p006-grid-break"></div>' +
-          '<div class="p006-field">' +
+          '<div class="p006-field span2">' +
             '<label for="p006PrefixSelect">คำนำหน้าใบสำคัญ</label>' +
             '<div class="p006-input-wrap">' + icon("grid", 17) +
               '<select id="p006PrefixSelect">' + prefixOptions + "</select>" +
               selectArrow +
             "</div>" +
           "</div>" +
-          '<div class="p006-field">' +
+          '<div class="p006-field span2">' +
             '<label for="p006StatusSelect">สถานะ Invoice</label>' +
             '<div class="p006-input-wrap">' + icon("chart", 17) +
               '<select id="p006StatusSelect">' + statusOptions + "</select>" +
