@@ -96,12 +96,11 @@
     font-weight: 700;
     text-decoration: underline;
   }
-  /* DEBgrade — 18pt B ตรงกลาง (C# L285) */
+  /* DEBgrade — 18pt B ชิดขวาบรรทัด "กำหนดส่งของ" */
+  .rep-ship-row { display: flex; justify-content: space-between; align-items: baseline; }
   .rep-grade {
-    text-align: center;
     font-size: 24px;
     font-weight: 800;
-    margin-bottom: 4px;
   }
 
   /* ---------- header cells (3 คอลั่น — clone C# 183/183/184 ≈ 33/33/34%) ---------- */
@@ -352,7 +351,6 @@
         <span class="rep-company">${chk ? "MCIT" : "พาราเทค"}</span>
         <span class="rep-pageno">หน้า ${pageNo}</span>
       </div>
-      <div class="rep-grade">${esc(text(row.DEBgrade))}</div>
 
       <table class="rep-table rep-header">
         <colgroup><col style="width:33%" /><col style="width:33%" /><col style="width:34%" /></colgroup>
@@ -374,7 +372,10 @@
             <div>${esc(h.telFax)}</div>
           </td>
           <td style="height:80px">
-            <div class="rep-ship">กำหนดส่งของ</div>
+            <div class="rep-ship-row">
+              <span class="rep-ship">กำหนดส่งของ</span>
+              <span class="rep-grade">${esc(text(row.DEBgrade))}</span>
+            </div>
             <div><b>การชำระเงิน :</b> ${payTerm}</div>
             <div><b>อ้างอิงใบสั่งซื้อ :</b> <span>${esc(h.refDisplay).replace(/\n/g, "<br>")}</span></div>
           </td>
