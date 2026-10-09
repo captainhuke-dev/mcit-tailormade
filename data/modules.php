@@ -40,7 +40,7 @@ return [
                 "programs"   => [
                     ["id" => "P004", "name" => "ใบปะหน้าเก็บบัญชี (พาราเทค)"],
                     ["id" => "P005", "name" => "ใบปะหน้าเก็บบัญชีห้าง"],
-                    ["id" => "P006", "name" => "Print Invoice เช็คคืน", "status" => "ready"],
+                    ["id" => "P006", "name" => "Print Invoice เช็คคืน"],
                     ["id" => "P007", "name" => "ใบปะหน้าเก็บบัญชี VAT, No VAT"],
                     ["id" => "P008", "name" => "ใบปะหน้าเก็บบัญชี VAT, No VAT V2", "status" => "ready"],
                     ["id" => "P009", "name" => "ใบปะหน้าเก็บบัญชี VAT, No VAT V2-BKK"],

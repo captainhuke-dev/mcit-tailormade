@@ -151,14 +151,29 @@
       if (totalPages <= 1) {
         pg.innerHTML = "";
       } else {
+        var pages = [];
+        var startPage = Math.max(1, state.page - 2);
+        var endPage = Math.min(totalPages, startPage + 4);
+        if (endPage - startPage < 4) {
+          startPage = Math.max(1, endPage - 4);
+        }
+        for (var p = startPage; p <= endPage; p++) {
+          pages.push('<button type="button" class="p019-page-btn ' + (p === state.page ? 'active' : '') + '" data-page="' + p + '">' + p + '</button>');
+        }
         pg.innerHTML =
-          '<button type="button" class="p019-page-btn" id="p019Prev" ' + (state.page <= 1 ? "disabled" : "") + ">&lsaquo;</button>" +
-          '<span class="p019-page-info">' + state.page + " / " + totalPages + "</span>" +
-          '<button type="button" class="p019-page-btn" id="p019Next" ' + (state.page >= totalPages ? "disabled" : "") + ">&rsaquo;</button>";
+          '<button type="button" class="p019-page-btn" id="p019Prev" ' + (state.page <= 1 ? "disabled" : "") + '>&lsaquo;</button>' +
+          pages.join("") +
+          '<button type="button" class="p019-page-btn" id="p019Next" ' + (state.page >= totalPages ? "disabled" : "") + '>&rsaquo;</button>';
         var prev = document.getElementById("p019Prev");
         var next = document.getElementById("p019Next");
         if (prev) prev.addEventListener("click", function () { if (state.page > 1) { state.page--; renderRows(); } });
         if (next) next.addEventListener("click", function () { if (state.page < totalPages) { state.page++; renderRows(); } });
+        pg.querySelectorAll("[data-page]").forEach(function (btn) {
+          btn.addEventListener("click", function () {
+            state.page = Number(btn.getAttribute("data-page"));
+            renderRows();
+          });
+        });
       }
     }
 
@@ -333,11 +348,10 @@
     state.searched = false;
     injectCSS();
 
-    /* วันที่ default — clone C# L48-51: 1 แห่งเดือนก่อนหน้า → วันนี้ - 3 */
+    /* วันที่ default — เริ่มต้นค้นหาเป็นวันปัจจุบัน */
     var now = new Date();
-    var from = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    var from = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     var to = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    to.setDate(to.getDate() - 3);
 
     root.innerHTML =
       '<form class="p019-launcher" id="p019Form">' +
