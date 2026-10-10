@@ -53,8 +53,8 @@
     ".p059-panel-title h2{font-size:14px;font-weight:700}",
     ".p059-panel-title p{margin-top:1px;color:var(--p059-muted);font-size:11px}",
     ".p059-badge{padding:5px 10px;color:var(--p059-primary-dark);border-radius:999px;background:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap}",
-    ".p059-table-wrap{overflow:auto;max-height:65vh}",
-    ".p059-table{width:100%;min-width:950px;border-collapse:separate;border-spacing:0;white-space:nowrap}",
+    ".p059-table-wrap{overflow:visible}",
+    ".p059-table{width:100%;border-collapse:separate;border-spacing:0;white-space:nowrap}",
     ".p059-table th{position:sticky;top:0;z-index:2;padding:12px 14px;color:#475569;border-bottom:1px solid var(--p059-border);background:#f8fafc;box-shadow:inset 0 -1px var(--p059-border);font-size:13px;font-weight:700;text-align:left}",
     ".p059-table td{max-width:300px;overflow:hidden;padding:10px 14px;border-bottom:1px solid #edf1f6;font-size:13px;line-height:1.45;text-overflow:ellipsis}",
     ".p059-table th.center,.p059-table td.center{text-align:center}",
@@ -110,7 +110,7 @@
     ".p059-ac-empty{padding:14px;color:var(--p059-muted);font-size:12px;text-align:center}",
     ".p059-ac-hint{display:flex;gap:10px;padding:7px 18px;color:#94a3b8;background:#f8fafc;border-bottom:1px solid var(--p059-border);font-size:10px}",
     /* split — drop zone + list ซ้าย / preview ข้า้ */
-    ".p059-msplit{display:grid;grid-template-columns:320px 1fr;min-height:380px;flex:1}",
+    ".p059-msplit{display:grid;grid-template-columns:320px 1fr;min-height:0;flex:1;overflow:auto}",
     ".p059-file-panel{display:flex;flex-direction:column;border-right:1px solid var(--p059-border)}",
     ".p059-dropzone{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px;padding:18px 12px;border:2px dashed #93c5fd;border-radius:12px;background:#f8faff;color:var(--p059-primary-dark);cursor:pointer;transition:0.15s ease}",
     ".p059-dropzone:hover,.p059-dropzone.drag{border-color:var(--p059-primary);background:var(--p059-primary-soft)}",
@@ -394,6 +394,7 @@
 
     el.backdrop.classList.add("show");
     document.body.style.overflow = "hidden";
+    resizeModal();
   }
 
   function closeModal() {
@@ -403,6 +404,28 @@
     el.fVnos.classList.remove("ac-active");
   }
 
+  /* ---------- modal geometry — ให้อยู่ตรงกลางจอเสมอ (ไม่จม/ไม่ล้น) ---------- */
+  function resizeModal() {
+    if (!el.modal || !el.backdrop) return;
+    var show = el.backdrop.classList.contains("show");
+    // ล้างขนาด fix ทั้งหมด — วัด content height จริง
+    el.backdrop.style.padding = "";
+    el.modal.style.width = "";
+    el.modal.style.height = "";
+    el.modal.style.maxHeight = "";
+    if (!show) return;
+    var pad = 16;
+    el.backdrop.style.padding = pad + "px";
+    el.modal.style.width = "min(1000px, 100%)";
+    el.modal.style.maxHeight = (window.innerHeight - pad * 2) + "px";
+    // ถ้า content สูงกว่าจอ — ขยาย modal เต็มพื้นที่ + ให้ file-list/preview กลับ within
+    var contentH = el.modal.scrollHeight;
+    if (contentH > window.innerHeight - pad * 2) {
+      el.modal.style.height = (window.innerHeight - pad * 2) + "px";
+    } else {
+      el.modal.style.height = "";
+    }
+  }
   /* ---------- autocomplete SO (TOP 10 — LIKE 'kw%') ---------- */
   function fetchAc(kw) {
     var token = ++acToken;
@@ -633,7 +656,13 @@
           '<div class="p059-table-wrap" id="p059TableWrap"><div class="p059-empty">กำลังค้นหา...</div></div>' +
           '<div class="p059-table-foot"><span id="p059Foot">แสดง 0 รายการ</span><div class="p059-pagination" id="p059Pager"></div></div>' +
         "</section>" +
-      "</div>" +
+      "</div>"
+    );
+
+    // modal + hidden input + toast → append ที่ document.body
+    // (position:fixed ถูก break โดย ancestor transform — portal root มี transform)
+    var bodyFrag = document.createElement("div");
+    bodyFrag.innerHTML =
       // modal
       '<div class="p059-backdrop" id="p059Backdrop">' +
         '<section class="p059-modal">' +
@@ -678,8 +707,10 @@
       "</div>" +
       '<input type="file" id="p059Hidden" accept="image/*" multiple style="display:none">' +
       // toast
-      '<div class="p059-toast" id="p059Toast">' + icon("check", 17) + '<span id="p059ToastMsg"></span></div>'
-    );
+      '<div class="p059-toast" id="p059Toast">' + icon("check", 17) + '<span id="p059ToastMsg"></span></div>';
+    while (bodyFrag.firstChild) {
+      document.body.appendChild(bodyFrag.firstChild);
+    }
 
     // cache elements
     el.searchInput = target.querySelector("#p059Search");
