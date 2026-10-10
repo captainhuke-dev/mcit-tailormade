@@ -130,9 +130,6 @@
     ".p059-file-item.selected{background:#dbeafe;box-shadow:inset 4px 0 0 var(--p059-primary)}",
     ".p059-file-item.selected .fi-name{color:var(--p059-primary-dark);font-weight:700}",
     ".p059-file-item .fi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
-    ".p059-file-item .fi-del{display:grid;place-items:center;width:26px;height:26px;border:1px solid var(--p059-border);border-radius:6px;background:#fff;color:#94a3b8;cursor:pointer;flex:none}",
-    ".p059-file-item .fi-del svg{width:13px;height:13px}",
-    ".p059-file-item .fi-del:hover{color:#fff;border-color:var(--p059-danger);background:var(--p059-danger)}",
     ".p059-file-empty{padding:18px;color:var(--p059-muted);font-size:12px;text-align:center}",
     ".p059-preview-panel{display:flex;flex-direction:column}",
     ".p059-preview-label{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 14px;color:var(--p059-text);border-bottom:1px solid var(--p059-border);background:#f8fafc;font-size:13px;font-weight:700;text-align:center}",
@@ -318,7 +315,6 @@
       el.fileList.innerHTML = files.map(function (f, i) {
         return '<div class="p059-file-item' + (i === selectedIdx ? " selected" : "") + '" data-i="' + i + '" title="' + esc(f.filename) + '">' +
           '<span class="fi-name">' + esc(f.filename) + "</span>" +
-          '<button type="button" class="fi-del" data-del="' + i + '" title="ลบภาพนี้">' + icon("close", 13) + "</button>" +
           "</div>";
       }).join("");
     }
@@ -847,12 +843,6 @@
       setZoom(zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1));
     }, { passive: false });
     el.fileList.addEventListener("click", function (e) {
-      var del = e.target.closest(".fi-del");
-      if (del) {
-        e.stopPropagation();
-        deleteFile(parseInt(del.getAttribute("data-del"), 10));
-        return;
-      }
       var item = e.target.closest(".p059-file-item");
       if (item) selectFile(parseInt(item.getAttribute("data-i"), 10));
     });
