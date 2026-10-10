@@ -59,7 +59,7 @@
 | P019 | เช็คสถานะส่ง Invoice | ready (clone demo/P019-demo + C# frm_CheckStatusInvoiceGUI — 2 APIs `p019_invoices`/`p019_status` (AR_S) — วันที่ from–to (default วันนี้) + สถานะ dropdown 62/63/65/67/68/70 + table 6 คอลั่น sort/quick/row select + pagination 15 (เลข 5 ปุ่ม) — cache v=20261008a) |
 | P006 | Print Invoice เช็คคืน | ready (clone demo/P006-demo + C# MCIT_FrmPrintChqueReturnGUI — 3 APIs `p006_search`/`p006_report`/`p006_markprint` — launcher 4 field 2×2 (วันที่ Invoice/ผู้สร้าง/คำนำหน้า 18/สถานะ 14) + table 9 คอลั่น (row แดง cnt>=11) + report 2 หน้า/ใบ A4 portrait (T1 12pt ยกเว้น DEBgrade 18pt ชิดขวาบรรทัดกำหนดส่งของ · T2 MCIT 50/250/50/50/50/40/60 พาราเทค 300/50/50/50/40/60 · T3 250/110/110/80 12pt แถว 26px) — cache v=20261009h) |
 | P130 | Print Invoice MCIT (BKK) | ready (clone P064 + flag BKK — 3 APIs `p130_invoices`/`p130_report`/`p130_markprint` — รายงาน 3 หน้า — font THSarabunNew — T4 7 แถว + ช่องทางชำระเงิน + QR TTB 90×90 (หน้า 1+3) + COD blank payterm — หน้า 2 thead 28px + แถว 40px — cache v=20261008a) |
-| P059 | จัดเก็บเอกสารลูกค้า (SO Image) | dev (clone demo/P059-demo + C# AppSOimage — 5 APIs `p059_search`/`p059_detail`/`p059_image`/`p059_save`/`p059_so_list` — launcher New+search + table 7 คอลั่น TOP 100 + view modal (Edit→browse/ลบ/save) + new modal (SO picker TOP 50) + soft delete + upload FTP NAS + report A4 1 ภาพ/หน้า — cache v=20261010b — รอ user ยืนยัน) |
+| P059 | จัดเก็บเอกสารลูกค้า (SO Image) | dev (clone demo/P059-demo + C# AppSOimage — 5 APIs `p059_search`/`p059_detail`/`p059_image`/`p059_save`/`p059_so_list` — launcher New+search + table 7 คอลั่น TOP 100 + **pagination 15/หน้า** + view modal (Edit→browse/ลบ/save) + new modal (SO picker TOP 50) + soft delete + upload FTP NAS + report A4 1 ภาพ/หน้า — cache v=20261010c — รอ user ยืนยัน) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
@@ -67,9 +67,9 @@
 ## 2. รายงานรายวัน
 
 ### 10/10 — P059 จัดเก็บเอกสารลูกค้า (SO Image) — **DEV** (clone demo/P059-demo + C# AppSOimage — 5 APIs + report A4 — CDP verify ครบ — commit `5262a4c`)
-- `assets/js/p059-so-image.js` (IIFE `window.P059SoImage`) — **clone demo/P059-demo.html (1,542 หน้า) + C# `frm_SOimageGUI.cs`/`frm_SOimage_manager.cs`/`frm_selectData.cs`** — real data MAC5 5 APIs — **cache v=20261010b**
+- `assets/js/p059-so-image.js` (IIFE `window.P059SoImage`) — **clone demo/P059-demo.html (1,542 หน้า) + C# `frm_SOimageGUI.cs`/`frm_SOimage_manager.cs`/`frm_selectData.cs`** — real data MAC5 5 APIs — **cache v=20261010c**
 - **API 5 ไฟล์:** `p059_search` (TOP 100 `tb_PictureSO` LEFT JOIN MIH/DEB — status=0 + vnos LIKE) + `p059_detail` (fields 4 + file list) + `p059_image` (image proxy — **curl FTP** NAS `192.168.0.200/web/PO/` — 226 verified) + `p059_save` (multipart upload → FTP + INSERT/soft delete status=-1) + `p059_so_list` (mode=picker TOP 50 SO ไม่มีภาพ / mode=info query SO แม่นยำ)
-- **UI:** launcher **New + search** (ค้นหาเลขที่ SO) + **table 7 คอลั่น** (วันที่ SO/เลขที่ SO/รหัสลูกค้า/ชื่อลูกค้า/จำนวนภาพ/View/Print) + **view modal** (fields 4 + file list + preview — **Edit→browse/ลบ/save** clone C# btn_edit_Click) + **new modal** (SO picker TOP 50 + browse + save) + **soft delete** (ไฟล์เดิมที่ลบจาก working set → status=-1) + toast
+- **UI:** launcher **New + search** (ค้นหาเลขที่ SO) + **table 7 คอลั่น** (วันที่ SO/เลขที่ SO/รหัสลูกค้า/ชื่อลูกค้า/จำนวนภาพ/View/Print) + **pagination 15/หน้า** (clone P019 — ปุ่ม ‹ 1 2 3 4 5 › + "หน้า X / Y" — commit `d2c7421`) + **view modal** (fields 4 + file list + preview — **Edit→browse/ลบ/save** clone C# btn_edit_Click) + **new modal** (SO picker TOP 50 + browse + save) + **soft delete** (ไฟล์เดิมที่ลบจาก working set → status=-1) + toast
 - **report** `p059_report.html` — A4 portrait 1 ภาพ/หน้า (530×770 clone C# previewSOimage) + THSarabunNew + toolbar (ปิด/พิมพ์) — **fix relative path `../api/`** (report/ → ../api/)
 - **modules.php:** ตัด P059 ซ้ำออกจาก ฝ่ายขาย›รายการระดับฝ่ายขาย (เหลือเฉพาะ บัญชี›กำหนดค่า L161)
 - **CDP verify:** 100 rows + search (SCRE6910-1206 → 1 row) + view modal (2 files + image proxy 955×853) + edit mode (browse/save enable) + new modal (SO picker 50 items + select → fields) + report 2 imgs loaded — 0 JS errors
