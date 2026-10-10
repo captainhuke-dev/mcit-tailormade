@@ -31,7 +31,8 @@
     ".p059-app *,.p059-backdrop *{box-sizing:border-box;margin:0;padding:0}",
     ".p059-app button,.p059-backdrop button{cursor:pointer;font:inherit}",
     ".p059-app button:disabled,.p059-backdrop button:disabled{cursor:not-allowed;opacity:0.5}",
-    ".p059-app svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}",
+    ".p059-app svg{display:block;width:20px;height:20px}",
+    ".p059-app svg,.p059-backdrop svg{fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}",
 
     /* launcher */
     ".p059-launcher{display:grid;grid-template-columns:auto minmax(280px,1fr) auto;gap:12px;align-items:end;padding:16px;border:1px solid var(--p059-border);border-radius:var(--p059-radius);background:#fff;box-shadow:0 5px 18px rgba(15,23,42,0.04);margin-bottom:14px}",
