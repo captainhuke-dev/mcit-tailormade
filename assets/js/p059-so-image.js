@@ -720,6 +720,7 @@
     el.footText = target.querySelector("#p059Foot");
     el.pager = target.querySelector("#p059Pager");
     el.backdrop = document.querySelector("#p059Backdrop");
+    el.modal = document.querySelector(".p059-modal");
     el.mTitle = document.querySelector("#p059MTitle");
     el.fVnos = document.querySelector("#p059FVnos");
     el.fCusCode = document.querySelector("#p059FCusCode");
