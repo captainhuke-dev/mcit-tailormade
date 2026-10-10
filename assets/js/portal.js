@@ -1081,6 +1081,20 @@
       `;
     }
 
+    // P059: จัดเก็บเอกสารลูกค้า
+    if (programId === "P059") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p059Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P051: รายงานการเก็บเงินสด
     if (programId === "P051") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1552,6 +1566,12 @@
     if (page.type === "program" && page.programId === "P019" && window.P019InvoiceStatus) {
       const root = document.getElementById("p019Root");
       if (root) window.P019InvoiceStatus.mount(root);
+    }
+
+    // P059: mount SO Image app
+    if (page.type === "program" && page.programId === "P059" && window.P059SoImage) {
+      const root = document.getElementById("p059Root");
+      if (root) window.P059SoImage.mount(root);
     }
 
     // P051: mount Cash Collection app
