@@ -201,7 +201,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p047-invoice-status.js?v=20260929d"></script>
   <script src="assets/js/p015-bill-status.js?v=20260929g"></script>
   <script src="assets/js/p019-invoice-status.js?v=20261008a"></script>
-  <script src="assets/js/p059-so-image.js?v=20261010c"></script>
+  <script src="assets/js/p059-so-image.js?v=20261010d"></script>
   <script src="assets/js/p051-cash-collection.js?v=20261003c"></script>
   <script src="assets/js/p008-collection-v2.js?v=20261006g"></script>
   <script src="assets/js/p006-print-invoice.js?v=20261009f"></script>

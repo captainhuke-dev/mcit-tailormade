@@ -5,7 +5,7 @@
  * Real data MAC5 — 5 APIs:
  *   p059_search   — TOP 100 tb_PictureSO (status=0) + vnos LIKE
  *   p059_detail   — fields 4 + file list (view modal)
- *   p059_so_list  — mode=picker (SO ยังไม่มีภาพ TOP 50) / mode=info (query SO แม่นยำ)
+ *   p059_so_list  — mode=picker (SO ยังไม่มีภาพ TOP 10 + LIKE 'kw%' — autocomplete) / mode=info (query SO แม่นยำ)
  *   p059_save     — multipart upload → FTP NAS /web/PO/ + INSERT/soft delete
  *   p059_image    — image proxy (FTP GET)
  *
@@ -90,36 +90,52 @@
     ".p059-tb-close{display:grid;width:32px;height:30px;place-items:center;color:#e2e8f0;border:0;background:#dc2626;cursor:pointer}",
     ".p059-tb-close:hover{background:#b91c1c}",
     ".p059-tb-close svg{width:13px;height:13px}",
-    ".p059-mfields{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px 18px;border-bottom:1px solid var(--p059-border);background:#f8fafc}",
+    /* doc fields — row 4 คอลั่น */
+    ".p059-mfields{display:grid;grid-template-columns:minmax(240px,1.3fr) 130px 120px 1fr;gap:10px;padding:14px 18px;border-bottom:1px solid var(--p059-border);background:#f8fafc}",
     ".p059-mfield label{display:block;margin-bottom:6px;color:var(--p059-muted);font-size:11px;font-weight:700}",
-    ".p059-mfield .p059-with-btn{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;position:relative}",
-    ".p059-mfield input{width:100%;height:40px;padding:0 11px;color:var(--p059-text);border:1px solid var(--p059-border);border-radius:9px;outline:none;background:#fff;font-size:13px}",
-    ".p059-mfield input:read-only{color:#64748b;background:#f1f5f9}",
+    ".p059-mfield input{width:100%;height:38px;padding:0 11px;color:var(--p059-text);border:1px solid var(--p059-border);border-radius:9px;outline:none;background:#fff;font-size:13px}",
+    ".p059-mfield input:read-only{color:#475569;background:#f1f5f9}",
     ".p059-mfield input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,0.14)}",
-    ".p059-pick-btn{height:40px;padding:0 14px;color:var(--p059-primary-dark);border:1px solid #bfdbfe;border-radius:9px;background:var(--p059-primary-soft);font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}",
-    ".p059-pick-btn:hover:not(:disabled){color:#fff;background:var(--p059-primary)}",
-    ".p059-so-picker{position:absolute;top:calc(100% + 6px);left:0;z-index:20;display:none;width:380px;max-height:260px;overflow-y:auto;border:1px solid #bfdbfe;border-radius:10px;background:#fff;box-shadow:0 16px 34px rgba(15,23,42,0.18)}",
-    ".p059-so-picker.show{display:block}",
-    ".p059-pick-item{display:flex;flex-direction:column;gap:2px;padding:9px 12px;border-bottom:1px solid #eef2f7;cursor:pointer;font-size:12px}",
-    ".p059-pick-item:hover{background:var(--p059-primary-soft)}",
-    ".p059-pick-item strong{color:var(--p059-primary-dark)}",
-    ".p059-pick-item span{color:var(--p059-muted);font-size:11px}",
-    ".p059-pick-empty{padding:14px;color:var(--p059-muted);font-size:12px;text-align:center}",
-    ".p059-msplit{display:grid;grid-template-columns:300px 1fr;min-height:360px;flex:1}",
+    ".p059-mfield input.ac-active{border-color:var(--p059-primary);box-shadow:0 0 0 3px rgba(37,99,235,0.12)}",
+    /* autocomplete — TOP 10 */
+    ".p059-ac-wrap{position:relative}",
+    ".p059-ac-list{position:absolute;top:calc(100% + 6px);left:0;right:0;z-index:40;display:none;max-height:320px;overflow-y:auto;border:1px solid #bfdbfe;border-radius:10px;background:#fff;box-shadow:0 16px 34px rgba(15,23,42,0.18)}",
+    ".p059-ac-list.show{display:block}",
+    ".p059-ac-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid #eef2f7;cursor:pointer;font-size:12px}",
+    ".p059-ac-item:last-child{border-bottom:0}",
+    ".p059-ac-item:hover,.p059-ac-item.hl{background:var(--p059-primary-soft)}",
+    ".p059-ac-item b{color:var(--p059-primary-dark);white-space:nowrap}",
+    ".p059-ac-item .ac-cus{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#334155}",
+    ".p059-ac-item .ac-date{color:var(--p059-muted);font-size:11px;white-space:nowrap}",
+    ".p059-ac-empty{padding:14px;color:var(--p059-muted);font-size:12px;text-align:center}",
+    ".p059-ac-hint{display:flex;gap:10px;padding:7px 18px;color:#94a3b8;background:#f8fafc;border-bottom:1px solid var(--p059-border);font-size:10px}",
+    /* split — drop zone + list ซ้าย / preview ข้า้ */
+    ".p059-msplit{display:grid;grid-template-columns:320px 1fr;min-height:380px;flex:1}",
     ".p059-file-panel{display:flex;flex-direction:column;border-right:1px solid var(--p059-border)}",
-    ".p059-file-tools{display:flex;gap:7px;padding:12px;border-bottom:1px solid var(--p059-border);background:#f8fafc}",
-    ".p059-file-tools button{flex:1;height:34px;border:1px solid var(--p059-border);border-radius:8px;background:#fff;font-size:12px;font-weight:700;color:#334155;cursor:pointer}",
+    ".p059-dropzone{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px;padding:18px 12px;border:2px dashed #93c5fd;border-radius:12px;background:#f8faff;color:var(--p059-primary-dark);cursor:pointer;transition:0.15s ease}",
+    ".p059-dropzone:hover,.p059-dropzone.drag{border-color:var(--p059-primary);background:var(--p059-primary-soft)}",
+    ".p059-dropzone:disabled{opacity:0.5;cursor:not-allowed;background:#f1f5f9;border-color:var(--p059-border)}",
+    ".p059-dropzone svg{width:26px;height:26px}",
+    ".p059-dropzone .dz-t{font-size:12px;font-weight:700}",
+    ".p059-dropzone .dz-s{font-size:10px;color:var(--p059-muted)}",
+    ".p059-file-tools{display:flex;gap:7px;padding:0 12px 10px}",
+    ".p059-file-tools button{flex:1;height:32px;border:1px solid var(--p059-border);border-radius:8px;background:#fff;font-size:12px;font-weight:700;color:#334155;cursor:pointer}",
     ".p059-file-tools button:hover:not(:disabled){color:#fff;border-color:var(--p059-primary);background:var(--p059-primary)}",
     ".p059-file-tools button.danger:hover:not(:disabled){border-color:var(--p059-danger);background:var(--p059-danger)}",
     ".p059-file-list{flex:1;overflow-y:auto;min-height:120px}",
-    ".p059-file-item{padding:10px 12px;border-bottom:1px solid #f1f5f9;font-size:11px;color:#334155;word-break:break-all;cursor:pointer}",
+    ".p059-file-item{display:flex;align-items:center;gap:9px;padding:8px 12px;border-bottom:1px solid #f1f5f9;font-size:11px;color:#334155;cursor:pointer}",
     ".p059-file-item:hover{background:var(--p059-primary-soft)}",
-    ".p059-file-item.selected{color:#fff;background:var(--p059-primary)}",
+    ".p059-file-item.selected{background:var(--p059-primary-soft);box-shadow:inset 3px 0 0 var(--p059-primary)}",
+    ".p059-file-item .fi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+    ".p059-file-item .fi-del{display:grid;place-items:center;width:22px;height:22px;border:0;border-radius:6px;background:transparent;color:#94a3b8;cursor:pointer}",
+    ".p059-file-item .fi-del svg{width:13px;height:13px}",
+    ".p059-file-item .fi-del:hover{color:#fff;background:var(--p059-danger)}",
     ".p059-file-empty{padding:18px;color:var(--p059-muted);font-size:12px;text-align:center}",
     ".p059-preview-panel{display:flex;flex-direction:column}",
-    ".p059-preview-label{padding:10px 14px;color:var(--p059-text);border-bottom:1px solid var(--p059-border);background:#f8fafc;font-size:13px;font-weight:700;text-align:center}",
-    ".p059-preview-area{display:grid;flex:1;place-items:center;overflow:hidden;background:#94a3b8;min-height:280px}",
-    ".p059-preview-area img{max-width:100%;max-height:340px;object-fit:contain;box-shadow:0 10px 24px rgba(0,0,0,0.25)}",
+    ".p059-preview-label{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;color:var(--p059-text);border-bottom:1px solid var(--p059-border);background:#f8fafc;font-size:13px;font-weight:700;text-align:center}",
+    ".p059-preview-label .pl-count{padding:2px 9px;border-radius:999px;background:#dbeafe;color:var(--p059-primary-dark);font-size:11px}",
+    ".p059-preview-area{display:grid;flex:1;place-items:center;overflow:hidden;background:#94a3b8;min-height:300px}",
+    ".p059-preview-area img{max-width:100%;max-height:420px;object-fit:contain;box-shadow:0 10px 24px rgba(0,0,0,0.25)}",
     ".p059-preview-ph{display:flex;flex-direction:column;align-items:center;gap:8px;color:#e2e8f0;text-align:center}",
     ".p059-preview-ph svg{width:44px;height:44px}",
     ".p059-preview-ph span{font-size:11px}",
@@ -181,6 +197,10 @@
   var origFiles = []; // ไฟล์เดิมจาก DB (สำหรับคำนวณ soft delete)
   var files = []; // working set — {id, filename, isLocal?, dataUrl?, file?}
   var selectedIdx = -1;
+  var acRows = []; // autocomplete results (TOP 10)
+  var acIndex = -1; // highlighted item
+  var acTimer = null; // debounce
+  var acToken = 0; // prevent stale response
   var editMode = false; // view modal: ถูกกด Edit แล้ว
   var toastTimer = null;
   var escBound = false;
@@ -274,37 +294,36 @@
     el.fVnos.value = doc.vnos || "";
     el.fVnos.readOnly = !!readOnly;
     el.fCusCode.value = doc.cusCode || doc.customerCode || "";
-    el.fDate.value = fmtDate(doc.date);
+    el.fDate.value = doc.date ? fmtDate(doc.date) : "";
     el.fCusName.value = doc.cusName || doc.customerName || "";
-    el.pickBtn.disabled = !!readOnly;
   }
 
   function renderFileList() {
     if (files.length === 0) {
-      el.fileList.innerHTML = '<div class="p059-file-empty">ไม่มีไฟล์ภาพแนบ</div>';
+      el.fileList.innerHTML = '<div class="p059-file-empty">ไม่มีภาพ — เพิ่มผ่านช่องด้านบน</div>';
     } else {
       el.fileList.innerHTML = files.map(function (f, i) {
-        return '<div class="p059-file-item' + (i === selectedIdx ? " selected" : "") + '" data-i="' + i + '">' + esc(f.filename) + "</div>";
+        return '<div class="p059-file-item' + (i === selectedIdx ? " selected" : "") + '" data-i="' + i + '" title="' + esc(f.filename) + '">' +
+          '<span class="fi-name">' + esc(f.filename) + "</span>" +
+          '<button type="button" class="fi-del" data-del="' + i + '" title="ลบภาพนี้">' + icon("close", 13) + "</button>" +
+          "</div>";
       }).join("");
     }
-    // clone C# — view: Browse/ลบ disabled จนกด Edit · new: Browse ใช้ได้ทันที
-    if (modalMode === "view") {
-      el.btnBrowse.disabled = !editMode;
-      el.btnEdit.disabled = editMode;
-      el.btnDel.disabled = !editMode || selectedIdx < 0;
-      el.btnSave.disabled = !editMode;
-    } else {
-      el.btnBrowse.disabled = false;
-      el.btnEdit.disabled = true;
-      el.btnDel.disabled = selectedIdx < 0;
-      el.btnSave.disabled = files.length === 0;
-    }
+    // preview counter
+    el.plCount.textContent = files.length > 0 ? (selectedIdx >= 0 ? (selectedIdx + 1) + " / " : "") + files.length + " ภาพ" : "";
+    // view: DropZone/แก้ไข/ลบ/บันทึก disabled จนกดแก้ไขภาพ · new: ใช้ได้ทันที
+    var canEdit = modalMode === "new" || editMode;
+    el.dropZone.style.pointerEvents = canEdit ? "" : "none";
+    el.dropZone.style.opacity = canEdit ? "" : "0.5";
+    el.btnEdit.disabled = modalMode !== "view" || editMode;
+    el.btnDel.disabled = !canEdit || selectedIdx < 0;
+    el.btnSave.disabled = !canEdit || (modalMode === "new" && files.filter(function (f) { return f.isLocal; }).length === 0);
   }
 
   function renderPreview() {
     var f = files[selectedIdx];
     if (!f) {
-      el.previewArea.innerHTML = '<div class="p059-preview-ph">' + icon("image", 44) + "<span>ยังไม่ได้เลือกไฟล์ภาพ</span></div>";
+      el.previewArea.innerHTML = '<div class="p059-preview-ph">' + icon("image", 44) + "<span>ยังไม่ได้เลือกภาพ — คลิกภาพด้านซ้าย</span></div>";
       return;
     }
     var src;
@@ -322,26 +341,33 @@
     renderPreview();
   }
 
+  function deleteFile(i) {
+    if (i < 0 || i >= files.length) return;
+    files.splice(i, 1);
+    if (selectedIdx >= files.length) selectedIdx = files.length - 1;
+    else if (selectedIdx === i) selectedIdx = -1;
+    renderFileList();
+    renderPreview();
+  }
+
   function openModal(mode, row) {
     modalMode = mode;
     editMode = false;
     selectedIdx = -1;
     files = [];
     origFiles = [];
-    el.soPicker.classList.remove("show");
-    el.soPicker.innerHTML = "";
+    acRows = [];
+    acIndex = -1;
+    el.acList.classList.remove("show");
+    el.acList.innerHTML = "";
+    el.fVnos.classList.remove("ac-active");
 
     if (mode === "view" && row) {
       activeVnos = row.vnos;
-      el.mTitle.textContent = "[" + row.vnos + "]";
+      el.mTitle.textContent = "SO " + row.vnos;
       setFields(row, true);
-      // clone C# view mode — Browse/Edit/ลบ disabled, Edit ใช้ได้
-      el.btnBrowse.disabled = true;
-      el.btnEdit.disabled = false;
-      el.btnDel.disabled = true;
-      el.btnSave.disabled = true;
-      // load files from API
-      el.fileList.innerHTML = '<div class="p059-file-empty">กำลังโหลดไฟล์...</div>';
+      // view — ใช้ได้เมื่อ กดแก้ไขภาพ
+      el.fileList.innerHTML = '<div class="p059-file-empty">กำลังโหลดภาพ...</div>';
       el.previewArea.innerHTML = '<div class="p059-preview-ph">' + icon("image", 44) + "<span>กำลังโหลด...</span></div>";
       apiPost(API.detail, { connectionId: MAC5_CONNECTION_ID, vnos: row.vnos }).then(function (data) {
         if (!data.ok) {
@@ -356,16 +382,14 @@
         el.fileList.innerHTML = '<div class="p059-file-empty">Error: ' + esc(e.message) + "</div>";
       });
     } else {
-      // new — clone C# new mode — Browse ใช้ได้ทันที
+      // new — autocomplete + dropzone ใช้ได้ทันที
       activeVnos = "";
-      el.mTitle.textContent = "[เอกสารใหม่]";
+      el.mTitle.textContent = "เอกสารใหม่";
       setFields({ vnos: "", cusCode: "", date: "", cusName: "" }, false);
-      el.btnBrowse.disabled = false;
-      el.btnEdit.disabled = true;
-      el.btnDel.disabled = true;
-      el.btnSave.disabled = true;
       renderFileList();
       renderPreview();
+      // fetch autocomplete defaults (TOP 10) — แสดงเมื่อ focus
+      fetchAc("");
     }
 
     el.backdrop.classList.add("show");
@@ -375,56 +399,102 @@
   function closeModal() {
     el.backdrop.classList.remove("show");
     document.body.style.overflow = "";
-    el.soPicker.classList.remove("show");
+    el.acList.classList.remove("show");
+    el.fVnos.classList.remove("ac-active");
   }
 
-  /* ---------- SO picker (new mode) ---------- */
-  function openSoPicker() {
-    if (el.pickBtn.disabled) return;
-    el.soPicker.classList.add("show");
-    el.soPicker.innerHTML = '<div class="p059-pick-empty">กำลังโหลด SO...</div>';
-    apiPost(API.soList, { connectionId: MAC5_CONNECTION_ID, mode: "picker" }).then(function (data) {
+  /* ---------- autocomplete SO (TOP 10 — LIKE 'kw%') ---------- */
+  function fetchAc(kw) {
+    var token = ++acToken;
+    apiPost(API.soList, { connectionId: MAC5_CONNECTION_ID, mode: "picker", vnos: kw }).then(function (data) {
+      if (token !== acToken) return; // stale
       if (!data.ok) {
-        el.soPicker.innerHTML = '<div class="p059-pick-empty">Error: ' + esc(data.error) + "</div>";
+        el.acList.innerHTML = '<div class="p059-ac-empty">Error: ' + esc(data.error) + "</div>";
+        el.acList.classList.add("show");
         return;
       }
-      var list = data.rows || [];
-      if (list.length === 0) {
-        el.soPicker.innerHTML = '<div class="p059-pick-empty">ไม่มี SO ที่ยังไม่มีภาพ</div>';
-        return;
-      }
-      el.soPicker.innerHTML = list.map(function (r) {
-        return '<div class="p059-pick-item" data-vnos="' + esc(r.vnos) + '">' +
-          "<strong>" + esc(r.vnos) + "</strong>" +
-          "<span>" + esc(fmtDate(r.date)) + " · " + esc(r.cusCode) + " · " + esc(r.cusName) + "</span>" +
+      acRows = data.rows || [];
+      acIndex = acRows.length > 0 ? 0 : -1;
+      renderAcList();
+    }).catch(function () { /* ignore */ });
+  }
+
+  function renderAcList() {
+    if (acRows.length === 0) {
+      el.acList.innerHTML = '<div class="p059-ac-empty">ไม่พบ SO ที่ตรงกับค่าที่ค้นหา</div>';
+    } else {
+      el.acList.innerHTML = acRows.map(function (r, i) {
+        return '<div class="p059-ac-item' + (i === acIndex ? " hl" : "") + '" data-i="' + i + '">' +
+          "<b>" + esc(r.vnos) + "</b>" +
+          '<span class="ac-cus" title="' + esc(r.cusName) + '">' + esc(r.cusCode) + " · " + esc(r.cusName) + "</span>" +
+          '<span class="ac-date">' + esc(fmtDate(r.date)) + "</span>" +
           "</div>";
       }).join("");
-      // bind
-      el.soPicker.querySelectorAll(".p059-pick-item").forEach(function (item) {
-        item.addEventListener("click", function () {
-          var v = item.getAttribute("data-vnos");
-          // query SO แม่นยำ (mode=info) เพื่อ get fields
-          apiPost(API.soList, { connectionId: MAC5_CONNECTION_ID, mode: "info", vnos: v }).then(function (d2) {
-            if (d2.ok) {
-              setFields(d2.doc, true);
-              activeVnos = d2.doc.vnos;
-              el.pickBtn.disabled = true;
-            }
-          });
-          el.soPicker.classList.remove("show");
+      el.acList.querySelectorAll(".p059-ac-item").forEach(function (item) {
+        item.addEventListener("mousedown", function (e) {
+          e.preventDefault(); // prevent blur
+          pickAc(parseInt(item.getAttribute("data-i"), 10));
         });
       });
-    });
+    }
+    el.acList.classList.add("show");
   }
 
-  /* ---------- browse (local files) ---------- */
+  function hideAc() {
+    el.acList.classList.remove("show");
+    el.fVnos.classList.remove("ac-active");
+    acIndex = -1;
+  }
+
+  function pickAc(i) {
+    var r = acRows[i];
+    if (!r) return;
+    // use row data directly (picker returns date/vnos/cusCode/cusName)
+    setFields(r, true);
+    activeVnos = r.vnos;
+    hideAc();
+    el.fVnos.value = r.vnos;
+    el.fVnos.readOnly = true;
+    renderFileList(); // re-evaluate save button
+  }
+
+  function onVnosInput() {
+    if (modalMode !== "new" || el.fVnos.readOnly) return;
+    var kw = el.fVnos.value.trim();
+    el.fVnos.classList.add("ac-active");
+    clearTimeout(acTimer);
+    acTimer = setTimeout(function () { fetchAc(kw); }, 250);
+  }
+
+  function onVnosKeydown(e) {
+    if (el.fVnos.readOnly) return;
+    var open = el.acList.classList.contains("show");
+    if (e.key === "ArrowDown" && open) {
+      e.preventDefault();
+      if (acIndex < acRows.length - 1) acIndex++;
+      renderAcList();
+    } else if (e.key === "ArrowUp" && open) {
+      e.preventDefault();
+      if (acIndex > 0) acIndex--;
+      renderAcList();
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (open && acIndex >= 0) pickAc(acIndex);
+    } else if (e.key === "Escape" && open) {
+      e.stopPropagation();
+      hideAc();
+    }
+  }
+
+  /* ---------- dropzone (click + drag&drop) ---------- */
   function onBrowseFiles() {
+    if (el.dropZone.style.pointerEvents === "none") return;
     el.hiddenInput.click();
   }
-  function onFilesChosen(ev) {
-    var list = ev.target.files;
+  function onFilesChosen(list) {
     if (!list || list.length === 0) return;
     Array.prototype.forEach.call(list, function (f) {
+      if (f.type && f.type.indexOf("image/") !== 0) return;
       var reader = new FileReader();
       reader.onload = function (e) {
         files.push({
@@ -440,7 +510,6 @@
       };
       reader.readAsDataURL(f);
     });
-    ev.target.value = "";
   }
 
   /* ---------- edit mode (view modal — clone C# btn_edit_Click L408-416) ---------- */
@@ -450,6 +519,8 @@
   }
 
   /* ---------- save (upload + soft delete — clone C# btn_save_Click L200-302) ---------- */
+  var SAVE_BTN_HTML; // set in mount (icon + text)
+  function saveBtnReset() { el.btnSave.innerHTML = SAVE_BTN_HTML; }
   function doSave() {
     var v = el.fVnos.value.trim();
     if (!v) {
@@ -459,7 +530,7 @@
     // clone C# — new: ต้องมีภาพ >= 1 · edit: ลบทั้งหมดได้ (soft delete)
     var newFiles = files.filter(function (f) { return f.isLocal; });
     if (modalMode === "new" && newFiles.length === 0) {
-      showToast("โปรด!! เพิ่มรูปภาพอย่างน้อย 1 ภาพ");
+      showToast("กรุณาเพิ่มรูปภาพอย่างน้อย 1 ภาพ");
       return;
     }
     // soft delete — ไฟล์เดิม (origFiles) ที่หายจาก working set (clone C# L244-252: status=-1)
@@ -471,42 +542,56 @@
       showToast("ไม่มีการเปลี่ยนแปลง");
       return;
     }
-    var fd = new FormData();
-    fd.append("connectionId", MAC5_CONNECTION_ID);
-    fd.append("vnos", v);
-    fd.append("deleteIds", JSON.stringify(delIds));
-    newFiles.forEach(function (f) {
-      fd.append("files[]", f.file, f.filename);
-    });
-    el.btnSave.disabled = true;
-    el.btnSave.textContent = "กำลังอัปโหลด...";
-    fetch(API.save, { method: "POST", body: fd }).then(function (r) { return r.json(); }).then(function (data) {
-      el.btnSave.textContent = "บันทึกรูปภาพ";
-      if (!data.ok) {
-        showToast("Error: " + data.error);
+    // new mode + SO ที่พิมพ์เอง (ไม่ได้เลือกจาก autocomplete) — verify SO ก่อน (mode=info)
+    var doUpload = function () {
+      var fd = new FormData();
+      fd.append("connectionId", MAC5_CONNECTION_ID);
+      fd.append("vnos", v);
+      fd.append("deleteIds", JSON.stringify(delIds));
+      newFiles.forEach(function (f) {
+        fd.append("files[]", f.file, f.filename);
+      });
+      el.btnSave.disabled = true;
+      el.btnSave.textContent = "กำลังอัปโหลด...";
+      fetch(API.save, { method: "POST", body: fd }).then(function (r) { return r.json(); }).then(function (data) {
+        saveBtnReset();
+        if (!data.ok) {
+          showToast("Error: " + data.error);
+          renderFileList();
+          return;
+        }
+        var msg = "บันทึก " + v + " เรียบร้อยแล้ว";
+        if (data.uploaded) msg += " (อัปโหลด " + data.uploaded + " ไฟล์)";
+        if (data.deleted) msg += " (ลบ " + data.deleted + ")";
+        showToast(msg);
+        closeModal();
+        doSearch(); // refresh list
+      }).catch(function (e) {
+        saveBtnReset();
         renderFileList();
+        showToast("Error: " + e.message);
+      });
+    };
+    if (modalMode === "new" && el.fVnos.readOnly) {
+      doUpload(); // เลือกจาก autocomplete แล้ว
+      return;
+    }
+    // typed manually — verify SO (mode=info)
+    apiPost(API.soList, { connectionId: MAC5_CONNECTION_ID, mode: "info", vnos: v }).then(function (d2) {
+      if (!d2.ok) {
+        showToast("Error: " + d2.error);
         return;
       }
-      var msg = "บันทึก " + v + " เรียบร้อยแล้ว";
-      if (data.uploaded) msg += " (อัปโหลด " + data.uploaded + " ไฟล์)";
-      if (data.deleted) msg += " (ลบ " + data.deleted + ")";
-      showToast(msg);
-      closeModal();
-      doSearch(); // refresh list
+      activeVnos = d2.doc.vnos;
+      doUpload();
     }).catch(function (e) {
-      el.btnSave.textContent = "บันทึกรูปภาพ";
-      renderFileList();
       showToast("Error: " + e.message);
     });
   }
 
-  /* ---------- delete local file (new mode) ---------- */
+  /* ---------- delete file (button ในรายการ / ปุ่มลบภาพนี้) ---------- */
   function deleteSelected() {
-    if (selectedIdx < 0) return;
-    files.splice(selectedIdx, 1);
-    selectedIdx = -1;
-    renderFileList();
-    renderPreview();
+    deleteFile(selectedIdx);
   }
 
   /* ---------- print (report overlay) ---------- */
@@ -556,34 +641,38 @@
             '<button class="p059-tb-close" id="p059CloseBtn" type="button" title="Close">' + icon("close", 13) + "</button>" +
           "</div>" +
           '<div class="p059-mfields">' +
-            '<div class="p059-mfield"><label>เลขใบสำคัญ</label>' +
-              '<div class="p059-with-btn">' +
-                '<input id="p059FVnos" type="text" placeholder="เลือก SO" autocomplete="off">' +
-                '<button class="p059-pick-btn" id="p059PickBtn" type="button">เลือก</button>' +
-                '<div class="p059-so-picker" id="p059SoPicker"></div>' +
+            '<div class="p059-mfield"><label>เลขที่ SO</label>' +
+              '<div class="p059-ac-wrap">' +
+                '<input id="p059FVnos" type="text" placeholder="พิมพ์เลขที่ SO เพื่อค้นหา..." autocomplete="off">' +
+                '<div class="p059-ac-list" id="p059AcList"></div>' +
               "</div>" +
             "</div>" +
-            '<div class="p059-mfield"><label>รหัสลูกค้า</label><input id="p059FCusCode" type="text" readonly></div>' +
-            '<div class="p059-mfield"><label>วันที่</label><input id="p059FDate" type="text" readonly></div>' +
-            '<div class="p059-mfield"><label>ชื่อลูกค้า</label><input id="p059FCusName" type="text" readonly></div>' +
+            '<div class="p059-mfield"><label>รหัสลูกค้า</label><input id="p059FCusCode" type="text" readonly placeholder="—"></div>' +
+            '<div class="p059-mfield"><label>วันที่ SO</label><input id="p059FDate" type="text" readonly placeholder="—"></div>' +
+            '<div class="p059-mfield"><label>ชื่อลูกค้า</label><input id="p059FCusName" type="text" readonly placeholder="—"></div>' +
           "</div>" +
+          '<div class="p059-ac-hint"><span>พิมพ์เลขที่ SO เพื่อค้นหา (TOP 10)</span><span>&uarr;&darr; เลือก</span><span>Enter ยืนยัน / Esc ปิด</span></div>' +
           '<div class="p059-msplit">' +
             '<div class="p059-file-panel">' +
+              '<div class="p059-dropzone" id="p059DropZone" tabindex="0">' +
+                icon("image", 26) +
+                '<span class="dz-t">คลิกเลือกหรือดึงรูปมาวาง</span>' +
+                '<span class="dz-s">JPG / PNG — เลือกได้หลายภาพทีละครั้ง</span>' +
+              "</div>" +
               '<div class="p059-file-tools">' +
-                '<button id="p059BrowseBtn" type="button">Browse...</button>' +
-                '<button id="p059EditBtn" type="button" disabled>Edit</button>' +
-                '<button id="p059DelBtn" type="button" class="danger" disabled>ลบ</button>' +
+                '<button id="p059EditBtn" type="button" disabled>แก้ไขภาพ</button>' +
+                '<button id="p059DelBtn" type="button" class="danger" disabled>ลบภาพนี้</button>' +
               "</div>" +
               '<div class="p059-file-list" id="p059FileList"></div>' +
             "</div>" +
             '<div class="p059-preview-panel">' +
-              '<div class="p059-preview-label">View Picture</div>' +
+              '<div class="p059-preview-label">ภาพ <span class="pl-count" id="p059PlCount"></span></div>' +
               '<div class="p059-preview-area" id="p059Preview"></div>' +
             "</div>" +
           "</div>" +
           '<div class="p059-mfoot">' +
-            '<button class="p059-save-btn" id="p059SaveBtn" type="button">บันทึกรูปภาพ</button>' +
-            '<button class="p059-cancel-btn" id="p059CancelBtn" type="button">ยกเลิก</button>' +
+            '<button class="p059-save-btn" id="p059SaveBtn" type="button">' + icon("check", 16) + ' บันทึกภาพ</button>' +
+            '<button class="p059-cancel-btn" id="p059CancelBtn" type="button">ปิด</button>' +
           "</div>" +
         "</section>" +
       "</div>" +
@@ -605,17 +694,18 @@
     el.fCusCode = document.querySelector("#p059FCusCode");
     el.fDate = document.querySelector("#p059FDate");
     el.fCusName = document.querySelector("#p059FCusName");
-    el.pickBtn = document.querySelector("#p059PickBtn");
-    el.soPicker = document.querySelector("#p059SoPicker");
+    el.acList = document.querySelector("#p059AcList");
+    el.dropZone = document.querySelector("#p059DropZone");
     el.fileList = document.querySelector("#p059FileList");
     el.previewArea = document.querySelector("#p059Preview");
-    el.btnBrowse = document.querySelector("#p059BrowseBtn");
+    el.plCount = document.querySelector("#p059PlCount");
     el.btnEdit = document.querySelector("#p059EditBtn");
     el.btnDel = document.querySelector("#p059DelBtn");
     el.btnSave = document.querySelector("#p059SaveBtn");
     el.hiddenInput = document.querySelector("#p059Hidden");
     el.toast = document.querySelector("#p059Toast");
     el.toastMsg = document.querySelector("#p059ToastMsg");
+    SAVE_BTN_HTML = el.btnSave.innerHTML;
 
     // bind — launcher
     target.querySelector("#p059NewBtn").addEventListener("click", function () { openModal("new", null); });
@@ -641,21 +731,44 @@
     document.querySelector("#p059CloseBtn").addEventListener("click", closeModal);
     document.querySelector("#p059CancelBtn").addEventListener("click", closeModal);
     el.backdrop.addEventListener("click", function (e) { if (e.target === el.backdrop) closeModal(); });
-    el.pickBtn.addEventListener("click", openSoPicker);
-    el.btnBrowse.addEventListener("click", onBrowseFiles);
-    el.hiddenInput.addEventListener("change", onFilesChosen);
+    // autocomplete
+    el.fVnos.addEventListener("input", onVnosInput);
+    el.fVnos.addEventListener("keydown", onVnosKeydown);
+    el.fVnos.addEventListener("focus", function () {
+      if (modalMode === "new" && !el.fVnos.readOnly && acRows.length > 0 && !el.acList.classList.contains("show")) {
+        el.acList.classList.add("show");
+        el.fVnos.classList.add("ac-active");
+      }
+    });
+    // dropzone — click + drag&drop
+    el.dropZone.addEventListener("click", onBrowseFiles);
+    el.dropZone.addEventListener("dragover", function (e) { e.preventDefault(); el.dropZone.classList.add("drag"); });
+    el.dropZone.addEventListener("dragleave", function () { el.dropZone.classList.remove("drag"); });
+    el.dropZone.addEventListener("drop", function (e) {
+      e.preventDefault();
+      el.dropZone.classList.remove("drag");
+      onFilesChosen(e.dataTransfer.files);
+    });
+    el.hiddenInput.addEventListener("change", function (ev) { onFilesChosen(ev.target.files); ev.target.value = ""; });
     el.btnEdit.addEventListener("click", enterEdit);
     el.btnDel.addEventListener("click", deleteSelected);
     el.btnSave.addEventListener("click", doSave);
     el.fileList.addEventListener("click", function (e) {
+      var del = e.target.closest(".fi-del");
+      if (del) {
+        e.stopPropagation();
+        deleteFile(parseInt(del.getAttribute("data-del"), 10));
+        return;
+      }
       var item = e.target.closest(".p059-file-item");
       if (item) selectFile(parseInt(item.getAttribute("data-i"), 10));
     });
 
-    // close SO picker on outside click
+    // close autocomplete on outside click
     document.addEventListener("click", function (e) {
-      if (!e.target.closest(".p059-with-btn")) {
-        el.soPicker.classList.remove("show");
+      if (!e.target.closest(".p059-ac-wrap")) {
+        el.acList.classList.remove("show");
+        el.fVnos.classList.remove("ac-active");
       }
     });
 

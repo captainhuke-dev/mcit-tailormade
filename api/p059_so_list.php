@@ -6,7 +6,7 @@
  *   AND MIHvnos NOT IN (SELECT vnos FROM tb_PictureSO GROUP BY vnos)
  *   (+ MIHvnos LIKE 'keyword%')
  * POST {connectionId, vnos?, mode?}
- *   mode=picker (default) — SO ยังไม่มีภาพ (NOT IN tb_PictureSO) + LIKE
+ *   mode=picker (default) — SO ยังไม่มีภาพ (NOT IN tb_PictureSO) TOP 10 + MIHvnos LIKE 'kw%' (autocomplete)
  *   mode=info — query SO แม่นยำ (clone C# loadSO L97-118: MIHtype='PS' AND MIHvnos=?)
  */
 require __DIR__ . '/lib/db.php';
@@ -68,7 +68,7 @@ if ($mode === 'info') {
     exit;
 }
 
-// ---------- mode=picker — SO ยังไม่มีภาพ (clone C# frm_selectData L56-58) ----------
+// ---------- mode=picker — SO ยังไม่มีภาพ (autocomplete TOP 10 — LIKE 'kw%') ----------
 $where = "MIH.MIHtype = 'PS' AND MIH.MIHvnos NOT IN (SELECT vnos FROM [BI_CUBE].[dbo].[tb_PictureSO] GROUP BY vnos)";
 $params = array();
 if ($vnos !== '') {
@@ -76,8 +76,7 @@ if ($vnos !== '') {
     $params[] = $vnos . '%';
 }
 
-// clone C# frm_selectData L56-58
-$sql = "SELECT TOP 50
+$sql = "SELECT TOP 10
           CONVERT(DATE, STR(MIH.MIHday)+'/'+STR(MIH.MIHmonth)+'/'+STR(MIH.MIHyear), 103) AS MIHdate,
           MIH.MIHvnos,
           DEB.DEBcode,
