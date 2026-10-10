@@ -15,6 +15,8 @@
   "use strict";
 
   var MAC5_CONNECTION_ID = "c1788406814359";
+  var PER_PAGE = 15; // clone P019 — 15 รายการ/หน้า
+  var page = 1;
   var API = {
     search: "api/p059_search.php",
     detail: "api/p059_detail.php",
@@ -70,6 +72,12 @@
     ".p059-row-act.print{color:#334155;border-color:var(--p059-border);background:#f8fafc}",
     ".p059-row-act.print:hover{color:#fff;border-color:#475569;background:#475569}",
     ".p059-table-foot{display:flex;min-height:50px;align-items:center;justify-content:space-between;gap:12px;padding:8px 15px;color:var(--p059-muted);border-top:1px solid var(--p059-border);background:#f8fafc;font-size:12px}",
+    ".p059-pagination{display:flex;align-items:center;gap:6px}",
+    ".p059-page-btn{min-width:28px;height:28px;padding:0 6px;border:1px solid var(--p059-border);border-radius:8px;background:#fff;color:var(--p059-text);font:inherit;font-size:13px;cursor:pointer;transition:0.14s ease}",
+    ".p059-page-btn:hover:not(:disabled){border-color:#60a5fa;color:var(--p059-primary-dark)}",
+    ".p059-page-btn.active{border-color:var(--p059-primary);background:var(--p059-primary);color:#fff}",
+    ".p059-page-btn:disabled{opacity:0.4;cursor:not-allowed}",
+    ".p059-page-info{font-size:12px;color:var(--p059-muted);margin-left:4px}",
     ".p059-empty{padding:40px;text-align:center;color:var(--p059-muted);font-size:13px}",
 
     /* modal */
@@ -197,6 +205,7 @@
         return;
       }
       rows = data.rows || [];
+      page = 1;
       renderTable();
     }).catch(function (e) {
       el.tableWrap.innerHTML = '<div class="p059-empty">Error: ' + esc(e.message) + "</div>";
@@ -204,10 +213,14 @@
   }
 
   function renderTable() {
+    var totalPages = Math.max(1, Math.ceil(rows.length / PER_PAGE));
+    if (page > totalPages) page = totalPages;
+    var start = (page - 1) * PER_PAGE;
+    var pageRows = rows.slice(start, start + PER_PAGE);
     if (rows.length === 0) {
       el.tableWrap.innerHTML = '<div class="p059-empty">ไม่พบข้อมูล</div>';
     } else {
-      var trs = rows.map(function (r) {
+      var trs = pageRows.map(function (r) {
         var cnt = r.cntPic;
         return "<tr data-vnos=\"" + esc(r.vnos) + "\">" +
           '<td class="center">' + esc(fmtDate(r.date)) + "</td>" +
@@ -226,7 +239,34 @@
         "</tr></thead><tbody>" + trs + "</tbody></table>";
     }
     el.badge.textContent = rows.length + " รายการ";
-    el.footText.textContent = "แสดง " + rows.length + " รายการ";
+    el.footText.textContent = "แสดง " + pageRows.length + " จาก " + rows.length + " รายการ";
+    renderPager(totalPages);
+  }
+
+  /* ---------- pagination (clone P019 — 15/หน้า — ปุ่ม ‹ 1 2 3 4 5 ›) ---------- */
+  function renderPager(totalPages) {
+    var pg = el.pager;
+    if (!pg) return;
+    if (totalPages <= 1) { pg.innerHTML = ""; return; }
+    var pages = [];
+    var startPage = Math.max(1, page - 2);
+    var endPage = Math.min(totalPages, startPage + 4);
+    if (endPage - startPage < 4) startPage = Math.max(1, endPage - 4);
+    for (var p = startPage; p <= endPage; p++) {
+      pages.push('<button type="button" class="p059-page-btn' + (p === page ? " active" : "") + '" data-page="' + p + '">' + p + "</button>");
+    }
+    pg.innerHTML =
+      '<button type="button" class="p059-page-btn" data-nav="prev"' + (page <= 1 ? " disabled" : "") + ">&lsaquo;</button>" +
+      pages.join("") +
+      '<button type="button" class="p059-page-btn" data-nav="next"' + (page >= totalPages ? " disabled" : "") + ">&rsaquo;</button>" +
+      '<span class="p059-page-info">หน้า ' + page + " / " + totalPages + "</span>";
+    pg.querySelectorAll("[data-page]").forEach(function (btn) {
+      btn.addEventListener("click", function () { page = parseInt(btn.getAttribute("data-page"), 10); renderTable(); });
+    });
+    var prev = pg.querySelector('[data-nav="prev"]');
+    var next = pg.querySelector('[data-nav="next"]');
+    if (prev) prev.addEventListener("click", function () { if (page > 1) { page--; renderTable(); } });
+    if (next) next.addEventListener("click", function () { if (page < totalPages) { page++; renderTable(); } });
   }
 
   /* ---------- modal ---------- */
@@ -506,7 +546,7 @@
             '<span class="p059-badge" id="p059Badge">0 รายการ</span>' +
           "</div>" +
           '<div class="p059-table-wrap" id="p059TableWrap"><div class="p059-empty">กำลังค้นหา...</div></div>' +
-          '<div class="p059-table-foot"><span id="p059Foot">แสดง 0 รายการ</span></div>' +
+          '<div class="p059-table-foot"><span id="p059Foot">แสดง 0 รายการ</span><div class="p059-pagination" id="p059Pager"></div></div>' +
         "</section>" +
       "</div>" +
       // modal
@@ -558,6 +598,7 @@
     el.badge = target.querySelector("#p059Badge");
     el.tableWrap = target.querySelector("#p059TableWrap");
     el.footText = target.querySelector("#p059Foot");
+    el.pager = target.querySelector("#p059Pager");
     el.backdrop = document.querySelector("#p059Backdrop");
     el.mTitle = document.querySelector("#p059MTitle");
     el.fVnos = document.querySelector("#p059FVnos");
