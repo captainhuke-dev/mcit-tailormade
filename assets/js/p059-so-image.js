@@ -83,7 +83,7 @@
     /* modal */
     ".p059-backdrop{position:fixed;inset:0;z-index:100;display:none;padding:20px;place-items:center;background:rgba(15,23,42,0.52);backdrop-filter:blur(4px)}",
     ".p059-backdrop.show{display:grid}",
-    ".p059-modal{width:min(1000px,100%);max-height:92vh;overflow:hidden;border-radius:14px;background:#fff;box-shadow:0 28px 75px rgba(15,23,42,0.36);animation:p059Open 0.2s ease;display:flex;flex-direction:column}",
+    ".p059-modal{width:min(1280px,100%);max-height:92vh;overflow:hidden;border-radius:14px;background:#fff;box-shadow:0 28px 75px rgba(15,23,42,0.36);animation:p059Open 0.2s ease;display:flex;flex-direction:column}",
     "@keyframes p059Open{from{opacity:0;transform:translateY(12px) scale(0.98)}to{opacity:1;transform:translateY(0) scale(1)}}",
     ".p059-titlebar{display:flex;min-height:38px;align-items:center;justify-content:space-between;padding:0 4px 0 12px;background:linear-gradient(180deg,#334155,#1e293b)}",
     ".p059-titlebar span{color:#e2e8f0;font-size:12px;font-weight:600}",
@@ -110,7 +110,7 @@
     ".p059-ac-empty{padding:14px;color:var(--p059-muted);font-size:12px;text-align:center}",
     ".p059-ac-hint{display:flex;gap:10px;padding:7px 18px;color:#94a3b8;background:#f8fafc;border-bottom:1px solid var(--p059-border);font-size:10px}",
     /* split — drop zone + list ซ้าย / preview ข้า้ */
-    ".p059-msplit{display:grid;grid-template-columns:320px 1fr;min-height:0;flex:1;overflow:auto}",
+    ".p059-msplit{display:grid;grid-template-columns:360px 1fr;min-height:0;flex:1;overflow:auto}",
     ".p059-file-panel{display:flex;flex-direction:column;border-right:1px solid var(--p059-border)}",
     ".p059-dropzone{display:flex;flex-direction:column;align-items:center;gap:6px;margin:12px;padding:18px 12px;border:2px dashed #93c5fd;border-radius:12px;background:#f8faff;color:var(--p059-primary-dark);cursor:pointer;transition:0.15s ease}",
     ".p059-dropzone:hover,.p059-dropzone.drag{border-color:var(--p059-primary);background:var(--p059-primary-soft)}",
@@ -132,10 +132,18 @@
     ".p059-file-item .fi-del:hover{color:#fff;background:var(--p059-danger)}",
     ".p059-file-empty{padding:18px;color:var(--p059-muted);font-size:12px;text-align:center}",
     ".p059-preview-panel{display:flex;flex-direction:column}",
-    ".p059-preview-label{display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;color:var(--p059-text);border-bottom:1px solid var(--p059-border);background:#f8fafc;font-size:13px;font-weight:700;text-align:center}",
+    ".p059-preview-label{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 14px;color:var(--p059-text);border-bottom:1px solid var(--p059-border);background:#f8fafc;font-size:13px;font-weight:700;text-align:center}",
     ".p059-preview-label .pl-count{padding:2px 9px;border-radius:999px;background:#dbeafe;color:var(--p059-primary-dark);font-size:11px}",
-    ".p059-preview-area{display:grid;flex:1;place-items:center;overflow:hidden;background:#94a3b8;min-height:300px}",
-    ".p059-preview-area img{max-width:100%;max-height:420px;object-fit:contain;box-shadow:0 10px 24px rgba(0,0,0,0.25)}",
+    ".p059-zoom{display:flex;align-items:center;gap:4px}",
+    ".p059-zoom button{min-width:26px;height:26px;padding:0 6px;border:1px solid var(--p059-border);border-radius:7px;background:#fff;color:var(--p059-text);font:inherit;font-size:12px;font-weight:700;cursor:pointer}",
+    ".p059-zoom button:hover:not(:disabled){border-color:#60a5fa;color:var(--p059-primary-dark)}",
+    ".p059-zoom button:disabled{opacity:0.4;cursor:not-allowed}",
+    ".p059-zoom .z-fit{font-size:11px}",
+    ".p059-zoom .z-pct{min-width:46px;text-align:center;color:var(--p059-muted);font-size:11px}",
+    ".p059-preview-area{flex:1;min-height:380px;background:#94a3b8;position:relative;overflow:hidden}",
+    ".p059-preview-fit{position:absolute;inset:0;overflow:auto}",
+    ".p059-preview-inner{display:flex;align-items:center;justify-content:center;min-height:100%;padding:14px;box-sizing:border-box}",
+    ".p059-preview-area img{display:block;max-width:none;max-height:none;width:auto;height:auto;box-shadow:0 10px 24px rgba(0,0,0,0.25)}",
     ".p059-preview-ph{display:flex;flex-direction:column;align-items:center;gap:8px;color:#e2e8f0;text-align:center}",
     ".p059-preview-ph svg{width:44px;height:44px}",
     ".p059-preview-ph span{font-size:11px}",
@@ -201,6 +209,7 @@
   var acIndex = -1; // highlighted item
   var acTimer = null; // debounce
   var acToken = 0; // prevent stale response
+  var zoom = 1; // 1 = fit to area
   var editMode = false; // view modal: ถูกกด Edit แล้ว
   var toastTimer = null;
   var escBound = false;
@@ -323,7 +332,8 @@
   function renderPreview() {
     var f = files[selectedIdx];
     if (!f) {
-      el.previewArea.innerHTML = '<div class="p059-preview-ph">' + icon("image", 44) + "<span>ยังไม่ได้เลือกภาพ — คลิกภาพด้านซ้าย</span></div>";
+      el.previewArea.innerHTML = '<div class="p059-preview-fit"><div class="p059-preview-inner"><div class="p059-preview-ph">' + icon("image", 44) + "<span>ยังไม่ได้เลือกภาพ — คลิกภาพด้านซ้าย</span></div></div></div>";
+      el.zPct.textContent = "";
       return;
     }
     var src;
@@ -332,7 +342,38 @@
     } else {
       src = API.image + "?f=" + encodeURIComponent(f.filename);
     }
-    el.previewArea.innerHTML = '<img src="' + src + '" alt="' + esc(f.filename) + '" onerror="this.outerHTML=\'<div class=p059-preview-ph><span>โหลดภาพไม่ได้</span></div>\'">';
+    el.previewArea.innerHTML = '<div class="p059-preview-fit"><div class="p059-preview-inner"></div></div>';
+    var img = document.createElement("img");
+    img.alt = f.filename;
+    img.onload = function () { applyZoom(); };
+    img.onerror = function () {
+      el.previewArea.innerHTML = '<div class="p059-preview-fit"><div class="p059-preview-inner"><div class="p059-preview-ph"><span>โหลดภาพไม่ได้</span></div></div></div>';
+      el.zPct.textContent = "";
+    };
+    img.src = src;
+    el.previewArea.querySelector(".p059-preview-inner").appendChild(img);
+    if (img.complete && img.naturalWidth > 0) applyZoom();
+  }
+
+  /* ---------- zoom (−/+/fit + Ctrl+wheel) ---------- */
+  function applyZoom() {
+    var img = el.previewArea.querySelector("img");
+    if (!img || !img.naturalWidth) return;
+    // วัดจาก .p059-preview-fit (absolute inset:0 — ขึ้นกับ modal ไม่ใช่ภาพ)
+    var fit = el.previewArea.querySelector(".p059-preview-fit");
+    var aw = fit.clientWidth - 28, ah = fit.clientHeight - 28;
+    if (aw <= 0 || ah <= 0) return;
+    var fitScale = Math.min(aw / img.naturalWidth, ah / img.naturalHeight);
+    if (!(fitScale > 0)) fitScale = 1;
+    var s = fitScale * zoom;
+    img.style.width = Math.round(img.naturalWidth * s) + "px";
+    el.zPct.textContent = Math.round(s * 100) + "%";
+    el.zIn.disabled = s >= 8;
+    el.zOut.disabled = s <= 0.05;
+  }
+  function setZoom(z) {
+    zoom = Math.min(Math.max(z, 0.1), 12);
+    applyZoom();
   }
 
   function selectFile(i) {
@@ -358,6 +399,7 @@
     origFiles = [];
     acRows = [];
     acIndex = -1;
+    zoom = 1;
     el.acList.classList.remove("show");
     el.acList.innerHTML = "";
     el.fVnos.classList.remove("ac-active");
@@ -404,7 +446,7 @@
     el.fVnos.classList.remove("ac-active");
   }
 
-  /* ---------- modal geometry — ให้อยู่ตรงกลางจอเสมอ (ไม่จม/ไม่ล้น) ---------- */
+  /* ---------- modal geometry — เต็มจอ + อยู่กลางจอเสมอ (ไม่จม/ไม่ล้น) ---------- */
   function resizeModal() {
     if (!el.modal || !el.backdrop) return;
     var show = el.backdrop.classList.contains("show");
@@ -416,15 +458,10 @@
     if (!show) return;
     var pad = 16;
     el.backdrop.style.padding = pad + "px";
-    el.modal.style.width = "min(1000px, 100%)";
+    el.modal.style.width = "min(1280px, 100%)";
+    // modal เต็มความสูงจอ เสมอ — preview area จึงยืดตาม (image ใหญ่)
+    el.modal.style.height = (window.innerHeight - pad * 2) + "px";
     el.modal.style.maxHeight = (window.innerHeight - pad * 2) + "px";
-    // ถ้า content สูงกว่าจอ — ขยาย modal เต็มพื้นที่ + ให้ file-list/preview กลับ within
-    var contentH = el.modal.scrollHeight;
-    if (contentH > window.innerHeight - pad * 2) {
-      el.modal.style.height = (window.innerHeight - pad * 2) + "px";
-    } else {
-      el.modal.style.height = "";
-    }
   }
   /* ---------- autocomplete SO (TOP 10 — LIKE 'kw%') ---------- */
   function fetchAc(kw) {
@@ -695,7 +732,14 @@
               '<div class="p059-file-list" id="p059FileList"></div>' +
             "</div>" +
             '<div class="p059-preview-panel">' +
-              '<div class="p059-preview-label">ภาพ <span class="pl-count" id="p059PlCount"></span></div>' +
+              '<div class="p059-preview-label"><span>ภาพ <span class="pl-count" id="p059PlCount"></span></span>' +
+                '<div class="p059-zoom">' +
+                  '<button type="button" id="p059ZoomOut" title="ย่อ (Ctrl+Wheel)">&#8722;</button>' +
+                  '<span class="z-pct" id="p059ZoomPct"></span>' +
+                  '<button type="button" id="p059ZoomIn" title="ขยาย (Ctrl+Wheel)">+</button>' +
+                  '<button type="button" id="p059ZoomFit" class="z-fit" title="พอดีพื้นที่">fit</button>' +
+                "</div>" +
+              "</div>" +
               '<div class="p059-preview-area" id="p059Preview"></div>' +
             "</div>" +
           "</div>" +
@@ -731,6 +775,10 @@
     el.fileList = document.querySelector("#p059FileList");
     el.previewArea = document.querySelector("#p059Preview");
     el.plCount = document.querySelector("#p059PlCount");
+    el.zIn = document.querySelector("#p059ZoomIn");
+    el.zOut = document.querySelector("#p059ZoomOut");
+    el.zFit = document.querySelector("#p059ZoomFit");
+    el.zPct = document.querySelector("#p059ZoomPct");
     el.btnEdit = document.querySelector("#p059EditBtn");
     el.btnDel = document.querySelector("#p059DelBtn");
     el.btnSave = document.querySelector("#p059SaveBtn");
@@ -785,6 +833,15 @@
     el.btnEdit.addEventListener("click", enterEdit);
     el.btnDel.addEventListener("click", deleteSelected);
     el.btnSave.addEventListener("click", doSave);
+    // zoom
+    el.zIn.addEventListener("click", function () { setZoom(zoom * 1.25); });
+    el.zOut.addEventListener("click", function () { setZoom(zoom / 1.25); });
+    el.zFit.addEventListener("click", function () { setZoom(1); });
+    el.previewArea.addEventListener("wheel", function (e) {
+      if (!e.ctrlKey) return; // scroll ปัจจัย = หนุน/ลากลง
+      e.preventDefault();
+      setZoom(zoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1));
+    }, { passive: false });
     el.fileList.addEventListener("click", function (e) {
       var del = e.target.closest(".fi-del");
       if (del) {
@@ -809,6 +866,12 @@
       document.addEventListener("keydown", function (e) {
         if (e.key === "Escape" && el.backdrop && el.backdrop.classList.contains("show")) {
           closeModal();
+        }
+      });
+      window.addEventListener("resize", function () {
+        if (el.backdrop && el.backdrop.classList.contains("show")) {
+          resizeModal();
+          applyZoom();
         }
       });
       escBound = true;
