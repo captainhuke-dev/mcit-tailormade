@@ -187,7 +187,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p111-SO_PendingTransfer.js"></script>
   <script src="assets/js/p031-transfer-report.js"></script>
   <script src="assets/js/p106-print-barcode.js"></script>
-  <script src="assets/js/p103-check-cost.js?v=20261012b"></script>
+  <script src="assets/js/p103-check-cost.js?v=20261012c"></script>
   <script src="assets/js/p050-billing.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <script src="assets/js/qrcode.min.js"></script>

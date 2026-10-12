@@ -298,7 +298,7 @@
     ".p103-app svg,.p103-backdrop svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}",
     ".p103-app{display:flex;flex-direction:column;gap:14px}",
     /* launcher */
-    ".p103-launcher{display:grid;grid-template-columns:minmax(300px,1.2fr) minmax(250px,1fr) auto;gap:14px;align-items:stretch;padding:18px;border:1px solid var(--p103-border);border-radius:var(--p103-radius);background:#fff;box-shadow:0 5px 18px rgba(15,23,42,0.04)}",
+    ".p103-launcher{display:grid;grid-template-columns:minmax(300px,1.2fr) minmax(250px,1fr);gap:14px;align-items:stretch;padding:18px;border:1px solid var(--p103-border);border-radius:var(--p103-radius);background:#fff;box-shadow:0 5px 18px rgba(15,23,42,0.04)}",
     ".p103-launcher-label{display:flex;align-items:center;gap:7px;margin-bottom:12px;color:var(--p103-primary-dark);font-size:12px;font-weight:700}",
     ".p103-launcher-label svg{width:16px;height:16px}",
     ".p103-product-section{display:flex;flex-direction:column;gap:11px}",
@@ -308,15 +308,16 @@
     ".p103-pick-button{height:44px;padding:0 18px;display:inline-flex;align-items:center;gap:7px;color:var(--p103-primary-dark);border:1px solid #bfdbfe;border-radius:11px;background:var(--p103-primary-soft);font-weight:700;white-space:nowrap;transition:0.15s ease}",
     ".p103-pick-button svg{width:16px;height:16px}",
     ".p103-pick-button:hover{color:#fff;border-color:var(--p103-primary);background:var(--p103-primary)}",
-    ".p103-name-box{min-height:44px;display:flex;align-items:center;padding:11px 13px;color:var(--p103-text);border:1px solid var(--p103-border);border-radius:11px;background:var(--p103-surface-soft);font-size:13px;font-weight:600;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
-    ".p103-group-section{display:flex;flex-direction:column}",
-    ".p103-group-label{display:block;margin-bottom:9px;color:var(--p103-muted);font-size:11px;font-weight:700}",
+    ".p103-name-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}",
+    ".p103-name-box{height:44px;display:flex;align-items:center;padding:11px 13px;color:var(--p103-text);border:1px solid var(--p103-border);border-radius:11px;background:var(--p103-surface-soft);font-size:13px;font-weight:600;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}",
+    ".p103-group-section{display:flex;flex-direction:column;border:1px solid var(--p103-border);border-radius:12px;background:linear-gradient(180deg,#f8fbff,#f0f7ff);padding:12px 14px}",
+    ".p103-group-label{display:flex;align-items:center;gap:6px;margin-bottom:9px;color:var(--p103-primary-dark);font-size:11px;font-weight:700}",
+    ".p103-group-label svg{width:14px;height:14px}",
     ".p103-group-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 14px;align-content:start}",
     ".p103-group-option{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;cursor:pointer}",
     ".p103-group-option input{width:17px;height:17px;accent-color:var(--p103-primary);cursor:pointer}",
-    ".p103-search-column{display:flex;align-items:center;justify-content:center}",
-    ".p103-search-button{display:inline-flex;height:100%;min-height:90px;width:150px;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:#fff;border:0;border-radius:13px;background:linear-gradient(135deg,#3b82f6,var(--p103-primary-dark));box-shadow:0 10px 22px rgba(37,99,235,0.25);font-size:14px;font-weight:700;transition:0.16s ease}",
-    ".p103-search-button svg{width:26px;height:26px}",
+    ".p103-search-button{height:44px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;color:#fff;border:0;border-radius:11px;background:linear-gradient(135deg,#3b82f6,var(--p103-primary-dark));box-shadow:0 6px 16px rgba(37,99,235,0.25);font-size:14px;font-weight:700;white-space:nowrap;transition:0.16s ease}",
+    ".p103-search-button svg{width:17px;height:17px}",
     ".p103-search-button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.06)}",
     ".p103-search-button.loading svg{animation:p103spin 1s linear infinite}",
     "@keyframes p103spin{to{transform:rotate(360deg)}}",
@@ -381,8 +382,8 @@
     /* toast */
     ".p103-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;box-shadow:0 12px 32px rgba(15,23,42,0.3);opacity:0;pointer-events:none;transition:0.2s ease}",
     ".p103-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}",
-    "@media (max-width:1100px){.p103-launcher{grid-template-columns:1fr}.p103-search-button{width:100%;min-height:54px;flex-direction:row}.p103-stock-grid,.p103-summary-grid{grid-template-columns:repeat(2,1fr)}}",
-    "@media (max-width:680px){.p103-group-grid{grid-template-columns:1fr 1fr}.p103-stock-grid,.p103-summary-grid{grid-template-columns:1fr}}"
+    "@media (max-width:1100px){.p103-launcher{grid-template-columns:1fr}.p103-stock-grid{grid-template-columns:repeat(2,1fr)}}",
+    "@media (max-width:680px){.p103-group-grid{grid-template-columns:1fr 1fr}.p103-stock-grid{grid-template-columns:1fr}}"
   ].join("\n");
 
   /* ---------- HTML ---------- */
@@ -401,15 +402,15 @@
           "</div>" +
           '<div class="p103-field">' +
             "<label>ชื่อสินค้า</label>" +
-            '<div class="p103-name-box" id="p103NameBox">—</div>' +
+            '<div class="p103-name-row">' +
+              '<div class="p103-name-box" id="p103NameBox">—</div>' +
+              '<button class="p103-search-button" id="p103SearchBtn" type="submit">' + icon("search") + '<span id="p103SearchLabel">ค้นหา</span></button>' +
+            "</div>" +
           "</div>" +
         "</div>" +
         '<div class="p103-group-section">' +
-          '<label class="p103-group-label">กลุ่มคลัง</label>' +
+          '<label class="p103-group-label">' + icon("grid") + " กลุ่มคลัง</label>" +
           '<div class="p103-group-grid" id="p103Groups"></div>' +
-        "</div>" +
-        '<div class="p103-search-column">' +
-          '<button class="p103-search-button" id="p103SearchBtn" type="submit">' + icon("search") + '<span id="p103SearchLabel">ค้นหา</span></button>' +
         "</div>" +
       "</form>" +
       // stock panel
