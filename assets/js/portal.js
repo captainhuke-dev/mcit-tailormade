@@ -1011,6 +1011,20 @@
       `;
     }
 
+    // P103: ตรวจสอบต้นทุนปัจจุบัน vs นำเข้า+ค่าขนส่ง
+    if (programId === "P103") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p103Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P050: ใบวางบิล
     if (programId === "P050") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1668,6 +1682,12 @@
     if (page.type === "program" && page.programId === "P106" && window.P106PrintBarcode) {
       const root = document.getElementById("p106Root");
       if (root) window.P106PrintBarcode.mount(root);
+    }
+
+    // P103: mount Check Cost app
+    if (page.type === "program" && page.programId === "P103" && window.P103CheckCost) {
+      const root = document.getElementById("p103Root");
+      if (root) window.P103CheckCost.mount(root);
     }
   }
 
