@@ -73,6 +73,7 @@
 - **UI:** launcher (รหัส/ชื่อสินค้า + **ปุ่มเลือก → picker modal** (search Enter + click เลือก + Esc) + **กลุ่มคลัง 9 checkbox** (G01 G02 G03 G04 G06 G07 G09 PD RTV — default ติ๊ก G01+G06 clone C# frm_Load) + ปุ่มค้นหา) + **stock cards 5** (จำนวน/ต้นทุนเฉลี่ย/มูลค่า (จาก CST) + หน่วยหลัก/รอง (จาก STK)) + **tables 3** (PR 7 คอลั่น / ประวัติซื้อ 10 คอลั่น + Ex Rate + THB / ค่าใช้จ่ายส่วนเพิ่ม 10 คอลั่น + Ex Rate + THB — row แรก highlight)
 - **4 กาด summary ตัดออก (user 2026-10-12)** — เดิมตาม intent demo (ราคาล่าสุด PR/ค่าซื้อล่าสุด THB/ความแตกต่าง/ค่าใช้จ่ายเพิ่มล่าสุด) — ตัดทั้ง HTML+CSS+renderSummary+API summary field — `7304d18`
 - **UI launcher (user 2026-10-12)** — ย้าย **ปุ่มค้นหา** จาก column แยก → **ต่อช่องชื่อสินค้า (แถวเดียวกัน** `.p103-name-row` grid 1fr+auto — ปุ่ม h44) + **กรอบกลุ่มคลัง** (border + bg gradient อ่อน + radius 12 + label สีฟ้า) — `9f3e609` — cache v=20261012c
+- **3 ตารางแสดงเต็ม (user 2026-10-12)** — ตัด scrollbar: `.p103-table-wrap` max-height 230+overflow auto → visible + `.p103-table` ตัด min-width 760 — `e1f6e62` — cache v=20261012d
 - **CDP verify:** real data 10299059 — qty 668.000/avg 3.410/value 2,277.850 (ตรง demo) + PR 2/PO 2/RE 5 rows + picker 200 rows + search filter + pick → fields — 0 JS errors
 - **status: dev** — รอ user ยืนยัน (ยังไม่ mark ready)
 
