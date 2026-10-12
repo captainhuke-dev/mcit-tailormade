@@ -117,25 +117,6 @@
     el.subUnit.textContent = state.product ? (state.product.subUnit || "-") : "-";
   }
 
-  /* ---------- summary (intent demo — updateSummary) ---------- */
-  function renderSummary() {
-    var s = state.data ? state.data.summary : null;
-    if (!s) {
-      el.sumPr.textContent = "-";
-      el.sumPurchase.textContent = "-";
-      el.sumDiff.textContent = "-";
-      el.sumDiff.style.color = "";
-      el.sumExtra.textContent = "-";
-      return;
-    }
-    el.sumPr.textContent = s.prPrice != null ? s.prPrice.toFixed(2) + " " + (s.prCcy || "") : "-";
-    el.sumPurchase.textContent = s.purchasePrice != null ? "฿" + s.purchasePrice.toFixed(2) : "-";
-    var diff = s.purchasePrice != null ? s.purchasePrice - s.avgCost : null;
-    el.sumDiff.textContent = diff != null ? (diff >= 0 ? "+" : "") + "฿" + diff.toFixed(2) : "-";
-    el.sumDiff.style.color = diff == null ? "" : (diff > 0 ? "#dc2626" : diff < 0 ? "#059669" : "");
-    el.sumExtra.textContent = s.extraCost != null ? "฿" + money(s.extraCost) : "-";
-  }
-
   /* ---------- tables ---------- */
   function ccyTag(c) {
     var cls = c === "THB" ? "p103-ccy thb" : "p103-ccy";
@@ -205,7 +186,6 @@
 
   function renderAll() {
     renderStock();
-    renderSummary();
     renderPR();
     renderPO();
     renderRE();
@@ -357,17 +337,6 @@
     ".p103-stock-text{min-width:0}",
     ".p103-stock-text span{display:block;color:var(--p103-muted);font-size:10px}",
     ".p103-stock-text strong{display:block;overflow:hidden;margin-top:2px;font-size:16px;text-overflow:ellipsis;white-space:nowrap;color:var(--p103-text)}",
-    /* summary */
-    ".p103-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:12px}",
-    ".p103-summary-card{display:flex;min-width:0;align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--p103-border);border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,0.04)}",
-    ".p103-summary-icon{display:grid;width:42px;height:42px;flex:0 0 auto;place-items:center;color:var(--p103-primary);border-radius:12px;background:var(--p103-primary-soft)}",
-    ".p103-summary-icon svg{width:22px;height:22px}",
-    ".p103-summary-card.green .p103-summary-icon{color:var(--p103-success);background:var(--p103-success-soft)}",
-    ".p103-summary-card.orange .p103-summary-icon{color:var(--p103-warning);background:var(--p103-warning-soft)}",
-    ".p103-summary-card.purple .p103-summary-icon{color:var(--p103-purple);background:var(--p103-purple-soft)}",
-    ".p103-summary-text{min-width:0}",
-    ".p103-summary-text span{display:block;color:var(--p103-muted);font-size:10px}",
-    ".p103-summary-text strong{display:block;overflow:hidden;margin-top:2px;font-size:17px;text-overflow:ellipsis;white-space:nowrap;color:var(--p103-text)}",
     /* history panels */
     ".p103-history-panel{overflow:hidden;border:1px solid var(--p103-border);border-radius:var(--p103-radius);background:#fff;box-shadow:var(--p103-shadow)}",
     ".p103-history-header{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--p103-border);background:linear-gradient(90deg,#e0f2fe,#f0f9ff)}",
@@ -457,13 +426,6 @@
           '<div class="p103-stock-card purple"><div class="p103-stock-icon">' + icon("unit") + '</div><div class="p103-stock-text"><span>หน่วยรอง</span><strong id="p103SubUnit">-</strong></div></div>' +
         "</div>" +
       "</section>" +
-      // summary (intent demo)
-      '<section class="p103-summary-grid">' +
-        '<div class="p103-summary-card"><div class="p103-summary-icon">' + icon("doc") + '</div><div class="p103-summary-text"><span>ราคาล่าสุด (PR)</span><strong id="p103SumPr">-</strong></div></div>' +
-        '<div class="p103-summary-card green"><div class="p103-summary-icon">' + icon("chart") + '</div><div class="p103-summary-text"><span>ค่าซื้อล่าสุด (THB/หน่วย)</span><strong id="p103SumPurchase">-</strong></div></div>' +
-        '<div class="p103-summary-card orange"><div class="p103-summary-icon">' + icon("diff") + '</div><div class="p103-summary-text"><span>ความแตกต่าง vs ต้นทุนเฉลี่ย</span><strong id="p103SumDiff">-</strong></div></div>' +
-        '<div class="p103-summary-card purple"><div class="p103-summary-icon">' + icon("cash") + '</div><div class="p103-summary-text"><span>ค่าใช้จ่ายเพิ่มล่าสุด (THB)</span><strong id="p103SumExtra">-</strong></div></div>' +
-      "</section>" +
       // PR
       '<section class="p103-history-panel">' +
         '<div class="p103-history-header">' +
@@ -529,10 +491,6 @@
     el.value = $("p103Value");
     el.mainUnit = $("p103MainUnit");
     el.subUnit = $("p103SubUnit");
-    el.sumPr = $("p103SumPr");
-    el.sumPurchase = $("p103SumPurchase");
-    el.sumDiff = $("p103SumDiff");
-    el.sumExtra = $("p103SumExtra");
     el.prRows = $("p103PrRows");
     el.poRows = $("p103PoRows");
     el.reRows = $("p103ReRows");

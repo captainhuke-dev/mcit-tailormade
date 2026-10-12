@@ -49,9 +49,6 @@ try {
   exit;
 }
 
-function p103_num($s) {
-  return (float) str_replace([",", " "], "", (string) $s);
-}
 function p103_rate($v) {
   return $v === null ? "" : number_format((float) $v, 2);
 }
@@ -143,16 +140,7 @@ try {
     $re[] = ["date" => $r["dateID"], "vnos" => $r["MILvnos"], "unit" => $r["MILuname"], "qty" => $r["qty"], "cost" => $r["Allcost"], "ucost" => $r["Ucost"], "exRate" => p103_rate($r["MILexchg"]), "ccy" => $r["CCYunitT1"], "costTHB" => $r["costTHB"], "ucostTHB" => $r["UcostTHB"]];
   }
 
-  // ---------- summary (intent demo — updateSummary) ----------
-  $summary = [
-    "prPrice" => count($pr) > 0 ? p103_num($pr[0]["uprice"]) : null,
-    "prCcy" => count($pr) > 0 ? $pr[0]["ccy"] : null,
-    "purchasePrice" => count($po) > 0 ? p103_num($po[0]["upriceTHB"]) : null,
-    "extraCost" => count($re) > 0 ? p103_num($re[0]["costTHB"]) : null,
-    "avgCost" => p103_num($balance["avgCost"])
-  ];
-
-  echo json_encode(["ok" => true, "product" => $product, "balance" => $balance, "pr" => $pr, "po" => $po, "re" => $re, "summary" => $summary], JSON_UNESCAPED_UNICODE);
+  echo json_encode(["ok" => true, "product" => $product, "balance" => $balance, "pr" => $pr, "po" => $po, "re" => $re], JSON_UNESCAPED_UNICODE);
 } catch (Exception $e) {
   http_response_code(500);
   echo json_encode(["ok" => false, "error" => $e->getMessage()], JSON_UNESCAPED_UNICODE);
