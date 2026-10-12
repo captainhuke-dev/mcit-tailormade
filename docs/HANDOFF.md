@@ -59,12 +59,24 @@
 | P019 | เช็คสถานะส่ง Invoice | ready (clone demo/P019-demo + C# frm_CheckStatusInvoiceGUI — 2 APIs `p019_invoices`/`p019_status` (AR_S) — วันที่ from–to (default วันนี้) + สถานะ dropdown 62/63/65/67/68/70 + table 6 คอลั่น sort/quick/row select + pagination 15 (เลข 5 ปุ่ม) — cache v=20261008a) |
 | P006 | Print Invoice เช็คคืน | ready (clone demo/P006-demo + C# MCIT_FrmPrintChqueReturnGUI — 3 APIs `p006_search`/`p006_report`/`p006_markprint` — launcher 4 field 2×2 (วันที่ Invoice/ผู้สร้าง/คำนำหน้า 18/สถานะ 14) + table 9 คอลั่น (row แดง cnt>=11) + report 2 หน้า/ใบ A4 portrait (T1 12pt ยกเว้น DEBgrade 18pt ชิดขวาบรรทัดกำหนดส่งของ · T2 MCIT 50/250/50/50/50/40/60 พาราเทค 300/50/50/50/40/60 · T3 250/110/110/80 12pt แถว 26px) — cache v=20261009h) |
 | P130 | Print Invoice MCIT (BKK) | ready (clone P064 + flag BKK — 3 APIs `p130_invoices`/`p130_report`/`p130_markprint` — รายงาน 3 หน้า — font THSarabunNew — T4 7 แถว + ช่องทางชำระเงิน + QR TTB 90×90 (หน้า 1+3) + COD blank payterm — หน้า 2 thead 28px + แถว 40px — cache v=20261008a) |
-| P059 | จัดเก็บเอกสารลูกค้า (SO Image) | dev (clone demo/P059-demo + C# AppSOimage — 5 APIs `p059_search`/`p059_detail`/`p059_image`/`p059_save`/`p059_so_list` — launcher New+search + table 7 คอลั่น TOP 100 + **pagination 15/หน้า** + view modal (แก้ไขภาพ→dropzone/ลบ/บันทึก) + new modal (**SO autocomplete TOP 10** LIKE kw% + dropzone) + soft delete + upload FTP NAS + report A4 1 ภาพ/หน้า — cache v=20261010d — รอ user ยืนยัน) |
+| P059 | จัดเก็บเอกสารลูกค้า (SO Image) | ready (clone demo/P059-demo + C# AppSOimage — 5 APIs `p059_search`/`p059_detail`/`p059_image`/`p059_save`/`p059_so_list` — launcher New+search + table 7 คอลั่น TOP 100 + **pagination 15/หน้า** + view modal (แก้ไขภาพ→dropzone/ลบ/บันทึก + zoom −/+/fit/Ctrl+Wheel) + new modal (**SO autocomplete TOP 10** LIKE kw% + dropzone) + soft delete + upload FTP NAS + report A4 1 ภาพ/หน้า — user ยืนยัน 2026-10-12 — cache v=20261010k) |
+| P103 | ตรวจสอบต้นทุนปัจจุบัน vs นำเข้า+ค่าขนส่ง | dev (clone demo/P103_demo + C# frm_CheckCOST_GUI/frm_selectSTK — 2 APIs `p103_stk`/`p103_cost` — launcher (รหัส/ชื่อ + ปุ่มเลือก picker + กลุ่มคลัง 9 default G01+G06) + stock cards 5 + summary cards 4 + tables PR/PO/RE TOP 5 — CDP verify — cache v=20261012a — รอ user ยืนยัน) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 12/10 — P103 ตรวจสอบต้นทุนปัจจุบัน vs นำเข้า+ค่าขนส่ง — **DEV** (clone demo/P103_demo + C# frm_CheckCOST_GUI/frm_selectSTK — 2 APIs + CDP verify — commit `4ef3c1e`)
+- `assets/js/p103-check-cost.js` (IIFE `window.P103CheckCost`) — **clone demo/P103_demo.html (1,133 บรรทัด) + C# `frm_CheckCOST_GUI.cs`/`frm_selectSTK.cs`** — real data MAC5 — **cache v=20261012a**
+- **API 2 ไฟล์:** `p103_stk` (picker สินค้า — clone frm_selectSTK: STKhide=0/STKlock=0/STKsnsv!=3 + kw LIKE code/desc — TOP 200) + `p103_cost` (balance จาก **CST** clone getRateBalance — SP/IS/AS/BS/IP/AP/BP/BF/SS/JX/MX ไม่รวม PP/PS/PX + **PR** MILtype='PX' (สกุลจากข้อหน้า: PRU6→USD/PRY6+PRCN→RMB/อื่น→THB) + **PO** MILtype='PP' + **RE** MILtype='IP' — ทั้ง 3 = TOP 5 + STO filter (STOgroup whitelist 9 + STOlock=0/STOhide=0) + **summary** ตาม intent demo (ราคาล่าสุด PR/ซื้อล่าสุด THB/ความแตกต่าง/ค่าขนส่งล่าสุด))
+- **UI:** launcher (รหัส/ชื่อสินค้า + **ปุ่มเลือก → picker modal** (search Enter + click เลือก + Esc) + **กลุ่มคลัง 9 checkbox** (G01 G02 G03 G04 G06 G07 G09 PD RTV — default ติ๊ก G01+G06 clone C# frm_Load) + ปุ่มค้นหา) + **stock cards 5** (จำนวน/ต้นทุนเฉลี่ย/มูลค่า/หน่วยหลัก/หน่วยรอง) + **summary cards 4** (intent demo) + **tables 3** (PR 7 คอลั่น / ประวัติซื้อ 10 คอลั่น + Ex Rate + THB / ค่าใช้จ่ายส่วนเพิ่ม 10 คอลั่น + Ex Rate + THB — row แรก highlight)
+- **CDP verify:** real data 10299059 — qty 668.000/avg 3.410/value 2,277.850 (ตรง demo) + PR 2/PO 2/RE 5 rows + picker 200 rows + search filter + pick → fields — 0 JS errors
+- **status: dev** — รอ user ยืนยัน (ยังไม่ mark ready)
+
+### 12/10 — P059 จัดเก็บเอกสารลูกค้า (SO Image) — **READY** (user ยืนยัน 2026-10-12 — 28 modules ready)
+- modules.php P059 → `status: ready` (L161)
+- งานล่าสุดก่อน ready: modal 1280px เต็มจอ + zoom −/+/fit/Ctrl+Wheel (`3ad95c0`) + compact + UI clarity + ตัดปุ่มลบ (X) ท้ายแถว + แก้ icon ปุ่ม X modal (`92ed985`/`40dcb50`/`3d04900`/`5fc0ad6`) — cache v=20261010k
 
 ### 10/10 — P059 จัดเก็บเอกสารลูกค้า (SO Image) — **DEV** (clone demo/P059-demo + C# AppSOimage — 5 APIs + report A4 — CDP verify ครบ — commit `5262a4c`)
 - `assets/js/p059-so-image.js` (IIFE `window.P059SoImage`) — **clone demo/P059-demo.html (1,542 หน้า) + C# `frm_SOimageGUI.cs`/`frm_SOimage_manager.cs`/`frm_selectData.cs`** — real data MAC5 5 APIs — **cache v=20261010j**
