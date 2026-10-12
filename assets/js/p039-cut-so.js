@@ -103,13 +103,9 @@
       return;
     }
     state.loading = true;
-    el.searchBtn.classList.add("loading");
-    el.searchBtn.disabled = true;
     apiPost(API.cutso, { connectionId: MAC5_CONNECTION_ID, mode: state.mode, from: from, to: to })
       .then(function (data) {
         state.loading = false;
-        el.searchBtn.classList.remove("loading");
-        el.searchBtn.disabled = false;
         if (!data.ok) {
           state.items = [];
           state.searched = true;
@@ -124,8 +120,6 @@
       })
       .catch(function (e) {
         state.loading = false;
-        el.searchBtn.classList.remove("loading");
-        el.searchBtn.disabled = false;
         showToast(e.message || "ค้นหาไม่สำเร็จ");
       });
   }
@@ -170,26 +164,17 @@
     items.forEach(function (r, i) { r._idx = i + 1; });
     var tbody = el.rows;
 
-    // summary cards (clone demo updateSummary)
     var excessTotal = 0;
-    var docs = {};
-    var cuss = {};
     state.items.forEach(function (r) {
       excessTotal += Math.max(0, num(r.sumCUT) - num(r.sumREQ));
-      docs[r.vnos] = 1;
-      cuss[r.cus] = 1;
     });
-    el.sumCount.textContent = state.items.length.toLocaleString("th-TH") + " แถว";
-    el.sumExcess.textContent = money(excessTotal);
-    el.sumDocs.textContent = Object.keys(docs).length.toLocaleString("th-TH") + " ใบ";
-    el.sumCustomers.textContent = Object.keys(cuss).length.toLocaleString("th-TH") + " ราย";
     el.footerExcess.textContent = money(excessTotal);
     el.badge.textContent = items.length.toLocaleString("th-TH") + " รายการ";
     el.footerText.textContent = "แสดง " + items.length.toLocaleString("th-TH") + " รายการ";
     el.subtitle.textContent = "จำนวน " + items.length.toLocaleString("th-TH") + " แถว";
 
     if (!state.searched) {
-      tbody.innerHTML = emptyRow(11, "เลือกรูปแบบการตรวจสอบแล้วกดค้นหา");
+      tbody.innerHTML = emptyRow(11, "กดปุ่มรูปแบบการตรวจสอบเพื่อค้นหา");
       el.emptyState.classList.remove("show");
       el.tableContainer.style.display = "";
       return;
@@ -221,14 +206,14 @@
     }).join("");
   }
 
-  /* ---------- mode ---------- */
-  function setMode(mode, showMsg) {
+  /* ---------- mode (click = search ทันที) ---------- */
+  function setMode(mode) {
     state.mode = mode;
     document.querySelectorAll(".p039-mode-button").forEach(function (b) {
       b.classList.toggle("active", b.getAttribute("data-mode") === mode);
     });
     el.title.textContent = MODES[mode].title;
-    if (showMsg && state.searched) doSearch();
+    doSearch();
   }
 
   /* ---------- CSS (clone demo — prefix p039-) ---------- */
@@ -248,12 +233,6 @@
     ".p039-input-wrap svg{position:absolute;top:50%;left:13px;width:18px;height:18px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}",
     ".p039-input-wrap input{width:100%;height:44px;padding:0 14px 0 43px;color:var(--p039-text);border:1px solid var(--p039-border);border-radius:11px;outline:none;background:#fff;font-size:14px}",
     ".p039-input-wrap input:focus{border-color:#60a5fa;box-shadow:0 0 0 4px rgba(96,165,250,0.14)}",
-    ".p039-search-row{display:flex;gap:10px;margin-top:2px}",
-    ".p039-search-button{flex:1;height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;color:#fff;border:0;border-radius:11px;background:linear-gradient(135deg,#3b82f6,var(--p039-primary-dark));box-shadow:0 6px 16px rgba(37,99,235,0.25);font-size:14px;font-weight:700;transition:0.16s ease}",
-    ".p039-search-button svg{width:17px;height:17px}",
-    ".p039-search-button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.06)}",
-    ".p039-search-button.loading svg{animation:p039spin 1s linear infinite}",
-    "@keyframes p039spin{to{transform:rotate(360deg)}}",
     ".p039-mode-section label{display:block;margin-bottom:9px;color:var(--p039-muted);font-size:11px;font-weight:700}",
     ".p039-mode-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}",
     ".p039-mode-button{display:flex;min-height:68px;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:10px 8px;color:var(--p039-text);border:1px solid var(--p039-border);border-radius:13px;background:var(--p039-surface-soft);font-size:12px;font-weight:700;text-align:center;transition:0.16s ease}",
@@ -261,18 +240,6 @@
     ".p039-mode-button:hover{border-color:#bfdbfe;background:var(--p039-primary-soft)}",
     ".p039-mode-button.active{color:#fff;border-color:var(--p039-primary-dark);background:linear-gradient(135deg,#3b82f6,var(--p039-primary-dark));box-shadow:0 8px 18px rgba(37,99,235,0.25)}",
     ".p039-mode-button.active svg{color:#fff}",
-    /* summary */
-    ".p039-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:12px}",
-    ".p039-summary-card{display:flex;min-width:0;align-items:center;gap:12px;padding:13px 15px;border:1px solid var(--p039-border);border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,0.04)}",
-    ".p039-summary-icon{display:grid;width:42px;height:42px;flex:0 0 auto;place-items:center;color:var(--p039-primary);border-radius:12px;background:var(--p039-primary-soft)}",
-    ".p039-summary-icon svg{width:22px;height:22px}",
-    ".p039-summary-card.green .p039-summary-icon{color:var(--p039-success);background:var(--p039-success-soft)}",
-    ".p039-summary-card.orange .p039-summary-icon{color:var(--p039-warning);background:var(--p039-warning-soft)}",
-    ".p039-summary-card.red .p039-summary-icon{color:var(--p039-danger);background:var(--p039-danger-soft)}",
-    ".p039-summary-text{min-width:0}",
-    ".p039-summary-text span{display:block;color:var(--p039-muted);font-size:10px}",
-    ".p039-summary-text strong{display:block;overflow:hidden;margin-top:2px;font-size:17px;text-overflow:ellipsis;white-space:nowrap;color:var(--p039-text)}",
-    ".p039-summary-card.red .p039-summary-text strong{color:var(--p039-danger)}",
     /* panel */
     ".p039-panel{overflow:hidden;border:1px solid var(--p039-border);border-radius:var(--p039-radius);background:#fff;box-shadow:var(--p039-shadow)}",
     ".p039-panel-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid var(--p039-border)}",
@@ -316,15 +283,15 @@
     /* toast */
     ".p039-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;box-shadow:0 12px 32px rgba(15,23,42,0.3);opacity:0;pointer-events:none;transition:0.2s ease}",
     ".p039-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}",
-    "@media (max-width:950px){.p039-launcher{grid-template-columns:1fr}.p039-summary-grid{grid-template-columns:repeat(2,1fr)}}",
-    "@media (max-width:680px){.p039-mode-grid{grid-template-columns:1fr}.p039-summary-grid{grid-template-columns:1fr}.p039-panel-header{align-items:flex-start;flex-direction:column}.p039-table-search{width:100%}}"
+    "@media (max-width:950px){.p039-launcher{grid-template-columns:1fr}}",
+    "@media (max-width:680px){.p039-mode-grid{grid-template-columns:1fr}.p039-panel-header{align-items:flex-start;flex-direction:column}.p039-table-search{width:100%}}"
   ].join("\n");
 
   /* ---------- HTML ---------- */
   var HTML =
     '<div class="p039-app">' +
       // launcher
-      '<form class="p039-launcher" id="p039Form">' +
+      '<div class="p039-launcher" id="p039Form">' +
         '<div class="p039-date-group">' +
           '<div class="p039-field">' +
             "<label>ตั้งแต่วันที่</label>" +
@@ -334,26 +301,16 @@
             "<label>จนถึงวันที่</label>" +
             '<div class="p039-input-wrap">' + icon("cal") + '<input id="p039DateTo" type="date">' + "</div>" +
           "</div>" +
-          '<div class="p039-search-row">' +
-            '<button class="p039-search-button" id="p039SearchBtn" type="submit">' + icon("search") + '<span>ค้นหา</span></button>' +
-          "</div>" +
         "</div>" +
         '<div class="p039-mode-section">' +
-          "<label>รูปแบบการตรวจสอบ</label>" +
+          "<label>รูปแบบการตรวจสอบ (กดเพื่อค้นหา)</label>" +
           '<div class="p039-mode-grid">' +
             '<button class="p039-mode-button" id="p039ModeProduct" type="button" data-mode="product">' + icon("box") + " ตรวจสอบจากสินค้า</button>" +
             '<button class="p039-mode-button active" id="p039ModeAmount" type="button" data-mode="amount">' + icon("money") + " ตรวจสอบจากยอดเงิน</button>" +
             '<button class="p039-mode-button" id="p039ModeComplete" type="button" data-mode="complete">' + icon("check") + " ตรวจสอบสินค้าส่งครบแต่ค้างส่ง</button>" +
           "</div>" +
         "</div>" +
-      "</form>" +
-      // summary (clone demo updateSummary)
-      '<section class="p039-summary-grid">' +
-        '<div class="p039-summary-card"><div class="p039-summary-icon">' + icon("rows") + '</div><div class="p039-summary-text"><span>จำนวนแถว</span><strong id="p039SumCount">0 แถว</strong></div></div>' +
-        '<div class="p039-summary-card red"><div class="p039-summary-icon">' + icon("money") + '</div><div class="p039-summary-text"><span>ยอดส่วนเกินรวม</span><strong id="p039SumExcess">0.00</strong></div></div>' +
-        '<div class="p039-summary-card green"><div class="p039-summary-icon">' + icon("doc") + '</div><div class="p039-summary-text"><span>จำนวนใบสั่ง</span><strong id="p039SumDocs">0 ใบ</strong></div></div>' +
-        '<div class="p039-summary-card orange"><div class="p039-summary-icon">' + icon("users") + '</div><div class="p039-summary-text"><span>จำนวนลูกค้า</span><strong id="p039SumCustomers">0 ราย</strong></div></div>' +
-      "</section>" +
+      "</div>" +
       // panel
       '<section class="p039-panel">' +
         '<div class="p039-panel-header">' +
@@ -379,7 +336,7 @@
           '<th class="sortable number" data-sort="shipped">ยอดที่ตัด</th>' +
           '<th class="sortable center" data-sort="qtyOrdered">จำนวนที่สั่ง</th>' +
           '<th class="sortable center" data-sort="qtyShipped">จำนวนที่ตัด</th>' +
-        "</tr></thead><tbody id=\"p039Rows\">" + emptyRow(11, "เลือกรูปแบบการตรวจสอบแล้วกดค้นหา") + "</tbody></table></div>" +
+        "</tr></thead><tbody id=\"p039Rows\">" + emptyRow(11, "กดปุ่มรูปแบบการตรวจสอบเพื่อค้นหา") + "</tbody></table></div>" +
         '<div class="p039-empty-state" id="p039EmptyState"><div>' + icon("search") + "<strong>ไม่พบรายการในช่วงวันทีนี้</strong><p>ลองเปลี่ยนช่วงวันที่ หรือสลับรูปแบบการตรวจสอบ</p></div></div>" +
         '<div class="p039-table-footer">' +
           '<span id="p039FooterText">แสดง 0 รายการ</span>' +
@@ -398,10 +355,8 @@
     target.appendChild(style);
     target.insertAdjacentHTML("beforeend", HTML);
 
-    el.form = $("p039Form");
     el.dateFrom = $("p039DateFrom");
     el.dateTo = $("p039DateTo");
-    el.searchBtn = $("p039SearchBtn");
     el.quick = $("p039Quick");
     el.title = $("p039Title");
     el.subtitle = $("p039Subtitle");
@@ -411,10 +366,6 @@
     el.emptyState = $("p039EmptyState");
     el.footerText = $("p039FooterText");
     el.footerExcess = $("p039FooterExcess");
-    el.sumCount = $("p039SumCount");
-    el.sumExcess = $("p039SumExcess");
-    el.sumDocs = $("p039SumDocs");
-    el.sumCustomers = $("p039SumCustomers");
     el.toast = $("p039Toast");
 
     // clone C# FrmCheckCutSOGUI_Load — from = Today.AddDays(-90), to = Today
@@ -424,13 +375,8 @@
     el.dateFrom.value = isoDate(from);
     el.dateTo.value = isoDate(today);
 
-    el.form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      doSearch();
-    });
-
     document.querySelectorAll(".p039-mode-button").forEach(function (b) {
-      b.addEventListener("click", function () { setMode(b.getAttribute("data-mode"), true); });
+      b.addEventListener("click", function () { setMode(b.getAttribute("data-mode")); });
     });
 
     el.quick.addEventListener("input", function () { render(); });
