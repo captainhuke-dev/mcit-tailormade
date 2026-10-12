@@ -1025,6 +1025,20 @@
       `;
     }
 
+    // P039: ตรวจสอบตัดของเกิน SO
+    if (programId === "P039") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p039Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P050: ใบวางบิล
     if (programId === "P050") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1688,6 +1702,12 @@
     if (page.type === "program" && page.programId === "P103" && window.P103CheckCost) {
       const root = document.getElementById("p103Root");
       if (root) window.P103CheckCost.mount(root);
+    }
+
+    // P039: mount Check Cut SO app
+    if (page.type === "program" && page.programId === "P039" && window.P039CutSO) {
+      const root = document.getElementById("p039Root");
+      if (root) window.P039CutSO.mount(root);
     }
   }
 
