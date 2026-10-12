@@ -28,8 +28,8 @@ try {
 }
 
 try {
-  // clone C# frm_selectSTK.searchDATA — TOP 200 (web picker)
-  $sql = "SELECT TOP 200 STKcode, STKdescT1,
+  // clone C# frm_selectSTK.searchDATA — TOP 15 (web picker — user limit)
+  $sql = "SELECT TOP 15 STKcode, STKdescT1,
           CASE STKunit1 WHEN 1 THEN STKuname1 WHEN 2 THEN STKuname2 WHEN 3 THEN STKuname3 WHEN 4 THEN STKuname4 WHEN 5 THEN STKuname5 ELSE '' END AS MainUnit,
           CASE STKunit2 WHEN 1 THEN STKuname1 WHEN 2 THEN STKuname2 WHEN 3 THEN STKuname3 WHEN 4 THEN STKuname4 WHEN 5 THEN STKuname5 ELSE '' END AS SubUnit
           FROM STK
