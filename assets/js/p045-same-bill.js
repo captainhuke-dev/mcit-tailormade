@@ -188,29 +188,8 @@
     return String(d || "").replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
   }
 
-  function summarizeUnits(items) {
-    var totals = {};
-    items.forEach(function (i) { totals[i.unit] = (totals[i.unit] || 0) + i.qty; });
-    var parts = [];
-    Object.keys(totals).forEach(function (u) { parts.push(fmtQty(totals[u]) + " " + u); });
-    return parts.join(" · ");
-  }
-
-  function filteredBills() {
-    var kw = (el.modalSearch.value || "").trim().toLowerCase();
-    var bills = modalState.bills;
-    if (!kw) return bills;
-    return bills.map(function (b) {
-      var items = b.items.filter(function (i) {
-        return (i.stk + " " + cleanDesc(i.desc)).toLowerCase().indexOf(kw) >= 0;
-      });
-      var matchDoc = String(b.vnos).toLowerCase().indexOf(kw) >= 0;
-      return { vnos: b.vnos, date: b.date, status: b.status, items: matchDoc ? b.items : items };
-    }).filter(function (b) { return b.items.length > 0 || String(b.vnos).toLowerCase().indexOf(kw) >= 0; });
-  }
-
   function renderDetail() {
-    var bills = filteredBills();
+    var bills = modalState.bills;
     var body = el.modalBody;
     var totalItems = 0;
     bills.forEach(function (b) { totalItems += b.items.length; });
@@ -224,10 +203,9 @@
     }
 
     var html = '<table class="p045-detail-table"><thead><tr>' +
-      '<th style="width:34%">วันที่ / เลขใบสำคัญ</th>' +
+      '<th style="width:26%">วันที่ / เลขใบสำคัญ</th>' +
       '<th class="center" style="width:12%">สถานะ</th>' +
-      '<th class="center" style="width:18%">จำนวนรายการสินค้า</th>' +
-      '<th style="width:36%">สรุปสินค้า</th>' +
+      '<th>รายการสินค้า</th>' +
       "</tr></thead><tbody>";
 
     bills.forEach(function (b) {
@@ -237,17 +215,15 @@
         '<div><div class="p045-doc-number">' + esc(b.vnos) + "</div>" +
         '<div style="color:#64748b;font-size:11px;margin-top:2px">' + fmtDate(b.date) + "</div></div></div></td>" +
         '<td class="center"><span class="p045-status-tag">' + esc(b.status) + "</span></td>" +
-        '<td class="center"><span class="p045-item-count-tag">' + b.items.length + " รายการ</span></td>" +
-        '<td style="color:#475569;font-size:12px">' + (b.items.length ? esc(summarizeUnits(b.items)) : "-") + "</td>" +
+        '<td style="color:#475569;font-size:12px">' + (b.items.length ? b.items.length + " รายการ" : "-") + "</td>" +
         "</tr>";
       b.items.forEach(function (i, idx) {
         html += '<tr class="p045-item-row' + (isExp ? "" : " hidden-row") + '" data-parent="' + esc(b.vnos) + '">' +
           '<td colspan="2"><div class="p045-item-indent"><span class="p045-item-connector"></span>' +
           '<span class="p045-item-order">' + (idx + 1) + "</span>" +
           '<span class="p045-item-product-code">' + esc(i.stk) + "</span></div></td>" +
-          '<td class="center"><span class="p045-item-qty">' + fmtQty(i.qty) + "</span></td>" +
           '<td class="item-detail-cell" title="' + esc(cleanDesc(i.desc)) + " (" + esc(i.unit) + ')">' +
-          esc(cleanDesc(i.desc)) + ' <span style="color:#94a3b8">· ' + esc(i.unit) + "</span></td>" +
+          esc(cleanDesc(i.desc)) + ' <span style="color:#94a3b8">· </span><span class="p045-item-qty">' + fmtQty(i.qty) + " " + esc(i.unit) + "</span></td>" +
           "</tr>";
       });
     });
@@ -259,7 +235,6 @@
     modalState = { open: true, bills: [], expanded: {} };
     el.modalTitle.textContent = "รายละเอียดลูกค้า " + cus;
     el.modalSub.textContent = cusName + " — วันที่ " + fmtDate(date);
-    el.modalSearch.value = "";
     el.modalBody.innerHTML = '<div class="p045-detail-empty">กำลังโหลดข้อมูล...</div>';
     el.modalOverlay.classList.add("show");
     apiPost(API.detail, { connectionId: MAC5_CONNECTION_ID, date: date, cus: cus })
@@ -269,8 +244,8 @@
           return;
         }
         modalState.bills = data.bills;
-        // expand ใบแรก (clone demo)
-        if (data.bills.length > 0) modalState.expanded[data.bills[0].vnos] = true;
+        // expand ทั้งหมดตั้งแต่เปิด (user 2026-10-13)
+        data.bills.forEach(function (b) { modalState.expanded[b.vnos] = true; });
         renderDetail();
       })
       .catch(function (e) {
@@ -360,10 +335,7 @@
     ".p045-toggle-button{display:inline-flex;height:34px;align-items:center;gap:6px;padding:0 12px;color:var(--p045-primary-dark);border:1px solid #bfdbfe;border-radius:9px;background:var(--p045-primary-soft);font-size:12px;font-weight:700;white-space:nowrap;transition:0.15s ease}",
     ".p045-toggle-button:hover{color:#fff;background:var(--p045-primary)}",
     ".p045-toggle-button svg{width:14px;height:14px}",
-    ".p045-modal-search{position:relative;flex:1;max-width:280px}",
-    ".p045-modal-search svg{position:absolute;top:50%;left:10px;width:15px;height:15px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}",
-    ".p045-modal-search input{width:100%;height:34px;padding:0 10px 0 32px;border:1px solid var(--p045-border);border-radius:9px;outline:none;font-size:12px}",
-    ".p045-modal-search input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,0.12)}",
+    ".p045-modal-search{display:none}",
     ".p045-modal-body{overflow:auto;padding:0}",
     ".p045-detail-table{width:100%;border-collapse:separate;border-spacing:0;white-space:nowrap}",
     ".p045-detail-table th{padding:10px 14px;color:#475569;border-bottom:1px solid var(--p045-border);background:var(--p045-surface-soft);box-shadow:inset 0 -1px var(--p045-border);font-size:12px;font-weight:700;text-align:left}",
@@ -378,7 +350,7 @@
     ".p045-expand-icon svg{width:14px;height:14px}",
     ".p045-doc-number{color:var(--p045-primary-dark);font-weight:700}",
     ".p045-status-tag{display:inline-flex;min-width:34px;align-items:center;justify-content:center;padding:4px 9px;color:#047857;border-radius:7px;background:#d1fae5;font-size:12px;font-weight:700}",
-    ".p045-item-count-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;color:#7c3aed;border-radius:999px;background:#f5f3ff;font-size:12px;font-weight:700;white-space:nowrap}",
+    ".p045-item-count-tag{display:none}",
     "tr.p045-item-row{background:#fff}",
     "tr.p045-item-row:hover td{background:#f8fafc}",
     "tr.p045-item-row.hidden-row{display:none}",
@@ -451,8 +423,6 @@
           '<div class="p045-modal-actions">' +
             '<button class="p045-toggle-button" id="p045ExpandAll" type="button">' + icon("plus") + " ขยายทั้งหมด</button>" +
             '<button class="p045-toggle-button" id="p045CollapseAll" type="button">' + icon("minus") + " ยุบทั้งหมด</button>" +
-            '<div class="p045-modal-search">' + icon("search") + '<input id="p045ModalSearch" type="search" placeholder="ค้นหาเลขที่, รหัสสินค้า">' +
-            "</div>" +
             '<span class="p045-badge" id="p045ModalBadge">0 ใบ</span>' +
           "</div>" +
           '<div class="p045-modal-body" id="p045ModalBody"></div>' +
@@ -489,7 +459,6 @@
     el.modalOverlay = $("p045ModalOverlay");
     el.modalTitle = $("p045ModalTitle");
     el.modalSub = $("p045ModalSub");
-    el.modalSearch = $("p045ModalSearch");
     el.modalBadge = $("p045ModalBadge");
     el.modalBody = $("p045ModalBody");
     el.modalFooterText = $("p045ModalFooterText");
@@ -543,7 +512,6 @@
       modalState.expanded = {};
       renderDetail();
     });
-    el.modalSearch.addEventListener("input", function () { renderDetail(); });
 
     document.querySelectorAll(".p045-table th.sortable").forEach(function (th) {
       th.addEventListener("click", function () {
