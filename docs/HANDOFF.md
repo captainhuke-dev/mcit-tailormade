@@ -61,12 +61,16 @@
 | P130 | Print Invoice MCIT (BKK) | ready (clone P064 + flag BKK — 3 APIs `p130_invoices`/`p130_report`/`p130_markprint` — รายงาน 3 หน้า — font THSarabunNew — T4 7 แถว + ช่องทางชำระเงิน + QR TTB 90×90 (หน้า 1+3) + COD blank payterm — หน้า 2 thead 28px + แถว 40px — cache v=20261008a) |
 | P059 | จัดเก็บเอกสารลูกค้า (SO Image) | ready (clone demo/P059-demo + C# AppSOimage — 5 APIs `p059_search`/`p059_detail`/`p059_image`/`p059_save`/`p059_so_list` — launcher New+search + table 7 คอลั่น TOP 100 + **pagination 15/หน้า** + view modal (แก้ไขภาพ→dropzone/ลบ/บันทึก + zoom −/+/fit/Ctrl+Wheel) + new modal (**SO autocomplete TOP 10** LIKE kw% + dropzone) + soft delete + upload FTP NAS + report A4 1 ภาพ/หน้า — user ยืนยัน 2026-10-12 — cache v=20261010k) |
 | P103 | ตรวจสอบต้นทุนปัจจุบัน vs นำเข้า+ค่าขนส่ง | ready (clone demo/P103_demo + C# frm_CheckCOST_GUI/frm_selectSTK — 2 APIs `p103_stk`/`p103_cost` — launcher (รหัส/ชื่อ + ปุ่มเลือก picker **limit 15** + **ปุ่มค้นหาต่อชื่อสินค้า** + กลุ่มคลัง 9 default G01+G06 **กรอบ border+bg อ่อน**) + **stock cards 5** + **tables 3** (PR/PO/RE TOP 5 — **เต็มพื้นไม่มี scrollbar**) — **4 กาด summary ตัดออก** — user ยืนยัน 2026-10-12 — cache v=20261012d) |
-| P039 | ตรวจสอบตัดของเกิน SO | dev (clone demo/P039_demo + C# FrmCheckCutSOGUI — 1 API `p039_cutso` (3 modes: **product** stkCUT>stkREQ / **amount** sumREQ>sumCUT1 + STKgroup≠SV / **complete** stkCUT=stkREQ + STKgroup≠SV — CPS LEFT JOIN DEB/STK + CPSclearUSER=0/CPSclearALL=0 + date range) — launcher (date from-to default -90d + **mode 3 ปุ่ม = กดค้นหาทันที** — ตัดปุ่มค้นหา) + table 11 คอลั่น (sort + quick search + excess highlight) — **4 กาด summary ตัดออก** — CDP verify — cache v=20261012b — รอ user ยืนยัน) |
+| P039 | ตรวจสอบตัดของเกิน SO | ready (clone demo/P039_demo + C# FrmCheckCutSOGUI — 1 API `p039_cutso` (3 modes: **product** stkCUT>stkREQ / **amount** sumREQ>sumCUT1 + STKgroup≠SV / **complete** stkCUT=stkREQ + STKgroup≠SV — CPS LEFT JOIN DEB/STK + CPSclearUSER=0/CPSclearALL=0 + date range) — launcher (date from-to default -90d + **mode 3 ปุ่ม = กดค้นหาทันที** — ตัดปุ่มค้นหา) + table 11 คอลั่น (sort + quick search + excess highlight) — **4 กาด summary ตัดออก** — user ยืนยัน 2026-10-12 — cache v=20261012b) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
 
 ## 2. รายงานรายวัน
+
+### 12/10 — P039 ตรวจสอบตัดของเกิน SO — **READY** (user ยืนยัน 2026-10-12 — 30 modules ready)
+- modules.php P039 → `status: ready` (L125)
+- งานล่าสุดก่อน ready: ตัดปุ่มค้นหา (กด mode = ค้นหาทันที) + ตัด 4 กาด summary (`ceff93d`) — cache v=20261012b
 
 ### 12/10 — P039 ตรวจสอบตัดของเกิน SO — **DEV** (clone demo/P039_demo + C# FrmCheckCutSOGUI — 1 API + CDP verify — commit `dfd35ab`)
 - `assets/js/p039-cut-so.js` (IIFE `window.P039CutSO`) — **clone demo/P039_demo.html (1,087 บรรทัด) + C# `FrmCheckCutSOGUI.cs`** — real data MAC5 — **cache v=20261012a** (portal v=20261012b)
