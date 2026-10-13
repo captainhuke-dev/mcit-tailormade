@@ -204,7 +204,7 @@
 
     var html = '<table class="p045-detail-table"><thead><tr>' +
       '<th style="width:26%">วันที่ / เลขใบสำคัญ</th>' +
-      '<th class="center" style="width:12%">สถานะ</th>' +
+      '<th class="center" style="width:14%">สถานะ/จำนวน</th>' +
       '<th>รายการสินค้า</th>' +
       "</tr></thead><tbody>";
 
@@ -214,8 +214,9 @@
         '<td><div class="p045-expand-cell"><span class="p045-expand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></span>' +
         '<div><div class="p045-doc-number">' + esc(b.vnos) + "</div>" +
         '<div style="color:#64748b;font-size:11px;margin-top:2px">' + fmtDate(b.date) + "</div></div></div></td>" +
-        '<td class="center"><span class="p045-status-tag">' + esc(b.status) + "</span></td>" +
-        '<td style="color:#475569;font-size:12px">' + (b.items.length ? b.items.length + " รายการ" : "-") + "</td>" +
+        '<td class="center"><span class="p045-status-tag">' + esc(b.status) + "</span>" +
+        '<div style="color:#64748b;font-size:11px;margin-top:4px">' + b.items.length + " รายการ</div></td>" +
+        '<td></td>' +
         "</tr>";
       b.items.forEach(function (i, idx) {
         html += '<tr class="p045-item-row' + (isExp ? "" : " hidden-row") + '" data-parent="' + esc(b.vnos) + '">' +
