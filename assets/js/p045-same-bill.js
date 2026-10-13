@@ -321,7 +321,7 @@
     ".p045-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
     ".p045-empty-state p{margin-top:5px;font-size:11px}",
     /* modal view detail */
-    ".p045-modal-overlay{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,0.5);backdrop-filter:blur(3px)}",
+    ".p045-modal-overlay{--p045-primary:#2563eb;--p045-primary-dark:#1d4ed8;--p045-primary-soft:#eff6ff;--p045-success:#059669;--p045-success-soft:#ecfdf5;--p045-warning:#d97706;--p045-warning-soft:#fffbeb;--p045-danger:#dc2626;--p045-danger-soft:#fef2f2;--p045-text:#172033;--p045-muted:#64748b;--p045-border:#dbe3ef;--p045-surface-soft:#f8fafc;--p045-radius:16px;--p045-shadow:0 12px 32px rgba(15,23,42,0.08);position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,0.5);backdrop-filter:blur(3px)}",
     ".p045-modal-overlay.show{display:flex}",
     ".p045-modal{display:flex;flex-direction:column;width:100%;max-width:980px;max-height:88vh;overflow:hidden;border:1px solid var(--p045-border);border-radius:var(--p045-radius);background:#fff;box-shadow:0 24px 64px rgba(15,23,42,0.3)}",
     ".p045-modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--p045-border)}",
@@ -338,7 +338,7 @@
     ".p045-toggle-button:hover{color:#fff;background:var(--p045-primary)}",
     ".p045-toggle-button svg{width:14px;height:14px}",
     ".p045-modal-search{display:none}",
-    ".p045-modal-body{overflow:auto;padding:0}",
+    ".p045-modal-body{min-height:0;flex:1;overflow:auto;padding:0}",
     ".p045-detail-table{width:100%;border-collapse:separate;border-spacing:0;white-space:nowrap}",
     ".p045-detail-table th{padding:10px 14px;color:#475569;border-bottom:1px solid var(--p045-border);background:var(--p045-surface-soft);box-shadow:inset 0 -1px var(--p045-border);font-size:12px;font-weight:700;text-align:left}",
     ".p045-detail-table th.center{text-align:center}",
@@ -468,6 +468,11 @@
 
     // default = วันนี้ (clone demo)
     el.date.value = isoDate(new Date());
+
+    // modal → document.body (portal) — MAIN.content มี transform → position:fixed จะผิด reference
+    // (เคลียร์ overlay เก่าจาก mount หน้า — portal อาจ mount 2 ครั้ง)
+    document.querySelectorAll("body > .p045-modal-overlay").forEach(function (o) { o.remove(); });
+    document.body.appendChild(el.modalOverlay);
 
     $("p045Form").addEventListener("submit", function (e) {
       e.preventDefault();
