@@ -1039,6 +1039,20 @@
       `;
     }
 
+    // P045: ตรวจสอบบิลลูกค้าเดียวกัน
+    if (programId === "P045") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p045Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P050: ใบวางบิล
     if (programId === "P050") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1708,6 +1722,12 @@
     if (page.type === "program" && page.programId === "P039" && window.P039CutSO) {
       const root = document.getElementById("p039Root");
       if (root) window.P039CutSO.mount(root);
+    }
+
+    // P045: mount Same Bill app
+    if (page.type === "program" && page.programId === "P045" && window.P045SameBill) {
+      const root = document.getElementById("p045Root");
+      if (root) window.P045SameBill.mount(root);
     }
   }
 
