@@ -7,7 +7,7 @@
   "use strict";
 
   var MAC5_CONNECTION_ID = "c1788406814359";
-  var API = { samebill: "api/p045_samebill.php" };
+  var API = { samebill: "api/p045_samebill.php", detail: "api/p045_detail.php" };
 
   var root = null;
   var el = {};
@@ -18,6 +18,8 @@
     loading: false,
     searched: false
   };
+  var modalState = { open: false, bills: [], expanded: {} };
+  var escapeBound = false;
   var toastTimer = null;
 
   function $(id) { return document.getElementById(id); }
@@ -32,7 +34,10 @@
       cal: '<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path>',
       user: '<circle cx="12" cy="7" r="4"></circle><path d="M4 21a8 8 0 0 1 16 0"></path>',
       warn: '<path d="M12 9v4M12 17h.01"></path><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path>',
-      grid: '<path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path>'
+      grid: '<path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path>',
+      close: '<path d="M18 6 6 18M6 6l12 12"></path>',
+      plus: '<path d="M12 5v14M5 12h14"></path>',
+      minus: '<path d="M5 12h14"></path>'
     };
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (paths[name] || "") + "</svg>";
   }
@@ -174,6 +179,110 @@
     }).join("");
   }
 
+  /* ---------- modal view detail (clone demo/P045-demo_viewdetail.html) ---------- */
+  function fmtQty(v) {
+    return Number(v || 0).toLocaleString("th-TH", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function cleanDesc(d) {
+    return String(d || "").replace(/[\r\n]+/g, " ").replace(/\s+/g, " ").trim();
+  }
+
+  function summarizeUnits(items) {
+    var totals = {};
+    items.forEach(function (i) { totals[i.unit] = (totals[i.unit] || 0) + i.qty; });
+    var parts = [];
+    Object.keys(totals).forEach(function (u) { parts.push(fmtQty(totals[u]) + " " + u); });
+    return parts.join(" · ");
+  }
+
+  function filteredBills() {
+    var kw = (el.modalSearch.value || "").trim().toLowerCase();
+    var bills = modalState.bills;
+    if (!kw) return bills;
+    return bills.map(function (b) {
+      var items = b.items.filter(function (i) {
+        return (i.stk + " " + cleanDesc(i.desc)).toLowerCase().indexOf(kw) >= 0;
+      });
+      var matchDoc = String(b.vnos).toLowerCase().indexOf(kw) >= 0;
+      return { vnos: b.vnos, date: b.date, status: b.status, items: matchDoc ? b.items : items };
+    }).filter(function (b) { return b.items.length > 0 || String(b.vnos).toLowerCase().indexOf(kw) >= 0; });
+  }
+
+  function renderDetail() {
+    var bills = filteredBills();
+    var body = el.modalBody;
+    var totalItems = 0;
+    bills.forEach(function (b) { totalItems += b.items.length; });
+    el.modalBadge.textContent = bills.length.toLocaleString("th-TH") + " ใบ";
+    el.modalFooterText.textContent = "แสดง " + bills.length.toLocaleString("th-TH") + " ใบสำคัญ";
+    el.modalFooterItems.textContent = totalItems.toLocaleString("th-TH") + " รายการสินค้า";
+
+    if (bills.length === 0) {
+      body.innerHTML = '<div class="p045-detail-empty">ไม่พบข้อมูลตามเงื่อนไข</div>';
+      return;
+    }
+
+    var html = '<table class="p045-detail-table"><thead><tr>' +
+      '<th style="width:34%">วันที่ / เลขใบสำคัญ</th>' +
+      '<th class="center" style="width:12%">สถานะ</th>' +
+      '<th class="center" style="width:18%">จำนวนรายการสินค้า</th>' +
+      '<th style="width:36%">สรุปสินค้า</th>' +
+      "</tr></thead><tbody>";
+
+    bills.forEach(function (b) {
+      var isExp = modalState.expanded[b.vnos] === true;
+      html += '<tr class="p045-doc-row' + (isExp ? " expanded" : "") + '" data-vnos="' + esc(b.vnos) + '">' +
+        '<td><div class="p045-expand-cell"><span class="p045-expand-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"></path></svg></span>' +
+        '<div><div class="p045-doc-number">' + esc(b.vnos) + "</div>" +
+        '<div style="color:#64748b;font-size:11px;margin-top:2px">' + fmtDate(b.date) + "</div></div></div></td>" +
+        '<td class="center"><span class="p045-status-tag">' + esc(b.status) + "</span></td>" +
+        '<td class="center"><span class="p045-item-count-tag">' + b.items.length + " รายการ</span></td>" +
+        '<td style="color:#475569;font-size:12px">' + (b.items.length ? esc(summarizeUnits(b.items)) : "-") + "</td>" +
+        "</tr>";
+      b.items.forEach(function (i, idx) {
+        html += '<tr class="p045-item-row' + (isExp ? "" : " hidden-row") + '" data-parent="' + esc(b.vnos) + '">' +
+          '<td colspan="2"><div class="p045-item-indent"><span class="p045-item-connector"></span>' +
+          '<span class="p045-item-order">' + (idx + 1) + "</span>" +
+          '<span class="p045-item-product-code">' + esc(i.stk) + "</span></div></td>" +
+          '<td class="center"><span class="p045-item-qty">' + fmtQty(i.qty) + "</span></td>" +
+          '<td class="item-detail-cell" title="' + esc(cleanDesc(i.desc)) + " (" + esc(i.unit) + ')">' +
+          esc(cleanDesc(i.desc)) + ' <span style="color:#94a3b8">· ' + esc(i.unit) + "</span></td>" +
+          "</tr>";
+      });
+    });
+    html += "</tbody></table>";
+    body.innerHTML = html;
+  }
+
+  function openDetail(cus, cusName, date) {
+    modalState = { open: true, bills: [], expanded: {} };
+    el.modalTitle.textContent = "รายละเอียดลูกค้า " + cus;
+    el.modalSub.textContent = cusName + " — วันที่ " + fmtDate(date);
+    el.modalSearch.value = "";
+    el.modalBody.innerHTML = '<div class="p045-detail-empty">กำลังโหลดข้อมูล...</div>';
+    el.modalOverlay.classList.add("show");
+    apiPost(API.detail, { connectionId: MAC5_CONNECTION_ID, date: date, cus: cus })
+      .then(function (data) {
+        if (!data.ok) {
+          el.modalBody.innerHTML = '<div class="p045-detail-empty">' + esc(data.error || "โหลดข้อมูลไม่สำเร็จ") + "</div>";
+          return;
+        }
+        modalState.bills = data.bills;
+        // expand ใบแรก (clone demo)
+        if (data.bills.length > 0) modalState.expanded[data.bills[0].vnos] = true;
+        renderDetail();
+      })
+      .catch(function (e) {
+        el.modalBody.innerHTML = '<div class="p045-detail-empty">' + esc(e.message || "โหลดข้อมูลไม่สำเร็จ") + "</div>";
+      });
+  }
+
+  function closeDetail() {
+    modalState.open = false;
+    el.modalOverlay.classList.remove("show");
+  }
+
   /* ---------- CSS (clone demo — prefix p045-) ---------- */
   var CSS = [
     ".p045-app{--p045-primary:#2563eb;--p045-primary-dark:#1d4ed8;--p045-primary-soft:#eff6ff;--p045-success:#059669;--p045-success-soft:#ecfdf5;--p045-warning:#d97706;--p045-warning-soft:#fffbeb;--p045-danger:#dc2626;--p045-danger-soft:#fef2f2;--p045-text:#172033;--p045-muted:#64748b;--p045-border:#dbe3ef;--p045-surface-soft:#f8fafc;--p045-radius:16px;--p045-shadow:0 12px 32px rgba(15,23,42,0.08)}",
@@ -234,6 +343,53 @@
     ".p045-empty-state.show{display:flex}",
     ".p045-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
     ".p045-empty-state p{margin-top:5px;font-size:11px}",
+    /* modal view detail */
+    ".p045-modal-overlay{position:fixed;inset:0;z-index:150;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(15,23,42,0.5);backdrop-filter:blur(3px)}",
+    ".p045-modal-overlay.show{display:flex}",
+    ".p045-modal{display:flex;flex-direction:column;width:100%;max-width:980px;max-height:88vh;overflow:hidden;border:1px solid var(--p045-border);border-radius:var(--p045-radius);background:#fff;box-shadow:0 24px 64px rgba(15,23,42,0.3)}",
+    ".p045-modal-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid var(--p045-border)}",
+    ".p045-modal-heading{display:flex;min-width:0;align-items:center;gap:11px}",
+    ".p045-modal-icon{display:grid;width:40px;height:40px;flex:0 0 auto;place-items:center;color:var(--p045-primary);border-radius:11px;background:var(--p045-primary-soft)}",
+    ".p045-modal-icon svg{width:19px;height:19px}",
+    ".p045-modal-title h3{overflow:hidden;font-size:15px;color:var(--p045-text);text-overflow:ellipsis;white-space:nowrap}",
+    ".p045-modal-title p{overflow:hidden;margin-top:2px;color:var(--p045-muted);font-size:11px;text-overflow:ellipsis;white-space:nowrap}",
+    ".p045-modal-close{display:grid;width:34px;height:34px;flex:0 0 auto;place-items:center;color:var(--p045-muted);border:1px solid var(--p045-border);border-radius:9px;background:#fff;transition:0.15s ease}",
+    ".p045-modal-close:hover{color:#fff;border-color:var(--p045-danger);background:var(--p045-danger)}",
+    ".p045-modal-close svg{width:16px;height:16px}",
+    ".p045-modal-actions{display:flex;align-items:center;gap:8px;padding:10px 18px;border-bottom:1px solid var(--p045-border);background:var(--p045-surface-soft)}",
+    ".p045-toggle-button{display:inline-flex;height:34px;align-items:center;gap:6px;padding:0 12px;color:var(--p045-primary-dark);border:1px solid #bfdbfe;border-radius:9px;background:var(--p045-primary-soft);font-size:12px;font-weight:700;white-space:nowrap;transition:0.15s ease}",
+    ".p045-toggle-button:hover{color:#fff;background:var(--p045-primary)}",
+    ".p045-toggle-button svg{width:14px;height:14px}",
+    ".p045-modal-search{position:relative;flex:1;max-width:280px}",
+    ".p045-modal-search svg{position:absolute;top:50%;left:10px;width:15px;height:15px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}",
+    ".p045-modal-search input{width:100%;height:34px;padding:0 10px 0 32px;border:1px solid var(--p045-border);border-radius:9px;outline:none;font-size:12px}",
+    ".p045-modal-search input:focus{border-color:#60a5fa;box-shadow:0 0 0 3px rgba(96,165,250,0.12)}",
+    ".p045-modal-body{overflow:auto;padding:0}",
+    ".p045-detail-table{width:100%;border-collapse:separate;border-spacing:0;white-space:nowrap}",
+    ".p045-detail-table th{padding:10px 14px;color:#475569;border-bottom:1px solid var(--p045-border);background:var(--p045-surface-soft);box-shadow:inset 0 -1px var(--p045-border);font-size:12px;font-weight:700;text-align:left}",
+    ".p045-detail-table th.center{text-align:center}",
+    "tr.p045-doc-row{cursor:pointer;transition:0.14s ease;background:linear-gradient(90deg,#eff6ff,#f8fafc)}",
+    "tr.p045-doc-row:hover{background:linear-gradient(90deg,#dbeafe,#eff6ff)}",
+    "tr.p045-doc-row.expanded{background:linear-gradient(90deg,#dbeafe,#e0f2fe)}",
+    "tr.p045-doc-row td{padding:12px 14px;border-bottom:1px solid var(--p045-border);font-size:13px}",
+    ".p045-expand-cell{display:flex;align-items:center;gap:10px}",
+    ".p045-expand-icon{display:grid;width:24px;height:24px;flex:0 0 auto;place-items:center;color:var(--p045-primary-dark);border:1px solid #bfdbfe;border-radius:7px;background:#fff;transition:transform 0.18s ease}",
+    "tr.p045-doc-row.expanded .p045-expand-icon{color:#fff;background:var(--p045-primary);transform:rotate(90deg)}",
+    ".p045-expand-icon svg{width:14px;height:14px}",
+    ".p045-doc-number{color:var(--p045-primary-dark);font-weight:700}",
+    ".p045-status-tag{display:inline-flex;min-width:34px;align-items:center;justify-content:center;padding:4px 9px;color:#047857;border-radius:7px;background:#d1fae5;font-size:12px;font-weight:700}",
+    ".p045-item-count-tag{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;color:#7c3aed;border-radius:999px;background:#f5f3ff;font-size:12px;font-weight:700;white-space:nowrap}",
+    "tr.p045-item-row{background:#fff}",
+    "tr.p045-item-row:hover td{background:#f8fafc}",
+    "tr.p045-item-row.hidden-row{display:none}",
+    "tr.p045-item-row td{padding:8px 14px;border-bottom:1px solid #f1f5f9;font-size:12px;line-height:1.4}",
+    ".p045-item-indent{display:flex;align-items:center;gap:9px;padding-left:46px}",
+    ".p045-item-connector{position:relative;width:16px;height:16px;flex:0 0 auto;border-bottom:2px solid #bfdbfe;border-left:2px solid #bfdbfe;border-bottom-left-radius:6px}",
+    ".p045-item-order{display:inline-flex;min-width:22px;justify-content:center;color:#64748b;font-size:11px;font-weight:700}",
+    ".p045-item-product-code{color:#1d4ed8;font-weight:700}",
+    ".p045-item-qty{display:inline-flex;min-width:46px;justify-content:center;padding:3px 9px;color:#047857;border-radius:7px;background:#d1fae5;font-weight:700}",
+    ".p045-detail-empty{padding:30px 14px;color:var(--p045-muted);font-size:12px;text-align:center}",
+    ".p045-modal-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 18px;color:var(--p045-muted);border-top:1px solid var(--p045-border);background:var(--p045-surface-soft);font-size:12px}",
     /* toast */
     ".p045-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;box-shadow:0 12px 32px rgba(15,23,42,0.3);opacity:0;pointer-events:none;transition:0.2s ease}",
     ".p045-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}",
@@ -282,6 +438,30 @@
           '<div class="p045-footer-total">รวมจำนวนบิลทั้งหมด <strong id="p045FooterVnos">0</strong></div>' +
         "</div>" +
       "</section>" +
+      // modal view detail
+      '<div class="p045-modal-overlay" id="p045ModalOverlay">' +
+        '<div class="p045-modal" role="dialog" aria-modal="true">' +
+          '<div class="p045-modal-header">' +
+            '<div class="p045-modal-heading">' +
+              '<div class="p045-modal-icon">' + icon("grid") + "</div>" +
+              '<div class="p045-modal-title"><h3 id="p045ModalTitle">รายละเอียดลูกค้า</h3><p id="p045ModalSub"></p></div>' +
+            "</div>" +
+            '<button class="p045-modal-close" id="p045ModalClose" type="button">' + icon("close") + "</button>" +
+          "</div>" +
+          '<div class="p045-modal-actions">' +
+            '<button class="p045-toggle-button" id="p045ExpandAll" type="button">' + icon("plus") + " ขยายทั้งหมด</button>" +
+            '<button class="p045-toggle-button" id="p045CollapseAll" type="button">' + icon("minus") + " ยุบทั้งหมด</button>" +
+            '<div class="p045-modal-search">' + icon("search") + '<input id="p045ModalSearch" type="search" placeholder="ค้นหาเลขที่, รหัสสินค้า">' +
+            "</div>" +
+            '<span class="p045-badge" id="p045ModalBadge">0 ใบ</span>' +
+          "</div>" +
+          '<div class="p045-modal-body" id="p045ModalBody"></div>' +
+          '<div class="p045-modal-footer">' +
+            '<span id="p045ModalFooterText">แสดง 0 ใบสำคัญ</span>' +
+            '<span id="p045ModalFooterItems">0 รายการสินค้า</span>' +
+          "</div>" +
+        "</div>" +
+      "</div>" +
       // toast
       '<div class="p045-toast" id="p045Toast"><span id="p045ToastMsg"></span></div>' +
     "</div>";
@@ -306,6 +486,14 @@
     el.footerText = $("p045FooterText");
     el.footerVnos = $("p045FooterVnos");
     el.toast = $("p045Toast");
+    el.modalOverlay = $("p045ModalOverlay");
+    el.modalTitle = $("p045ModalTitle");
+    el.modalSub = $("p045ModalSub");
+    el.modalSearch = $("p045ModalSearch");
+    el.modalBadge = $("p045ModalBadge");
+    el.modalBody = $("p045ModalBody");
+    el.modalFooterText = $("p045ModalFooterText");
+    el.modalFooterItems = $("p045ModalFooterItems");
 
     // default = วันนี้ (clone demo)
     el.date.value = isoDate(new Date());
@@ -316,6 +504,46 @@
     });
 
     el.quick.addEventListener("input", function () { render(); });
+
+    // modal — row click = show detail (clone demo viewdetail)
+    el.rows.addEventListener("click", function (e) {
+      var tr = e.target.closest("tr");
+      if (!tr || tr.classList.contains("p045-empty")) return;
+      var cells = tr.querySelectorAll("td");
+      if (cells.length < 3) return;
+      var cus = cells[1] ? cells[1].textContent.trim() : "";
+      var cusName = cells[2] ? cells[2].textContent.trim() : "";
+      if (cus) openDetail(cus, cusName, el.date.value);
+    });
+
+    $("p045ModalClose").addEventListener("click", closeDetail);
+    el.modalOverlay.addEventListener("click", function (e) {
+      if (e.target === el.modalOverlay) closeDetail();
+    });
+    if (!escapeBound) {
+      escapeBound = true;
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape" && modalState.open) closeDetail();
+      });
+    }
+
+    el.modalBody.addEventListener("click", function (e) {
+      var docRow = e.target.closest(".p045-doc-row");
+      if (!docRow) return;
+      var vnos = docRow.getAttribute("data-vnos");
+      modalState.expanded[vnos] = modalState.expanded[vnos] !== true;
+      renderDetail();
+    });
+
+    $("p045ExpandAll").addEventListener("click", function () {
+      modalState.bills.forEach(function (b) { modalState.expanded[b.vnos] = true; });
+      renderDetail();
+    });
+    $("p045CollapseAll").addEventListener("click", function () {
+      modalState.expanded = {};
+      renderDetail();
+    });
+    el.modalSearch.addEventListener("input", function () { renderDetail(); });
 
     document.querySelectorAll(".p045-table th.sortable").forEach(function (th) {
       th.addEventListener("click", function () {
