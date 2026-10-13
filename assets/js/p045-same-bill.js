@@ -220,11 +220,12 @@
         "</tr>";
       b.items.forEach(function (i, idx) {
         html += '<tr class="p045-item-row' + (isExp ? "" : " hidden-row") + '" data-parent="' + esc(b.vnos) + '">' +
-          '<td colspan="2"><div class="p045-item-indent"><span class="p045-item-connector"></span>' +
+          '<td><div class="p045-item-indent"><span class="p045-item-connector"></span>' +
           '<span class="p045-item-order">' + (idx + 1) + "</span>" +
           '<span class="p045-item-product-code">' + esc(i.stk) + "</span></div></td>" +
-          '<td class="item-detail-cell" title="' + esc(cleanDesc(i.desc)) + " (" + esc(i.unit) + ')">' +
-          esc(cleanDesc(i.desc)) + ' <span style="color:#94a3b8">· </span><span class="p045-item-qty">' + fmtQty(i.qty) + " " + esc(i.unit) + "</span></td>" +
+          '<td class="center"><span class="p045-item-qty">' + fmtQty(i.qty) + " " + esc(i.unit) + "</span></td>" +
+          '<td class="item-detail-cell" title="' + esc(cleanDesc(i.desc)) + '">' +
+          esc(cleanDesc(i.desc)) + "</td>" +
           "</tr>";
       });
     });
