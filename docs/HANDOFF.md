@@ -69,12 +69,14 @@
 
 ## 2. รายงานรายวัน
 
-### 13/10 — P045 ตรวจสอบบิลลูกค้าเดียวกัน — **DEV** (clone demo/P045-demo + C# **AppForCheck/frm_CheckBillMorethanOne_GUI** — 1 API + CDP verify — commit `089c281`)
-- `assets/js/p045-same-bill.js` (IIFE `window.P045SameBill`) — **clone demo/P045-demo.html** — real data MAC5 — **cache v=20261012a** (portal v=20261012c)
+### 13/10 — P045 ตรวจสอบบิลลูกค้าเดียวกัน — **DEV** (clone demo/P045-demo + C# **AppForCheck/frm_CheckBillMorethanOne_GUI** — 2 APIs + modal + CDP verify — commit `089c281` + `964c741`)
+- `assets/js/p045-same-bill.js` (IIFE `window.P045SameBill`) — **clone demo/P045-demo.html + demo/P045-demo_viewdetail.html** — real data MAC5 — **cache v=20261013a** (portal v=20261012c)
 - **API:** `p045_samebill` — POST `{connectionId, date, cus}` → ลูกค้าที่มีบิล **MIHtype='IS'** ซ้ำในวันเดียวกัน (GROUP BY ลูกค้า + **HAVING COUNT(MIHvnos)>1** — clone intent demo/C#) + filter รหัสลูกค้า LIKE — **DEBnameT/DEBadd3AT เป็น text → CONVERT nvarchar ก่อน group/sort** (ไม่ทำ = error text cannot be sorted)
+- **API:** `p045_detail` — POST `{connectionId, date, cus}` → bills[{vnos, date, status, items[{listNo, stk, desc, qty, unit}]}] — **clone C# GetVnos (MIHtype='IS' + MIHcancel=0) + GetListSTK (MILtype='IS' + MILquan/MILconv)**
 - **UI:** launcher (วันที่ default วันนี้ + รหัสลูกค้า + ปุ่มค้นหา) + table 5 คอลั่น (วันที่(พ.ศ.)/รหัสลูกค้า/ชื่อลูกค้า/เขต-อำเภอ/จำนวนบิล — badge สี: 2=ฟ้า 3=เหลือง >=4=แดง) + sort column + quick search + footer รวมจำนวนบิล + empty state + toast
-- **CDP verify:** 2026-10-12 = 27 rows/62 บิล / 10-10 = 13 / quick filter "บจก." = 7 / sort vnos desc = 6 / 0 errors
-- **C# (user ยืนยัน path 2026-10-13):** `AppForCheck/frm_CheckBillMorethanOne_GUI.cs` — query ตารางหลักตรงกัน แต่ C# +`MIHcancel=0` + คอลั่นผู้สัมพันธ์ (DEBcontactT) + **drill-down 3 ชั้น** (คลิกลูกค้า→ตารางบิล vnos+status → คลิกบิล→ตารางสินค้า MIL) — P045 ทำตาม **demo** — **รอ user ตัดสินใจ** ว่าจะ clone C# เต็ม ๆ หรือไม่
+- **Modal view detail (user 2026-10-13):** คลิกแถวลูกค้า → modal รายละเอียดลูกค้า + ตารางจัดกลุ่มใบสำคัญ (doc-row expand + item-row — clone demo viewdetail — ปุ่มขยาย/ยุบทั้งหมด + quick search + expand ใบแรก default + Escape/overlay ปิด)
+- **CDP verify:** 2026-10-12 = 27 rows/62 บิล / 10-10 = 13 / quick filter "บจก." = 7 / sort vnos desc = 6 / **modal 10150-159 = 4 ใบ/13 รายการ — collapse 0 — expand 13 — search "รองเท้า" = 2 ใบ** / 0 errors
+- **C# (user ยืนยัน path 2026-10-13):** `AppForCheck/frm_CheckBillMorethanOne_GUI.cs` — query ตารางหลักตรงกัน แต่ C# +`MIHcancel=0` + คอลั่นผู้สัมพันธ์ (DEBcontactT) — P045 ทำตาม **demo** — **รอ user ตัดสินใจ** ว่าจะ clone C# เต็ม ๆ หรือไม่
 
 ### 12/10 — P039 ตรวจสอบตัดของเกิน SO — **READY** (user ยืนยัน 2026-10-12 — 30 modules ready)
 - modules.php P039 → `status: ready` (L125)
