@@ -33,7 +33,8 @@
 
   var root = null;
   var el = {};
-  var state = { pages: [], items: [], meta: null, searched: false, loading: false, escBound: false, mode: "route" };
+  var state = { pages: [], items: [], meta: null, searched: false, loading: false, escBound: false, mode: "route", page: 1 };
+  var PAGE_SIZE = 15; // 15 รายการสืนค้าต่อหน้า
   var toastTimer = null;
 
   function $(id) { return document.getElementById(id); }
@@ -47,6 +48,8 @@
       grid: '<path d="M3 3h18v18H3z"></path><path d="M9 3v18M3 9h18"></path>',
       cal: '<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path>',
       chevron: '<path d="m6 9 6 6 6-6"></path>',
+      chevL: '<path d="m15 18-6-6 6-6"></path>',
+      chevR: '<path d="m9 18 6-6-6-6"></path>',
       plus: '<path d="M12 5v14M5 12h14"></path>',
       search: '<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>'
     };
@@ -221,6 +224,7 @@
           return;
         }
         state.items = data.rows || [];
+        state.page = 1;
         state.searched = true;
         state.mode = "items";
         render();
@@ -305,10 +309,17 @@
       '<th class="center">กลุ่มสินค้า</th></tr>';
 
     var html = "";
-    state.items.forEach(function (r, n) {
+    var total = state.items.length;
+    var totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    if (state.page > totalPages) state.page = totalPages;
+    if (state.page < 1) state.page = 1;
+    var start = (state.page - 1) * PAGE_SIZE;
+    var pageRows = state.items.slice(start, start + PAGE_SIZE);
+
+    pageRows.forEach(function (r, n) {
       var desc = esc(r.STKdescT1 || "") + (r.STKdescT2 ? " " + esc(r.STKdescT2) : "");
       html += "<tr>" +
-        '<td class="center">' + (n + 1) + "</td>" +
+        '<td class="center">' + (start + n + 1) + "</td>" +
         '<td class="center"><span class="route-tag">' + esc(r.Route) + "</span></td>" +
         "<td>" + esc(r.MILsto) + "</td>" +
         '<td class="doc-number">' + esc(r.STKcode) + "</td>" +
@@ -319,7 +330,42 @@
         "</tr>";
     });
     el.rows.innerHTML = html;
-    el.footerText.textContent = "แสดง " + state.items.length.toLocaleString("th-TH") + " รายการสินค้า";
+    el.footerText.textContent = "แสดง " + (start + 1) + "–" + (start + pageRows.length) + " จาก " + total.toLocaleString("th-TH") + " รายการสืนค้า";
+    renderPager(totalPages);
+  }
+
+  /* ---------- ปุ่ มเลื่ อนหน้า: window 3–5 ปุ่ มตามจำนวณหน้า ---------- */
+  function renderPager(totalPages) {
+    var pager = el.pager;
+    if (!pager) return;
+    if (totalPages <= 1) { pager.style.display = "none"; return; }
+    pager.style.display = "flex";
+    var cur = state.page;
+    // window = min(5, total) แต่มิ อย่าน้อย 3 เมือ total >= 3
+    var win = Math.min(5, totalPages);
+    if (totalPages > 5) win = 5;
+    if (win < Math.min(3, totalPages)) win = Math.min(3, totalPages);
+    var lo = cur - Math.floor((win - 1) / 2);
+    if (lo < 1) lo = 1;
+    if (lo + win - 1 > totalPages) lo = totalPages - win + 1;
+    var hi = lo + win - 1;
+
+    var html = '<button class="p081-pagerbtn" type="button" data-page="prev"' + (cur === 1 ? " disabled" : "") + ' title="หน้าก่อนหน้า">' + icon("chevL") + "</button>";
+    if (lo > 1) html += '<button class="p081-pagerbtn" type="button" data-page="1">1</button>' + (lo > 2 ? '<span class="p081-pagerdots">…</span>' : "");
+    for (var p = lo; p <= hi; p++) {
+      html += '<button class="p081-pagerbtn' + (p === cur ? " active" : "") + '" type="button" data-page="' + p + '">' + p + "</button>";
+    }
+    if (hi < totalPages) html += (hi < totalPages - 1 ? '<span class="p081-pagerdots">…</span>' : "") + '<button class="p081-pagerbtn" type="button" data-page="' + totalPages + '">' + totalPages + "</button>";
+    html += '<button class="p081-pagerbtn" type="button" data-page="next"' + (cur === totalPages ? " disabled" : "") + ' title="หน้าตอไป">' + icon("chevR") + "</button>";
+    pager.innerHTML = html;
+  }
+
+  function gotoPage(val) {
+    var total = Math.max(1, Math.ceil(state.items.length / PAGE_SIZE));
+    if (val === "prev") state.page = Math.max(1, state.page - 1);
+    else if (val === "next") state.page = Math.min(total, state.page + 1);
+    else state.page = parseInt(val, 10) || 1;
+    renderItems();
   }
 
   /* ---------- รายงาน A4 (clone C# bgWorker_DoWork) ---------- */
@@ -561,7 +607,13 @@
     ".p081-rep-btn-primary:hover{background:#084a9e}",
     ".p081-rep-body{flex:1;min-height:0;overflow:hidden;padding:12px;background:#f1f5f9}",
     ".p081-rep-body iframe{width:100%;height:100%;min-height:520px;border:1px solid #e2e8f0;border-radius:8px;background:#fff}",
-    ".p081-rep-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-top:1px solid #e2e8f0}",
+    ".p081-pager{display:flex;align-items:center;gap:6px}",
+    ".p081-pagerbtn{display:grid;min-width:30px;height:30px;padding:0 6px;place-items:center;color:#475569;border:1px solid #dbe3ef;border-radius:8px;background:#fff;font-size:12px;font-weight:600;cursor:pointer;transition:0.15s}",
+    ".p081-pagerbtn:hover:not(:disabled){color:#1d4ed8;border-color:#93c5fd;background:#eff6ff}",
+    ".p081-pagerbtn.active{color:#fff;border-color:#0a5bc4;background:#0a5bc4}",
+    ".p081-pagerbtn:disabled{opacity:0.4;cursor:default}",
+    ".p081-pagerbtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
+    ".p081-pagerdots{color:#94a3b8;font-size:12px}",
     ".p081-rep-hint{color:#64748b;font-size:12px}",
     "@media (max-width:1000px){.p081-launcher-body{grid-template-columns:1fr}.p081-action-column{justify-content:stretch}.p081-generate-button{width:100%;min-height:54px;flex-direction:row}.p081-field-grid{grid-template-columns:1fr}.p081-group-grid{grid-template-columns:repeat(2,1fr)}}",
     "@media (max-width:680px){.p081-panel-header{align-items:flex-start;flex-direction:column}}"
@@ -627,7 +679,7 @@
         '<div class="p081-table-container" id="p081TableContainer" style="display:none"><table class="p081-table"><thead id="p081Head"></thead><tbody id="p081Rows"></tbody></table></div>' +
         '<div class="p081-empty-state" id="p081EmptyState"><div>' + icon("grid") +
           '<strong>ยังไม่มีเอกสารที่สร้าง</strong><p>กำหนดเงื่อนไขด้านบน แล้วกด "สร้างเอกสาร"</p></div></div>' +
-        '<div class="p081-table-footer" id="p081TableFooter" style="display:none"><span id="p081FooterText">แสดง 0 รายการ</span></div>' +
+        '<div class="p081-table-footer" id="p081TableFooter" style="display:none"><span id="p081FooterText">แสดง 0 รายการ</span><div class="p081-pager" id="p081Pager"></div></div>' +
       "</section>" +
       // toast
       '<div class="p081-toast" id="p081Toast"><span id="p081ToastMsg"></span></div>' +
@@ -664,6 +716,7 @@
     el.emptyState = $("p081EmptyState");
     el.tableFooter = $("p081TableFooter");
     el.footerText = $("p081FooterText");
+    el.pager = $("p081Pager");
     el.subtitle = $("p081Subtitle");
     el.toast = $("p081Toast");
 
@@ -680,6 +733,13 @@
     $("p081Form").addEventListener("submit", function (e) {
       e.preventDefault();
       doGenerate();
+    });
+
+    // ปุ่ มเลื่ อนหน้า (event delegation ใน pager)
+    el.pager.addEventListener("click", function (e) {
+      var btn = e.target.closest ? e.target.closest(".p081-pagerbtn") : null;
+      if (!btn || btn.disabled) return;
+      gotoPage(btn.getAttribute("data-page"));
     });
 
     // ปุ่ มสร้างเอกสารอยูนอก form (ใน panel header) → ผูก click ตรง

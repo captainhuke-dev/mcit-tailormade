@@ -69,6 +69,11 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 หัวตาราง + แยกปุ่ มสร้างเอกสาร (commit `9a1d6e2`)
+- หัวตาราง: `ผลการสร้างเอกสาร PickList` → `รายการสืนค้า PickList By Route`
+- ปุ่ มสร้างเอกสาร: ทำตาม C# btnGenerate_Click — fetch แล้วเปิ ดรายงาน A4 อยา่ งเดี ยว, ไม่ re-render ตารางรายการสืนค้า (ตารางคังเดิ ม)
+- CDP pass: H2 ตรงตามตัง, search → 97 rows คังอยูหลังเปิ ด overlay (iframe 1) — cache `v=20261014i`
+
 ### 14/10 — P081 ปุ่ มค้นหา animชั้ น wait (commit `7a377e6`)
 - ระหว่าง fetch: ปุ่ มสลับเป็น "กำลังค้นหา..." + spinner (ใช้ `p081spin` เดิ ม, `.loading` class) + disabled — หลังสำเร็จกลบั เป็น "ค้นหา"
 - CDP pass: LOADING state (text "กำลังค้นหา..." + cls loading + disabled) → DONE state (text "ค้นหา" + enabled + 19 rows) — cache `v=20261014h`
