@@ -368,12 +368,14 @@
     var f = overlay.querySelector("#p081RepFrame");
     f.srcdoc = reportDocHtml();
     overlay.classList.add("show");
+    overlay.style.display = "flex";
   }
 
   function closeReport() {
     var overlay = document.getElementById("p081ReportOverlay");
     if (!overlay) return;
     overlay.classList.remove("show");
+    overlay.style.display = "none";
     var f = overlay.querySelector("#p081RepFrame");
     if (f) f.srcdoc = "";
   }
@@ -538,9 +540,17 @@
   /* ---------- mount ---------- */
   function mount(target) {
     root = target;
-    var style = document.createElement("style");
-    style.textContent = CSS;
-    target.appendChild(style);
+    // style ตองไว้ ใน head ( ไม่ใช่ ใน root) — portal.js re-render content.innerHTML จะลบ style ใน root ทิงไว้
+    // ทิงให้ overlay ที่อยู่ ใน body หลง css = กลายเป็น block ด้างลางหน้ า
+    if (!document.getElementById("p081Style")) {
+      var style = document.createElement("style");
+      style.id = "p081Style";
+      style.textContent = CSS;
+      document.head.appendChild(style);
+    }
+    // สะอาด overlay เก่า ( ถ้ ามี ) กอน mount ซ้ำ
+    var olds = document.querySelectorAll("body > .p081-rep-overlay");
+    for (var oi = 0; oi < olds.length; oi++) olds[oi].parentNode.removeChild(olds[oi]);
     target.insertAdjacentHTML("beforeend", buildHtml());
 
     el.dateFrom = $("p081DateFrom");
