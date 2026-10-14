@@ -198,10 +198,14 @@
     }
     state.loading = true;
     el.searchBtn.disabled = true;
+    el.searchBtn.classList.add("loading");
+    el.searchBtn.innerHTML = icon("search") + "กำลังค้นหา...";
 
     function done() {
       state.loading = false;
       el.searchBtn.disabled = false;
+      el.searchBtn.classList.remove("loading");
+      el.searchBtn.innerHTML = icon("search") + "ค้นหา";
     }
 
     apiPost(API.search, {
@@ -501,8 +505,10 @@
     ".p081-search-row .p081-input-wrap{flex:1;min-width:0}",
     ".p081-search-button{display:flex;align-items:center;justify-content:center;gap:6px;height:42px;padding:0 16px;color:#fff;border:0;border-radius:10px;background:#0a5bc4;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}",
     ".p081-search-button:hover:not(:disabled){background:#084a9e}",
-    ".p081-search-button:disabled{opacity:0.7}",
+    ".p081-search-button:disabled{opacity:0.85}",
     ".p081-search-button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
+    ".p081-search-button.loading svg{animation:p081spin 1s linear infinite}",
+    ".p081-search-button.loading{cursor:progress}",
     ".p081-group-section{min-width:0;padding:12px 14px;border:1px solid #cbd9ec;border-radius:12px;background:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),0 1px 3px rgba(15,23,42,0.05)}",
     ".p081-group-section label.group-title{display:block;margin-bottom:9px;color:#1d4ed8;font-size:12px;font-weight:700}",
     ".p081-group-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 10px}",
