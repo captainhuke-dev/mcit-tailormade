@@ -178,11 +178,9 @@
       });
   }
 
-  /* ---------- สร้างเอกสาร → รายงาน A4 ---------- */
+  /* ---------- สร้างเอกสาร → รายงาน A4 (ตาม C# btnGenerate_Click: เปิ ดรายงานอยา่ งเดี ยว, ไม่ แตะตาราง) ---------- */
   function doGenerate() {
     fetchPages(function (data) {
-      state.mode = "route";
-      render();
       openReport();
       showToast("สร้างเอกสาร " + data.count.toLocaleString("th-TH") + " สายส่ง");
     });
@@ -619,7 +617,7 @@
         '<div class="p081-panel-header">' +
           '<div class="p081-panel-heading">' +
             '<div class="p081-panel-icon">' + icon("grid") + "</div>" +
-            '<div class="p081-panel-title"><h2>ผลการสร้างเอกสาร PickList</h2><p id="p081Subtitle">ยงั ไมไ่ ด้ สร้างเอกสาร</p></div>' +
+            '<div class="p081-panel-title"><h2>รายการสืนค้า PickList By Route</h2><p id="p081Subtitle">ยงั ไมไ่ ด้ สร้างเอกสาร</p></div>' +
           "</div>" +
           '<div class="p081-panel-actions">' +
             '<span class="p081-badge" id="p081Badge">0 รายการ</span>' +
