@@ -69,6 +69,10 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 ปุ่ มค้นหา animชั้ น wait (commit `7a377e6`)
+- ระหว่าง fetch: ปุ่ มสลับเป็น "กำลังค้นหา..." + spinner (ใช้ `p081spin` เดิ ม, `.loading` class) + disabled — หลังสำเร็จกลบั เป็น "ค้นหา"
+- CDP pass: LOADING state (text "กำลังค้นหา..." + cls loading + disabled) → DONE state (text "ค้นหา" + enabled + 19 rows) — cache `v=20261014h`
+
 ### 14/10 — P081 ปุ่ มค้นหา = flat-list API (commit `1472d05`)
 - API ใหม่ `api/p081_search.php` — SQL ตามแบบของ user แบบ verbatim: MIH+MIL+STK+JOB_TransportRoute + SBLqty/RSVqty scalar subquery + STKsortID + Route, MIHtype='IS' + MILcut=-1 + NOT IN tb_FaceSheetSTK, วันที่จาก MILday/MILmonth/MILyear style 103, สถานะ = MIHstatus = ?, Route = ? เฉพาะเลือก (All = ไม่ มีบรรทัด), GROUP BY bare cols + ORDER BY STKgroup/STKsortID
 - ปุ่ มค้นหาเรียกอAPIน้ีตรง ๆ (ไม่ผาน generate) → `state.mode="items"` → ตาราง 8 คอลั่ น (ลำดบั /Route/คลัง/รหสั สืนค้า/ชื่ อสืนค้า/คงเหลือ (SBL)/RSV/กลุ่ มสืนค้า) — 8 col = ตาม SQL output จริง
