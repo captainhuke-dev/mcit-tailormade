@@ -7,7 +7,7 @@
   "use strict";
 
   var MAC5_CONNECTION_ID = "c1788406814359";
-  var API = { routes: "api/p081_routes.php", generate: "api/p081_generate.php" };
+  var API = { routes: "api/p081_routes.php", generate: "api/p081_generate.php", search: "api/p081_search.php" };
 
   var GROUPS = ["G01", "G02", "G03", "G04", "G06", "G07", "G09", "RTV", "BKK"];
   var GROUPS_CHECKED = ["G01", "G02", "G03", "G04", "RTV", "BKK"];
@@ -33,7 +33,7 @@
 
   var root = null;
   var el = {};
-  var state = { pages: [], meta: null, searched: false, loading: false, escBound: false, mode: "route" };
+  var state = { pages: [], items: [], meta: null, searched: false, loading: false, escBound: false, mode: "route" };
   var toastTimer = null;
 
   function $(id) { return document.getElementById(id); }
@@ -74,6 +74,13 @@
     var m = String(ts || "").match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}:\d{2}:\d{2})/);
     if (!m) return String(ts || "");
     return m[3] + "/" + m[2] + "/" + (parseInt(m[1], 10) + 543) + " " + m[4];
+  }
+
+  function fmtNum(v) {
+    if (v === null || v === undefined || v === "") return "-";
+    var n = parseFloat(v);
+    if (isNaN(n)) return String(v);
+    return n.toLocaleString("th-TH", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
   }
 
   function isoDate(d) {
@@ -181,24 +188,53 @@
     });
   }
 
-  /* ---------- ค้นหา → list รายการสินค้าในตาราง ---------- */
+  /* ---------- ค้นหา → ตารางรายการสืนคา (flat ตาม SQL) ---------- */
   function doSearch() {
-    fetchPages(function (data) {
-      state.mode = "items";
-      render();
-      var total = 0;
-      state.pages.forEach(function (p) {
-        p.items.forEach(function (it) { total += it.rows.length ? it.rows.length : 1; });
+    if (state.loading) return;
+    var warehouses = selectedWarehouses();
+    if (!warehouses.length) {
+      showToast("โปรดเลือกกลุ่ มคลังสืนค้ า อย่ างน้ อย 1 ตั วเลือก");
+      return;
+    }
+    state.loading = true;
+    el.searchBtn.disabled = true;
+
+    function done() {
+      state.loading = false;
+      el.searchBtn.disabled = false;
+    }
+
+    apiPost(API.search, {
+      connectionId: MAC5_CONNECTION_ID,
+      dateFrom: el.dateFrom.value,
+      dateTo: el.dateTo.value,
+      status: el.status.value,
+      groups: warehouses,
+      route: el.route.value
+    })
+      .then(function (data) {
+        done();
+        if (!data.ok) {
+          showToast(data.error || "ค้ นหาไม่ สำเร้ จ");
+          return;
+        }
+        state.items = data.rows || [];
+        state.searched = true;
+        state.mode = "items";
+        render();
+        showToast("พบ " + state.items.length.toLocaleString("th-TH") + " รายการสืนค้ า");
+      })
+      .catch(function (e) {
+        done();
+        showToast(e.message || "ค้ นหาไม่ สำเร้ จ");
       });
-      showToast("พบ " + total.toLocaleString("th-TH") + " รายการสินค้า");
-    });
   }
 
   /* ---------- render ---------- */
   function render() {
-    var pages = state.pages;
-    var badge = pages.length.toLocaleString("th-TH") + " สายส่ง";
-    el.badge.textContent = badge;
+    var isItems = state.mode === "items";
+    var count = isItems ? state.items.length : state.pages.length;
+    el.badge.textContent = count.toLocaleString("th-TH") + (isItems ? " รายการ" : " สายส่ง");
 
     if (!state.searched) {
       el.tableContainer.style.display = "none";
@@ -208,7 +244,7 @@
       return;
     }
 
-    if (pages.length === 0) {
+    if (count === 0) {
       el.tableContainer.style.display = "none";
       el.tableFooter.style.display = "none";
       el.emptyState.style.display = "flex";
@@ -223,16 +259,16 @@
     var routeLabel = el.route.value === "all" ? "All-ทั้งหมด" : el.route.value;
     el.subtitle.textContent = "Route: " + routeLabel + " · วันที่เอกสาร " + fmtDate(el.dateFrom.value) + " ถึง " + fmtDate(el.dateTo.value);
 
-    if (state.mode === "items") {
+    if (isItems) {
       renderItems();
       return;
     }
 
     el.head.innerHTML = '<tr><th class="center">ลำดับ</th><th>เลขที่เอกสาร</th><th class="center">Route</th>' +
-      '<th class="center">วันที่</th><th>กลุ่มคลัง</th><th class="center number">จำนวนรายการ</th><th>สถานะ</th></tr>';
+      '<th class="center">วันที่</th><th>กลุ่ มคลัง</th><th class="center number">จำนวนรายการ</th><th>สถานะ</th></tr>';
 
     var html = "";
-    pages.forEach(function (p, idx) {
+    state.pages.forEach(function (p, idx) {
       var padded = String(idx + 1);
       while (padded.length < 4) padded = "0" + padded;
       var doc = "PLR" + p.route + "-" + padded;
@@ -256,52 +292,32 @@
     });
     el.rows.innerHTML = html;
 
-    el.footerText.textContent = "แสดง " + pages.length.toLocaleString("th-TH") + " สายส่ง";
+    el.footerText.textContent = "แสดง " + state.pages.length.toLocaleString("th-TH") + " สายส่ง";
   }
 
-  /* ---------- ตารางรายการสินคา (flat) ---------- */
+  /* ---------- ตารางรายการสืนคา (flat ตาม SQL: STKcode/desc/SBLqty/RSVqty/MILsto/STKgroup/STKsortID/Route) ---------- */
   function renderItems() {
-    el.head.innerHTML = '<tr><th class="center">ลำดับ</th><th class="center">สายส่ง</th><th>คลัง</th>' +
-      "<th>รหัสสินค้า</th><th>ชื่อสินค้า</th><th class=\"center\">เลขที่</th><th class=\"center\">วันที่</th>" +
-      '<th class="center number">ปริมาณ</th><th class="center">หน่วย</th></tr>';
+    el.head.innerHTML = '<tr><th class="center">ลำดับ</th><th class="center">Route</th><th>คลัง</th>' +
+      "<th>รหัสสินค้า</th><th>ชื่อสินค้า</th>" +
+      '<th class="center number">คงเหลือ (SBL)</th><th class="center number">RSV</th>' +
+      '<th class="center">กลุ่มสินค้า</th></tr>';
 
     var html = "";
-    var n = 0;
-    state.pages.forEach(function (p) {
-      p.items.forEach(function (it) {
-        if (it.rows.length === 0) {
-          n++;
-          html += "<tr>" +
-            '<td class="center">' + n + "</td>" +
-            '<td class="center"><span class="route-tag">' + esc(p.route) + "</span></td>" +
-            "<td>" + esc(it.sto) + "</td>" +
-            '<td class="doc-number">' + esc(it.stk) + "</td>" +
-            "<td>" + esc(it.desc1) + " " + esc(it.desc2) + "</td>" +
-            '<td class="center">-</td>' +
-            '<td class="center">-</td>' +
-            '<td class="center number">' + esc(it.grand) + "</td>" +
-            '<td class="center">-</td>' +
-            "</tr>";
-          return;
-        }
-        it.rows.forEach(function (r) {
-          n++;
-          html += "<tr>" +
-            '<td class="center">' + n + "</td>" +
-            '<td class="center"><span class="route-tag">' + esc(p.route) + "</span></td>" +
-            "<td>" + esc(it.sto) + "</td>" +
-            '<td class="doc-number">' + esc(it.stk) + "</td>" +
-            "<td>" + esc(it.desc1) + " " + esc(it.desc2) + "</td>" +
-            '<td class="center">' + esc(r.vnos) + "</td>" +
-            '<td class="center">' + esc(fmtDate(r.date)) + "</td>" +
-            '<td class="center number">' + esc(r.qty) + "</td>" +
-            '<td class="center">' + esc(r.unit) + "</td>" +
-            "</tr>";
-        });
-      });
+    state.items.forEach(function (r, n) {
+      var desc = esc(r.STKdescT1 || "") + (r.STKdescT2 ? " " + esc(r.STKdescT2) : "");
+      html += "<tr>" +
+        '<td class="center">' + (n + 1) + "</td>" +
+        '<td class="center"><span class="route-tag">' + esc(r.Route) + "</span></td>" +
+        "<td>" + esc(r.MILsto) + "</td>" +
+        '<td class="doc-number">' + esc(r.STKcode) + "</td>" +
+        "<td>" + desc + "</td>" +
+        '<td class="center number">' + esc(fmtNum(r.SBLqty)) + "</td>" +
+        '<td class="center number">' + esc(fmtNum(r.RSVqty)) + "</td>" +
+        '<td class="center">' + esc(r.STKgroup) + "</td>" +
+        "</tr>";
     });
     el.rows.innerHTML = html;
-    el.footerText.textContent = "แสดง " + n.toLocaleString("th-TH") + " รายการสินค้า";
+    el.footerText.textContent = "แสดง " + state.items.length.toLocaleString("th-TH") + " รายการสินค้า";
   }
 
   /* ---------- รายงาน A4 (clone C# bgWorker_DoWork) ---------- */
