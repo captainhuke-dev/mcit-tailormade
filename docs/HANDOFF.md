@@ -69,6 +69,12 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P045 modal residue fix (commit `9d760a4`)
+- modal P045 คางในหน้า index ด้านลางเมนู (เหมือนไม่ได้ถูกซ่อน) — สาเหตเวิ่่งเดี ยวกั บ P081: `<style>` append ใน `#p045Root` (ถููก ลบโดย `content.innerHTML` re-render) แต overlay ย้ายไป `document.body` (รอด) → หลังปิด/ออกหน้า = block ไม่มี CSS คาง
+- แก: style → `document.head` (id `p045Style`, รอดทุก re-render), portal.js cleanup selector ขยายเป็น `body > .p081-rep-overlay, body > .p045-modal-overlay` — cache p045 `v=20261014e`, portal `v=20261014b`
+- CDP pass (`cdp_p045_overlay.js`): mount styleInHead/overlay display none, open modal shown flex, close → none, leave page → overlays 0, return → 1 overlay + app mounted, 0 errors
+- **Pitfall (generalizing):** modal/overlay ใดก่ ็ ติ่ มที่ appendChild ใน `document.body` ต้อง (1) สอด style ใน `document.head` (2) เพิ่ ม selector ของมันใน cleanup ของ `portal.js renderPage` — ไม่ฉะนั้ นจะคางทุกครั้ งที่อออกแบบโมดูล
+
 ### 14/10 — P081 PickList By Route — **DEV** (clone demo/P081_demo.html + C# AppPickListByRoute/frm_PickListByRouteGUI — commit `c6d625b`)
 - API 2: `p081_routes.php` (DISTINCT Route จาก BI_CUBE.dbo.JOB_TransportRoute) + `p081_generate.php` (MIH+MIL+STK+JOB_TransportRoute, MIHtype='IS' + MILcut=-1 + กลุ่ มคลังผาน STOgroup + watis range + Route → group per Route)
 - JS `p081-picklist-route.js` — `window.P081PickListRoute` — launcher (วันที่เอกสาร from-to default = เมื่อวาน→วันนี้, วันที่หัวเอกสาร, Route dropdown from DB, สถานะ 13 ตัว, กลุ่ มคลัง 9 checkbox default checked = G01,G04,G02,G03,RTV,BKK) + ปุ่ มสร้างเอกสาร + ตาราง 7 คอลั่ น (ลำดับ/เลขที่ PLR{route}-NNNN/Route/วันที่/กลุ่ มคลัง tag/จำนวนรายการ/สถานะ tag) + toast
