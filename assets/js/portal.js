@@ -1039,17 +1039,31 @@
       `;
     }
 
-    // P045: ตรวจสอบบิลลูกค้าเดียวกัน
+    // P045: ตรวจสอบบิลลูกค้าเดี ยวกั น
     if (programId === "P045") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
       return `
         <div class="breadcrumb">
-          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+          หน้าหลั ก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
         </div>
         <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
           ${backLabel}
         </button>
         <div id="p045Root" style="margin-top:20px"></div>
+      `;
+    }
+
+    // P081: PickList By Route
+    if (programId === "P081") {
+      const backLabel = program.groupName ? `← กลบั ไป${program.groupName}` : "← กลบั หน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลั ก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p081Root" style="margin-top:20px"></div>
       `;
     }
 
@@ -1728,6 +1742,12 @@
     if (page.type === "program" && page.programId === "P045" && window.P045SameBill) {
       const root = document.getElementById("p045Root");
       if (root) window.P045SameBill.mount(root);
+    }
+
+    // P081: mount PickList By Route app
+    if (page.type === "program" && page.programId === "P081" && window.P081PickListRoute) {
+      const root = document.getElementById("p081Root");
+      if (root) window.P081PickListRoute.mount(root);
     }
   }
 
