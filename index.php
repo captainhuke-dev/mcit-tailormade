@@ -213,6 +213,6 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20261014b"></script>
+  <script src="assets/js/portal.js?v=20261014c"></script>
 </body>
 </html>
