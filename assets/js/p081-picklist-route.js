@@ -472,9 +472,6 @@
     ".p081-app{display:flex;flex-direction:column;gap:14px}",
     /* launcher */
     ".p081-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
-    ".p081-launcher-titlebar{display:flex;min-height:44px;align-items:center;justify-content:space-between;padding:0 8px 0 16px;background:linear-gradient(90deg,#1e3a8a,#1d4ed8)}",
-    ".p081-launcher-titlebar span{display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:700}",
-    ".p081-launcher-titlebar svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
     ".p081-launcher-body{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p081-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}",
     ".p081-field{display:block}",
@@ -490,8 +487,8 @@
     ".p081-search-button:hover:not(:disabled){background:#084a9e}",
     ".p081-search-button:disabled{opacity:0.7}",
     ".p081-search-button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
-    ".p081-group-section{min-width:0}",
-    ".p081-group-section label.group-title{display:block;margin-bottom:9px;color:#334155;font-size:12px;font-weight:700}",
+    ".p081-group-section{min-width:0;padding:12px 14px;border:1px solid #cbd9ec;border-radius:12px;background:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),0 1px 3px rgba(15,23,42,0.05)}",
+    ".p081-group-section label.group-title{display:block;margin-bottom:9px;color:#1d4ed8;font-size:12px;font-weight:700}",
     ".p081-group-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 10px}",
     ".p081-group-option{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;cursor:pointer}",
     ".p081-group-option input{width:16px;height:16px;accent-color:#2563eb;cursor:pointer}",
@@ -573,7 +570,6 @@
     return '<div class="p081-app">' +
       // launcher card
       '<section class="p081-launcher-card">' +
-        '<div class="p081-launcher-titlebar"><span>' + icon("grid") + "PickList By Route</span></div>" +
         '<form class="p081-launcher-body" id="p081Form">' +
           '<div class="p081-field-grid">' +
             '<div class="p081-field"><label for="p081DateFrom">วันที่เอกสาร</label>' +
