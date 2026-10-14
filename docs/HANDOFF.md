@@ -69,6 +69,10 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 กลุ่ มคลังเป็น box + ตัด titlebar (commit `e497539`)
+- ตัดแถบหัว "PickList By Route" ออกจาก launcher card (breadcrumb แสดงชื่ ออยู่ แล้ว)
+- box กลุ่ มคลัง: ขาว + border 1px #cbd9ec + radius 12px + padding, หััวชื่ อในกลุ่ มเป็น น้ ำเงิ น #1d4ed8 — cache `v=20261014f` — CDP + vision pass (titlebar gone, box ครบ, 0 errors)
+
 ### 14/10 — P081 กลุ่ มคลัง + ปุ่ มสร้างเอกสาร (commit `306f9a6`)
 - กลุ่ มคลังเรี ยงลำดบั G01-G09,RTV,BKK (grid 5 คอลั่ น = 2 แถว), default checked = G01-G04 + RTV + BKK (ชุดเดิ่ ม)
 - `All-ทั้ งหมด` + `กลุ่ มคลังสืนค้ า` + `สร้างเอกสาร` ตรง demo byte-exact (ตรวจด้วย compare script)
