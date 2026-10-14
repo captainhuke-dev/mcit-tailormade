@@ -9,8 +9,8 @@
   var MAC5_CONNECTION_ID = "c1788406814359";
   var API = { routes: "api/p081_routes.php", generate: "api/p081_generate.php" };
 
-  var GROUPS = ["G01", "G04", "G09", "G02", "G06", "RTV", "G03", "G07", "BKK"];
-  var GROUPS_CHECKED = ["G01", "G04", "G02", "RTV", "G03", "BKK"];
+  var GROUPS = ["G01", "G02", "G03", "G04", "G06", "G07", "G09", "RTV", "BKK"];
+  var GROUPS_CHECKED = ["G01", "G02", "G03", "G04", "RTV", "BKK"];
 
   var STATUS_OPTIONS = [
     ["6", "6-ลูกค้ารับเอง"],
@@ -111,7 +111,7 @@
         if (!data.ok || !data.rows || !data.rows.length) return;
         var sel = el.route;
         var cur = sel.value;
-        var html = '<option value="all">All-ทั้ งหมด</option>';
+        var html = '<option value="all">All-ทั้งหมด</option>';
         data.rows.forEach(function (r) {
           html += '<option value="' + esc(r.route) + '">' + esc(r.route) + "</option>";
         });
@@ -475,7 +475,7 @@
     ".p081-launcher-titlebar{display:flex;min-height:44px;align-items:center;justify-content:space-between;padding:0 8px 0 16px;background:linear-gradient(90deg,#1e3a8a,#1d4ed8)}",
     ".p081-launcher-titlebar span{display:flex;align-items:center;gap:8px;color:#fff;font-size:14px;font-weight:700}",
     ".p081-launcher-titlebar svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
-    ".p081-launcher-body{display:grid;grid-template-columns:1.3fr 1fr auto;gap:18px;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
+    ".p081-launcher-body{display:grid;grid-template-columns:1.3fr 1fr;gap:18px;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p081-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:13px}",
     ".p081-field{display:block}",
     ".p081-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
@@ -492,14 +492,14 @@
     ".p081-search-button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
     ".p081-group-section{min-width:0}",
     ".p081-group-section label.group-title{display:block;margin-bottom:9px;color:#334155;font-size:12px;font-weight:700}",
-    ".p081-group-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 10px}",
+    ".p081-group-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px 10px}",
     ".p081-group-option{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;cursor:pointer}",
     ".p081-group-option input{width:16px;height:16px;accent-color:#2563eb;cursor:pointer}",
-    ".p081-action-column{display:flex;align-items:center;justify-content:center}",
-    ".p081-generate-button{display:flex;width:150px;min-height:86px;flex-direction:column;align-items:center;justify-content:center;gap:9px;color:#fff;border:0;border-radius:13px;background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 10px 22px rgba(37,99,235,0.28);font-size:14px;font-weight:700;transition:0.16s ease}",
-    ".p081-generate-button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.06)}",
+    ".p081-panel-actions{display:flex;align-items:center;gap:10px}",
+    ".p081-generate-button{display:flex;min-height:42px;align-items:center;justify-content:center;gap:7px;padding:0 16px;color:#fff;border:0;border-radius:10px;background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 6px 16px rgba(37,99,235,0.28);font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:0.16s ease}",
+    ".p081-generate-button:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.06)}",
     ".p081-generate-button:disabled{opacity:0.7}",
-    ".p081-generate-button svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
+    ".p081-generate-button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
     ".p081-generate-button.loading svg{animation:p081spin 1s linear infinite}",
     "@keyframes p081spin{to{transform:rotate(360deg)}}",
     /* panel */
@@ -583,7 +583,7 @@
             '<div class="p081-field"><label for="p081HeadDate">วันที่หัวเอกสาร</label>' +
               '<div class="p081-input-wrap">' + icon("cal") + '<input id="p081HeadDate" type="date"></div></div>' +
             '<div class="p081-field"><label for="p081Route">Route</label>' +
-              '<div class="p081-input-wrap">' + icon("chevron") + '<select id="p081Route"><option value="all" selected>All-ทั้ งหมด</option></select></div></div>' +
+              '<div class="p081-input-wrap">' + icon("chevron") + '<select id="p081Route"><option value="all" selected>All-ทั้งหมด</option></select></div></div>' +
             '<div class="p081-field" style="grid-column:1 / -1"><label for="p081Status">สถานะใบแจ้งหนี้</label>' +
               '<div class="p081-search-row">' +
                 '<div class="p081-input-wrap">' + icon("chevron") + '<select id="p081Status">' + statusOptionsHtml() + "</select></div>" +
@@ -591,11 +591,8 @@
               "</div></div>" +
           "</div>" +
           '<div class="p081-group-section">' +
-            '<label class="group-title">กลุ่ มคลังสืนค้ า</label>' +
+            '<label class="group-title">กลุ่มคลังสินค้า</label>' +
             '<div class="p081-group-grid" id="p081Groups">' + groupOptionsHtml() + "</div>" +
-          "</div>" +
-          '<div class="p081-action-column">' +
-            '<button class="p081-generate-button" id="p081GenBtn" type="submit">' + icon("plus") + "สร้ างเอกสาร</button>" +
           "</div>" +
         "</form>" +
       "</section>" +
@@ -606,7 +603,10 @@
             '<div class="p081-panel-icon">' + icon("grid") + "</div>" +
             '<div class="p081-panel-title"><h2>ผลการสร้างเอกสาร PickList</h2><p id="p081Subtitle">ยงั ไมไ่ ด้ สร้างเอกสาร</p></div>' +
           "</div>" +
-          '<span class="p081-badge" id="p081Badge">0 รายการ</span>' +
+          '<div class="p081-panel-actions">' +
+            '<span class="p081-badge" id="p081Badge">0 รายการ</span>' +
+            '<button class="p081-generate-button" id="p081GenBtn" type="submit">' + icon("plus") + "สร้างเอกสาร</button>" +
+          "</div>" +
         "</div>" +
         '<div class="p081-table-container" id="p081TableContainer" style="display:none"><table class="p081-table"><thead id="p081Head"></thead><tbody id="p081Rows"></tbody></table></div>' +
         '<div class="p081-empty-state" id="p081EmptyState"><div>' + icon("grid") +
@@ -662,6 +662,12 @@
     loadRoutes();
 
     $("p081Form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      doGenerate();
+    });
+
+    // ปุ่ มสร้างเอกสารอยูนอก form (ใน panel header) → ผูก click ตรง
+    el.genBtn.addEventListener("click", function (e) {
       e.preventDefault();
       doGenerate();
     });
