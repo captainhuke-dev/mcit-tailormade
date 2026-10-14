@@ -69,7 +69,13 @@
 
 ## 2. รายงานรายวัน
 
-### 13/10 — P045 ตรวจสอบบิลลูกค้าเดียวกัน — **READY** (user ยืนยัน 2026-10-13 — 31 modules ready)
+### 14/10 — P081 PickList By Route — **DEV** (clone demo/P081_demo.html + C# AppPickListByRoute/frm_PickListByRouteGUI — commit `c6d625b`)
+- API 2: `p081_routes.php` (DISTINCT Route จาก BI_CUBE.dbo.JOB_TransportRoute) + `p081_generate.php` (MIH+MIL+STK+JOB_TransportRoute, MIHtype='IS' + MILcut=-1 + กลุ่ มคลังผาน STOgroup + watis range + Route → group per Route)
+- JS `p081-picklist-route.js` — `window.P081PickListRoute` — launcher (วันที่เอกสาร from-to default = เมื่อวาน→วันนี้, วันที่หัวเอกสาร, Route dropdown from DB, สถานะ 13 ตัว, กลุ่ มคลัง 9 checkbox default checked = G01,G04,G02,G03,RTV,BKK) + ปุ่ มสร้างเอกสาร + ตาราง 7 คอลั่ น (ลำดับ/เลขที่ PLR{route}-NNNN/Route/วันที่/กลุ่ มคลัง tag/จำนวนรายการ/สถานะ tag) + toast
+- Pitfall: `selectedWarehouses()` ตอง selector `#p081Groups input:checked` (คลาสมี prefix p081- แลว) — v2
+- CDP verify: mount ครบ, dropdown Route 9 ตัวจาก DB จิง (M1-M9), generate = 7 เอกสาร (status 68), filter M2 = 1 แถว, 0 errors — cache `v=20261013b` (portal `v=20261013a`)
+
+### 13/10 — P045 ตรวจสอบบิลลูกค้าเดี ยวกั น — **READY** (user ยืนยัน 2026-10-13 — 31 modules ready)
 - modules.php P045 → `status: ready`
 - สรุปงาน P045: 2 APIs (`p045_samebill` + `p045_detail` clone C# GetVnos/GetListSTK) + launcher + table 5 คอลั่น + **modal view detail** (3 คอลั่น สถานะ/จำนวน + item-row qty — expand ทั้งหมดตั้งแต่เปิด — ตัด search — appendChild body + min-height:0 = centered + scroll ในจอ) — cache v=20261013g — commits `089c281` → `9c1da2b`
 
