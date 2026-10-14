@@ -69,6 +69,12 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 ปุ่ มค้นหา = flat-list API (commit `1472d05`)
+- API ใหม่ `api/p081_search.php` — SQL ตามแบบของ user แบบ verbatim: MIH+MIL+STK+JOB_TransportRoute + SBLqty/RSVqty scalar subquery + STKsortID + Route, MIHtype='IS' + MILcut=-1 + NOT IN tb_FaceSheetSTK, วันที่จาก MILday/MILmonth/MILyear style 103, สถานะ = MIHstatus = ?, Route = ? เฉพาะเลือก (All = ไม่ มีบรรทัด), GROUP BY bare cols + ORDER BY STKgroup/STKsortID
+- ปุ่ มค้นหาเรียกอAPIน้ีตรง ๆ (ไม่ผาน generate) → `state.mode="items"` → ตาราง 8 คอลั่ น (ลำดบั /Route/คลัง/รหสั สืนค้า/ชื่ อสืนค้า/คงเหลือ (SBL)/RSV/กลุ่ มสืนค้า) — 8 col = ตาม SQL output จริง
+- Pitfall: GROUP BY ตองเป็น bare col (STKcode) — ไม่ ฉะนั้ น scalar subquery อาง C.STKcode ไม่ ได้ (ODBC "Column not contained in GROUP BY")
+- curl test: status 68 + route M1 + 13..14/10 → ok 16 rows (~7s); first row 10010246 SBL=13 RSV=- — CDP pass: 16 rows / 8 cols / footer "แสดง 16 รายการสืนค้า" / badge "16 รายการ" / 0 errors — cache `v=20261014g`
+
 ### 14/10 — P081 กลุ่ มคลังเป็น box + ตัด titlebar (commit `e497539`)
 - ตัดแถบหัว "PickList By Route" ออกจาก launcher card (breadcrumb แสดงชื่ ออยู่ แล้ว)
 - box กลุ่ มคลัง: ขาว + border 1px #cbd9ec + radius 12px + padding, หััวชื่ อในกลุ่ มเป็น น้ ำเงิ น #1d4ed8 — cache `v=20261014f` — CDP + vision pass (titlebar gone, box ครบ, 0 errors)
