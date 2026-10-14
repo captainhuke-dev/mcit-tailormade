@@ -70,9 +70,9 @@
 ## 2. รายงานรายวัน
 
 ### 14/10 — P081 กลุ่ มคลัง + ปุ่ มสร้างเอกสาร (commit `306f9a6`)
-- กลุ่ มคลังเรียงลำดับ G01-G09,RTV,BKK (grid 5 คอลั่ น = 2 แถว), default checked = G01-G04 + RTV + BKK (ชุดเดิ ม)
+- กลุ่ มคลังเรี ยงลำดบั G01-G09,RTV,BKK (grid 5 คอลั่ น = 2 แถว), default checked = G01-G04 + RTV + BKK (ชุดเดิ่ ม)
 - `All-ทั้ งหมด` + `กลุ่ มคลังสืนค้ า` + `สร้างเอกสาร` ตรง demo byte-exact (ตรวจด้วย compare script)
-- ปุ่ ม "สร้างเอกสาร" ย้ายจากข้าง launcher → หััว panel ผลลัพท์ (`.p081-panel-actions` = badge + ปุ่ ม) อยูตอรายการสืนคาที่จะแสดง — ปุ่ มอยูนอก form → ผูก click handler ตรง, สไตลค์ระชับ 42px, launcher-body 2-col — cache `v=20261014e` — CDP pass: groups sorted, checked 6, genBtn in panel-header, route option ตรง demo, 0 errors; vision OK
+- ปุ่ ม "สร้างเอกสาร" ย้ายจากข้าง launcher → หัั ว panel ผลลัพท์ (`.p081-panel-actions` = badge + ปุ่ ม) อยู่ตอรายการสืนคาที่จะแสดง — ปุ่ มอยู่นอก form → ผูก click handler ตรง, สไตล์กระชั บ 42px, launcher-body 2-col — cache `v=20261014e` — CDP pass: groups sorted, checked 6, genBtn in panel-header, route option ตรง demo, 0 errors; vision OK
 
 ### 14/10 — P045 modal residue fix (commit `9d760a4`)
 - modal P045 คางในหน้า index ด้านลางเมนู (เหมือนไม่ได้ถูกซ่อน) — สาเหตเวิ่่งเดี ยวกั บ P081: `<style>` append ใน `#p045Root` (ถููก ลบโดย `content.innerHTML` re-render) แต overlay ย้ายไป `document.body` (รอด) → หลังปิด/ออกหน้า = block ไม่มี CSS คาง
