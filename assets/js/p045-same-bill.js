@@ -441,9 +441,14 @@
   /* ---------- mount ---------- */
   function mount(target) {
     root = target;
-    var style = document.createElement("style");
-    style.textContent = CSS;
-    target.appendChild(style);
+    // style ตองไวใน document.head — portal.js re-render (content.innerHTML) จะลบ style ใน root ทิง
+    // ทิง overlay ใน body โดยไมมี CSS = block ดานลางหนา — style ใน head รอดทุกรอบ re-render
+    if (!document.getElementById("p045Style")) {
+      var style = document.createElement("style");
+      style.id = "p045Style";
+      style.textContent = CSS;
+      document.head.appendChild(style);
+    }
     target.insertAdjacentHTML("beforeend", HTML);
 
     el.date = $("p045Date");

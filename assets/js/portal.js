@@ -1504,7 +1504,7 @@
     content.classList.add("page-anim");
 
     // ล้าง overlay ของ P081 ( appended to body — ไมถกู ลบตาม innerHTML )
-    document.querySelectorAll("body > .p081-rep-overlay").forEach(function (o) { o.remove(); });
+    document.querySelectorAll("body > .p081-rep-overlay, body > .p045-modal-overlay").forEach(function (o) { o.remove(); });
 
     // bind settings form buttons (post-render)
     if (page.type === "settings") {

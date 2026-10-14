@@ -189,7 +189,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p106-print-barcode.js"></script>
   <script src="assets/js/p103-check-cost.js?v=20261012d"></script>
   <script src="assets/js/p039-cut-so.js?v=20261012b"></script>
-  <script src="assets/js/p045-same-bill.js?v=20261013g"></script>
+  <script src="assets/js/p045-same-bill.js?v=20261014e"></script>
   <script src="assets/js/p081-picklist-route.js?v=20261014d"></script>
   <script src="assets/js/p050-billing.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
@@ -213,6 +213,6 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20261014a"></script>
+  <script src="assets/js/portal.js?v=20261014b"></script>
 </body>
 </html>
