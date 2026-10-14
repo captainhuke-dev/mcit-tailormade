@@ -13,7 +13,7 @@
   var GROUPS_CHECKED = ["G01", "G04", "G02", "RTV", "G03", "BKK"];
 
   var STATUS_OPTIONS = [
-    ["6", "6-ลูกค้ารบัเอง"],
+    ["6", "6-ลูกค้ารับเอง"],
     ["17", "17-ตัดท้ายรถ"],
     ["42", "42-INV - ปกติ"],
     ["43", "43-INV - ด่วน"],
@@ -33,7 +33,7 @@
 
   var root = null;
   var el = {};
-  var state = { pages: [], meta: null, searched: false, loading: false, escBound: false };
+  var state = { pages: [], meta: null, searched: false, loading: false, escBound: false, mode: "route" };
   var toastTimer = null;
 
   function $(id) { return document.getElementById(id); }
@@ -47,7 +47,8 @@
       grid: '<path d="M3 3h18v18H3z"></path><path d="M9 3v18M3 9h18"></path>',
       cal: '<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path>',
       chevron: '<path d="m6 9 6 6 6-6"></path>',
-      plus: '<path d="M12 5v14M5 12h14"></path>'
+      plus: '<path d="M12 5v14M5 12h14"></path>',
+      search: '<circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path>'
     };
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (paths[name] || "") + "</svg>";
   }
@@ -117,33 +118,40 @@
         sel.innerHTML = html;
         if (cur) sel.value = cur;
       })
-      .catch(function () { /* อยูกั บ default ใน fallback */ });
+      .catch(function () { /* อยูก่ ับ default ใน fallback */ });
   }
 
-  /* ---------- generate ---------- */
-  function doGenerate() {
+  /* ---------- fetch รวมกัน (สร้างเอกสาร + ค้นหา) ---------- */
+  function fetchPages(onDone) {
     if (state.loading) return;
     var warehouses = selectedWarehouses();
     if (!warehouses.length) {
-      showToast("โปรดยเลือกกลุ่ มคลังสินคา อยางนอย 1 ตัวเลือก");
+      showToast("โปรดเลือกกลุ่มคลังสินค้า อย่างน้อย 1 ตัวเลือก");
       return;
     }
     state.loading = true;
     el.genBtn.classList.add("loading");
     el.genBtn.disabled = true;
+    if (el.searchBtn) el.searchBtn.disabled = true;
+
+    function done() {
+      state.loading = false;
+      el.genBtn.classList.remove("loading");
+      el.genBtn.disabled = false;
+      if (el.searchBtn) el.searchBtn.disabled = false;
+    }
 
     apiPost(API.generate, {
       connectionId: MAC5_CONNECTION_ID,
       dateFrom: el.dateFrom.value,
       dateTo: el.dateTo.value,
+      headDate: el.headDate.value,
       status: el.status.value,
       groups: warehouses,
       route: el.route.value
     })
       .then(function (data) {
-        state.loading = false;
-        el.genBtn.classList.remove("loading");
-        el.genBtn.disabled = false;
+        done();
         if (!data.ok) {
           state.pages = [];
           state.meta = null;
@@ -155,29 +163,48 @@
         state.pages = data.pages || [];
         state.meta = data;
         state.searched = true;
-        render();
-        openReport();
-        showToast("สร้างเอกสาร " + data.count.toLocaleString("th-TH") + " สายส่ ง");
+        onDone(data);
       })
       .catch(function (e) {
-        state.loading = false;
-        el.genBtn.classList.remove("loading");
-        el.genBtn.disabled = false;
+        done();
         showToast(e.message || "สร้างเอกสารไม่สำเร็จ");
       });
+  }
+
+  /* ---------- สร้างเอกสาร → รายงาน A4 ---------- */
+  function doGenerate() {
+    fetchPages(function (data) {
+      state.mode = "route";
+      render();
+      openReport();
+      showToast("สร้างเอกสาร " + data.count.toLocaleString("th-TH") + " สายส่ง");
+    });
+  }
+
+  /* ---------- ค้นหา → list รายการสินค้าในตาราง ---------- */
+  function doSearch() {
+    fetchPages(function (data) {
+      state.mode = "items";
+      render();
+      var total = 0;
+      state.pages.forEach(function (p) {
+        p.items.forEach(function (it) { total += it.rows.length ? it.rows.length : 1; });
+      });
+      showToast("พบ " + total.toLocaleString("th-TH") + " รายการสินค้า");
+    });
   }
 
   /* ---------- render ---------- */
   function render() {
     var pages = state.pages;
-    var badge = pages.length.toLocaleString("th-TH") + " สายส่ ง";
+    var badge = pages.length.toLocaleString("th-TH") + " สายส่ง";
     el.badge.textContent = badge;
 
     if (!state.searched) {
       el.tableContainer.style.display = "none";
       el.tableFooter.style.display = "none";
       el.emptyState.style.display = "flex";
-      el.subtitle.textContent = "ยั งไมไ่ ด้สรางเอกสาร";
+      el.subtitle.textContent = "ยังไม่ได้สร้างเอกสาร";
       return;
     }
 
@@ -185,7 +212,7 @@
       el.tableContainer.style.display = "none";
       el.tableFooter.style.display = "none";
       el.emptyState.style.display = "flex";
-      el.subtitle.textContent = "ไมพบ่ ้อมูลตามเงื่ ่อนไขทลี่ ือก";
+      el.subtitle.textContent = "ไม่พบข้อมูลตามเงื่อนไขที่เลือก";
       return;
     }
 
@@ -193,8 +220,16 @@
     el.tableFooter.style.display = "flex";
     el.emptyState.style.display = "none";
 
-    var routeLabel = el.route.value === "all" ? "All-ทั้ งหมด" : el.route.value;
+    var routeLabel = el.route.value === "all" ? "All-ทั้งหมด" : el.route.value;
     el.subtitle.textContent = "Route: " + routeLabel + " · วันที่เอกสาร " + fmtDate(el.dateFrom.value) + " ถึง " + fmtDate(el.dateTo.value);
+
+    if (state.mode === "items") {
+      renderItems();
+      return;
+    }
+
+    el.head.innerHTML = '<tr><th class="center">ลำดับ</th><th>เลขที่เอกสาร</th><th class="center">Route</th>' +
+      '<th class="center">วันที่</th><th>กลุ่มคลัง</th><th class="center number">จำนวนรายการ</th><th>สถานะ</th></tr>';
 
     var html = "";
     pages.forEach(function (p, idx) {
@@ -221,7 +256,52 @@
     });
     el.rows.innerHTML = html;
 
-    el.footerText.textContent = "แสดง " + pages.length.toLocaleString("th-TH") + " สายส่ ง";
+    el.footerText.textContent = "แสดง " + pages.length.toLocaleString("th-TH") + " สายส่ง";
+  }
+
+  /* ---------- ตารางรายการสินคา (flat) ---------- */
+  function renderItems() {
+    el.head.innerHTML = '<tr><th class="center">ลำดับ</th><th class="center">สายส่ง</th><th>คลัง</th>' +
+      "<th>รหัสสินค้า</th><th>ชื่อสินค้า</th><th class=\"center\">เลขที่</th><th class=\"center\">วันที่</th>" +
+      '<th class="center number">ปริมาณ</th><th class="center">หน่วย</th></tr>';
+
+    var html = "";
+    var n = 0;
+    state.pages.forEach(function (p) {
+      p.items.forEach(function (it) {
+        if (it.rows.length === 0) {
+          n++;
+          html += "<tr>" +
+            '<td class="center">' + n + "</td>" +
+            '<td class="center"><span class="route-tag">' + esc(p.route) + "</span></td>" +
+            "<td>" + esc(it.sto) + "</td>" +
+            '<td class="doc-number">' + esc(it.stk) + "</td>" +
+            "<td>" + esc(it.desc1) + " " + esc(it.desc2) + "</td>" +
+            '<td class="center">-</td>' +
+            '<td class="center">-</td>' +
+            '<td class="center number">' + esc(it.grand) + "</td>" +
+            '<td class="center">-</td>' +
+            "</tr>";
+          return;
+        }
+        it.rows.forEach(function (r) {
+          n++;
+          html += "<tr>" +
+            '<td class="center">' + n + "</td>" +
+            '<td class="center"><span class="route-tag">' + esc(p.route) + "</span></td>" +
+            "<td>" + esc(it.sto) + "</td>" +
+            '<td class="doc-number">' + esc(it.stk) + "</td>" +
+            "<td>" + esc(it.desc1) + " " + esc(it.desc2) + "</td>" +
+            '<td class="center">' + esc(r.vnos) + "</td>" +
+            '<td class="center">' + esc(fmtDate(r.date)) + "</td>" +
+            '<td class="center number">' + esc(r.qty) + "</td>" +
+            '<td class="center">' + esc(r.unit) + "</td>" +
+            "</tr>";
+        });
+      });
+    });
+    el.rows.innerHTML = html;
+    el.footerText.textContent = "แสดง " + n.toLocaleString("th-TH") + " รายการสินค้า";
   }
 
   /* ---------- รายงาน A4 (clone C# bgWorker_DoWork) ---------- */
@@ -229,22 +309,22 @@
     var html = '<section class="p081-page">';
     html += '<div class="p081-r-title"> PickList Summary [By Route_TMS] </div>';
     html += '<div class="p081-r-date"> ประจำวันที่ ' + esc(fmtDateLong(state.meta.headDate)) + "</div>";
-    html += '<div class="p081-r-caption">พิมพ์เมื่ อ ' + esc(fmtStamp(state.meta.printedAt)) +
+    html += '<div class="p081-r-caption">พิมพ์เมื่อ ' + esc(fmtStamp(state.meta.printedAt)) +
       ", โดย : " + esc(state.meta.machine) +
       ", สถานะ : " + esc(statusLabel(state.meta.status)) +
       ", Route : " + esc(p.route) + "</div>";
 
     html += '<table class="p081-r-table"><thead><tr>' +
-      "<th>รหสั ,ชื่ อสินค้ า, <br>Route</th>" +
-      "<th>ชื่ .olูกค้ า</th>" +
-      "<th>เลขที่ ใบแจ้ งหนี้</th>" +
-      "<th>วันที่ ใบแจ้ งหนี้</th>" +
-      "<th>ปริมาน</th>" +
-      "<th>คงเหลือ /<br>หนว่ ยนบั</th>" +
+      "<th>รหัส,ชื่อสินค้า, <br>Route</th>" +
+      "<th>ชื่อลูกค้า</th>" +
+      "<th>เลขที่ ใบแจ้งหนี้</th>" +
+      "<th>วันที่ ใบแจ้งหนี้</th>" +
+      "<th>ปริมาณ</th>" +
+      "<th>คงเหลือ /<br>หน่วยนับ</th>" +
       "</tr></thead><tbody>";
 
     p.items.forEach(function (it) {
-      // แถบหวั กลุ่ ม: รหสั +{คลัง}+ชื่ อ (colspan 3) | รวม | จำนวนรวม | คงเหลือ
+      // แถบหัวกลุ่ม: รหัส+{คลัง}+ชื่อ (colspan 3) | รวม | จำนวนรวม | คงเหลือ
       html += '<tr class="p081-r-group">' +
         '<td colspan="3">' + esc(it.stk) +
         ' <b>{' + esc(it.sto) + "}</b> " + esc(it.desc1) + " " + esc(it.desc2) + "</td>" +
@@ -252,7 +332,7 @@
         '<td class="num">' + esc(it.grand) + "</td>" +
         '<td class="num">' + esc(it.remaining) + "</td>" +
         "</tr>";
-      // คอลมั น์สายส่ ง (rowspan = จำนวนรายการ+1) + รายละเอยี ด
+      // คอลัมน์สายส่ ง (rowspan = จำนวนรายการ+1) + รายละเอยี ด
       var span = it.rows.length + 1;
       it.rows.forEach(function (r, n) {
         html += "<tr>";
@@ -319,13 +399,13 @@
               '<div class="p081-rep-sub" id="p081RepSub"></div>' +
             "</div>" +
             '<div class="p081-rep-btns">' +
-              '<button class="p081-rep-btn" type="button" id="p081RepNewWin" title="เปิ ดหน้ าต่างใหม้">↗</button>' +
+              '<button class="p081-rep-btn" type="button" id="p081RepNewWin" title="เปิ ดหน้ าช่างใหม้">↗</button>' +
               '<button class="p081-rep-btn" type="button" id="p081RepClose" title="ปิ ด (Esc)">✕</button>' +
             "</div>" +
           "</div>" +
           '<div class="p081-rep-body"><iframe id="p081RepFrame" title="รายงาน PickList"></iframe></div>' +
           '<div class="p081-rep-foot">' +
-            '<div class="p081-rep-hint">รายงาน A4 แยกหน้ าตอ่ สายส่ ง — พิมพ์จากหน้ านี้ไดโ้ ดยตรง (หรื อกด ↗ เพื่ อเปิ ดหน้ าต่างใหม้)</div>' +
+            '<div class="p081-rep-hint">รายงาน A4 แยกหน้ าช่างตอ่ สายส่ ง — พิมพ์จากหน้ านี้ไดโ้ ดยตรง (หรื อกด ↗ เพื่ อเปิ ดหน้ าช่างใหม้)</div>' +
             '<button class="p081-rep-btn p081-rep-btn-primary" type="button" id="p081RepPrint">พิมพ์</button>' +
           "</div>" +
         "</div>";
@@ -354,7 +434,7 @@
             return;
           } catch (err) { /* ignore */ }
         }
-        showToast("พิมพ์จาก iframe ไมไ่ ด้ — กด ↗ เพื่ อเปิ ดหน้ าต่างใหม้แลว้ พิมพ์จากนั่ น");
+        showToast("พิมพ์จาก iframe ไมไ่ ด้ — กด ↗ เพื่อเปิ ดหน้ าช่างใหม้แลว้ พิมพ์จากนั่ น");
       });
       if (!state.escBound) {
         state.escBound = true;
@@ -404,6 +484,12 @@
     ".p081-input-wrap input,.p081-input-wrap select{width:100%;height:42px;padding:0 36px 0 12px;color:#172033;border:1px solid #dbe3ef;border-radius:10px;outline:none;background:#fff;font-size:13px}",
     ".p081-input-wrap select{cursor:pointer;appearance:none}",
     ".p081-input-wrap input:focus,.p081-input-wrap select:focus{border-color:#60a5fa;box-shadow:0 0 0 4px rgba(96,165,250,0.14)}",
+    ".p081-search-row{display:flex;gap:8px}",
+    ".p081-search-row .p081-input-wrap{flex:1;min-width:0}",
+    ".p081-search-button{display:flex;align-items:center;justify-content:center;gap:6px;height:42px;padding:0 16px;color:#fff;border:0;border-radius:10px;background:#0a5bc4;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}",
+    ".p081-search-button:hover:not(:disabled){background:#084a9e}",
+    ".p081-search-button:disabled{opacity:0.7}",
+    ".p081-search-button svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
     ".p081-group-section{min-width:0}",
     ".p081-group-section label.group-title{display:block;margin-bottom:9px;color:#334155;font-size:12px;font-weight:700}",
     ".p081-group-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px 10px}",
@@ -492,21 +578,24 @@
           '<div class="p081-field-grid">' +
             '<div class="p081-field"><label for="p081DateFrom">วันที่เอกสาร</label>' +
               '<div class="p081-input-wrap">' + icon("cal") + '<input id="p081DateFrom" type="date"></div></div>' +
-            '<div class="p081-field"><label for="p081DateTo">จนถึ ง</label>' +
+            '<div class="p081-field"><label for="p081DateTo">จนถึง</label>' +
               '<div class="p081-input-wrap">' + icon("cal") + '<input id="p081DateTo" type="date"></div></div>' +
-            '<div class="p081-field"><label for="p081HeadDate">วันที่หวัเอกสาร</label>' +
+            '<div class="p081-field"><label for="p081HeadDate">วันที่หัวเอกสาร</label>' +
               '<div class="p081-input-wrap">' + icon("cal") + '<input id="p081HeadDate" type="date"></div></div>' +
             '<div class="p081-field"><label for="p081Route">Route</label>' +
               '<div class="p081-input-wrap">' + icon("chevron") + '<select id="p081Route"><option value="all" selected>All-ทั้ งหมด</option></select></div></div>' +
-            '<div class="p081-field" style="grid-column:1 / -1"><label for="p081Status">สถานะใบแจ้ งหนี้</label>' +
-              '<div class="p081-input-wrap">' + icon("chevron") + '<select id="p081Status">' + statusOptionsHtml() + "</select></div></div>" +
+            '<div class="p081-field" style="grid-column:1 / -1"><label for="p081Status">สถานะใบแจ้งหนี้</label>' +
+              '<div class="p081-search-row">' +
+                '<div class="p081-input-wrap">' + icon("chevron") + '<select id="p081Status">' + statusOptionsHtml() + "</select></div>" +
+                '<button class="p081-search-button" id="p081SearchBtn" type="button">' + icon("search") + "ค้นหา</button>" +
+              "</div></div>" +
           "</div>" +
           '<div class="p081-group-section">' +
-            '<label class="group-title">กลุ่ มคลังสืนคา</label>' +
+            '<label class="group-title">กลุ่ มคลังสืนค้ า</label>' +
             '<div class="p081-group-grid" id="p081Groups">' + groupOptionsHtml() + "</div>" +
           "</div>" +
           '<div class="p081-action-column">' +
-            '<button class="p081-generate-button" id="p081GenBtn" type="submit">' + icon("plus") + "สรา้ งเอกสาร</button>" +
+            '<button class="p081-generate-button" id="p081GenBtn" type="submit">' + icon("plus") + "สร้ างเอกสาร</button>" +
           "</div>" +
         "</form>" +
       "</section>" +
@@ -515,21 +604,13 @@
         '<div class="p081-panel-header">' +
           '<div class="p081-panel-heading">' +
             '<div class="p081-panel-icon">' + icon("grid") + "</div>" +
-            '<div class="p081-panel-title"><h2>ผลสรา้ งเอกสาร PickList</h2><p id="p081Subtitle">ยังไมไดสรางเอกสาร</p></div>' +
+            '<div class="p081-panel-title"><h2>ผลการสร้างเอกสาร PickList</h2><p id="p081Subtitle">ยงั ไมไ่ ด้ สร้างเอกสาร</p></div>' +
           "</div>" +
           '<span class="p081-badge" id="p081Badge">0 รายการ</span>' +
         "</div>" +
-        '<div class="p081-table-container" id="p081TableContainer" style="display:none"><table class="p081-table"><thead><tr>' +
-          '<th class="center">ลำดบั</th>' +
-          "<th>เลขที่เอกสาร</th>" +
-          '<th class="center">Route</th>' +
-          '<th class="center">วันที่</th>' +
-          "<th>กลุ่ มคลัง</th>" +
-          '<th class="center number">จำนวนรายการ</th>' +
-          "<th>สถานะ</th>" +
-        '</tr></thead><tbody id="p081Rows"></tbody></table></div>' +
+        '<div class="p081-table-container" id="p081TableContainer" style="display:none"><table class="p081-table"><thead id="p081Head"></thead><tbody id="p081Rows"></tbody></table></div>' +
         '<div class="p081-empty-state" id="p081EmptyState"><div>' + icon("grid") +
-          "<strong>ยังไมมีเอกสารที่สราง</strong><p>กำหนดเงื่ อนไขดำนบน แลว้ กด \"สรา้ งเอกสาร\"</p></div></div>" +
+          '<strong>ยังไม่มีเอกสารที่สร้าง</strong><p>กำหนดเงื่อนไขด้านบน แล้วกด "สร้างเอกสาร"</p></div></div>' +
         '<div class="p081-table-footer" id="p081TableFooter" style="display:none"><span id="p081FooterText">แสดง 0 รายการ</span></div>' +
       "</section>" +
       // toast
@@ -540,15 +621,15 @@
   /* ---------- mount ---------- */
   function mount(target) {
     root = target;
-    // style ตองไว้ ใน head ( ไม่ใช่ ใน root) — portal.js re-render content.innerHTML จะลบ style ใน root ทิงไว้
-    // ทิงให้ overlay ที่อยู่ ใน body หลง css = กลายเป็น block ด้างลางหน้ า
+    // style ตอ งไว ใน head (ไม ไมใช ใน root) — portal.js re-render content.innerHTML จะลบ style ใน root ทิ้ งไว
+    // ทิ้ งให overlay อยู ใน body หลง css = กลายเป น block ดา นลางหน า
     if (!document.getElementById("p081Style")) {
       var style = document.createElement("style");
       style.id = "p081Style";
       style.textContent = CSS;
       document.head.appendChild(style);
     }
-    // สะอาด overlay เก่า ( ถ้ ามี ) กอน mount ซ้ำ
+    // สะอาด overlay เกา (ถามี ) กอ น mount ซำ
     var olds = document.querySelectorAll("body > .p081-rep-overlay");
     for (var oi = 0; oi < olds.length; oi++) olds[oi].parentNode.removeChild(olds[oi]);
     target.insertAdjacentHTML("beforeend", buildHtml());
@@ -559,6 +640,8 @@
     el.route = $("p081Route");
     el.status = $("p081Status");
     el.genBtn = $("p081GenBtn");
+    el.searchBtn = $("p081SearchBtn");
+    el.head = $("p081Head");
     el.badge = $("p081Badge");
     el.rows = $("p081Rows");
     el.tableContainer = $("p081TableContainer");
@@ -568,7 +651,7 @@
     el.subtitle = $("p081Subtitle");
     el.toast = $("p081Toast");
 
-    // default: from = วันนี้-1, to/หวั = วันนี้ (clone C# DateTime.Today.AddDays(-1))
+    // default: from = วา นนี้ -1, to/หัว = วา นนี้ (clone C# DateTime.Today.AddDays(-1))
     var today = new Date();
     var yesterday = new Date(today.getTime());
     yesterday.setDate(yesterday.getDate() - 1);
@@ -581,6 +664,11 @@
     $("p081Form").addEventListener("submit", function (e) {
       e.preventDefault();
       doGenerate();
+    });
+
+    el.searchBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      doSearch();
     });
 
     render();
