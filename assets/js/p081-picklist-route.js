@@ -427,8 +427,9 @@
   function reportDocHtml() {
     var css = [
       "@page{size:A4;margin:10pt 20pt}",
-      "body{margin:0}",
-      ".p081-page{width:100%;font-family:'THSarabunNew','TH Sarabun New',sans-serif;color:#000}",
+      "body{margin:0;background:#f1f5f9}",
+      /* กระดาษ A4 จอ: กว้าง 210mm ไม่เหมิ่ ยง, ขาวลอยบนหลังกราเดนเทา — ของจริงใช @page ด้านบน */
+      ".p081-page{box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto;padding:10pt 20pt;background:#fff;font-family:'THSarabunNew','TH Sarabun New',sans-serif;color:#000}",
       ".p081-r-headblk td{border:0;padding:0 0 4px}",
       ".p081-r-title{text-align:center;font-size:18pt;font-weight:bold;margin:0 0 2px}",
       ".p081-r-date{text-align:center;font-size:15pt;font-weight:bold;margin:0 0 4px}",
@@ -448,11 +449,13 @@
       ".p081-r-insum{font-weight:bold}",
       ".p081-r-foot{text-align:right;font-size:12px;margin-top:4px}",
       ".p081-page+.p081-page{margin-top:10px}",
-      "@media print{body{display:block}.p081-page{page-break-after:always}.p081-page:last-child{page-break-after:auto;margin-top:0}.p081-r-group{page-break-inside:auto}.p081-r-table tr{page-break-inside:auto}}"
+      "@media print{body{display:block;background:#fff;zoom:1}.p081-page{width:100%;min-height:0;padding:0;background:#fff;box-shadow:none;page-break-after:always}.p081-page:last-child{page-break-after:auto;margin-top:0}.p081-r-group{page-break-inside:auto}.p081-r-table tr{page-break-inside:auto}}"
     ].join("\n");
     var inner = "";
     state.pages.forEach(function (p, i) { inner += pageHtml(p, i, state.pages.length); });
-    return '<!doctype html><html><head><meta charset="utf-8"><title>PickList Summary</title><style>' + css + "</style></head><body>" + inner + "</body></html>";
+    // สเกลกระดาษ A4 (210mm ≈ 794px) ใหพอดีกรอบดวย zoom — ไม่ลนั งแนวนอน
+    var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',fit);</scr" + "ipt>";
+    return '<!doctype html><html><head><meta charset="utf-8"><title>PickList Summary</title><style>' + css + "</style></head><body>" + inner + fit + "</body></html>";
   }
 
   /* ---------- modal แสดงรายงาน (แพทเทิรน์ ์เีดียวกับ P063) ---------- */
