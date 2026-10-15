@@ -181,8 +181,13 @@
       });
   }
 
-  /* ---------- สร้างเอกสาร → รายงาน A4 (ตาม C# btnGenerate_Click: เปิ ดรายงานอยา่ งเดี ยว, ไม่ แตะตาราง) ---------- */
+  /* ---------- สร้างเอกสาร → รายงาน A4 (ตาม C# btnGenerate_Click: เปิ ดรายงานอยา่ งเดี ยว, ไม่ แตะตาราง) ----------
+     จะทำงานกตอเมื่ อมรี ายการสืนค้ าในตาราง (กดค้ นหาแลว) อย่ างน้ อย 1 รายการ */
   function doGenerate() {
+    if (!state.items.length) {
+      showToast("กดค้ นหาก่อน ให มีรายการสืนค้ า อย่ างน้ อย 1 รายการ จึงสร้ งรายงานได้");
+      return;
+    }
     fetchPages(function (data) {
       openReport();
       showToast("สร้างเอกสาร " + data.count.toLocaleString("th-TH") + " สายส่ง");
@@ -486,7 +491,9 @@
             "</div>" +
             '<div class="p081-rep-btns">' +
               '<button class="p081-rep-btn" type="button" id="p081RepNewWin" title="เปิ ดหน้ าช่างใหม้">↗</button>' +
-              '<button class="p081-rep-btn" type="button" id="p081RepZoom" title="ยอ่ /ขยาย (เป็ น %)">100%</button>' +
+              '<button class="p081-rep-btn" type="button" id="p081RepZoomOut" title="ยอ่ ลง">−</button>' +
+              '<span class="p081-rep-zoomlabel" id="p081RepZoom">100%</span>' +
+              '<button class="p081-rep-btn" type="button" id="p081RepZoomIn" title="ขยายขึ้ น">+</button>' +
               '<button class="p081-rep-btn" type="button" id="p081RepClose" title="ปิ ด (Esc)">✕</button>' +
             "</div>" +
           "</div>" +
@@ -501,13 +508,12 @@
         if (e.target === overlay) closeReport();
       });
       overlay.querySelector("#p081RepClose").addEventListener("click", closeReport);
-      // ปุ่ มยอ่ /ขยาย: เลือกระดบั เปอรเ์ซ็นตม์ — 100% → 125% → 150% → 75%
-      overlay.querySelector("#p081RepZoom").addEventListener("click", function () {
-        var steps = [100, 125, 150, 75];
-        var i = steps.indexOf(state.zoom);
-        state.zoom = steps[(i + 1) % steps.length];
-        this.textContent = state.zoom + "%";
-        applyZoom();
+      // ปุ่ มยอ่ /ขยาย: − ลง / + ขึ้ น ทีละ 25% (50–200%)
+      overlay.querySelector("#p081RepZoomOut").addEventListener("click", function () {
+        setZoomLevel(state.zoom - 25);
+      });
+      overlay.querySelector("#p081RepZoomIn").addEventListener("click", function () {
+        setZoomLevel(state.zoom + 25);
       });
       overlay.querySelector("#p081RepNewWin").addEventListener("click", function () {
         var f = document.getElementById("p081RepFrame");
@@ -546,6 +552,13 @@
     f.srcdoc = reportDocHtml();
     overlay.classList.add("show");
     overlay.style.display = "flex";
+    applyZoom();
+  }
+
+  function setZoomLevel(z) {
+    state.zoom = Math.max(50, Math.min(200, z));
+    var zb = document.getElementById("p081RepZoom");
+    if (zb) zb.textContent = state.zoom + "%";
     applyZoom();
   }
 
@@ -659,6 +672,7 @@
     ".p081-rep-btns{display:flex;gap:8px}",
     ".p081-rep-btn{padding:6px 12px;color:#334155;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;font-size:13px;cursor:pointer}",
     ".p081-rep-btn:hover{background:#e2e8f0}",
+    ".p081-rep-zoomlabel{display:inline-flex;min-width:48px;align-items:center;justify-content:center;color:#334155;font-size:12px;font-weight:600}",
     ".p081-rep-btn-primary{color:#fff;border-color:#0a5bc4;background:#0a5bc4}",
     ".p081-rep-btn-primary:hover{background:#084a9e}",
     ".p081-rep-body{flex:1;min-height:0;overflow:hidden;padding:12px;background:#f1f5f9}",
