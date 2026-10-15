@@ -431,10 +431,10 @@
       /* srcdoc = เอกสารอิสระ: ตองประกาศ @font-face ในตัวเอ ง (fonts.css ของ parent ไมเขามานี้) */
       "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew.ttf') format('truetype');font-weight:400;font-style:normal;font-display:block}",
       "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:block}",
-      "@page{size:A4;margin:10pt 20pt}",
+      "@page{size:A4;margin:20pt}",
       "body{margin:0;background:#f1f5f9}",
       /* กระดาษ A4 จอ: สูงคงที่ 297mm — รายการล้นจะตัดไปหน้าตอไปโดยสคริปต paginate */
-      ".p081-page{box-sizing:border-box;width:210mm;height:297mm;overflow:hidden;margin:0 auto;padding:10pt 20pt;background:#fff;font-family:'THSarabunNew','TH Sarabun New',sans-serif;color:#000}",
+      ".p081-page{box-sizing:border-box;display:flex;flex-direction:column;width:210mm;height:297mm;overflow:hidden;margin:0 auto;padding:20pt;background:#fff;font-family:'THSarabunNew','TH Sarabun New',sans-serif;color:#000}",
       ".p081-r-headblk td{border:0;padding:0 0 4px}",
       ".p081-r-title{text-align:center;font-size:16pt;font-weight:bold;margin:0 0 2px}",
       ".p081-r-date{text-align:center;font-size:14pt;font-weight:bold;margin:0 0 4px}",
@@ -452,7 +452,7 @@
       ".p081-r-table td.center{text-align:center}",
       ".p081-r-route{text-align:center;font-weight:bold}",
       ".p081-r-insum{font-weight:bold}",
-      ".p081-r-foot{text-align:right;font-size:10pt;margin-top:4px}",
+      ".p081-r-foot{text-align:right;font-size:10pt;margin-top:auto}",
       ".p081-page+.p081-page{margin-top:10px}",
       "@media print{body{display:block;background:#fff;zoom:1}.p081-page{width:100%;height:auto;min-height:0;overflow:visible;padding:0;background:#fff;box-shadow:none;page-break-after:always}.p081-page:last-child{page-break-after:auto;margin-top:0}.p081-r-group{page-break-inside:auto}.p081-r-table tr{page-break-inside:auto}}"
     ].join("\n");
@@ -464,8 +464,8 @@
     var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',function(){fit();pag()});" +
       "function sheetOver(sec){var t=sec.querySelector('table');var tb=t.tBodies[0];var last=tb.rows[tb.rows.length-1];if(!last)return false;var sr=sec.getBoundingClientRect();var lr=last.getBoundingClientRect();var f=sec.querySelector('.p081-r-foot');var fh=f?f.offsetHeight+4:18;return lr.bottom>sr.bottom-fh}" +
       "function renumber(){var s=document.querySelectorAll('section.p081-page');for(var i=0;i<s.length;i++){var f=s[i].querySelector('.p081-r-foot');if(f)f.textContent='Page '+(i+1)+' of '+s.length}}" +
-      "function pag(){var CG='<colgroup><col style=\\\"width:70pt\\\"><col style=\\\"width:220pt\\\"><col style=\\\"width:70pt\\\"><col style=\\\"width:60pt\\\"><col style=\\\"width:60pt\\\"></colgroup>';var secs=Array.prototype.slice.call(document.querySelectorAll('section.p081-page'));if(!secs.length)return;var THEAD=secs[0].querySelector('thead').outerHTML;var groups=[];secs.forEach(function(s){if(!s.classList.contains('p081-cont'))groups.push([s]);else groups[groups.length-1].push(s)});groups.forEach(function(g){var first=g[0];var t=first.querySelector('table');for(var i=1;i<g.length;i++){var g2=g[i].querySelector('table');while(g2.tBodies[0].rows.length)t.tBodies[0].appendChild(g2.tBodies[0].rows[0]);g[i].parentNode.removeChild(g[i])}var rows=Array.prototype.slice.call(t.tBodies[0].rows);t.tBodies[0].innerHTML='';var cur=first,curT=t;rows.forEach(function(row){var had=curT.tBodies[0].rows.length;curT.tBodies[0].appendChild(row);if(had&&sheetOver(cur)){curT.tBodies[0].removeChild(row);var s2=document.createElement('section');s2.className='p081-page p081-cont';s2.innerHTML='<table class=\\\"p081-r-table\\\">'+CG+THEAD+'<tbody></tbody></table>';cur.parentNode.insertBefore(s2,cur.nextSibling);cur=s2;curT=s2.querySelector('table');curT.tBodies[0].appendChild(row)}})});renumber()}" +
-      "function runPag(){fit();pag()}if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){pag()})}else{pag()}</scr" + "ipt>";
+      "function pag(){var CG='<colgroup><col style=\\\"width:70pt\\\"><col style=\\\"width:220pt\\\"><col style=\\\"width:70pt\\\"><col style=\\\"width:60pt\\\"><col style=\\\"width:60pt\\\"></colgroup>';var secs=Array.prototype.slice.call(document.querySelectorAll('section.p081-page'));if(!secs.length)return;var THEAD=secs[0].querySelector('thead').outerHTML;var groups=[];secs.forEach(function(s){if(!s.classList.contains('p081-cont'))groups.push([s]);else groups[groups.length-1].push(s)});groups.forEach(function(g){var first=g[0];var t=first.querySelector('table');for(var i=1;i<g.length;i++){var g2=g[i].querySelector('table');while(g2.tBodies[0].rows.length)t.tBodies[0].appendChild(g2.tBodies[0].rows[0]);g[i].parentNode.removeChild(g[i])}var rows=Array.prototype.slice.call(t.tBodies[0].rows);t.tBodies[0].innerHTML='';var cur=first,curT=t;rows.forEach(function(row){var had=curT.tBodies[0].rows.length;curT.tBodies[0].appendChild(row);if(had&&sheetOver(cur)){curT.tBodies[0].removeChild(row);var s2=document.createElement('section');s2.className='p081-page p081-cont';s2.innerHTML='<table class=\\\"p081-r-table\\\">'+CG+THEAD+'<tbody></tbody></table><div class=\\\"p081-r-foot\\\"></div>';cur.parentNode.insertBefore(s2,cur.nextSibling);cur=s2;curT=s2.querySelector('table');curT.tBodies[0].appendChild(row)}})});renumber()}" +
+      "function runPag(){fit();pag()}if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){pag()})}else{pag()}window.addEventListener('load',function(){pag()});setTimeout(pag,300);</scr" + "ipt>";
     return '<!doctype html><html><head><meta charset="utf-8"><title>PickList Summary</title><style>' + css + "</style></head><body>" + inner + fit + "</body></html>";
   }
 
