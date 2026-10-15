@@ -426,6 +426,9 @@
 
   function reportDocHtml() {
     var css = [
+      /* srcdoc = เอกสารอิสระ: ตองประกาศ @font-face ในตัวเอ ง (fonts.css ของ parent ไมเขามานี้) */
+      "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew.ttf') format('truetype');font-weight:400;font-style:normal;font-display:block}",
+      "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:block}",
       "@page{size:A4;margin:10pt 20pt}",
       "body{margin:0;background:#f1f5f9}",
       /* กระดาษ A4 จอ: กว้าง 210mm ไม่เหมิ่ ยง, ขาวลอยบนหลังกราเดนเทา — ของจริงใช @page ด้านบน */
