@@ -69,6 +69,12 @@
 
 ## 2. รายงานรายวัน
 
+### 15/10 — P081 พร้อมใชงาน (READY)
+- หมาย status `ready` ใน `data/modules.php` (commit นี้)
+- สรุปงาน P081: หนาจอเลือกวันที่/Route/สถานะ/กลุ่ มคลัง + ปุ่ มค้นหา (flat list, 15 รายการ/หน้า, pager, animation) + ปุ่ มสรางเอกสาร (ตองมมีราย การค้นหากอน) + modal รายงาน A4 (THSarabunNew, ขอบ 25/20pt, 6 คอลั่ ม 70/220/70/70/60/60pt, font 16/14/12/12/10pt, header ซ้ำทุกหน้า, Page N of N ดานบนชิดขวา, ตัดหน้าอัติโนมัติ, zoom −/+ 25%)
+- สถานะ dropdown: 12 ตัวเลือก (6,17,42–45,50–55), ตัด 68-test ออก
+- Cache `v=20261014ff`
+
 ### 15/10 — P081 ขอบ 20pt ทัง 4 ด้าน + footer Page N of N ทุกหน้า (commit `56b37c0`)
 - `@page{margin:20pt}` + `.p081-page` padding `20pt` (ตังเดยีวกกันทังบนจอ/พิมพ)
 - `.p081-page` เป็น flex column + `.p081-r-foot{margin-top:auto}` → footer ติดท้ ายกระดาษทุกหน้า; หน้า cont มี `<div class="p081-r-foot">` ของตวัเอ ง
