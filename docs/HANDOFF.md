@@ -69,6 +69,11 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 รายงาน A4 ตัดหน้าใหมอัติโนมัติเมือรายการล้น (commit `e7b2d41`)
+- ย้ายหัว (title+date+caption) เข้าระดานหวัใน `thead` (colspan 6) + คอลั่ มหัวใน `thead` เดยีวกั น → ตอนดูลบนจอ/พิมพ์ แสดงหัวซ้ำทุกหน้า, แถวรายการล้นตัดไปหน้าใหมเอง
+- `@media print` ใช้ `page-break-after:always` ระหว่างสายส่ ง + `page-break-inside:auto` ให แถวแตกหน้าได
+- Verified: 60-row doc → printToPDF 3 A4 หน้า, หัว (title+คอลั่ ม) ซ้ำทุกหน้า, 24/24/12 แถว; M4 จริง 5 กลุ่ ม = 1 หน้า — cache `v=20261014m`
+
 ### 14/10 — P081 รายงาน: Route col1 rowspan ตามจำนวนรายการจริง (commit `b96ba2d`)
 - `span = it.rows.length` (เดิม `+1`) — 1 รายการ 1 แถวรายละเอยี ด = rowspan 1 ตามแบบ
 - CDP fresh tab: routeCells `["1","1","1","1","1"]` (5 items, 10 tbody rows) — cache `v=20261014l`
