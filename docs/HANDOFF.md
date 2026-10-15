@@ -69,6 +69,10 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 รายงานตองประกาศ @font-face ใน srcdoc (commit `a63a812`)
+- srcdoc iframe = เอกสารอิสระ, ไม่ได้รบั `fonts.css` จาก parent → ตองประกาศ `@font-face` THSarabunNew (400 + Bold 700) ใน css ของ `reportDocHtml()` เอง (src สมั พทั ธ์ `assets/fonts/...` เทียบกบั base URL ของหน้ าพาหนะแลวได้เอง)
+- CDP pass: `d.fonts` = 400 loaded + 700 loaded, computed family = THSarabunNew — cache `v=20261014r`
+
 ### 14/10 — P081 ขนาด font รายงาน (commit `9668483`)
 - หัวเรื่ อง 16pt B, ประจำวันที่ 14pt B, พิมพ์เมื่อ 12pt, th/td 12pt, Page N of N 10pt
 - CDP pass: 21.33/18.67/16/16/16/13.33px = 16/14/12/12/12/10pt — cache `v=20261014q`
