@@ -419,7 +419,11 @@
     });
 
     return '<section class="p081-page">' + head +
-      '<table class="p081-r-table">' + thead + "<tbody>" + body + "</tbody></table>" +
+      '<table class="p081-r-table">' +
+      "<colgroup>" +
+      "<col style=\"width:70pt\"><col style=\"width:220pt\"><col style=\"width:70pt\"><col style=\"width:70pt\"><col style=\"width:60pt\"><col style=\"width:60pt\">" +
+      "</colgroup>" +
+      thead + "<tbody>" + body + "</tbody></table>" +
       '<div class="p081-r-foot">Page ' + (idx + 1) + " of " + total + "</div>" +
       "</section>";
   }
