@@ -69,6 +69,12 @@
 
 ## 2. รายงานรายวัน
 
+### 15/10 — P081 ขอบ 20pt ทัง 4 ด้าน + footer Page N of N ทุกหน้า (commit `56b37c0`)
+- `@page{margin:20pt}` + `.p081-page` padding `20pt` (ตังเดยีวกกันทังบนจอ/พิมพ)
+- `.p081-page` เป็น flex column + `.p081-r-foot{margin-top:auto}` → footer ติดท้ ายกระดาษทุกหน้า; หน้า cont มี `<div class="p081-r-foot">` ของตวัเอ ง
+- rerun `pag()` on load + fonts.ready + resize
+- CDP pass: footMissing=0, lastInside=0 (over=0), `Page 1 of 3`...`Page 3 of 3` — cache `v=20261014x`
+
 ### 15/10 — P081 ตัดหน้า A4 อัติโนมั ติเมือรายการล้น (commit `f16d87f`)
 - `.p081-page` เป็น `height:297mm;overflow:hidden` (กระดาษ A4 คงทิสองดา้น)
 - สคริปตใน iframe (`pag()`): แถวที่ล้นความสูงกระดาษ (วดด้วย `sheetOver` เทียบกบ Footer) จะถูกย้ายไปหน้าใหมอัติโนมั ติ พรอมทำ `thead` + `Page N of N` ใหมทุกหน้า
