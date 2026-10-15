@@ -431,12 +431,12 @@
       /* กระดาษ A4 จอ: กว้าง 210mm ไม่เหมิ่ ยง, ขาวลอยบนหลังกราเดนเทา — ของจริงใช @page ด้านบน */
       ".p081-page{box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto;padding:10pt 20pt;background:#fff;font-family:'THSarabunNew','TH Sarabun New',sans-serif;color:#000}",
       ".p081-r-headblk td{border:0;padding:0 0 4px}",
-      ".p081-r-title{text-align:center;font-size:18pt;font-weight:bold;margin:0 0 2px}",
-      ".p081-r-date{text-align:center;font-size:15pt;font-weight:bold;margin:0 0 4px}",
+      ".p081-r-title{text-align:center;font-size:16pt;font-weight:bold;margin:0 0 2px}",
+      ".p081-r-date{text-align:center;font-size:14pt;font-weight:bold;margin:0 0 4px}",
       ".p081-r-caption{font-size:12pt;margin:0 0 6px}",
       ".p081-r-table{width:100%;border-collapse:collapse;table-layout:fixed}",
-      ".p081-r-table th,.p081-r-table td{border:1px solid #000;padding:2px 4px;font-size:14px;vertical-align:middle}",
-      ".p081-r-table th{background:#f0f0f0;text-align:center;font-weight:bold;font-size:14px}",
+      ".p081-r-table th,.p081-r-table td{border:1px solid #000;padding:2px 4px;font-size:12pt;vertical-align:middle}",
+      ".p081-r-table th{background:#f0f0f0;text-align:center;font-weight:bold;font-size:12pt}",
       ".p081-r-table th:nth-child(1),.p081-r-table td.p081-r-route{width:70pt}",
       ".p081-r-table th:nth-child(2){width:220pt}",
       ".p081-r-table th:nth-child(3),.p081-r-table th:nth-child(4){width:70pt}",
@@ -447,7 +447,7 @@
       ".p081-r-table td.center{text-align:center}",
       ".p081-r-route{text-align:center;font-weight:bold}",
       ".p081-r-insum{font-weight:bold}",
-      ".p081-r-foot{text-align:right;font-size:12px;margin-top:4px}",
+      ".p081-r-foot{text-align:right;font-size:10pt;margin-top:4px}",
       ".p081-page+.p081-page{margin-top:10px}",
       "@media print{body{display:block;background:#fff;zoom:1}.p081-page{width:100%;min-height:0;padding:0;background:#fff;box-shadow:none;page-break-after:always}.p081-page:last-child{page-break-after:auto;margin-top:0}.p081-r-group{page-break-inside:auto}.p081-r-table tr{page-break-inside:auto}}"
     ].join("\n");

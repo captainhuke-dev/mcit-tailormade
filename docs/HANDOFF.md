@@ -69,6 +69,12 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 preview เป็นกระดาษ A4 ใน modal (commit `42c562a`)
+- สาเหตุกอนหนานี้ไม่เเป็นกระดาษ: iframe doc `width:100%` ฉายเเน่นกรอบ, ไมมีขอบกระดาษ
+- ภายใน iframe: `body` ทาเทา `#f1f5f9`, `.p081-page` = กระดาษขาว `210mm x 297mm` (min-height) center ด้วย `margin:0 auto` + padding 10pt/20pt ตาม margin A4 จริง
+- สคริปต์ `zoom` ใน iframe: สเกลกระดาษ 794px ใหพอดีกวามกวางกรอบ (เฉพาะ screen; `@media print` รีเซ็ต `zoom:1` + `width:100%` เพื่ อ A4 จริงจาก `@page`)
+- CDP: frame 697px → sheet 695px (พอดี, ไมลนั ง) + vision pass: กระดาษขาวคร่อมเทา, 6 คอลั่ มครบ, ปุ่ ม ⤢ อยหูวั modal — cache `v=20261014p`
+
 ### 14/10 — P081 modal รายงานเต็ มหน้ า + ปุ่ มยอ่ /ขยาย (commit `977c2cb`)
 - modal กลายเป็นเต็ มหน้ า (width/height 100%, overlay padding 10px) — เดิม `max-width:960px`
 - ปุ่ ม `⤢` (id `p081RepZoom`) สลับ `.compact`: กรอบแคบ 660px (≈คอลั่ ม A4) ↔ เต็ มหน้ า; ไอคอนสลับ `⤢`/`⤡` + title "ยอ่"/"ขยายเต็ มหน้ า"
