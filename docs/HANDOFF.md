@@ -69,6 +69,11 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 รายงาน: Route col1 rowspan ตามจำนวนรายการจริง (commit `b96ba2d`)
+- `span = it.rows.length` (เดิม `+1`) — 1 รายการ 1 แถวรายละเอยี ด = rowspan 1 ตามแบบ
+- CDP fresh tab: routeCells `["1","1","1","1","1"]` (5 items, 10 tbody rows) — cache `v=20261014l`
+- Pitfall: tab เกา่ ค้างใน Edge CDP ทำให้อ่าน JS เวอร์ชน์ เกา่ — ปิ ด tab เกา่ ใหหมดกอนวัด
+
 ### 14/10 — P081 แก้ไขรายงาน A4 ตามสเปค (commit `206eedf`)
 - `@page A4 margin:10pt 20pt` (บน-ลาง 10pt, ซ้าย-ขวา 20pt), หน้ากระดาษ `body{margin:0}`; ระวัง้ `@page` ของ Chrome ไม่รอบั 4-tuple ครบทุกเคส — ใช้ 2-tuple
 - ระยะห่างระหว่างหน้า 10px (`.p081-page+.p081-page{margin-top:10px}` — ใชง้านบนจอ, `@media print` กลบัต่า 0)
