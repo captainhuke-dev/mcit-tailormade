@@ -396,8 +396,8 @@
         '<td class="num">' + esc(it.grand) + "</td>" +
         '<td class="num">' + esc(it.remaining) + "</td>" +
         "</tr>";
-      // คอลัมน์สายส่ ง (rowspan = จำนวนรายการ+1) + รายละเอยี ด
-      var span = it.rows.length + 1;
+      // คอลั่ ม์สายส่ ง (rowspan = จำนวนรายการ, ไม่ +1) + รายละเอียด
+      var span = it.rows.length;
       it.rows.forEach(function (r, n) {
         html += "<tr>";
         if (n === 0) html += '<td class="p081-r-route" rowspan="' + span + '">' + esc(p.route) + "</td>";
