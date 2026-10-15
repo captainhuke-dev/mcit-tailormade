@@ -368,40 +368,44 @@
     renderItems();
   }
 
-  /* ---------- รายงาน A4 (clone C# bgWorker_DoWork) ---------- */
+  /* ---------- รายงาน A4 (clone C# bgWorker_DoWork) ----------
+     หน้า A4 ตัดเองถ้ามีรายการเกิ น: ทังหัว (title/date/caption) + แถวคอลั่ มอยูใน <thead>
+     → หัวจะแสดงซ้ำทุกหน้าตอนพิมพ์, กลุ่ มสืนคาที่ล้นตัดไปหน้าใหมอัติโนมั ติ */
   function pageHtml(p, idx, total) {
-    var html = '<section class="p081-page">';
-    html += '<div class="p081-r-title"> PickList Summary [By Route_TMS] </div>';
-    html += '<div class="p081-r-date"> ประจำวันที่ ' + esc(fmtDateLong(state.meta.headDate)) + "</div>";
-    html += '<div class="p081-r-caption">พิมพ์เมื่อ ' + esc(fmtStamp(state.meta.printedAt)) +
+    var head = '<tr class="p081-r-headblk"><td colspan="6">' +
+      '<div class="p081-r-title"> PickList Summary [By Route_TMS] </div>' +
+      '<div class="p081-r-date"> ประจำวันที่ ' + esc(fmtDateLong(state.meta.headDate)) + "</div>" +
+      '<div class="p081-r-caption">พิมพ์เมื่อ ' + esc(fmtStamp(state.meta.printedAt)) +
       ", โดย : " + esc(state.meta.machine) +
       ", สถานะ : " + esc(statusLabel(state.meta.status)) +
-      ", Route : " + esc(p.route) + "</div>";
+      ", Route : " + esc(p.route) + "</div>" +
+      "</td></tr>";
 
-    html += '<table class="p081-r-table"><thead><tr>' +
+    var thead = "<thead>" + head +
+      "<tr>" +
       "<th>รหัส,ชื่อสินค้า<br>Route</th>" +
       "<th>ชื่อลูกค้า</th>" +
       "<th>เลขที่ใบแจ้งหนี้</th>" +
       "<th>วันที่ใบแจ้งหนี้</th>" +
       "<th>ปริมาณ</th>" +
       "<th>คงเหลือ<br>หน่วยนับ</th>" +
-      "</tr></thead><tbody>";
+      "</tr></thead>";
 
+    var body = "";
     p.items.forEach(function (it) {
-      // แถบหัวกลุ่ม: รหัส+{คลัง}+ชื่อ (colspan 3) | รวม | จำนวนรวม | คงเหลือ
-      html += '<tr class="p081-r-group">' +
+      // กลุ่ มสืนคา = แถบหัวกลุ่ ม (colspan 3) + แถวรายละเอยี ด (Route col1 rowspan = จำนวนแถว)
+      body += '<tr class="p081-r-group">' +
         '<td colspan="3">' + esc(it.stk) +
         ' <b>{' + esc(it.sto) + "}</b> " + esc(it.desc1) + " " + esc(it.desc2) + "</td>" +
         '<td class="p081-r-sumlabel"> รวม </td>' +
         '<td class="num">' + esc(it.grand) + "</td>" +
         '<td class="num">' + esc(it.remaining) + "</td>" +
         "</tr>";
-      // คอลั่ ม์สายส่ ง (rowspan = จำนวนรายการ, ไม่ +1) + รายละเอียด
       var span = it.rows.length;
       it.rows.forEach(function (r, n) {
-        html += "<tr>";
-        if (n === 0) html += '<td class="p081-r-route" rowspan="' + span + '">' + esc(p.route) + "</td>";
-        html += "<td>" + esc(r.cusName) + " " + esc(r.contact) + "</td>" +
+        body += "<tr>";
+        if (n === 0) body += '<td class="p081-r-route" rowspan="' + span + '">' + esc(p.route) + "</td>";
+        body += "<td>" + esc(r.cusName) + " " + esc(r.contact) + "</td>" +
           '<td class="center">' + esc(r.vnos) + "</td>" +
           '<td class="center">' + esc(fmtDate(r.date)) + "</td>" +
           '<td class="num">' + esc(r.qty) + "</td>" +
@@ -409,15 +413,15 @@
           "</tr>";
       });
       if (it.rows.length === 0) {
-        html += '<tr><td class="p081-r-route">' + esc(p.route) + "</td>" +
+        body += '<tr><td class="p081-r-route">' + esc(p.route) + "</td>" +
           '<td class="p081-r-insum" colspan="5"> รวม ' + esc(it.grand) + "</td></tr>";
       }
     });
 
-    html += "</tbody></table>";
-    html += '<div class="p081-r-foot">Page ' + (idx + 1) + " of " + total + "</div>";
-    html += "</section>";
-    return html;
+    return '<section class="p081-page">' + head +
+      '<table class="p081-r-table">' + thead + "<tbody>" + body + "</tbody></table>" +
+      '<div class="p081-r-foot">Page ' + (idx + 1) + " of " + total + "</div>" +
+      "</section>";
   }
 
   function reportDocHtml() {
@@ -425,6 +429,7 @@
       "@page{size:A4;margin:10pt 20pt}",
       "body{margin:0}",
       ".p081-page{width:100%;font-family:'THSarabunNew','TH Sarabun New',sans-serif;color:#000}",
+      ".p081-r-headblk td{border:0;padding:0 0 4px}",
       ".p081-r-title{text-align:center;font-size:18pt;font-weight:bold;margin:0 0 2px}",
       ".p081-r-date{text-align:center;font-size:15pt;font-weight:bold;margin:0 0 4px}",
       ".p081-r-caption{font-size:12pt;margin:0 0 6px}",
@@ -443,7 +448,7 @@
       ".p081-r-insum{font-weight:bold}",
       ".p081-r-foot{text-align:right;font-size:12px;margin-top:4px}",
       ".p081-page+.p081-page{margin-top:10px}",
-      "@media print{.p081-page{page-break-after:always}.p081-page:last-child{page-break-after:auto;margin-top:0}}"
+      "@media print{body{display:block}.p081-page{page-break-after:always}.p081-page:last-child{page-break-after:auto;margin-top:0}.p081-r-group{page-break-inside:auto}.p081-r-table tr{page-break-inside:auto}}"
     ].join("\n");
     var inner = "";
     state.pages.forEach(function (p, i) { inner += pageHtml(p, i, state.pages.length); });
