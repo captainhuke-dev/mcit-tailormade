@@ -69,6 +69,11 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 modal รายงานเต็ มหน้ า + ปุ่ มยอ่ /ขยาย (commit `977c2cb`)
+- modal กลายเป็นเต็ มหน้ า (width/height 100%, overlay padding 10px) — เดิม `max-width:960px`
+- ปุ่ ม `⤢` (id `p081RepZoom`) สลับ `.compact`: กรอบแคบ 660px (≈คอลั่ ม A4) ↔ เต็ มหน้ า; ไอคอนสลับ `⤢`/`⤡` + title "ยอ่"/"ขยายเต็ มหน้ า"
+- CDP pass: FULL 721px (vw 756) → compact 660px → กลบั 721px ✓ — cache `v=20261014n`
+
 ### 14/10 — P081 รายงาน A4 ตัดหน้าใหมอัติโนมัติเมือรายการล้น (commit `e7b2d41`)
 - ย้ายหัว (title+date+caption) เข้าระดานหวัใน `thead` (colspan 6) + คอลั่ มหัวใน `thead` เดยีวกั น → ตอนดูลบนจอ/พิมพ์ แสดงหัวซ้ำทุกหน้า, แถวรายการล้นตัดไปหน้าใหมเอง
 - `@media print` ใช้ `page-break-after:always` ระหว่างสายส่ ง + `page-break-inside:auto` ให แถวแตกหน้าได
