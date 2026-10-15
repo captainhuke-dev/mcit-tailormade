@@ -471,6 +471,7 @@
             "</div>" +
             '<div class="p081-rep-btns">' +
               '<button class="p081-rep-btn" type="button" id="p081RepNewWin" title="เปิ ดหน้ าช่างใหม้">↗</button>' +
+              '<button class="p081-rep-btn" type="button" id="p081RepZoom" title="ยอ่ /ขยาย">⤢</button>' +
               '<button class="p081-rep-btn" type="button" id="p081RepClose" title="ปิ ด (Esc)">✕</button>' +
             "</div>" +
           "</div>" +
@@ -485,6 +486,13 @@
         if (e.target === overlay) closeReport();
       });
       overlay.querySelector("#p081RepClose").addEventListener("click", closeReport);
+      // ปุ่ มยอ่ /ขยาย: สลับระหว่างเต็ มหน้ ากั บกรอบแคบแนวตัง (ติ อยา่ ง A4)
+      overlay.querySelector("#p081RepZoom").addEventListener("click", function () {
+        var modal = overlay.querySelector(".p081-rep-modal");
+        var on = modal.classList.toggle("compact");
+        this.textContent = on ? "⤡" : "⤢";
+        this.title = on ? "ขยายเต็ มหน้ า" : "ยอ่";
+      });
       overlay.querySelector("#p081RepNewWin").addEventListener("click", function () {
         var f = document.getElementById("p081RepFrame");
         var w = window.open("", "_blank", "width=900,height=1200");
@@ -601,9 +609,11 @@
     ".p081-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;box-shadow:0 12px 32px rgba(15,23,42,0.3);opacity:0;pointer-events:none;transition:0.2s ease}",
     ".p081-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}",
     /* report overlay */
-    ".p081-rep-overlay{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(15,23,42,0.55)}",
+    ".p081-rep-overlay{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:10px;background:rgba(15,23,42,0.55)}",
     ".p081-rep-overlay.show{display:flex}",
-    ".p081-rep-modal{display:flex;flex-direction:column;overflow:hidden;width:100%;max-width:960px;max-height:92vh;border-radius:14px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.35)}",
+    ".p081-rep-modal{display:flex;flex-direction:column;overflow:hidden;width:100%;height:100%;max-width:100%;max-height:100%;border-radius:10px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.35)}",
+    ".p081-rep-modal.compact{width:660px;max-width:92vw}",
+    ".p081-rep-modal.compact .p081-rep-body iframe{width:620px;margin:0 auto;display:block}",
     ".p081-rep-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid #e2e8f0}",
     ".p081-rep-title{font-size:15px;font-weight:700;color:#0f172a}",
     ".p081-rep-sub{margin-top:2px;color:#64748b;font-size:12px}",
