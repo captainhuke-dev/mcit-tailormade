@@ -379,12 +379,12 @@
       ", Route : " + esc(p.route) + "</div>";
 
     html += '<table class="p081-r-table"><thead><tr>' +
-      "<th>รหัส,ชื่อสินค้า, <br>Route</th>" +
+      "<th>รหัส,ชื่อสินค้า<br>Route</th>" +
       "<th>ชื่อลูกค้า</th>" +
-      "<th>เลขที่ ใบแจ้งหนี้</th>" +
-      "<th>วันที่ ใบแจ้งหนี้</th>" +
+      "<th>เลขที่ใบแจ้งหนี้</th>" +
+      "<th>วันที่ใบแจ้งหนี้</th>" +
       "<th>ปริมาณ</th>" +
-      "<th>คงเหลือ /<br>หน่วยนับ</th>" +
+      "<th>คงเหลือ<br>หน่วยนับ</th>" +
       "</tr></thead><tbody>";
 
     p.items.forEach(function (it) {
@@ -422,18 +422,19 @@
 
   function reportDocHtml() {
     var css = [
-      "@page{size:A4;margin:10mm}",
+      "@page{size:A4;margin:10pt 20pt}",
+      "body{margin:0}",
       ".p081-page{width:100%;font-family:'THSarabunNew','TH Sarabun New',sans-serif;color:#000}",
-      ".p081-r-title{text-align:center;font-size:18px;font-weight:bold;margin:0 0 2px}",
-      ".p081-r-date{text-align:center;font-size:15px;font-weight:bold;margin:0 0 4px}",
-      ".p081-r-caption{font-size:12px;margin:0 0 6px}",
+      ".p081-r-title{text-align:center;font-size:18pt;font-weight:bold;margin:0 0 2px}",
+      ".p081-r-date{text-align:center;font-size:15pt;font-weight:bold;margin:0 0 4px}",
+      ".p081-r-caption{font-size:12pt;margin:0 0 6px}",
       ".p081-r-table{width:100%;border-collapse:collapse;table-layout:fixed}",
       ".p081-r-table th,.p081-r-table td{border:1px solid #000;padding:2px 4px;font-size:14px;vertical-align:middle}",
       ".p081-r-table th{background:#f0f0f0;text-align:center;font-weight:bold;font-size:14px}",
-      ".p081-r-table th:nth-child(1),.p081-r-table td.p081-r-route{width:12.7%}",
-      ".p081-r-table th:nth-child(2){width:40%}",
-      ".p081-r-table th:nth-child(3),.p081-r-table th:nth-child(4){width:12.7%}",
-      ".p081-r-table th:nth-child(5),.p081-r-table th:nth-child(6){width:10.9%}",
+      ".p081-r-table th:nth-child(1),.p081-r-table td.p081-r-route{width:70pt}",
+      ".p081-r-table th:nth-child(2){width:220pt}",
+      ".p081-r-table th:nth-child(3),.p081-r-table th:nth-child(4){width:70pt}",
+      ".p081-r-table th:nth-child(5),.p081-r-table th:nth-child(6){width:60pt}",
       ".p081-r-group td{background:#f0f0f0;font-weight:bold}",
       ".p081-r-group td.p081-r-sumlabel{text-align:center}",
       ".p081-r-table td.num{text-align:right}",
@@ -441,7 +442,8 @@
       ".p081-r-route{text-align:center;font-weight:bold}",
       ".p081-r-insum{font-weight:bold}",
       ".p081-r-foot{text-align:right;font-size:12px;margin-top:4px}",
-      "@media print{.p081-page{page-break-after:always}.p081-page:last-child{page-break-after:auto}}"
+      ".p081-page+.p081-page{margin-top:10px}",
+      "@media print{.p081-page{page-break-after:always}.p081-page:last-child{page-break-after:auto;margin-top:0}}"
     ].join("\n");
     var inner = "";
     state.pages.forEach(function (p, i) { inner += pageHtml(p, i, state.pages.length); });
