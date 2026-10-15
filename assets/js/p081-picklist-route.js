@@ -369,19 +369,17 @@
   }
 
   /* ---------- รายงาน A4 (clone C# bgWorker_DoWork) ----------
-     หน้า A4 ตัดเองถ้ามีรายการเกิ น: ทังหัว (title/date/caption) + แถวคอลั่ มอยูใน <thead>
-     → หัวจะแสดงซ้ำทุกหน้าตอนพิมพ์, กลุ่ มสืนคาที่ล้นตัดไปหน้าใหมอัติโนมั ติ */
+     หัวเอกสาร (title/date/caption) อยูนอกตาราง (บนสุดของหน้า) — แสดงครังเดียว
+     หัวคอลั่ มอยูใน <thead> → ซ้ำทุกหน้าตอนพิมพ, กลุ่ มสืนคาที่ล้นตัดไปหน้าใหมอัติโนมั ติ */
   function pageHtml(p, idx, total) {
-    var head = '<tr class="p081-r-headblk"><td colspan="6">' +
-      '<div class="p081-r-title"> PickList Summary [By Route_TMS] </div>' +
+    var head = '<div class="p081-r-title"> PickList Summary [By Route_TMS] </div>' +
       '<div class="p081-r-date"> ประจำวันที่ ' + esc(fmtDateLong(state.meta.headDate)) + "</div>" +
       '<div class="p081-r-caption">พิมพ์เมื่อ ' + esc(fmtStamp(state.meta.printedAt)) +
       ", โดย : " + esc(state.meta.machine) +
       ", สถานะ : " + esc(statusLabel(state.meta.status)) +
-      ", Route : " + esc(p.route) + "</div>" +
-      "</td></tr>";
+      ", Route : " + esc(p.route) + "</div>";
 
-    var thead = "<thead>" + head +
+    var thead = "<thead>" +
       "<tr>" +
       "<th>รหัส,ชื่อสินค้า<br>Route</th>" +
       "<th>ชื่อลูกค้า</th>" +

@@ -69,6 +69,10 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 ตารางรายงาน 6 คอลั่ ม 70/220/70/70/60/60pt (commit `789fb87`)
+- เพิ่ ม `<colgroup><col style="width:70pt">...` ข้างใน `<table>` (หน้ า thead) เพราะ `nth-child` บน th ลวมกบคอลั่ ม `colspan=3` ของแถบบกลุ่ ม
+- CDP: คอลั่ ม 82/259/82/82/71/71px ตอนย่ อ = สัดส่วย 70/220/70/70/60/60 ครบ — cache `v=20261014s`
+
 ### 14/10 — P081 รายงานตองประกาศ @font-face ใน srcdoc (commit `a63a812`)
 - srcdoc iframe = เอกสารอิสระ, ไม่ได้รบั `fonts.css` จาก parent → ตองประกาศ `@font-face` THSarabunNew (400 + Bold 700) ใน css ของ `reportDocHtml()` เอง (src สมั พทั ธ์ `assets/fonts/...` เทียบกบั base URL ของหน้ าพาหนะแลวได้เอง)
 - CDP pass: `d.fonts` = 400 loaded + 700 loaded, computed family = THSarabunNew — cache `v=20261014r`
