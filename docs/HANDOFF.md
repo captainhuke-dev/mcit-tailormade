@@ -69,6 +69,10 @@
 
 ## 2. รายงานรายวัน
 
+### 14/10 — P081 ขนาด font รายงาน (commit `9668483`)
+- หัวเรื่ อง 16pt B, ประจำวันที่ 14pt B, พิมพ์เมื่อ 12pt, th/td 12pt, Page N of N 10pt
+- CDP pass: 21.33/18.67/16/16/16/13.33px = 16/14/12/12/12/10pt — cache `v=20261014q`
+
 ### 14/10 — P081 preview เป็นกระดาษ A4 ใน modal (commit `42c562a`)
 - สาเหตุกอนหนานี้ไม่เเป็นกระดาษ: iframe doc `width:100%` ฉายเเน่นกรอบ, ไมมีขอบกระดาษ
 - ภายใน iframe: `body` ทาเทา `#f1f5f9`, `.p081-page` = กระดาษขาว `210mm x 297mm` (min-height) center ด้วย `margin:0 auto` + padding 10pt/20pt ตาม margin A4 จริง
