@@ -33,7 +33,7 @@
 
   var root = null;
   var el = {};
-  var state = { pages: [], items: [], meta: null, searched: false, loading: false, escBound: false, mode: "route", page: 1 };
+  var state = { pages: [], items: [], meta: null, searched: false, loading: false, escBound: false, mode: "route", page: 1, zoom: 100 };
   var PAGE_SIZE = 15; // 15 รายการสืนค้าต่อหน้า
   var toastTimer = null;
 
@@ -462,7 +462,7 @@
     // หนาสกริปตใน iframe: (1) สเกลกระดาษ 210mm ใหพอดีกรอบ (เฉพาะจอ)
     // (2) paginate — แถวที่ล้นกวามสูง A4 (297mm) จะตัดไปหน้าใหมอัติโนมั ติ
     //     ทกุกลุ่ ม Route เริ่ มหน้าใหมตลอด (page-break-after ทิงตอนพิมพ)
-    var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',function(){fit();pag()});" +
+    var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var m=window.__MAN;if(m){document.body.style.zoom=m;return}var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',function(){fit();pag()});window.setZoom=function(z){window.__MAN=z;fit();pag()};" +
       "function sheetOver(sec){var t=sec.querySelector('table');var tb=t.tBodies[0];var last=tb.rows[tb.rows.length-1];if(!last)return false;var sr=sec.getBoundingClientRect();var lr=last.getBoundingClientRect();var pb=parseFloat(getComputedStyle(sec).paddingBottom)||0;return lr.bottom>sr.bottom-pb}" +
       "function renumber(){var s=document.querySelectorAll('section.p081-page');for(var i=0;i<s.length;i++){var f=s[i].querySelector('.p081-r-foot');if(f)f.textContent='Page '+(i+1)+' of '+s.length}}" +
       "function pag(){var CG='<colgroup><col style=\\\"width:70pt\\\"><col style=\\\"width:220pt\\\"><col style=\\\"width:70pt\\\"><col style=\\\"width:60pt\\\"><col style=\\\"width:60pt\\\"></colgroup>';var secs=Array.prototype.slice.call(document.querySelectorAll('section.p081-page'));if(!secs.length)return;var THEAD=secs[0].querySelector('thead').outerHTML;var groups=[];secs.forEach(function(s){if(!s.classList.contains('p081-cont'))groups.push([s]);else groups[groups.length-1].push(s)});groups.forEach(function(g){var first=g[0];var t=first.querySelector('table');for(var i=1;i<g.length;i++){var g2=g[i].querySelector('table');while(g2.tBodies[0].rows.length)t.tBodies[0].appendChild(g2.tBodies[0].rows[0]);g[i].parentNode.removeChild(g[i])}var rows=Array.prototype.slice.call(t.tBodies[0].rows);t.tBodies[0].innerHTML='';var cur=first,curT=t;rows.forEach(function(row){var had=curT.tBodies[0].rows.length;curT.tBodies[0].appendChild(row);if(had&&sheetOver(cur)){curT.tBodies[0].removeChild(row);var s2=document.createElement('section');s2.className='p081-page p081-cont';s2.innerHTML='<div class=\\\"p081-r-foot\\\"></div><table class=\\\"p081-r-table\\\">'+CG+THEAD+'<tbody></tbody></table>';cur.parentNode.insertBefore(s2,cur.nextSibling);cur=s2;curT=s2.querySelector('table');curT.tBodies[0].appendChild(row)}})});renumber()}" +
@@ -486,7 +486,7 @@
             "</div>" +
             '<div class="p081-rep-btns">' +
               '<button class="p081-rep-btn" type="button" id="p081RepNewWin" title="เปิ ดหน้ าช่างใหม้">↗</button>' +
-              '<button class="p081-rep-btn" type="button" id="p081RepZoom" title="ยอ่ /ขยาย">⤢</button>' +
+              '<button class="p081-rep-btn" type="button" id="p081RepZoom" title="ยอ่ /ขยาย (เป็ น %)">100%</button>' +
               '<button class="p081-rep-btn" type="button" id="p081RepClose" title="ปิ ด (Esc)">✕</button>' +
             "</div>" +
           "</div>" +
@@ -501,12 +501,13 @@
         if (e.target === overlay) closeReport();
       });
       overlay.querySelector("#p081RepClose").addEventListener("click", closeReport);
-      // ปุ่ มยอ่ /ขยาย: สลับระหว่างเต็ มหน้ ากั บกรอบแคบแนวตัง (ติ อยา่ ง A4)
+      // ปุ่ มยอ่ /ขยาย: เลือกระดบั เปอรเ์ซ็นตม์ — 100% → 125% → 150% → 75%
       overlay.querySelector("#p081RepZoom").addEventListener("click", function () {
-        var modal = overlay.querySelector(".p081-rep-modal");
-        var on = modal.classList.toggle("compact");
-        this.textContent = on ? "⤡" : "⤢";
-        this.title = on ? "ขยายเต็ มหน้ า" : "ยอ่";
+        var steps = [100, 125, 150, 75];
+        var i = steps.indexOf(state.zoom);
+        state.zoom = steps[(i + 1) % steps.length];
+        this.textContent = state.zoom + "%";
+        applyZoom();
       });
       overlay.querySelector("#p081RepNewWin").addEventListener("click", function () {
         var f = document.getElementById("p081RepFrame");
@@ -539,10 +540,33 @@
     }
     $("p081RepSub").textContent =
       state.pages.length + " สายส่ ง — " + fmtDateLong(state.meta.headDate) + " · " + statusLabel(state.meta.status);
+    var zb = overlay.querySelector("#p081RepZoom");
+    if (zb) zb.textContent = state.zoom + "%";
     var f = overlay.querySelector("#p081RepFrame");
     f.srcdoc = reportDocHtml();
     overlay.classList.add("show");
     overlay.style.display = "flex";
+    applyZoom();
+  }
+
+  function applyZoom() {
+    var f = document.getElementById("p081RepFrame");
+    if (!f) return;
+    var tryIt = function () {
+      try {
+        if (f.contentWindow && f.contentWindow.setZoom) {
+          f.contentWindow.setZoom(state.zoom / 100);
+          return true;
+        }
+      } catch (e) { /* iframe ยังไม่พร้อม */ }
+      return false;
+    };
+    if (tryIt()) return;
+    var n = 0;
+    var t = setInterval(function () {
+      n++;
+      if (tryIt() || n > 50) clearInterval(t);
+    }, 100);
   }
 
   function closeReport() {
