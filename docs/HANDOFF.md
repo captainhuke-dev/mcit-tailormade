@@ -69,12 +69,12 @@
 
 ## 2. รายงานรายวัน
 
-### 16/10 — P080 PickList QC: UI ก่อน (clone demo) — commit `e447e2d` + `8107e15`
+### 16/10 — P080 PickList QC: UI ก่อน (clone demo) — commit `e447e2d` + `8107e15` + `8c8a45a`
 - `assets/js/p080-picklist-qc.js` IIFE `window.P080PickListQC={mount}` — clone demo/P080_demo.html
-- Launcher: วันที่หัวเอกสาร + สถานะ (12 ตัว) — ปุ่ ม 2 ปุ่ มย้ายไปหัว panel ผลลัพธ์ ด้านบนขวา (`8107e15`)
-- ผลลัพธ์: 9 คอลั่ ม (ลำดับ/เลขที่/วันที่/รหัส/ชื่อ/จำนวน/หน่วย/สถานะ/QC) + mode badge (ปกติ/ซ่อนชื่อ) + footer
-- mock data ตาม demo (PQCN/PQCH, ชื่อสินค้ามัสก์เมื่ อซ่อน) — ยังไม่เชื่อม API
-- CDP: 12 rows normal, 8 rows hidden (masked, PQCH), gradient ปุ่ มดี ด์/ม่วง pass — cache `p080 v=20261016a`, `portal v=20261016a`
+- Launcher: วันที่หัวเอกสาร + สถานะ (12 ตัว) + ปุ่ ม "ค้นหา" (เขียว) — ปุ่ ม 2 ปุ่ มสร้างอยู่หัว panel ผลลัพธ์ ด้านบนขวา
+- **ค้นหา** (`8c8a45a`): `api/p080_search.php` — SQL verbatim (MIH+MIL+STK, MILcut=-1, MILsto='01', STKgroup IN tb_GroupBattery Active, SBLqty subquery 01/03/04, MIHtype='IS', status param) → ตาราง 5 คอลั่ ม (รหัส/กลุ่ ม/ชื่อ 1/ชื่อ 2/คงเหลือ) ใน panel ผลลัพธ์ + badge "ผลค้นหา"
+- ผลลัพธ์สร้าง: 9 คอลั่ ม (mock ตาม demo — PQCN/PQCH) + mode badge + footer
+- CDP: search status 52 = 8 rows (batte รีจริง), status 6 = empty + toast "ไม่พบรายการ...", generate ปกติ/ซ่อนชื่ อ pass — cache `p080 v=20261016c`, `portal v=20261016a`
 
 ### 15/10 — P081 พร้อมใชงาน (READY)
 - หมาย status `ready` ใน `data/modules.php` (commit นี้)
