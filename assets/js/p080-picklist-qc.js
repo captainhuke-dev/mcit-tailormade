@@ -181,7 +181,7 @@
     ".p080-app{display:flex;flex-direction:column;gap:14px}",
     /* launcher */
     ".p080-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
-    ".p080-launcher-body{display:grid;grid-template-columns:minmax(220px,0.8fr) minmax(220px,0.9fr) auto auto;gap:14px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
+    ".p080-launcher-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p080-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
     ".p080-input-wrap{position:relative}",
     ".p080-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
@@ -206,6 +206,9 @@
     ".p080-panel-title h2{overflow:hidden;font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}",
     ".p080-panel-title p{overflow:hidden;margin-top:1px;color:#64748b;font-size:11px;text-overflow:ellipsis;white-space:nowrap}",
     ".p080-mode-badge{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}",
+    ".p080-header-right{display:flex;align-items:center;gap:10px}",
+    ".p080-header-actions{display:flex;align-items:center;gap:8px}",
+    ".p080-header-actions .p080-action-button{min-height:38px;width:140px;padding:6px 8px;border-radius:9px;font-size:12px}",
     ".p080-mode-badge.normal{color:#1d4ed8;background:#dbeafe}",
     ".p080-mode-badge.hidden{color:#7c3aed;background:#f5f3ff}",
     ".p080-table-container{min-height:0;flex:1;overflow:auto}",
@@ -250,8 +253,6 @@
             '<label for="p080Status">สถานะใบแจ้งหนี้</label>' +
             '<div class="p080-input-wrap">' + icon("chevron") + '<select id="p080Status">' + statusHtml + "</select></div>" +
           "</div>" +
-          '<button class="p080-action-button primary" id="p080GenNormal" type="submit">' + icon("doc") + "สร้างเอกสาร</button>" +
-          '<button class="p080-action-button secondary" id="p080GenHidden" type="button">' + icon("eyeoff") + "สร้างเอกสาร<small>(ซ่อนชื่อสินค้า)</small></button>" +
         "</form>" +
       "</section>" +
       '<section class="p080-panel">' +
@@ -263,7 +264,13 @@
               '<p id="p080Subtitle">ยังไม่ได้สร้างเอกสาร</p>' +
             "</div>" +
           "</div>" +
+          '<div class="p080-header-right">' +
           '<span class="p080-mode-badge normal" id="p080ModeBadge" style="display:none">โหมดปกติ</span>' +
+          '<div class="p080-header-actions">' +
+            '<button class="p080-action-button primary" id="p080GenNormal" type="button">' + icon("doc") + "สร้างเอกสาร</button>" +
+            '<button class="p080-action-button secondary" id="p080GenHidden" type="button">' + icon("eyeoff") + "สร้างเอกสาร<small>(ซ่อนชื่อสินค้า)</small></button>" +
+          "</div>" +
+          "</div>" +
         "</div>" +
         '<div class="p080-table-container" id="p080TableContainer" style="display:none">' +
           '<table class="p080-table">' +
@@ -312,7 +319,7 @@
     el.footerText = $("p080FooterText");
     el.toast = $("p080Toast");
 
-    $("p080Form").addEventListener("submit", function (e) {
+    el.genNormalBtn.addEventListener("click", function (e) {
       e.preventDefault();
       doGenerate(false);
     });
