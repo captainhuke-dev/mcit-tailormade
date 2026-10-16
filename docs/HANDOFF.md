@@ -69,6 +69,13 @@
 
 ## 2. รายงานรายวัน
 
+### 16/10 — P080 PickList QC: UI ก่อน (clone demo) — commit `e447e2d`
+- `assets/js/p080-picklist-qc.js` IIFE `window.P080PickListQC={mount}` — clone demo/P080_demo.html
+- Launcher: วันที่หัวเอกสาร + สถานะ (12 ตัว) + ปุ่ ม 2 ปุ่ ม: สร้างเอกสาร (ดี ด์) / สร้างเอกสาร (ซ่อนชื่อสินค้า) (ม่วง)
+- ผลลัพธ์: 9 คอลั่ ม (ลำดับ/เลขที่/วันที่/รหัส/ชื่อ/จำนวน/หน่วย/สถานะ/QC) + mode badge (ปกติ/ซ่อนชื่อ) + footer
+- mock data ตาม demo (PQCN/PQCH, ชื่อสินค้ามัสก์เมื่ อซ่อน) — ยังไม่เชื่อม API
+- CDP: 12 rows normal, 8 rows hidden (masked, PQCH), gradient ปุ่ มดี ด์/ม่วง pass — cache `p080 v=20261016a`, `portal v=20261016a`
+
 ### 15/10 — P081 พร้อมใชงาน (READY)
 - หมาย status `ready` ใน `data/modules.php` (commit นี้)
 - สรุปงาน P081: หนาจอเลือกวันที่/Route/สถานะ/กลุ่ มคลัง + ปุ่ มค้นหา (flat list, 15 รายการ/หน้า, pager, animation) + ปุ่ มสรางเอกสาร (ตองมมีราย การค้นหากอน) + modal รายงาน A4 (THSarabunNew, ขอบ 25/20pt, 6 คอลั่ ม 70/220/70/70/60/60pt, font 16/14/12/12/10pt, header ซ้ำทุกหน้า, Page N of N ดานบนชิดขวา, ตัดหน้าอัติโนมัติ, zoom −/+ 25%)
