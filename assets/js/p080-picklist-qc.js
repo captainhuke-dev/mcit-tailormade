@@ -36,7 +36,7 @@
 
   var root = null;
   var el = {};
-  var state = { rows: [], generated: false, loading: false, hideNames: false };
+  var state = { rows: [], generated: false, loading: false, hideNames: false, searched: false, searching: false };
   var toastTimer = null;
 
   function $(id) { return document.getElementById(id); }
@@ -52,7 +52,8 @@
       grid: '<path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path>',
       check: '<path d="m9 11 3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>',
       cal: '<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path>',
-      chevron: '<path d="m6 9 6 6 6-6"></path>'
+      chevron: '<path d="m6 9 6 6 6-6"></path>',
+      search: '<circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path>'
     };
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (paths[name] || "") + "</svg>";
   }
@@ -74,6 +75,17 @@
       if (STATUS_OPTIONS[i][0] === v) return STATUS_OPTIONS[i][1];
     }
     return v;
+  }
+
+  var MAC5_CONNECTION_ID = "c1788406814359";
+  var API = { search: "api/p080_search.php" };
+
+  function apiPost(url, data) {
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    }).then(function (r) { return r.json(); });
   }
 
   function randomBetween(min, max) {
@@ -115,26 +127,53 @@
 
   /* ---------- render ผลลัพธ์ ---------- */
   function render() {
-    var rows = state.rows;
-    if (!state.generated || !rows.length) {
+    var isSearch = state.view === "search";
+    var isGen = state.view === "gen";
+
+    if (!isSearch && !isGen) {
+      el.searchContainer.style.display = "none";
       el.tableContainer.style.display = "none";
       el.footer.style.display = "none";
       el.modeBadge.style.display = "none";
       el.emptyState.style.display = "flex";
-      el.subtitle.textContent = "ยังไม่ได้สร้างเอกสาร";
+      el.subtitle.textContent = "ยังไม่ได้ค้นหา/สร้างเอกสาร";
       return;
     }
-    el.tableContainer.style.display = "block";
-    el.footer.style.display = "flex";
-    el.modeBadge.style.display = "inline-flex";
     el.emptyState.style.display = "none";
+    el.footer.style.display = "flex";
+    el.searchContainer.style.display = isSearch ? "block" : "none";
+    el.tableContainer.style.display = isGen ? "block" : "none";
+
+    if (isSearch) {
+      var rows = state.searchRows || [];
+      el.modeBadge.style.display = "inline-flex";
+      el.modeBadge.textContent = "ผลค้นหา";
+      el.modeBadge.className = "p080-mode-badge search";
+      el.subtitle.textContent = "สถานะ " + statusLabel(el.status.value) + " · " + fmtDate(el.headDate.value);
+      var html = "";
+      rows.forEach(function (r) {
+        html += "<tr>" +
+          '<td class="p080-product-code">' + esc(r.STKcode) + "</td>" +
+          '<td class="center">' + esc(r.STKgroup) + "</td>" +
+          "<td>" + esc(r.STKdescT1) + "</td>" +
+          "<td>" + esc(r.STKdescT2) + "</td>" +
+          '<td class="center number">' + (r.SBLqty == null ? "" : esc(r.SBLqty)) + "</td>" +
+          "</tr>";
+      });
+      el.searchRows.innerHTML = html;
+      el.footerText.textContent = "แสดง " + rows.length + " รายการ";
+      return;
+    }
+
+    var rows2 = state.rows;
+    el.modeBadge.style.display = "inline-flex";
     el.modeBadge.textContent = state.hideNames ? "โหมดซ่อนชื่อสินค้า" : "โหมดปกติ";
     el.modeBadge.className = "p080-mode-badge " + (state.hideNames ? "hidden" : "normal");
     el.subtitle.textContent = "วันที่หัวเอกสาร " + fmtDate(el.headDate.value) + " · สถานะ " + statusLabel(el.status.value);
 
-    var html = "";
-    rows.forEach(function (r) {
-      html += "<tr>" +
+    var html2 = "";
+    rows2.forEach(function (r) {
+      html2 += "<tr>" +
         '<td class="center">' + r.index + "</td>" +
         '<td class="p080-doc-number">' + esc(r.document) + "</td>" +
         '<td class="center">' + esc(fmtDate(r.date)) + "</td>" +
@@ -147,8 +186,38 @@
         '<td class="center"><span class="p080-qc-check"></span></td>' +
         "</tr>";
     });
-    el.rows.innerHTML = html;
-    el.footerText.textContent = "แสดง " + rows.length + " รายการ";
+    el.rows.innerHTML = html2;
+    el.footerText.textContent = "แสดง " + rows2.length + " รายการ";
+  }
+
+  /* ---------- ค้นหา (api/p080_search.php) ---------- */
+  function doSearch() {
+    if (state.searching) return;
+    state.searching = true;
+    el.searchBtn.classList.add("loading");
+    el.searchBtn.disabled = true;
+    apiPost(API.search, { connectionId: MAC5_CONNECTION_ID, status: el.status.value })
+      .then(function (d) {
+        if (!d.ok) throw new Error(d.error);
+        if (d.count === 0) {
+          state.view = null;
+          render();
+          showToast("ไม่พบรายการตามเงื่ อนไขที่ค้ นหา");
+          return;
+        }
+        state.searchRows = d.rows;
+        state.view = "search";
+        render();
+        showToast("พบ " + d.count + " รายการ");
+      })
+      .catch(function (e) {
+        showToast("ค้นหาไม่สำเร็จ: " + e.message);
+      })
+      .then(function () {
+        state.searching = false;
+        el.searchBtn.classList.remove("loading");
+        el.searchBtn.disabled = false;
+      });
   }
 
   /* ---------- สร้างเอกสาร (ปกติ / ซ่อนชื่อสินค้า) ---------- */
@@ -165,7 +234,7 @@
     // mock — ต่อ APIจริงขึ้ น
     setTimeout(function () {
       state.rows = generatePicklist(hideNames);
-      state.generated = true;
+      state.view = "gen";
       state.loading = false;
       el.genNormalBtn.classList.remove("loading");
       el.genHiddenBtn.classList.remove("loading");
@@ -181,7 +250,7 @@
     ".p080-app{display:flex;flex-direction:column;gap:14px}",
     /* launcher */
     ".p080-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
-    ".p080-launcher-body{display:grid;grid-template-columns:1fr 1fr;gap:14px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
+    ".p080-launcher-body{display:grid;grid-template-columns:1fr 1fr auto;gap:14px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p080-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
     ".p080-input-wrap{position:relative}",
     ".p080-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
@@ -192,6 +261,7 @@
     ".p080-action-button svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
     ".p080-action-button.primary{background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 9px 20px rgba(37,99,235,0.26)}",
     ".p080-action-button.secondary{background:linear-gradient(135deg,#a78bfa,#7c3aed);box-shadow:0 9px 20px rgba(124,58,237,0.26)}",
+    ".p080-action-button.search-btn{width:120px;background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 9px 20px rgba(5,150,105,0.26)}",
     ".p080-action-button small{font-size:10px;font-weight:600;opacity:0.92}",
     ".p080-action-button:hover:not(:disabled){transform:translateY(-2px);filter:brightness(1.06)}",
     ".p080-action-button:disabled{opacity:0.7}",
@@ -210,6 +280,7 @@
     ".p080-header-actions{display:flex;align-items:center;gap:8px}",
     ".p080-header-actions .p080-action-button{min-height:38px;width:140px;padding:6px 8px;border-radius:9px;font-size:12px}",
     ".p080-mode-badge.normal{color:#1d4ed8;background:#dbeafe}",
+    ".p080-mode-badge.search{color:#047857;background:#d1fae5}",
     ".p080-mode-badge.hidden{color:#7c3aed;background:#f5f3ff}",
     ".p080-table-container{min-height:0;flex:1;overflow:auto}",
     ".p080-table{width:100%;min-width:820px;border-collapse:separate;border-spacing:0;white-space:nowrap}",
@@ -253,6 +324,7 @@
             '<label for="p080Status">สถานะใบแจ้งหนี้</label>' +
             '<div class="p080-input-wrap">' + icon("chevron") + '<select id="p080Status">' + statusHtml + "</select></div>" +
           "</div>" +
+          '<button class="p080-action-button search-btn" id="p080SearchBtn" type="button">' + icon("search") + "ค้นหา</button>" +
         "</form>" +
       "</section>" +
       '<section class="p080-panel">' +
@@ -272,6 +344,16 @@
           "</div>" +
           "</div>" +
         "</div>" +
+        '<div class="p080-table-container" id="p080SearchContainer" style="display:none">' +
+          '<table class="p080-table p080-search-table">' +
+            "<thead><tr>" +
+            "<th>รหัสสินค้า</th><th class=\"center\">กลุ่ ม</th>" +
+            "<th>ชื่อสินค้า (1)</th><th>ชื่อสินค้า (2)</th>" +
+            '<th class="center number">คงเหลือ</th>' +
+            "</tr></thead>" +
+            '<tbody id="p080SearchRows"></tbody>' +
+          "</table>" +
+        "</div>" +
         '<div class="p080-table-container" id="p080TableContainer" style="display:none">' +
           '<table class="p080-table">' +
             "<thead><tr>" +
@@ -286,7 +368,7 @@
         '<div class="p080-empty-state" id="p080EmptyState">' +
           "<div>" + icon("check") +
           "<strong>ยังไม่มีเอกสารที่สร้าง</strong>" +
-          '<p>กำหนดเงื่อนไขด้านบน แล้วกด "สร้างเอกสาร" หรือ "สร้างเอกสาร (ซ่อนชื่อสินค้า)"</p>' +
+          '<p>เลือกสถานะ แล้วกด "ค้นหา" หรือ "สร้างเอกสาร"</p>' +
           "</div>" +
         "</div>" +
         '<div class="p080-table-footer" id="p080Footer" style="display:none">' +
@@ -310,6 +392,9 @@
     el.status = $("p080Status");
     el.genNormalBtn = $("p080GenNormal");
     el.genHiddenBtn = $("p080GenHidden");
+    el.searchBtn = $("p080SearchBtn");
+    el.searchContainer = $("p080SearchContainer");
+    el.searchRows = $("p080SearchRows");
     el.subtitle = $("p080Subtitle");
     el.modeBadge = $("p080ModeBadge");
     el.tableContainer = $("p080TableContainer");
@@ -326,6 +411,14 @@
     el.genHiddenBtn.addEventListener("click", function (e) {
       e.preventDefault();
       doGenerate(true);
+    });
+    el.searchBtn.addEventListener("click", function (e) {
+      e.preventDefault();
+      doSearch();
+    });
+    $("p080Form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      doSearch();
     });
   }
 
