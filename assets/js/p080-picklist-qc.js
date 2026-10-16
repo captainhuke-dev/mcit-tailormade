@@ -140,9 +140,7 @@
     if (state.loading) return;
     state.loading = true;
     el.genNormalBtn.disabled = true;
-    el.genHiddenBtn.disabled = true;
-    var btn = hideNames ? el.genHiddenBtn : el.genNormalBtn;
-    btn.classList.add("loading");
+    el.genNormalBtn.classList.add("loading");
 
     apiPost(API.generate, {
       connectionId: MAC5_CONNECTION_ID,
@@ -166,9 +164,7 @@
       .then(function () {
         state.loading = false;
         el.genNormalBtn.disabled = false;
-        el.genHiddenBtn.disabled = false;
         el.genNormalBtn.classList.remove("loading");
-        el.genHiddenBtn.classList.remove("loading");
       });
   }
 
@@ -551,7 +547,6 @@
           '<span class="p080-mode-badge search" id="p080ModeBadge" style="display:none">ผลค้นหา</span>' +
           '<div class="p080-header-actions">' +
             '<button class="p080-action-button primary" id="p080GenNormal" type="button">' + icon("doc") + "สร้างรายงาน</button>" +
-            '<button class="p080-action-button secondary" id="p080GenHidden" type="button">' + icon("eyeoff") + "สร้างรายงาน<small>(ซ่อนชื่อสินค้า)</small></button>" +
           "</div>" +
           "</div>" +
         "</div>" +
@@ -593,7 +588,6 @@
     el.headDate = $("p080HeadDate");
     el.status = $("p080Status");
     el.genNormalBtn = $("p080GenNormal");
-    el.genHiddenBtn = $("p080GenHidden");
     el.searchBtn = $("p080SearchBtn");
     el.searchContainer = $("p080SearchContainer");
     el.searchRows = $("p080SearchRows");
@@ -607,10 +601,6 @@
     el.genNormalBtn.addEventListener("click", function (e) {
       e.preventDefault();
       doGenerate(false);
-    });
-    el.genHiddenBtn.addEventListener("click", function (e) {
-      e.preventDefault();
-      doGenerate(true);
     });
     el.searchBtn.addEventListener("click", function (e) {
       e.preventDefault();
