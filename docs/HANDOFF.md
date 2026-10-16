@@ -69,12 +69,15 @@
 
 ## 2. รายงานรายวัน
 
-### 16/10 — P080 PickList QC: UI ก่อน (clone demo) — commit `e447e2d` + `8107e15` + `8c8a45a`
+### 16/10 — P080 PickList QC: UI + ค้นหา + รายงาน modal — commit `e447e2d` + `8107e15` + `8c8a45a` + `1fb7c42`
 - `assets/js/p080-picklist-qc.js` IIFE `window.P080PickListQC={mount}` — clone demo/P080_demo.html
 - Launcher: วันที่หัวเอกสาร + สถานะ (12 ตัว) + ปุ่ ม "ค้นหา" (เขียว) — ปุ่ ม 2 ปุ่ มสร้างอยู่หัว panel ผลลัพธ์ ด้านบนขวา
 - **ค้นหา** (`8c8a45a`): `api/p080_search.php` — SQL verbatim (MIH+MIL+STK, MILcut=-1, MILsto='01', STKgroup IN tb_GroupBattery Active, SBLqty subquery 01/03/04, MIHtype='IS', status param) → ตาราง 5 คอลั่ ม (รหัส/กลุ่ ม/ชื่อ 1/ชื่อ 2/คงเหลือ) ใน panel ผลลัพธ์ + badge "ผลค้นหา"
-- ผลลัพธ์สร้าง: 9 คอลั่ ม (mock ตาม demo — PQCN/PQCH) + mode badge + footer
-- CDP: search status 52 = 8 rows (batte รีจริง), status 6 = empty + toast "ไม่พบรายการ...", generate ปกติ/ซ่อนชื่ อ pass — cache `p080 v=20261016c`, `portal v=20261016a`
+- **รายงาน modal** (`1fb7c42`): clone C# `FrmPackingListBatteryGUI` + pattern P081 — `api/p080_generate.php` (groupSpare+dataHeader+groupDesc+dataDetail+sumSTk)
+  - ปุ่ ม "สร้างรายงาน" → modal "Pick List QC" — หัวกลุ่ ม (STGcode : STGdescT) + ชื่อสินค้า T1+T2 + col6 "คงเหลือ(01,03,04)"
+  - ปุ่ ม "สร้างรายงาน (ซ่อนชื่อสินค้า)" → modal "Packing List ช่าง" — flat (ไม่มี หัวกลุ่ ม, ชื่ อ T1) + หน้า barcode (STKcode ตัวใหญ่)
+  - A4: @page 25/20pt, THSarabunNew, colgroup 70/220/70/70/60/60pt, paginate ใน iframe, zoom −/+, print, ↗
+  - CDP: status 17 = 2 items 2 groups (batte รีจริง), tech 2 sheets (main/bar), Page N of N แยกกลุ่ ม — cache `p080 v=20261016e`
 
 ### 15/10 — P081 พร้อมใชงาน (READY)
 - หมาย status `ready` ใน `data/modules.php` (commit นี้)
