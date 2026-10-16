@@ -267,7 +267,7 @@
       ".p080-r-group td{font-size:12pt;padding:3px 4px}",
       ".p080-r-spacer td{border:0;height:6pt;padding:0}",
       ".p080-r-foot{text-align:right;font-size:10pt;margin:0 0 4px}",
-      ".p080-r-barcode{height:340pt;text-align:center;vertical-align:middle}",
+      ".p080-r-barcode{height:340pt;text-align:center;vertical-align:middle;font-size:72pt;font-weight:bold;font-family:Arial,sans-serif}",
       ".p080-r-bartable{width:100%}",
       ".p080-page+.p080-page{margin-top:10px}",
       "@media print{body{display:block;background:#fff;zoom:1}.p080-page{width:100%;height:auto;min-height:0;overflow:visible;padding:0;background:#fff;page-break-after:always}.p080-page:last-child{page-break-after:auto;margin-top:0}.p080-r-table tr{page-break-inside:auto}}"
