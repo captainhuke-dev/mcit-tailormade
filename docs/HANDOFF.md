@@ -69,9 +69,9 @@
 
 ## 2. รายงานรายวัน
 
-### 16/10 — P080 PickList QC: UI ก่อน (clone demo) — commit `e447e2d`
+### 16/10 — P080 PickList QC: UI ก่อน (clone demo) — commit `e447e2d` + `8107e15`
 - `assets/js/p080-picklist-qc.js` IIFE `window.P080PickListQC={mount}` — clone demo/P080_demo.html
-- Launcher: วันที่หัวเอกสาร + สถานะ (12 ตัว) + ปุ่ ม 2 ปุ่ ม: สร้างเอกสาร (ดี ด์) / สร้างเอกสาร (ซ่อนชื่อสินค้า) (ม่วง)
+- Launcher: วันที่หัวเอกสาร + สถานะ (12 ตัว) — ปุ่ ม 2 ปุ่ มย้ายไปหัว panel ผลลัพธ์ ด้านบนขวา (`8107e15`)
 - ผลลัพธ์: 9 คอลั่ ม (ลำดับ/เลขที่/วันที่/รหัส/ชื่อ/จำนวน/หน่วย/สถานะ/QC) + mode badge (ปกติ/ซ่อนชื่อ) + footer
 - mock data ตาม demo (PQCN/PQCH, ชื่อสินค้ามัสก์เมื่ อซ่อน) — ยังไม่เชื่อม API
 - CDP: 12 rows normal, 8 rows hidden (masked, PQCH), gradient ปุ่ มดี ด์/ม่วง pass — cache `p080 v=20261016a`, `portal v=20261016a`
