@@ -1053,6 +1053,20 @@
       `;
     }
 
+    // P080: PickList QC
+    if (programId === "P080") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p080Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P081: PickList By Route
     if (programId === "P081") {
       const backLabel = program.groupName ? `← กลบั ไป${program.groupName}` : "← กลบั หน้ารายการ";
@@ -1751,6 +1765,12 @@
     if (page.type === "program" && page.programId === "P081" && window.P081PickListRoute) {
       const root = document.getElementById("p081Root");
       if (root) window.P081PickListRoute.mount(root);
+    }
+
+    // P080: mount PickList QC app
+    if (page.type === "program" && page.programId === "P080" && window.P080PickListQC) {
+      const root = document.getElementById("p080Root");
+      if (root) window.P080PickListQC.mount(root);
     }
   }
 
