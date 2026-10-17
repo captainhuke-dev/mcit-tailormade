@@ -69,6 +69,14 @@
 
 ## 2. รายงานรายวัน
 
+### 17/10 — P080 ปุ่มตั้งค่ากลุ่มสินค้าแบตเตอรี (CRUD `tb_GroupBattery`) — `api/p080_groups.php`
+- ปุ่ม `⚙ ตั้งค่ากลุ่มสินค้าแบตเตอรี` อยู่ระดับเดียวกันกับ back link `← กลับไป PickList (Trade)` — `portal.js` ครอบ flex row + `<span id="p080SettingsWrap">` แล้ว JS สร้าง `#p080SettingsBtn` ใน `mount()`
+- Modal: form (รหัสกลุ่ม / ชื่อกลุ่ม / สถานะ Active-Inactive) + ปุ่ม บันทึก / เพิ่มกลุ่มใหม่ + ตาราง 25 ถว (แก้ไข / ลบ) — ESC หรือคลิกนอก modal = ปิด
+- API: `action: list | upsert | delete` → `BI_CUBE.[dbo].[tb_GroupBattery]` (STGcode, STGdescT, STGstatus) — upsert = SELECT COUNT แล้ว UPDATE/INSERT
+- คำ "สินค้า" ใช้ SARA I `0E34` (0E2A 0E34 0E19) ตรงกับ demo + C# + ทั้ ง repo — ห้ามใช้ 0E37
+- ทดสอบ Edge CDP: ปุ่ม sameRow=true (backTop 131 / btnTop 123), modal 25 ถว, insert `ZZTEST-01` → 26 ถว (toast "บันทึกแล้ว"), delete → 25 ถว (toast "ลบแล้ว") — ผ่าน เรียบร้อย
+- cache `p080 v=20261017c`, `portal.js v=20261017b`
+
 ### 16/10 — P080 PickList QC: UI + ค้นหา + รายงาน modal — commit `e447e2d` + `8107e15` + `8c8a45a` + `1fb7c42`
 - `assets/js/p080-picklist-qc.js` IIFE `window.P080PickListQC={mount}` — clone demo/P080_demo.html
 - Launcher: วันที่หัวเอกสาร + สถานะ (12 ตัว) + ปุ่ ม "ค้นหา" (เขียว) — ปุ่ ม 2 ปุ่ มสร้างอยู่หัว panel ผลลัพธ์ ด้านบนขวา
