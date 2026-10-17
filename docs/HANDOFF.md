@@ -79,7 +79,8 @@
   - A4: @page 25/20pt, THSarabunNew, colgroup 70/220/70/70/60/60pt, paginate ใน iframe, zoom −/+, print, ↗
   - CDP: status 17 = 2 items 2 groups (batte รีจริง), tech 2 sheets (main/bar), Page N of N แยกกลุ่ ม — cache `p080 v=20261016e`
 - `2a2d59c` — เอา ปุ่ ม "สร้างรายงาน (ซ่อนชื่อสินค้ า)" ออก — เหลือ ปุ่ มเดียว "สร้างรายงาน" (รายงาน Pick List QC) — cache `p080 v=20261016g`
-- `6c1e911` — แก้สะกด/เว้นช่องภาษาไทยทั้ ง P080 (JS + generate/search API) — ตัด "ช่องในกลางคำ" (สร้ าง→สร้าง, เปิ ด→เปิด, สร้ างรายงาน→สร้างรายงาน) — row กลุ่ ม `กลุ่ มสืนค้ า [STGcode] : [STGdescT]` — verify ด้วย unicodedata.name + CDP — cache `p080 v=20261016i`
+- `6c1e911` — แก้สะกด/เว้นช่องภาษาไทยทั้ ง P080 (JS + generate/search API) — ตัด "ช่องในกลางคำ" (สร้ าง→สร้าง, เปิ ด→เปิด, สร้างรายงาน→สร้างรายงาน) — row กลุ่ ม `กลุ่ มสืนค้ า [STGcode] : [STGdescT]` — verify ด้วย unicodedata.name + CDP — cache `p080 v=20261016i`
+- `4bf3ef6` — แก้คำ "กลุ่ มสืนค้ า" → "กลุ่ มสินค้า" (สระ ิ SARA II 0E35 — เดิมสระผิด) ใน generate/search API
 
 ### 15/10 — P081 พร้อมใชงาน (READY)
 - หมาย status `ready` ใน `data/modules.php` (commit นี้)
