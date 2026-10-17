@@ -76,6 +76,7 @@
 - คำ "สินค้า" ใช้ SARA I `0E34` (0E2A 0E34 0E19) ตรงกับ demo + C# + ทั้ ง repo — ห้ามใช้ 0E37
 - ทดสอบ Edge CDP: ปุ่ม sameRow=true (backTop 131 / btnTop 123), modal 25 ถว, insert `ZZTEST-01` → 26 ถว (toast "บันทึกแล้ว"), delete → 25 ถว (toast "ลบแล้ว") — ผ่าน เรียบร้อย
 - cache `p080 v=20261017c`, `portal.js v=20261017b`
+- **สถานะ: พร้อมใช้งาน (READY)** — `data/modules.php` ใส่ `"status" => "ready"` (2026-10-17) — cache ล่าสุด `p080 v=20261017e`
 
 ### 16/10 — P080 PickList QC: UI + ค้นหา + รายงาน modal — commit `e447e2d` + `8107e15` + `8c8a45a` + `1fb7c42`
 - `assets/js/p080-picklist-qc.js` IIFE `window.P080PickListQC={mount}` — clone demo/P080_demo.html

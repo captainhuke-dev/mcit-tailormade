@@ -204,7 +204,7 @@ return [
                     ["id" => "P077", "name" => "PickList EM"],
                     ["id" => "P078", "name" => "PickList By INV"],
                     ["id" => "P079", "name" => "PickList Marketplace"],
-                    ["id" => "P080", "name" => "PickList QC"],
+                    ["id" => "P080", "name" => "PickList QC", "status" => "ready"],
                     ["id" => "P081", "name" => "PickList By Route", "status" => "ready"],
                     ["id" => "P082", "name" => "PickList To Pack"],
                     ["id" => "P083", "name" => "PickList To Load V2"],
