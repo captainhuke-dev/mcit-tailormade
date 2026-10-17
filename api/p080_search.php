@@ -1,6 +1,6 @@
 <?php
 /**
- * P080 — ปุ่ มค้ นหา → รายการสืนค้า (battery)
+ * P080 — ปุ่มค้นหา → รายการสืนค้า (battery)
  * SQL ตามแบบที่ user กำหนด (verbatim):
  *   MIH+MIL+STK, MILcut=-1, MILsto='01', STKgroup IN tb_GroupBattery(Active)
  *   + SBLqty subquery (SBLsto 01/03/04)

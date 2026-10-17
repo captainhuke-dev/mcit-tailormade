@@ -2,9 +2,9 @@
 /* P080 — PickList QC
  * IIFE — window.P080PickListQC = { mount }
  * clone demo/P080_demo.html + C# AppPackingListBucketParts/FrmPackingListBatteryGUI:
- *   - ปุ่ มค้นหา → api/p080_search.php (ตาราง 5 คอลั่ ม)
- *   - ปุ่ มสร้างรายงาน → api/p080_generate.php → modal รายงาน A4 "Pick List QC" (หัวกลุ่ ม)
- *   - ปุ่ มสร้างรายงาน (ซ่อนชื่อสินค้า) → modal รายงาน A4 "Packing List ช่าง" (flat + หน้า barcode)
+ *   - ปุ่มค้นหา → api/p080_search.php (ตาราง 5 คอลั่ม)
+ *   - ปุ่มสร้างรายงาน → api/p080_generate.php → modal รายงาน A4 "Pick List QC" (หัวกลุ่ม)
+ *   - ปุ่มสร้างรายงาน (ซ่อนชื่อสินค้า) → modal รายงาน A4 "Packing List ช่าง" (flat + หน้า barcode)
  * รายงาน modal clone pattern P081 (srcdoc iframe + paginate + zoom + print)
  */
 (function () {
@@ -117,7 +117,7 @@
         if (d.count === 0) {
           state.view = null;
           render();
-          showToast("ไม่พบรายการตามเงื่ อนไขที่ค้ นหา");
+          showToast("ไม่พบรายการตามเงื่อนไขที่ค้นหา");
           return;
         }
         state.searchRows = d.rows;
@@ -202,8 +202,8 @@
   }
 
   /* ---------- รายงาน A4 (clone C# bgWorker_DoWork / bgWorker_DoWork_TEST + pattern P081) ----------
-     mode "qc"   = "Pick List QC" — หัวกลุ่ ม (STGcode : STGdescT) + ชื่อสินค้า T1+T2
-     mode "tech" = "Packing List ช่าง" — flat (ไม่มี หัวกลุ่ ม, ชื่ อ T1) + หน้า barcode */
+     mode "qc"   = "Pick List QC" — หัวกลุ่ม (STGcode : STGdescT) + ชื่อสินค้า T1+T2
+     mode "tech" = "Packing List ช่าง" — flat (ไม่มี หัวกลุ่ม, ชื่อ T1) + หน้า barcode */
   function itemRowsHtml(items, hideNames) {
     var body = "";
     items.forEach(function (it) {
@@ -341,16 +341,16 @@
               '<div class="p080-rep-sub" id="p080RepSub"></div>' +
             "</div>" +
             '<div class="p080-rep-btns">' +
-              '<button class="p080-rep-btn" type="button" id="p080RepNewWin" title="เปิ ดหน้ าช่างใหม้">↗</button>' +
-              '<button class="p080-rep-btn" type="button" id="p080RepZoomOut" title="ยอ่ ลง">−</button>' +
+              '<button class="p080-rep-btn" type="button" id="p080RepNewWin" title="เปิดหน้าช่างใหม้">↗</button>' +
+              '<button class="p080-rep-btn" type="button" id="p080RepZoomOut" title="ยอ่ลง">−</button>' +
               '<span class="p080-rep-zoomlabel" id="p080RepZoom">100%</span>' +
-              '<button class="p080-rep-btn" type="button" id="p080RepZoomIn" title="ขยายขึ้ น">+</button>' +
-              '<button class="p080-rep-btn" type="button" id="p080RepClose" title="ปิ ด (Esc)">✕</button>' +
+              '<button class="p080-rep-btn" type="button" id="p080RepZoomIn" title="ขยายขึ้น">+</button>' +
+              '<button class="p080-rep-btn" type="button" id="p080RepClose" title="ปิด (Esc)">✕</button>' +
             "</div>" +
           "</div>" +
           '<div class="p080-rep-body"><iframe id="p080RepFrame" title="รายงาน"></iframe></div>' +
           '<div class="p080-rep-foot">' +
-            '<div class="p080-rep-hint">รายงาน A4 — พิมพ์จากหน้ านี้ไดโ้ ดยตรง (หรื อกด ↗ เพื่ อเปิ ดหน้ าช่างใหม้)</div>' +
+            '<div class="p080-rep-hint">รายงาน A4 — พิมพ์จากหน้านี้ไดโ้ดยตรง (หรือกด ↗ เพื่อเปิดหน้าช่างใหม้)</div>' +
             '<button class="p080-rep-btn p080-rep-btn-primary" type="button" id="p080RepPrint">พิมพ์</button>' +
           "</div>" +
         "</div>";
@@ -385,7 +385,7 @@
             return;
           } catch (err) { /* ignore */ }
         }
-        showToast("พิมพ์จาก iframe ไมไ่ ด้ — กด ↗ เพื่ อเปิ ดหน้ าช่างใหม้แล้วพิมพ์จากนั่ น");
+        showToast("พิมพ์จาก iframe ไมไ่ด้ — กด ↗ เพื่อเปิดหน้าช่างใหม้แล้วพิมพ์จากนั่น");
       });
       if (!state.escBound) {
         state.escBound = true;
@@ -553,7 +553,7 @@
         '<div class="p080-table-container" id="p080SearchContainer" style="display:none">' +
           '<table class="p080-table p080-search-table">' +
             "<thead><tr>" +
-            "<th>รหัสสินค้า</th><th class=\"center\">กลุ่ ม</th>" +
+            "<th>รหัสสินค้า</th><th class=\"center\">กลุ่ม</th>" +
             "<th>ชื่อสินค้า (1)</th><th>ชื่อสินค้า (2)</th>" +
             '<th class="center number">คงเหลือ</th>' +
             "</tr></thead>" +

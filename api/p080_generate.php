@@ -5,9 +5,9 @@
  *   groupSpare + dataHeader + groupDesc + dataDetail + sumSTk
  * POST { connectionId, status, headDate }
  * { ok, count, machine, printedAt, headDate, status,
- *   groups:[{code, label, items:[...]}],  // รายงาน "Pick List QC" (หัวกลุ่ ม)
+ *   groups:[{code, label, items:[...]}],  // รายงาน "Pick List QC" (หัวกลุ่ม)
  *   items:[...],                          // รายงาน "Packing List ช่าง" (flat)
- *   barcodes:[stkcode] }                  // หน้ า barcode
+ *   barcodes:[stkcode] }                  // หน้า barcode
  * item = { stk, desc1, desc2, grand, remaining, rows:[{cusName,contact,vnos,date,qty,unit}] }
  * PHP 7.3-compatible
  */
@@ -43,7 +43,7 @@ try {
 }
 
 try {
-  // ---------- groupSpare : กลุ่ ม battery Active ----------
+  // ---------- groupSpare : กลุ่ม battery Active ----------
   $st = $db->query("SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupBattery] WHERE STGstatus = 'Active'");
   $grp = array();
   foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $r) {
@@ -62,7 +62,7 @@ try {
   foreach ($grp as $g) $grpPh[] = "?";
   $grpIn = implode(",", $grpPh);
 
-  // ---------- dataHeader (SQL ตามแบบ — หนึ่ ง query) ----------
+  // ---------- dataHeader (SQL ตามแบบ — หนึ่ง query) ----------
   $sql = "SELECT"
     . " B.MILstk AS STKcode,"
     . " C.STKgroup,"
@@ -96,7 +96,7 @@ try {
     exit;
   }
 
-  // ---------- dataDetail : รายละเอียดตาม STKcode (หนึ่ ง query — IN) ----------
+  // ---------- dataDetail : รายละเอียดตาม STKcode (หนึ่ง query — IN) ----------
   $stks = array();
   foreach ($heads as $h) {
     if (!in_array($h["STKcode"], $stks, true)) $stks[] = $h["STKcode"];
@@ -123,7 +123,7 @@ try {
   $st->execute($paramsD);
   $details = $st->fetchAll(PDO::FETCH_ASSOC);
 
-  // ---------- sumSTk : SUM(MILquan) ตาม STKcode (หนึ่ ง query — IN) ----------
+  // ---------- sumSTk : SUM(MILquan) ตาม STKcode (หนึ่ง query — IN) ----------
   $sqlS = "SELECT MILstk, SUM(MILquan) AS sumqty"
     . " FROM MIL"
     . " LEFT JOIN MIH ON MIH.MIHvnos = MIL.MILvnos"
@@ -150,7 +150,7 @@ try {
   foreach ($groupOrder as $c) {
     $st->execute(array($c));
     $g = $st->fetch(PDO::FETCH_ASSOC);
-    $groupLabels[$c] = ($g && $g["STGdescT"] !== null) ? "กลุ่ มสืนค้ า " . $g["STGcode"] . " : " . $g["STGdescT"] : "";
+    $groupLabels[$c] = ($g && $g["STGdescT"] !== null) ? "กลุ่มสืนค้า " . $g["STGcode"] . " : " . $g["STGdescT"] : "";
   }
 
   // ---------- ประกอบ items ----------
