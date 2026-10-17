@@ -241,7 +241,7 @@
     var d = state.report;
     var isTech = state.reportMode === "tech";
     var title = isTech ? " Packing List ช่าง" : " Pick List QC";
-    var lastCol = isTech ? "คงเหลือ /\nหน่วยนับ" : "คงเหลือ\n( 01,03,04 )";
+    var lastCol = isTech ? "คงเหลือ /<br>หน่วยนับ" : "คงเหลือ<br>( 01,03,04 )";
 
     var css = [
       "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew.ttf') format('truetype');font-weight:400;font-style:normal;font-display:block}",
@@ -275,7 +275,7 @@
       "<th>เลขที่ใบแจ้งหนี้</th>" +
       "<th>วันที่ใบแจ้งหนี้</th>" +
       "<th>ปริมาณ</th>" +
-      "<th>" + esc(lastCol) + "</th>" +
+      "<th>" + lastCol + "</th>" +
       "</tr></thead>";
 
     var cg = "<colgroup><col style=\"width:70pt\"><col style=\"width:220pt\"><col style=\"width:70pt\"><col style=\"width:70pt\"><col style=\"width:60pt\"><col style=\"width:60pt\"></colgroup>";

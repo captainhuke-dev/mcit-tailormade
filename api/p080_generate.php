@@ -150,7 +150,7 @@ try {
   foreach ($groupOrder as $c) {
     $st->execute(array($c));
     $g = $st->fetch(PDO::FETCH_ASSOC);
-    $groupLabels[$c] = ($g && $g["STGdescT"] !== null) ? "กลุ่มสีนค้า " . $g["STGcode"] . " : " . $g["STGdescT"] : "";
+    $groupLabels[$c] = ($g && $g["STGdescT"] !== null) ? "กลุ่มสินค้า " . $g["STGcode"] . " : " . $g["STGdescT"] : "";
   }
 
   // ---------- ประกอบ items ----------
