@@ -81,6 +81,7 @@
 - `2a2d59c` — เอา ปุ่ ม "สร้างรายงาน (ซ่อนชื่อสินค้ า)" ออก — เหลือ ปุ่ มเดียว "สร้างรายงาน" (รายงาน Pick List QC) — cache `p080 v=20261016g`
 - `6c1e911` — แก้สะกด/เว้นช่องภาษาไทยทั้ ง P080 (JS + generate/search API) — ตัด "ช่องในกลางคำ" (สร้ าง→สร้าง, เปิ ด→เปิด, สร้างรายงาน→สร้างรายงาน) — row กลุ่ ม `กลุ่ มสืนค้ า [STGcode] : [STGdescT]` — verify ด้วย unicodedata.name + CDP — cache `p080 v=20261016i`
 - `4bf3ef6` — แก้คำ "กลุ่ มสืนค้ า" → "กลุ่ มสินค้า" (สระ ิ SARA II 0E35 — เดิมสระผิด) ใน generate/search API
+- `510d5d5` — row header รายงาน: `คงเหลือ<br>( 01,03,04 )` (2 บรรทัด — เดิม `\n` render ไม่เป็นบรรทัดใหม่) + คำ row กลุ่ ม = การสะกดใน demo ของ user (`ส+ิ 0E34 SARA I` — byte เดียวกัน demo) ใน generate/search API — CDP: codepoints row ที่ render = E2A E34 E19 E04 E49 + vision pass — cache `p080 v=20261017a`
 
 ### 15/10 — P081 พร้อมใชงาน (READY)
 - หมาย status `ready` ใน `data/modules.php` (commit นี้)
