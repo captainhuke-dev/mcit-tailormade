@@ -535,7 +535,12 @@
     ".p080-grp-mini.danger{color:#dc2626;border-color:#fecaca}",
     ".p080-grp-on{display:inline-block;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:11px;font-weight:700}",
     ".p080-grp-off{display:inline-block;padding:2px 8px;border-radius:999px;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:700}",
-    ".p080-grp-empty{padding:28px;text-align:center;color:#94a3b8;font-size:13px}"
+    ".p080-grp-empty{padding:28px;text-align:center;color:#94a3b8;font-size:13px}",
+    ".p080-grp-mode{display:flex;align-items:center;gap:8px;margin:0 0 8px;color:#1d4ed8;font-size:12px;font-weight:800}",
+    ".p080-grp-mode .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18)}",
+    ".p080-grp-mode small{color:#64748b;font-weight:600}",
+    ".p080-grp-form.flash{animation:p080flash .7s ease}",
+    "@keyframes p080flash{0%{box-shadow:0 0 0 0 rgba(52,211,153,.65)}100%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}"
   ].join("\n");
 
   /* ---------- HTML ---------- */
@@ -652,13 +657,26 @@
       .catch(function (e) { showToast(e.message); });
   }
 
+  function grpSetMode(text) {
+    var t = document.getElementById("p080GrpModeText");
+    if (t) t.textContent = text;
+  }
+
   function grpResetForm() {
     var c = document.getElementById("p080GrpCode");
     var n = document.getElementById("p080GrpDesc");
     var t = document.getElementById("p080GrpStatus");
+    var f = document.getElementById("p080GrpForm");
     if (c) { c.value = ""; c.readOnly = false; }
     if (n) n.value = "";
     if (t) t.value = "Active";
+    grpSetMode("เพิ่มกลุ่มใหม่");
+    if (f) {
+      f.classList.remove("flash");
+      void f.offsetWidth;
+      f.classList.add("flash");
+    }
+    if (c) c.focus();
   }
 
   function grpEdit(code) {
@@ -672,6 +690,7 @@
     c.readOnly = true;
     document.getElementById("p080GrpDesc").value = g.descT;
     document.getElementById("p080GrpStatus").value = g.status;
+    grpSetMode("แก้ไขกลุ่ม " + g.code);
     document.getElementById("p080GrpDesc").focus();
   }
 
@@ -720,6 +739,7 @@
             '<button class="p080-grp-x" id="p080GrpClose" type="button" title="' + G_CLOSE + '">' + "\u2715" + "</button>" +
           "</div>" +
           '<div class="p080-grp-body">' +
+            '<div class="p080-grp-mode" id="p080GrpMode"><span class="dot"></span><span id="p080GrpModeText"></span><small>(พิมพ์แล้วกดบันทึก)</small></div>' +
             '<form class="p080-grp-form" id="p080GrpForm">' +
               "<div><label>" + G_CODE + '</label><input id="p080GrpCode" maxlength="20" placeholder="1036-0300"></div>' +
               "<div><label>" + G_NAME + '</label><input id="p080GrpDesc" maxlength="120" placeholder="แบตเตอรี 12V 8AH"></div>' +
@@ -754,6 +774,8 @@
     }
     GRP_STATE.open = true;
     ov.classList.add("show");
+    var mt = document.getElementById("p080GrpModeText");
+    if (mt && !mt.textContent) mt.textContent = "เพิ่มกลุ่มใหม่";
     grpLoad();
   }
 
