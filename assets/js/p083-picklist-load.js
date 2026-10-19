@@ -77,7 +77,7 @@
 
   var root = null;
   var el = {};
-  var state = { sections: [], products: 0, filters: null, paperHtml: "", zoom: 100, escBound: false };
+  var state = { sections: [], products: 0, filters: null, paperHtml: "", zoom: 100, escBound: false, searchRows: [], view: null };
   var toastTimer = null;
 
   function $(id) { return document.getElementById(id); }
@@ -90,6 +90,8 @@
     var paths = {
       cal: '<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path>',
       chevron: '<path d="m6 9 6 6 6-6"></path>',
+      search: '<circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path>',
+      check: '<path d="m9 11 3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>',
       pen: '<path d="M12 20h9"></path><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"></path>',
       eye: '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path><circle cx="12" cy="12" r="3"></circle>',
       print: '<path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16"></path><rect x="6" y="14" width="12" height="8"></rect>',
@@ -156,7 +158,7 @@
   var CSS = [
     ".p083-app{display:flex;flex-direction:column;gap:14px}",
     ".p083-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
-    ".p083-launcher-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr) auto;gap:18px;align-items:center;padding:20px;background:linear-gradient(180deg,#e3f7fb,#eefbfd)}",
+    ".p083-launcher-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr) auto auto;gap:18px;align-items:center;padding:20px;background:linear-gradient(180deg,#e3f7fb,#eefbfd)}",
     ".p083-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
     ".p083-input-wrap{position:relative}",
     ".p083-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
@@ -170,6 +172,27 @@
     ".p083-generate{display:inline-flex;height:50px;align-items:center;gap:10px;padding:0 24px;color:#fff;border:0;border-radius:12px;background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 10px 22px rgba(37,99,235,0.28);font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;transition:0.16s ease}",
     ".p083-generate:hover{transform:translateY(-2px);filter:brightness(1.06)}",
     ".p083-generate svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
+      ".p083-search{display:inline-flex;height:50px;align-items:center;gap:10px;padding:0 20px;color:#fff;border:0;border-radius:12px;background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 10px 22px rgba(5,150,105,0.26);font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;transition:0.16s ease}",
+      ".p083-search:hover{transform:translateY(-2px);filter:brightness(1.06)}",
+      ".p083-search svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
+      ".p083-panel{display:flex;flex-direction:column;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.08)}",
+      ".p083-panel-header{display:flex;min-height:60px;align-items:center;justify-content:space-between;gap:12px;padding:10px 15px;border-bottom:1px solid #dbe3ef}",
+      ".p083-panel-title h2{overflow:hidden;font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}",
+      ".p083-panel-title p{overflow:hidden;margin-top:1px;color:#64748b;font-size:11px;text-overflow:ellipsis;white-space:nowrap}",
+      ".p083-mode-badge{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap;color:#047857;background:#d1fae5}",
+      ".p083-table-container{min-height:0;max-height:420px;overflow:auto}",
+      ".p083-stable{width:100%;min-width:720px;border-collapse:separate;border-spacing:0;white-space:nowrap}",
+      ".p083-stable th{position:sticky;top:0;z-index:2;padding:11px 14px;color:#475569;border-bottom:1px solid #dbe3ef;background:#f8fafc;box-shadow:inset 0 -1px #dbe3ef;font-size:12px;font-weight:700;text-align:left}",
+      ".p083-stable td{padding:10px 14px;border-bottom:1px solid #edf1f6;font-size:12px;line-height:1.4}",
+      ".p083-stable th.center,.p083-stable td.center{text-align:center}",
+      ".p083-stable td.number{text-align:right;font-family:Arial,sans-serif}",
+      ".p083-product-code{color:#334155;font-family:Arial,sans-serif;font-weight:700}",
+      ".p083-empty-state{display:flex;min-height:280px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
+      ".p083-empty-state svg{width:34px;height:34px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-bottom:10px}",
+      ".p083-empty-state strong{display:block;font-size:14px;color:#334155}",
+      ".p083-empty-state p{margin-top:4px;font-size:12px}",
+      ".p083-table-footer{display:flex;min-height:50px;align-items:center;justify-content:space-between;gap:12px;padding:8px 15px;color:#64748b;border-top:1px solid #dbe3ef;background:#f8fafc;font-size:12px}",
+
     ".p083-paper{width:900px;min-height:100%;padding:28px 32px 40px;background:#fff;box-shadow:0 18px 44px rgba(15,23,42,0.32)}",
     ".p083-paper-title{font-size:20px;text-align:center;color:#0f172a;font-weight:800}",
     ".p083-paper-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;color:#1d4ed8;font-size:12px;font-weight:700}",
@@ -236,12 +259,12 @@
 
   function sectionTable(products) {
     var h = "<table class=\"p083-table\"><thead><tr>"
-      + '<th style="width:12.7%">' + "\"รหัส + ชื่อสินค้า\"" + "</th>"
-      + '<th style="width:40%">' + "\"ชื่อลูกค้า\"" + "</th>"
-      + '<th style="width:12.7%">' + "\"เลขที่ใบสำคัญ\"" + "</th>"
-      + '<th class="center" style="width:11.8%">' + "\"วันที่\"" + "</th>"
-      + '<th class="center" style="width:10.9%">' + "\"จำนวน\"" + "</th>"
-      + '<th class="center" colspan="2" style="width:11.9%">' + "\"หน่วย/คลัง\"" + "</th>"
+      + '<th style="width:12.7%">' + "รหัส + ชื่อสินค้า" + "</th>"
+      + '<th style="width:40%">' + "ชื่อลูกค้า" + "</th>"
+      + '<th style="width:12.7%">' + "เลขที่ใบสำคัญ" + "</th>"
+      + '<th class="center" style="width:11.8%">' + "วันที่" + "</th>"
+      + '<th class="center" style="width:10.9%">' + "จำนวน" + "</th>"
+      + '<th class="center" colspan="2" style="width:11.9%">' + "หน่วย/คลัง" + "</th>"
       + "</tr></thead><tbody>";
     for (var i = 0; i < products.length; i++) {
       var p = products[i];
@@ -299,7 +322,36 @@
               '<div class="p083-group-grid">' + groupOptionsHtml() + "</div>" +
             "</div>" +
             '<button class="p083-generate" id="p083GenBtn" type="submit">' + icon("pen") + "สร้างเอกสาร" + "</button>" +
+          '<button class="p083-search" id="p083SearchBtn" type="button">' + icon("search") + "ค้นหา" + "</button>" +
           "</form>" +
+        "</section>" +
+        '<section class="p083-panel">' +
+          '<div class="p083-panel-header">' +
+            '<div class="p083-panel-title">' +
+              "<h2>" + "ผลการสร้างเอกสาร ค้นหา PickList To Load" + "</h2>" +
+              '<p id="p083Sub"></p>' +
+            "</div>" +
+            '<span class="p083-mode-badge" id="p083ModeBadge" style="display:none">' + "ผลค้นหา" + "</span>" +
+          "</div>" +
+          '<div class="p083-table-container" id="p083SearchContainer" style="display:none">' +
+            '<table class="p083-stable">' +
+              "<thead><tr>" +
+              "<th>" + "รหัสสินค้า" + "</th>" + '<th class="center">' + "กลุ่ม" + "</th>" +
+              "<th>" + "ชื่อสินค้า (1)" + "</th>" + "<th>" + "ชื่อสินค้า (2)" + "</th>" +
+              '<th class="center number">' + "คงเหลือ" + "</th>" +
+              "</tr></thead>" +
+              '<tbody id="p083SearchRows"></tbody>' +
+            "</table>" +
+          "</div>" +
+          '<div class="p083-empty-state" id="p083EmptyState">' +
+            "<div>" + icon("check") +
+            "<strong>" + "ยังไม่มีข้อมูล" + "</strong>" +
+            "<p>" + "เลือกสถานะ แล้วกด \"ค้นหา\" หรือ \"สร้างเอกสาร\"" + "</p>" +
+            "</div>" +
+          "</div>" +
+          '<div class="p083-table-footer" id="p083Footer" style="display:none">' +
+            '<span id="p083FooterText">' + "แสดง 0 รายการ" + "</span>" +
+          "</div>" +
         "</section>" +
         '<div class="p083-toast" id="p083Toast"><span id="p083ToastMsg"></span></div>' +
       "</div>"
@@ -462,6 +514,71 @@
     if (f) f.srcdoc = "";
   }
 
+  /* ---------- search (UI stage: sample data, status 17 only) ---------- */
+  var TH_CTH = "ค้นหา";
+  var TH_PHOB = "พบ ";
+  var TH_RIALANG = "รายการ";
+  var TH_NOFOUND = "ไม่พบรายการตามเงื่อนไขที่ค้นหา";
+  var TH_SANGSHOW = "แสดง";
+  var TH_SANAT = "สถานะ";
+
+  function searchSampleRows(status, warehouses) {
+    var out = [];
+    if (status !== "17") return out;
+    var whMap = {};
+    for (var w = 0; w < warehouses.length; w++) whMap[warehouses[w].replace(/^G/, "")] = 1;
+    for (var i = 0; i < SECTIONS.length; i++) {
+      var prods = SECTIONS[i].products;
+      for (var j = 0; j < prods.length; j++) {
+        var p = prods[j];
+        if (!whMap[p.warehouse]) continue;
+        out.push({ STKcode: p.productCode, STKgroup: "G" + p.warehouse, STKdescT1: p.productName, STKdescT2: p.unit, SBLqty: p.totalQty });
+      }
+    }
+    return out;
+  }
+
+  function doSearch() {
+    var wh = selectedWarehouses();
+    if (!wh.length) {
+      showToast("ลื่ก กลุ่มคลังสินค้า");
+      return;
+    }
+    var rows = searchSampleRows($("p083Status").value, wh);
+    state.searchRows = rows;
+    state.view = rows.length ? "search" : null;
+    renderSearch();
+    if (rows.length) showToast(TH_PHOB + " " + rows.length + " " + TH_RIALANG);
+    else showToast(TH_NOFOUND);
+  }
+
+  function renderSearch() {
+    var isSearch = state.view === "search";
+    el.searchContainer.style.display = isSearch ? "block" : "none";
+    el.footer.style.display = isSearch ? "flex" : "none";
+    el.modeBadge.style.display = isSearch ? "inline-flex" : "none";
+    el.emptyState.style.display = isSearch ? "none" : "flex";
+    if (!isSearch) {
+      el.subtitle.textContent = "";
+      return;
+    }
+    var rows = state.searchRows;
+    var h = "";
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      h += "<tr>"
+        + '<td class="p083-product-code">' + esc(r.STKcode) + "</td>"
+        + '<td class="center">' + esc(r.STKgroup) + "</td>"
+        + "<td>" + esc(r.STKdescT1) + "</td>"
+        + "<td>" + esc(r.STKdescT2) + "</td>"
+        + '<td class="number">' + (r.SBLqty == null ? "" : r.SBLqty) + "</td>"
+        + "</tr>";
+    }
+    el.searchRows.innerHTML = h;
+    el.subtitle.textContent = TH_SANAT + " " + statusLabel($("p083Status").value) + " \u00b7 " + routeLabel($("p083Route").value);
+    el.footerText.textContent = TH_SANGSHOW + " " + rows.length + " " + TH_RIALANG;
+  }
+
   function mount(mountEl) {
     root = mountEl;
     var olds = document.querySelectorAll("body > .p083-rep-overlay");
@@ -474,6 +591,15 @@
       document.head.appendChild(st);
     }
     el.toast = $("p083Toast");
+    el.searchBtn = $("p083SearchBtn");
+    el.searchContainer = $("p083SearchContainer");
+    el.searchRows = $("p083SearchRows");
+    el.emptyState = $("p083EmptyState");
+    el.footer = $("p083Footer");
+    el.footerText = $("p083FooterText");
+    el.modeBadge = $("p083ModeBadge");
+    el.subtitle = $("p083Sub");
+    el.searchBtn.addEventListener("click", doSearch);
     $("p083Form").addEventListener("submit", function (e) {
       e.preventDefault();
       var wh = selectedWarehouses();
