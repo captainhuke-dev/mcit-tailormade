@@ -69,15 +69,16 @@
 
 ## 2. รายงานรายวัน
 
-### 19/10 — P083 PickList To Load V2 — **DEV** (UI stage — commits `93d4c6b`+`4d5c2b1`+`5ca15f5`)
+### 19/10 — P083 PickList To Load V2 — **DEV** (UI stage — commits `93d4c6b`+`4d5c2b1`+`5ca15f5`+`e153621`)
 - `assets/js/p083-picklist-load.js` IIFE `window.P083PickListLoad={mount}` — clone demo/P083-demo.html
 - Launcher: สถานะ (12) + Route (7) + checkbox กลุ่มสินค้า (9 ตัว, G06/G07/G09 ตัด default) + ปุ่ม "สร้างเอกสาร"
 - Preview: paper "PickList [To Load][Zone QC]" — ตาราง 6 คอลั่น (รหัส + ชื่อ / ลูกค้า / เลขที่ใบสำคัญ / วันที่ / จำนวน / หน่วย/คลัง) — sample data ตาม demo
 - 19/10: กลุ่มคลังสินค้า — ให้กรอบขาว + drop-shadow (P081 pattern, radius 12px) — commit `4d5c2b1`
 - 19/10: ตัวอย่างก่อนพิมพ์ — ตัดออก จกา้หน้าหลัก — modal (P081: iframe A4 THSarabunNew, zoom 50-200, print, Esc) หลังกด "สร้างเอกสาร" — commit `5ca15f5`
+- 19/10: รายงาน 3 section จกา้ C# `frm_PickListToLOAD_v2.cs` — Zone SparePart (tbSP) / Zone QC (tbQC) / By Route — ที่ละ title + meta + table 7 cols (70,220,70,65,60,30,35; last header colspan=2) — ไม่ section ที่ ไม่ ตัว — route title = label dropdown (All/M1-M2-M3/…) — commit `e153621`
 - คำไทย extra จาก demo (codepoint-exact) — word สินค้า = `0E2A 0E34 0E19` (SARA I)
 - แก้ P081 backLabel misspell กลับั่→กลับ ใน portal.js ด้วย
-- cache `p083 v=20261019c`, `portal.js v=20261019a` — **ยังไม่ ready** — ถัดไป: API + รายงาน 3 section (SparePart/QC/By Route) ตาม C# `AppPickList/frm_PickListToLOAD_v2.cs`
+- cache `p083 v=20261019e`, `portal.js v=20261019a` — **ยังไม่ ready** — ถัดไป: API + SQL from C# (status 17 only — sample data)
 
 ### 17/10 — P080 ปุ่มตั้งค่ากลุ่มสินค้าแบตเตอรี (CRUD `tb_GroupBattery`) — `api/p080_groups.php`
 - ปุ่ม `⚙ ตั้งค่ากลุ่มสินค้าแบตเตอรี` อยู่ระดับเดียวกันกับ back link `← กลับไป PickList (Trade)` — `portal.js` ครอบ flex row + `<span id="p080SettingsWrap">` แล้ว JS สร้าง `#p080SettingsBtn` ใน `mount()`
