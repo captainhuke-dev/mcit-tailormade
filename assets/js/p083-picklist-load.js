@@ -3,7 +3,7 @@
  * IIFE — window.P083PickListLoad = { mount }
  * clone demo/P083-demo.html + C# AppPickList/frm_PickListToLOAD_v2
  *   - Launcher: สถานะ (12) + Route (7) + กลุ่มคลังสินค้า checkbox (9) + สร้างเอกสาร
- *   - Preview: paper "PickList [To Load][Zone QC]" — 6 คอลั่น
+ *   - Preview: paper "PickList [To Load][Zone QC]" — modal (P081 pattern) — 6 คอลั่น
  *   - UI stage: sample data ตาม demo — API ต่อใน phase ถัดไป
  */
 (function () {
@@ -77,7 +77,7 @@
 
   var root = null;
   var el = {};
-  var state = { products: [], filters: null };
+  var state = { products: [], filters: null, paperHtml: "", zoom: 100, escBound: false };
   var toastTimer = null;
 
   function $(id) { return document.getElementById(id); }
@@ -145,7 +145,7 @@
   var CSS = [
     ".p083-app{display:flex;flex-direction:column;gap:14px}",
     ".p083-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
-    ".p083-launcher-body{display:grid;grid-template-columns:minmax(170px,0.6fr) minmax(130px,0.4fr) minmax(220px,0.8fr) auto;gap:18px;align-items:center;padding:20px;background:linear-gradient(180deg,#e3f7fb,#eefbfd)}",
+    ".p083-launcher-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr) auto;gap:18px;align-items:center;padding:20px;background:linear-gradient(180deg,#e3f7fb,#eefbfd)}",
     ".p083-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
     ".p083-input-wrap{position:relative}",
     ".p083-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
@@ -159,14 +159,6 @@
     ".p083-generate{display:inline-flex;height:50px;align-items:center;gap:10px;padding:0 24px;color:#fff;border:0;border-radius:12px;background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 10px 22px rgba(37,99,235,0.28);font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;transition:0.16s ease}",
     ".p083-generate:hover{transform:translateY(-2px);filter:brightness(1.06)}",
     ".p083-generate svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
-    ".p083-preview{display:flex;min-height:480px;flex:1;flex-direction:column;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#94a3b8;box-shadow:0 12px 32px rgba(15,23,42,0.08)}",
-    ".p083-preview-toolbar{display:flex;min-height:50px;align-items:center;justify-content:space-between;gap:12px;padding:8px 15px;border-bottom:1px solid #475569;background:#334155}",
-    ".p083-preview-title{display:flex;align-items:center;gap:9px;color:#e2e8f0;font-size:13px;font-weight:700}",
-    ".p083-preview-title svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
-    ".p083-print{display:inline-flex;height:34px;align-items:center;gap:6px;padding:0 14px;color:#1e293b;border:0;border-radius:8px;background:#e2e8f0;font-size:12px;font-weight:700;cursor:pointer}",
-    ".p083-print:hover{background:#fff}",
-    ".p083-print svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
-    ".p083-scroll{display:flex;flex:1;justify-content:center;overflow:auto;padding:28px 20px;background:repeating-linear-gradient(45deg,#9aa5b1 0 2px,transparent 2px 10px)}",
     ".p083-paper{width:900px;min-height:100%;padding:28px 32px 40px;background:#fff;box-shadow:0 18px 44px rgba(15,23,42,0.32)}",
     ".p083-paper-title{font-size:20px;text-align:center;color:#0f172a;font-weight:800}",
     ".p083-paper-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;color:#1d4ed8;font-size:12px;font-weight:700}",
@@ -184,14 +176,26 @@
     ".p083-doc{color:#1d4ed8;font-family:Arial,sans-serif;font-weight:700}",
     ".p083-qty{font-family:Arial,sans-serif;font-weight:700}",
     ".p083-wh{display:inline-flex;min-width:28px;justify-content:center;padding:1px 7px;color:#047857;border-radius:6px;background:#d1fae5;font-family:Arial,sans-serif;font-size:11px;font-weight:700}",
-    ".p083-empty{display:flex;flex:1;align-items:center;justify-content:center;color:#e2e8f0;text-align:center;padding:40px}",
-    ".p083-empty svg{width:48px;height:48px;margin:0 auto 10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
-    ".p083-empty p{margin-top:6px;font-size:12px}",
     ".p083-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:10001;padding:10px 18px;color:#fff;border-radius:10px;background:#0f172a;font-size:13px;font-weight:600;opacity:0;pointer-events:none;transition:0.2s ease}",
     ".p083-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}",
-    "@media (max-width:1050px){.p083-launcher-body{grid-template-columns:1fr 1fr}.p083-generate{grid-column:1/-1;width:100%;justify-content:center}.p083-group-grid{grid-template-columns:repeat(2,1fr)}.p083-paper{width:100%}}",
-    "@media (max-width:680px){.p083-launcher-body{grid-template-columns:1fr}.p083-group-grid{grid-template-columns:repeat(2,1fr)}.p083-scroll{padding:14px}}",
-    "@media print{body{background:#fff}.p083-app > *:not(.p083-preview){display:none}.p083-preview{border:none;border-radius:0;background:#fff;box-shadow:none;min-height:0}.p083-preview-toolbar{display:none}.p083-scroll{padding:0;background:#fff;overflow:visible;display:block}.p083-paper{width:100%;box-shadow:none;padding:0}}"
+    ".p083-rep-overlay{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:10px;background:rgba(15,23,42,0.55)}",
+    ".p083-rep-overlay.show{display:flex}",
+    ".p083-rep-modal{display:flex;flex-direction:column;overflow:hidden;width:100%;height:100%;max-width:100%;max-height:100%;border-radius:10px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.35)}",
+    ".p083-rep-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid #e2e8f0}",
+    ".p083-rep-title{font-size:15px;font-weight:700;color:#0f172a}",
+    ".p083-rep-sub{margin-top:2px;color:#64748b;font-size:12px}",
+    ".p083-rep-btns{display:flex;gap:8px}",
+    ".p083-rep-btn{padding:6px 12px;color:#334155;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;font-size:13px;cursor:pointer}",
+    ".p083-rep-btn:hover{background:#e2e8f0}",
+    ".p083-rep-zoomlabel{display:inline-flex;min-width:48px;align-items:center;justify-content:center;color:#334155;font-size:12px;font-weight:600}",
+    ".p083-rep-btn-primary{color:#fff;border-color:#0a5bc4;background:#0a5bc4}",
+    ".p083-rep-btn-primary:hover{background:#084a9e}",
+    ".p083-rep-body{flex:1;min-height:0;overflow:auto;padding:12px;background:#f1f5f9}",
+    ".p083-rep-body iframe{width:100%;height:100%;min-height:520px;border:1px solid #e2e8f0;border-radius:8px;background:#fff}",
+    ".p083-rep-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-top:1px solid #e2e8f0}",
+    ".p083-rep-hint{color:#64748b;font-size:12px}",
+    "@media (max-width:1050px){.p083-launcher-body{grid-template-columns:1fr}.p083-generate{grid-column:1/-1;width:100%;justify-content:center}.p083-group-grid{grid-template-columns:repeat(2,1fr)}}",
+    "@media (max-width:680px){.p083-launcher-body{grid-template-columns:1fr}.p083-group-grid{grid-template-columns:repeat(2,1fr)}}"
   ];
 
   function groupOptionsHtml() {
@@ -219,21 +223,14 @@
     return h;
   }
 
-  function emptyHtml() {
-    return '<div class="p083-empty"><div>' + icon("expand") +
-      "<strong>" + "ยังไม่มีเอกสารที่สร้าง" + "</strong>" +
-      "<p>" + "กำหนดเงื่อนไขด้านบน แล้วกด \"สร้างเอกสาร\"" + "</p>" +
-      "</div></div>";
-  }
-
-  function paperHtml(bodyHtml) {
+  function paperHtml(bodyHtml, mStatus, mPrinted, mUser) {
     return (
       '<article class="p083-paper" id="p083Paper">' +
         '<h1 class="p083-paper-title">"PickList [To Load][Zone QC]"</h1>' +
         '<div class="p083-paper-meta">' +
-          "<div>" + "สถานะ" + ': <span id="p083MetaStatus">-</span></div>' +
-          "<div>" + "พิมพ์เมื่อ" + ': <span id="p083MetaPrinted">-</span></div>' +
-          "<div>" + "โดย" + ': <span id="p083MetaUser">-</span></div>' +
+          "<div>" + "สถานะ" + ': <span>' + esc(mStatus) + '</span></div>' +
+          "<div>" + "พิมพ์เมื่อ" + ': <span>' + esc(mPrinted) + '</span></div>' +
+          "<div>" + "โดย" + ': <span>' + esc(mUser) + '</span></div>' +
         "</div>" +
         '<table class="p083-table">' +
           "<thead><tr>" +
@@ -270,13 +267,6 @@
             '<button class="p083-generate" id="p083GenBtn" type="submit">' + icon("pen") + "สร้างเอกสาร" + "</button>" +
           "</form>" +
         "</section>" +
-        '<section class="p083-preview">' +
-          '<div class="p083-preview-toolbar">' +
-            '<div class="p083-preview-title">' + icon("eye") + "ตัวอย่างก่อนพิมพ์" + "</div>" +
-            '<button class="p083-print" id="p083PrintBtn" type="button">' + icon("print") + "พิมพ์เอกสาร" + "</button>" +
-          "</div>" +
-          '<div class="p083-scroll" id="p083Scroll"></div>' +
-        "</section>" +
         '<div class="p083-toast" id="p083Toast"><span id="p083ToastMsg"></span></div>' +
       "</div>"
     );
@@ -293,10 +283,9 @@
     var products = getProducts(filters.status, filters.route);
     state.filters = filters;
     state.products = products;
-    var scroll = $("p083Scroll");
     if (!products.length) {
-      scroll.innerHTML = emptyHtml();
-      return;
+      state.paperHtml = "";
+      return null;
     }
     var h = "";
     for (var i = 0; i < products.length; i++) {
@@ -322,15 +311,140 @@
           "</tr>";
       }
     }
-    scroll.innerHTML = paperHtml(h);
-    // meta spans exist only after paperHtml is inserted — set them now
-    $("p083MetaStatus").textContent = statusLabel(filters.status);
-    $("p083MetaPrinted").textContent = fmtStamp();
-    $("p083MetaUser").textContent = machineName();
+    state.paperHtml = paperHtml(h, statusLabel(filters.status), fmtStamp(), machineName());
+    return state.paperHtml;
+  }
+
+  function routeLabel(v) {
+    for (var i = 0; i < ROUTE_OPTIONS.length; i++) {
+      if (ROUTE_OPTIONS[i][0] === v) return ROUTE_OPTIONS[i][1];
+    }
+    return String(v);
+  }
+
+  /* ---------- modal report (P081 pattern: overlay + iframe srcdoc + zoom) ---------- */
+  function reportDocHtml(paperInner) {
+    var css = [
+      "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew.ttf') format('truetype');font-weight:400;font-style:normal;font-display:block}",
+      "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:block}",
+      "@page{size:A4;margin:20mm 15mm}",
+      "body{margin:0;background:#f1f5f9}",
+      ".p083-paper{width:210mm;margin:0 auto;padding:20mm 15mm;box-sizing:border-box;background:#fff;font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}",
+      ".p083-paper-title{font-size:20px;text-align:center;color:#0f172a;font-weight:800}",
+      ".p083-paper-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;color:#1d4ed8;font-size:12px;font-weight:700}",
+      ".p083-paper-meta span{color:#475569;font-weight:600}",
+      ".p083-table{width:100%;margin-top:16px;border-collapse:collapse;table-layout:fixed}",
+      ".p083-table thead th{padding:8px 10px;color:#1d4ed8;border-top:2px solid #1d4ed8;border-bottom:2px solid #1d4ed8;background:#eff6ff;font-size:12px;font-weight:700;text-align:left}",
+      ".p083-table thead th.center{text-align:center}",
+      ".p083-grow td{padding:9px 10px 6px;border-bottom:1px solid #cbd5e1;background:#f1f5f9;font-size:13px;font-weight:700}",
+      ".p083-grow .p083-prod{color:#0f172a}",
+      ".p083-grow td.center{text-align:center}",
+      ".p083-crow td{padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:12.5px}",
+      ".p083-crow td.center{text-align:center}",
+      ".p083-crow td.number{text-align:right;font-family:Arial,sans-serif}",
+      ".p083-cust{color:#334155}",
+      ".p083-doc{color:#1d4ed8;font-family:Arial,sans-serif;font-weight:700}",
+      ".p083-qty{font-family:Arial,sans-serif;font-weight:700}",
+      ".p083-wh{display:inline-flex;min-width:28px;justify-content:center;padding:1px 7px;color:#047857;border-radius:6px;background:#d1fae5;font-family:Arial,sans-serif;font-size:11px;font-weight:700}",
+      "@media print{body{display:block;background:#fff;zoom:1}.p083-paper{width:100%;margin:0;padding:0;background:#fff;box-shadow:none}}"
+    ].join("\n");
+    var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',fit);window.setZoom=function(z){document.body.style.zoom=z};</scr" + "ipt>";
+    return '<!doctype html><html><head><meta charset="utf-8"><title>PickList To Load</title><style>' + css + "</style></head><body>" + paperInner + fit + "</body></html>";
+  }
+
+  function openReport() {
+    var overlay = document.getElementById("p083ReportOverlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "p083ReportOverlay";
+      overlay.className = "p083-rep-overlay";
+      overlay.innerHTML =
+        '<div class="p083-rep-modal">' +
+          '<div class="p083-rep-head">' +
+            '<div>' +
+              '<div class="p083-rep-title">"PickList [To Load][Zone QC]"</div>' +
+              '<div class="p083-rep-sub" id="p083RepSub"></div>' +
+            "</div>" +
+            '<div class="p083-rep-btns">' +
+              '<button class="p083-rep-btn" type="button" id="p083RepZoomOut" title="zoom out">\u2212</button>' +
+              '<span class="p083-rep-zoomlabel" id="p083RepZoom">100%</span>' +
+              '<button class="p083-rep-btn" type="button" id="p083RepZoomIn" title="zoom in">+</button>' +
+              '<button class="p083-rep-btn" type="button" id="p083RepClose" title="close (Esc)">\u2715</button>' +
+            "</div>" +
+          "</div>" +
+          '<div class="p083-rep-body"><iframe id="p083RepFrame" title="PickList To Load"></iframe></div>' +
+          '<div class="p083-rep-foot">' +
+            '<div class="p083-rep-hint">' + "รายงาน A4 — พิมพ์ซำ้หั้าฌสด้อบยยว" + "</div>" +
+            '<button class="p083-rep-btn p083-rep-btn-primary" type="button" id="p083RepPrint">' + "พิมพ์" + "</button>" +
+          "</div>" +
+        "</div>";
+      document.body.appendChild(overlay);
+      overlay.addEventListener("click", function (e) { if (e.target === overlay) closeReport(); });
+      overlay.querySelector("#p083RepClose").addEventListener("click", closeReport);
+      overlay.querySelector("#p083RepZoomOut").addEventListener("click", function () { setZoomLevel(state.zoom - 25); });
+      overlay.querySelector("#p083RepZoomIn").addEventListener("click", function () { setZoomLevel(state.zoom + 25); });
+      overlay.querySelector("#p083RepPrint").addEventListener("click", function () {
+        var f = $("p083RepFrame");
+        if (f && f.contentWindow) {
+          try { f.contentWindow.focus(); f.contentWindow.print(); return; } catch (err) { /* ignore */ }
+        }
+      });
+      if (!state.escBound) {
+        state.escBound = true;
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeReport(); });
+      }
+    }
+    $("p083RepSub").textContent =
+      statusLabel(state.filters.status) + " \u2014 " + routeLabel(state.filters.route) + " \u2014 " + state.products.length + " " + "สืนคาตัว";
+    var zb = overlay.querySelector("#p083RepZoom");
+    if (zb) zb.textContent = state.zoom + "%";
+    var f = overlay.querySelector("#p083RepFrame");
+    f.srcdoc = reportDocHtml(state.paperHtml);
+    overlay.classList.add("show");
+    overlay.style.display = "flex";
+    applyZoom();
+  }
+
+  function setZoomLevel(z) {
+    state.zoom = Math.max(50, Math.min(200, z));
+    var zb = $("p083RepZoom");
+    if (zb) zb.textContent = state.zoom + "%";
+    applyZoom();
+  }
+
+  function applyZoom() {
+    var f = $("p083RepFrame");
+    if (!f) return;
+    var tryIt = function () {
+      try {
+        if (f.contentWindow && f.contentWindow.setZoom) {
+          f.contentWindow.setZoom(state.zoom / 100);
+          return true;
+        }
+      } catch (e) { /* iframe not ready */ }
+      return false;
+    };
+    if (tryIt()) return;
+    var n2 = 0;
+    var t = setInterval(function () {
+      n2++;
+      if (tryIt() || n2 > 50) clearInterval(t);
+    }, 100);
+  }
+
+  function closeReport() {
+    var overlay = $("p083ReportOverlay");
+    if (!overlay) return;
+    overlay.classList.remove("show");
+    overlay.style.display = "none";
+    var f = overlay.querySelector("#p083RepFrame");
+    if (f) f.srcdoc = "";
   }
 
   function mount(mountEl) {
     root = mountEl;
+    var olds = document.querySelectorAll("body > .p083-rep-overlay");
+    for (var oi = 0; oi < olds.length; oi++) olds[oi].parentNode.removeChild(olds[oi]);
     root.innerHTML = html();
     if (!document.getElementById("p083Style")) {
       var st = document.createElement("style");
@@ -339,7 +453,6 @@
       document.head.appendChild(st);
     }
     el.toast = $("p083Toast");
-    $("p083Scroll").innerHTML = emptyHtml();
     $("p083Form").addEventListener("submit", function (e) {
       e.preventDefault();
       var wh = selectedWarehouses();
@@ -347,18 +460,16 @@
         showToast("ลื่ก กลุ่มคลังสินค้า");
         return;
       }
-      renderDocument({
+      var paper = renderDocument({
         status: $("p083Status").value,
         route: $("p083Route").value,
         warehouses: wh
       });
-    });
-    $("p083PrintBtn").addEventListener("click", function () {
-      if (!state.products.length) {
+      if (!paper) {
         showToast("ไม่มีเอกสาร");
         return;
       }
-      window.print();
+      openReport();
     });
   }
 
