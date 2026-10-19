@@ -69,6 +69,14 @@
 
 ## 2. รายงานรายวัน
 
+### 19/10 — P083 PickList To Load V2 — **DEV** (UI stage — commit `93d4c6b`)
+- `assets/js/p083-picklist-load.js` IIFE `window.P083PickListLoad={mount}` — clone demo/P083-demo.html
+- Launcher: สถานะ (12) + Route (7) + checkbox กลุ่มสินค้า (9 ตัว, G06/G07/G09 ตัด default) + ปุ่ม "สร้างเอกสาร"
+- Preview: paper "PickList [To Load][Zone QC]" — ตาราง 6 คอลั่น (รหัส + ชื่อ / ลูกค้า / เลขที่ใบสำคัญ / วันที่ / จำนวน / หน่วย/คลัง) — sample data ตาม demo
+- คำไทย extra จาก demo (codepoint-exact) — word สินค้า = `0E2A 0E34 0E19` (SARA I)
+- แก้ P081 backLabel misspell กลับั่→กลับ ใน portal.js ด้วย
+- cache `p083 v=20261019a`, `portal.js v=20261019a` — **ยังไม่ ready** — ถัดไป: API + รายงาน 3 section (SparePart/QC/By Route) ตาม C# `AppPickList/frm_PickListToLOAD_v2.cs`
+
 ### 17/10 — P080 ปุ่มตั้งค่ากลุ่มสินค้าแบตเตอรี (CRUD `tb_GroupBattery`) — `api/p080_groups.php`
 - ปุ่ม `⚙ ตั้งค่ากลุ่มสินค้าแบตเตอรี` อยู่ระดับเดียวกันกับ back link `← กลับไป PickList (Trade)` — `portal.js` ครอบ flex row + `<span id="p080SettingsWrap">` แล้ว JS สร้าง `#p080SettingsBtn` ใน `mount()`
 - Modal: form (รหัสกลุ่ม / ชื่อกลุ่ม / สถานะ Active-Inactive) + ปุ่ม บันทึก / เพิ่มกลุ่มใหม่ + ตาราง 25 ถว (แก้ไข / ลบ) — ESC หรือคลิกนอก modal = ปิด
