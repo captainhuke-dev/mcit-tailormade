@@ -46,38 +46,38 @@
     { code: "BKK", checked: true }
   ];
 
-  var SAMPLE_DATA = {
-    "17": {
-      "M9": [
-        {
-          productCode: "10360017",
-          productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]",
-          unit: "Ea/Ea",
-          warehouse: "01",
-          totalQty: 2,
-          totalBase: 0,
-          customers: [
-            { name: "วรรณ (LC*) (กำแพงแสน)", document: "IVVN6904-3905", date: "2026-04-29", qty: 2, unit: "Ea" }
-          ]
-        },
-        {
-          productCode: "10360018",
-          productName: "แบตเตอรี่แห้ง(LightingAll) 12V-12Ah [6Ea/CT]",
-          unit: "Ea/Ea",
-          warehouse: "01",
-          totalQty: 2,
-          totalBase: 0,
-          customers: [
-            { name: "วรรณ (LC*) (กำแพงแสน)", document: "IVVN6904-3905", date: "2026-04-29", qty: 2, unit: "Ea" }
-          ]
-        }
+  var SECTIONS = [
+    {
+      key: "sp",
+      title: "PickList [To Load][Zone SparePart]",
+      products: [
+        { productCode: "20110045", productName: "ถังพ่นยาไฟฟ้า", unit: "Ea", warehouse: "01", totalQty: 1, totalBase: 0,
+          customers: [ { name: "วรรณ (LC*) (กำแพงแสน)", document: "IVVN6904-3910", date: "2026-04-29", qty: 1, unit: "Ea" } ] },
+        { productCode: "20120088", productName: "สายยางใส", unit: "Ea", warehouse: "01", totalQty: 2, totalBase: 0,
+          customers: [ { name: "วรรณ (LC*) (กำแพงแสน)", document: "IVVN6904-3910", date: "2026-04-29", qty: 2, unit: "Ea" } ] }
+      ]
+    },
+    {
+      key: "qc",
+      title: "PickList [To Load][Zone QC]",
+      products: [
+        { productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", unit: "Ea", warehouse: "01", totalQty: 2, totalBase: 0,
+          customers: [ { name: "วรรณ (LC*) (กำแพงแสน)", document: "IVVN6904-3905", date: "2026-04-29", qty: 2, unit: "Ea" } ] }
+      ]
+    },
+    {
+      key: "route",
+      title: null,
+      products: [
+        { productCode: "30210034", productName: "สีทาอาคารภายนอก 5 แกลลอน", unit: "Can", warehouse: "01", totalQty: 2, totalBase: 0,
+          customers: [ { name: "วรรณ (LC*) (กำแพงแสน)", document: "IVVN6904-3912", date: "2026-04-30", qty: 2, unit: "Can" } ] }
       ]
     }
-  };
+  ];
 
   var root = null;
   var el = {};
-  var state = { products: [], filters: null, paperHtml: "", zoom: 100, escBound: false };
+  var state = { sections: [], products: 0, filters: null, paperHtml: "", zoom: 100, escBound: false };
   var toastTimer = null;
 
   function $(id) { return document.getElementById(id); }
@@ -126,15 +126,26 @@
     return out;
   }
 
-  function getProducts(status, route) {
-    var byStatus = SAMPLE_DATA[status];
-    if (!byStatus) return [];
-    if (route === "all") {
-      var out = [];
-      for (var k in byStatus) { if (byStatus.hasOwnProperty(k)) out = out.concat(byStatus[k]); }
-      return out;
+  function routeDisplay(v) {
+    if (v === "Route1") return "M1/M2/M3";
+    if (v === "Route2") return "M4/M5";
+    return routeLabel(v);
+  }
+
+  function getSections(status, route) {
+    var out = [];
+    if (status !== "17") return out; // UI stage: sample data for status 17 (demo)
+    for (var i = 0; i < SECTIONS.length; i++) {
+      var sec = SECTIONS[i];
+      if (sec.key === "route") {
+        if (route !== "all" && route !== "M9") continue; // UI stage: sample route = M9
+      }
+      if (!sec.products.length) continue;
+      var title = sec.title;
+      if (sec.key === "route") title = "PickList [To Load][Route " + routeDisplay(route) + "]";
+      out.push({ title: title, products: sec.products });
     }
-    return byStatus[route] || [];
+    return out;
   }
 
   function machineName() {
@@ -223,27 +234,50 @@
     return h;
   }
 
-  function paperHtml(bodyHtml, mStatus, mPrinted, mUser) {
+  function sectionTable(products) {
+    var h = "<table class=\"p083-table\"><thead><tr>"
+      + '<th style="width:12.7%">' + "\"รหัส + ชื่อสินค้า\"" + "</th>"
+      + '<th style="width:40%">' + "\"ชื่อลูกค้า\"" + "</th>"
+      + '<th style="width:12.7%">' + "\"เลขที่ใบสำคัญ\"" + "</th>"
+      + '<th class="center" style="width:11.8%">' + "\"วันที่\"" + "</th>"
+      + '<th class="center" style="width:10.9%">' + "\"จำนวน\"" + "</th>"
+      + '<th class="center" colspan="2" style="width:11.9%">' + "\"หน่วย/คลัง\"" + "</th>"
+      + "</tr></thead><tbody>";
+    for (var i = 0; i < products.length; i++) {
+      var p = products[i];
+      h +=
+        '<tr class="p083-grow">'
+        + '<td colspan="4" class="p083-prod">' + esc(p.productCode) + ", " + esc(p.productName) + "</td>"
+        + '<td colspan="2" class="center p083-qty">' + p.totalQty + "/" + p.totalBase + "</td>"
+        + '<td class="right"><span class="p083-wh">[' + esc(p.warehouse) + "]</span></td>"
+        + "</tr>";
+      for (var j = 0; j < p.customers.length; j++) {
+        var c = p.customers[j];
+        h +=
+          '<tr class="p083-crow">'
+          + "<td></td>"
+          + '<td class="p083-cust">' + esc(c.name) + "</td>"
+          + '<td class="p083-doc">' + esc(c.document) + "</td>"
+          + '<td class="center">' + fmtDate(c.date) + "</td>"
+          + '<td class="number">' + c.qty + "</td>"
+          + '<td colspan="2" class="center">' + esc(c.unit) + "</td>"
+          + "</tr>";
+      }
+    }
+    return h + "</tbody></table>";
+  }
+
+  function sectionHtml(sec, mStatus, mPrinted, mUser) {
     return (
-      '<article class="p083-paper" id="p083Paper">' +
-        '<h1 class="p083-paper-title">"PickList [To Load][Zone QC]"</h1>' +
-        '<div class="p083-paper-meta">' +
-          "<div>" + "สถานะ" + ': <span>' + esc(mStatus) + '</span></div>' +
-          "<div>" + "พิมพ์เมื่อ" + ': <span>' + esc(mPrinted) + '</span></div>' +
-          "<div>" + "โดย" + ': <span>' + esc(mUser) + '</span></div>' +
-        "</div>" +
-        '<table class="p083-table">' +
-          "<thead><tr>" +
-            '<th style="width:20%">"รหัส + ชื่อสินค้า"</th>' +
-            '<th style="width:28%">"ชื่อลูกค้า"</th>' +
-            '<th style="width:15%">"เลขที่ใบสำคัญ"</th>' +
-            '<th class="center" style="width:11%">"วันที่"</th>' +
-            '<th class="center" style="width:10%">"จำนวน"</th>' +
-            '<th class="center" style="width:8%">"หน่วย/คลัง"</th>' +
-          "</tr></thead>" +
-          '<tbody id="p083PaperBody">' + bodyHtml + "</tbody>" +
-        "</table>" +
-      "</article>"
+      '<section class="p083-sec">'
+      + '<h1 class="p083-paper-title">' + esc(sec.title) + "</h1>"
+      + '<div class="p083-paper-meta">'
+      + "<div>" + "สถานะ" + ': <span>' + esc(mStatus) + "</span></div>"
+      + "<div>" + "พิมพ์เมื่อ" + ': <span>' + esc(mPrinted) + "</span></div>"
+      + "<div>" + "โดย" + ': <span>' + esc(mUser) + "</span></div>"
+      + "</div>"
+      + sectionTable(sec.products)
+      + "</section>"
     );
   }
 
@@ -280,38 +314,22 @@
   }
 
   function renderDocument(filters) {
-    var products = getProducts(filters.status, filters.route);
+    var sections = getSections(filters.status, filters.route);
     state.filters = filters;
-    state.products = products;
-    if (!products.length) {
+    state.sections = sections;
+    var total = 0;
+    for (var i = 0; i < sections.length; i++) total += sections[i].products.length;
+    state.products = total;
+    if (!sections.length) {
       state.paperHtml = "";
       return null;
     }
+    var mStatus = statusLabel(filters.status);
+    var mPrinted = fmtStamp();
+    var mUser = machineName();
     var h = "";
-    for (var i = 0; i < products.length; i++) {
-      var p = products[i];
-      h +=
-        '<tr class="p083-grow">' +
-          '<td colspan="2" class="p083-prod">' + esc(p.productCode) + ", " + esc(p.productName) + "</td>" +
-          "<td></td>" +
-          "<td></td>" +
-          '<td class="center p083-qty">' + p.totalQty + "/" + p.totalBase + "</td>" +
-          '<td class="center">' + esc(p.unit) + ' <span class="p083-wh">[' + esc(p.warehouse) + "]</span></td>" +
-        "</tr>";
-      for (var j = 0; j < p.customers.length; j++) {
-        var c = p.customers[j];
-        h +=
-          '<tr class="p083-crow">' +
-            "<td></td>" +
-            '<td class="p083-cust">' + esc(c.name) + "</td>" +
-            '<td class="p083-doc">' + esc(c.document) + "</td>" +
-            '<td class="center">' + fmtDate(c.date) + "</td>" +
-            '<td class="center number">' + c.qty + "</td>" +
-            '<td class="center">' + esc(c.unit) + "</td>" +
-          "</tr>";
-      }
-    }
-    state.paperHtml = paperHtml(h, statusLabel(filters.status), fmtStamp(), machineName());
+    for (var j = 0; j < sections.length; j++) h += sectionHtml(sections[j], mStatus, mPrinted, mUser);
+    state.paperHtml = h;
     return state.paperHtml;
   }
 
@@ -330,10 +348,13 @@
       "@page{size:A4;margin:20mm 15mm}",
       "body{margin:0;background:#f1f5f9}",
       ".p083-paper{width:210mm;margin:0 auto;padding:20mm 15mm;box-sizing:border-box;background:#fff;font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}",
+      ".p083-sec{margin-bottom:26px}",
+      ".p083-sec:last-child{margin-bottom:0}",
       ".p083-paper-title{font-size:20px;text-align:center;color:#0f172a;font-weight:800}",
       ".p083-paper-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;color:#1d4ed8;font-size:12px;font-weight:700}",
       ".p083-paper-meta span{color:#475569;font-weight:600}",
-      ".p083-table{width:100%;margin-top:16px;border-collapse:collapse;table-layout:fixed}",
+      ".p083-table{width:100%;margin-top:10px;border-collapse:collapse;table-layout:fixed}",
+      ".p083-grow td.right{text-align:right}",
       ".p083-table thead th{padding:8px 10px;color:#1d4ed8;border-top:2px solid #1d4ed8;border-bottom:2px solid #1d4ed8;background:#eff6ff;font-size:12px;font-weight:700;text-align:left}",
       ".p083-table thead th.center{text-align:center}",
       ".p083-grow td{padding:9px 10px 6px;border-bottom:1px solid #cbd5e1;background:#f1f5f9;font-size:13px;font-weight:700}",
@@ -395,7 +416,7 @@
       }
     }
     $("p083RepSub").textContent =
-      statusLabel(state.filters.status) + " \u2014 " + routeLabel(state.filters.route) + " \u2014 " + state.products.length + " " + "สืนคาตัว";
+      statusLabel(state.filters.status) + " \u2014 " + routeLabel(state.filters.route) + " \u2014 " + state.products + " " + "จำนวน";
     var zb = overlay.querySelector("#p083RepZoom");
     if (zb) zb.textContent = state.zoom + "%";
     var f = overlay.querySelector("#p083RepFrame");
