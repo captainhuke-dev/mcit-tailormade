@@ -638,3 +638,10 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - CSS spinner (p083-spin) in search button: hidden by default, .searching class toggles display + 0.7s rotation during API call; button disabled + cursor:wait
 - cache bump p083-picklist-load.js?v=20261020i
 - CDP 10/10 (spinner hidden->visible+animating->hidden)
+
+### 20/10 - P083: generate button -> API (C# clone) (ab7126d)
+- api/p083_generate.php now COMMITTED (was untracked): 3-section report per C# frm_PickListToLOAD_v2 (sp/qc getFilter + byRoute + getTotalStk grand/unit); route=all loops Route1,Route2,M6-M9
+- JS doGenerate(): form submit -> API {status,route,groups} -> map items.rows -> customers -> sectionHtml -> modal A4; gen spinner (generating class) during call
+- sectionTable grand cell: single string grand + 5 spaces + unit (C# getTotalStk format)
+- cache bump p083-picklist-load.js?v=20261020j
+- CDP 14/14 (status 17 route all: 2 sections Zone QC + Route M9, 22 product rows, modal sub 22 items)
