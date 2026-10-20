@@ -650,3 +650,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - doGenerate() blocks when all 3 search tables (route/sp/qc) are empty: toast (Thai, codepoint-verified) + no API call
 - cache bump p083-picklist-load.js?v=20261020k
 - CDP 7/7 (no-modal/no-spin/enabled before search; toast cps exact; modal opens after search with 22 rows)
+
+### 20/10 - P083: modal report = true A4 per C# (091ca41)
+- reportDocHtml: .p083-page 210x297mm (793.7x1122.5px) overflow hidden, @page A4 margin 30pt 20pt (C# Document(PageSize.A4,20,20,30,30)), THSarabunNew
+- table 550pt fixed 7 cols (sp/qc 70/220/70/65/60/30/35, route 80/200/...), thead bg #e6e6e6 14pt bold, grow row bg #f8f8f8 (stkcode bold + desc, grand cell border, [sto] right/bottom), crow 14pt
+- section = new A4 page (C# doc.NewPage), footer (C# 0e2b 0e19 0e49 0e48 0e32 + page no) bottom-left via margin-top:auto
+- pagination script (P081 pattern): rows overflowing 297mm split to .p083-cont pages, thead+colgroup repeated, page numbers renumbered
+- route section: col1 = Route per row (API toItems now forwards Route), grow wh cell colspan 2
+- cache bump p083-picklist-load.js?v=20261020l
+- CDP 13/13 (page 793.7x1122.5, table 733.8px, colors, 14pt=18.667px, footer cps, 3 pages seq 1-2-3)
