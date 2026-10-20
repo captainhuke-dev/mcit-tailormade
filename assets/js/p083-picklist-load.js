@@ -177,6 +177,10 @@
       ".p083-search{display:inline-flex;height:44px;align-items:center;gap:8px;padding:0 18px;color:#fff;border:0;border-radius:11px;background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 9px 20px rgba(5,150,105,0.26);font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;transition:0.16s ease}",
       ".p083-search:hover{transform:translateY(-2px);filter:brightness(1.06)}",
       ".p083-search svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
+      ".p083-spin{width:16px;height:16px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;display:none;animation:p083spin 0.7s linear infinite}",
+      ".p083-search.searching .p083-spin{display:inline-block}",
+      ".p083-search.searching{opacity:0.85;transform:none;cursor:wait}",
+      "@keyframes p083spin{to{transform:rotate(360deg)}}",
       ".p083-panel{display:flex;flex-direction:column;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.08)}",
       ".p083-panel-header{display:flex;min-height:60px;align-items:center;justify-content:space-between;gap:12px;padding:10px 15px;border-bottom:1px solid #dbe3ef}",
       ".p083-panel-title h2{overflow:hidden;font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}",
@@ -329,7 +333,7 @@
               '<label class="p083-group-title">' + "กลุ่มคลังสินค้า" + "</label>" +
               '<div class="p083-group-grid">' + groupOptionsHtml() + "</div>" +
             "</div>" +
-            '<button class="p083-search" id="p083SearchBtn" type="button">' + icon("search") + "ค้นหา" + "</button>" +
+            '<button class="p083-search" id="p083SearchBtn" type="button">' + icon("search") + '<span class="p083-spin"></span>' + "ค้นหา" + "</button>" +
           "</form>" +
         "</section>" +
         '<section class="p083-panel">' +
@@ -568,6 +572,7 @@
     if (state.searching) return;
     state.searching = true;
     el.searchBtn.disabled = true;
+    el.searchBtn.classList.add("searching");
     apiPost(API.search, {
       connectionId: MAC5_CONNECTION_ID,
       status: $("p083Status").value,
@@ -592,6 +597,7 @@
       .then(function () {
         state.searching = false;
         el.searchBtn.disabled = false;
+        el.searchBtn.classList.remove("searching");
       });
   }
 
