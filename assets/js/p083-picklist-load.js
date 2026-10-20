@@ -181,6 +181,9 @@
       ".p083-search.searching .p083-spin{display:inline-block}",
       ".p083-search.searching{opacity:0.85;transform:none;cursor:wait}",
       "@keyframes p083spin{to{transform:rotate(360deg)}}",
+      ".p083-gen-spin{width:16px;height:16px;border:2px solid rgba(255,255,255,0.35);border-top-color:#fff;border-radius:50%;display:none;animation:p083spin 0.7s linear infinite}",
+      ".p083-generate.generating .p083-gen-spin{display:inline-block}",
+      ".p083-generate.generating{opacity:0.85;transform:none;cursor:wait}",
       ".p083-panel{display:flex;flex-direction:column;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.08)}",
       ".p083-panel-header{display:flex;min-height:60px;align-items:center;justify-content:space-between;gap:12px;padding:10px 15px;border-bottom:1px solid #dbe3ef}",
       ".p083-panel-title h2{overflow:hidden;font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}",
@@ -283,7 +286,7 @@
       h +=
         '<tr class="p083-grow">'
         + '<td colspan="4" class="p083-prod">' + esc(p.productCode) + ", " + esc(p.productName) + "</td>"
-        + '<td colspan="2" class="center p083-qty">' + p.totalQty + "/" + p.totalBase + "</td>"
+        + '<td colspan="2" class="center p083-qty">' + p.totalQty + "</td>"
         + '<td class="right"><span class="p083-wh">[' + esc(p.warehouse) + "]</span></td>"
         + "</tr>";
       for (var j = 0; j < p.customers.length; j++) {
@@ -344,7 +347,7 @@
             "</div>" +
             '<div class="p083-header-right">' +
                         '<div class="p083-header-actions">' +
-            '<button class="p083-generate" id="p083GenBtn" type="submit" form="p083Form">' + icon("pen") + "สร้างเอกสาร" + "</button>" +
+            '<button class="p083-generate" id="p083GenBtn" type="submit" form="p083Form">' + icon("pen") + '<span class="p083-gen-spin"></span>' + "สร้างเอกสาร" + "</button>" +
             "</div>" +
             "</div>" +
           "</div>" +
@@ -558,7 +561,7 @@
   var TH_SANAT = "สถานะ";
 
   var MAC5_CONNECTION_ID = "c1788406814359";
-  var API = { search: "api/p083_search.php" };
+  var API = { search: "api/p083_search.php", generate: "api/p083_generate.php" };
 
   function apiPost(url, data) {
     return fetch(url, {
@@ -633,6 +636,62 @@
     el.subtitle.textContent = TH_SANAT + " " + statusLabel($("p083Status").value) + " — " + routeLabel($("p083Route").value);
   }
 
+
+  /* ---------- generate (api/p083_generate.php -> modal A4, C# clone) ---------- */
+  function doGenerate() {
+    if (state.searching) return;
+    var wh = selectedWarehouses();
+    if (!wh.length) {
+      showToast("ลั่ก กลุ่มคลังสินค้า");
+      return;
+    }
+    state.searching = true;
+    el.genBtn.disabled = true;
+    el.genBtn.classList.add("generating");
+    apiPost(API.generate, {
+      connectionId: MAC5_CONNECTION_ID,
+      status: $("p083Status").value,
+      route: $("p083Route").value,
+      groups: wh
+    })
+      .then(function (d) {
+        if (!d.ok) throw new Error(d.error);
+        var sections = [];
+        for (var i = 0; i < d.sections.length; i++) {
+          var s = d.sections[i];
+          var title = "PickList [To Load][" + (s.key === "sp" ? "Zone SparePart" : s.key === "qc" ? "Zone QC" : "Route " + routeDisplay(s.route)) + "]";
+          var products = [];
+          for (var a = 0; a < s.items.length; a++) {
+            var it = s.items[a];
+            var customers = [];
+            for (var b = 0; b < it.rows.length; b++) {
+              var rr = it.rows[b];
+              customers.push({ name: rr.name + " " + rr.contact, document: rr.vnos, date: rr.date, qty: rr.qty, unit: rr.unit });
+            }
+            products.push({ productCode: it.stk, productName: it.desc1, totalQty: it.grand + "     " + it.unit, totalBase: "", warehouse: it.sto, customers: customers });
+          }
+          sections.push({ title: title, products: products });
+        }
+        state.filters = { status: $("p083Status").value, route: $("p083Route").value, warehouses: wh };
+        state.sections = sections;
+        state.products = d.count;
+        var mStatus = statusLabel($("p083Status").value);
+        var mPrinted = fmtStamp();
+        var mUser = machineName();
+        var h = "";
+        for (var j = 0; j < sections.length; j++) h += sectionHtml(sections[j], mStatus, mPrinted, mUser);
+        state.paperHtml = h;
+        openReport();
+      })
+      .catch(function (e) {
+        showToast("สร้างเอกสารไม่สำเร็จ: " + e.message);
+      })
+      .then(function () {
+        state.searching = false;
+        el.genBtn.disabled = false;
+        el.genBtn.classList.remove("generating");
+      });
+  }
   function mount(mountEl) {
     root = mountEl;
     var olds = document.querySelectorAll("body > .p083-rep-overlay");
@@ -646,6 +705,7 @@
     }
     el.toast = $("p083Toast");
     el.searchBtn = $("p083SearchBtn");
+    el.genBtn = $("p083GenBtn");
     el.emptyState = $("p083EmptyState");
     el.subtitle = $("p083Sub");
     el.searchBtn.addEventListener("click", doSearch);
@@ -653,21 +713,7 @@
     renderSearch();
     $("p083Form").addEventListener("submit", function (e) {
       e.preventDefault();
-      var wh = selectedWarehouses();
-      if (!wh.length) {
-        showToast("ลื่ก กลุ่มคลังสินค้า");
-        return;
-      }
-      var paper = renderDocument({
-        status: $("p083Status").value,
-        route: $("p083Route").value,
-        warehouses: wh
-      });
-      if (!paper) {
-        showToast("ไม่มีเอกสาร");
-        return;
-      }
-      openReport();
+      doGenerate();
     });
   }
 
