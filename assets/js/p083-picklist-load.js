@@ -185,6 +185,15 @@
       ".p083-table-container{min-height:0;max-height:420px;overflow:auto}",
       ".p083-stable{width:100%;min-width:720px;border-collapse:separate;border-spacing:0;white-space:nowrap}",
       ".p083-stable th{position:sticky;top:0;z-index:2;padding:11px 14px;color:#475569;border-bottom:1px solid #dbe3ef;background:#f8fafc;box-shadow:inset 0 -1px #dbe3ef;font-size:12px;font-weight:700;text-align:left}",
+      ".p083-res-tables{display:flex;flex-direction:column;gap:16px;padding:14px 15px;background:#f8fafc}",
+      ".p083-rt{background:#fff;border:1px solid #dbe3ef;border-radius:12px;overflow:hidden}",
+      ".p083-rt-title{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#1d4ed8;border-bottom:1px solid #dbe3ef;background:#eff6ff;font-size:13px;font-weight:700}",
+      ".p083-rt-count{color:#475569;background:#fff;border:1px solid #dbe3ef;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:600}",
+      ".p083-rt-wrap{max-height:280px;overflow:auto}",
+      ".p083-rtable th{font-size:11.5px;padding:9px 12px}",
+      ".p083-rtable td{padding:8px 12px;font-size:12.5px;border-bottom:1px solid #f1f5f9}",
+      ".p083-rtable td.center{text-align:center}",
+      ".p083-rtable td.number{text-align:right;font-family:Arial,sans-serif}",
       ".p083-stable td{padding:10px 14px;border-bottom:1px solid #edf1f6;font-size:12px;line-height:1.4}",
       ".p083-stable th.center,.p083-stable td.center{text-align:center}",
       ".p083-stable td.number{text-align:right;font-family:Arial,sans-serif}",
@@ -348,6 +357,38 @@
               "</tr></thead>" +
               '<tbody id="p083SearchRows"></tbody>' +
             "</table>" +
+          "</div>" +
+          '<div class="p083-res-tables" id="p083ResTables">' +
+            '<div class="p083-rt" id="p083RtRoute">' +
+              '<div class="p083-rt-title">' + "รายการสินค้า By Route" + '<span class="p083-rt-count" id="p083RtRouteCount"></span></div>' +
+              '<div class="p083-rt-wrap"><table class="p083-stable p083-rtable">' +
+              "<thead><tr>" +
+              "<th>" + "รหัสสินค้า" + "</th>" + '<th class="center">' + "กลุ่มสินค้า" + "</th>" +
+              "<th>" + "ชื่อสินค้า" + "</th>" + "<th>" + "ชื่อสินค้า" + "</th>" +
+              '<th class="center number">' + "จำนวน" + "</th>" +
+              "</tr></thead>" +
+              '<tbody id="p083RtRouteRows"></tbody></table></div>' +
+            "</div>" +
+            '<div class="p083-rt" id="p083RtSp">' +
+              '<div class="p083-rt-title">' + "รายการสินค้า บาลาห่น" + '<span class="p083-rt-count" id="p083RtSpCount"></span></div>' +
+              '<div class="p083-rt-wrap"><table class="p083-stable p083-rtable">' +
+              "<thead><tr>" +
+              "<th>" + "รหัสสินค้า" + "</th>" + '<th class="center">' + "กลุ่มสินค้า" + "</th>" +
+              "<th>" + "ชื่อสินค้า" + "</th>" + "<th>" + "ชื่อสินค้า" + "</th>" +
+              '<th class="center number">' + "จำนวน" + "</th>" +
+              "</tr></thead>" +
+              '<tbody id="p083RtSpRows"></tbody></table></div>' +
+            "</div>" +
+            '<div class="p083-rt" id="p083RtQc">' +
+              '<div class="p083-rt-title">' + "รายการสินค้า แบตเตอรี่แห้ง" + '<span class="p083-rt-count" id="p083RtQcCount"></span></div>' +
+              '<div class="p083-rt-wrap"><table class="p083-stable p083-rtable">' +
+              "<thead><tr>" +
+              "<th>" + "รหัสสินค้า" + "</th>" + '<th class="center">' + "กลุ่มสินค้า" + "</th>" +
+              "<th>" + "ชื่อสินค้า" + "</th>" + "<th>" + "ชื่อสินค้า" + "</th>" +
+              '<th class="center number">' + "จำนวน" + "</th>" +
+              "</tr></thead>" +
+              '<tbody id="p083RtQcRows"></tbody></table></div>' +
+            "</div>" +
           "</div>" +
           '<div class="p083-empty-state" id="p083EmptyState">' +
             "<div>" + icon("check") +
@@ -558,6 +599,39 @@
     else showToast(TH_NOFOUND);
   }
 
+  var RESULT_SAMPLE = {
+    route: [
+      { code: "30210034", group: "G01", name1: "สีทาอาคารภายนอก 5 แกลลอน", name2: "Can", qty: 2 }
+    ],
+    sp: [
+      { code: "20110045", group: "G01", name1: "ถังพ่นยาไฟฟ้า", name2: "Ea", qty: 1 },
+      { code: "20120088", group: "G01", name1: "สายยางใส", name2: "Ea", qty: 2 }
+    ],
+    qc: [
+      { code: "10360017", group: "G01", name1: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", name2: "Ea", qty: 2 }
+    ]
+  };
+
+  function renderResultTables() {
+    var map = { route: "p083RtRoute", sp: "p083RtSp", qc: "p083RtQc" };
+    for (var key in map) {
+      var rows = RESULT_SAMPLE[key] || [];
+      var h = "";
+      for (var i = 0; i < rows.length; i++) {
+        var r = rows[i];
+        h += "<tr>"
+          + "<td>" + esc(r.code) + "</td>"
+          + '<td class="center">' + esc(r.group) + "</td>"
+          + "<td>" + esc(r.name1) + "</td>"
+          + "<td>" + esc(r.name2) + "</td>"
+          + '<td class="center number">' + r.qty + "</td>"
+          + "</tr>";
+      }
+      $(map[key] + "Rows").innerHTML = h;
+      $(map[key] + "Count").textContent = rows.length + " " + TH_RIALANG;
+    }
+  }
+
   function renderSearch() {
     var isSearch = state.view === "search";
     el.searchContainer.style.display = isSearch ? "block" : "none";
@@ -606,6 +680,7 @@
     el.modeBadge = $("p083ModeBadge");
     el.subtitle = $("p083Sub");
     el.searchBtn.addEventListener("click", doSearch);
+    renderResultTables();
     $("p083Form").addEventListener("submit", function (e) {
       e.preventDefault();
       var wh = selectedWarehouses();
