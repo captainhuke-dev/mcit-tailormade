@@ -627,3 +627,9 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Table 3 title: รายการสินค้า บาตตเ่อรี
 - cache bump index.php p083-picklist-load.js?v=20261020f
 - Verified via codepoint dump (unicodedata) — all Thai strings correct
+
+### 20/10 - P083: By Route column + API By Route query
+- api/p083_search.php: added By Route query (user SQL 20/10) - route dropdown (all/Route1=M1,M2,M3/Route2=M4,M5/M6-M9) + warehouse checkboxes; returns route:[{STKcode,STKgroup,STKdescT1,STKdescT2,qty,Route}]
+- JS: search sends status+route+warehouses; By Route table = 6 cols (5 + Route); subtitle = status + route label; count/toast include route rows
+- cache bump p083-picklist-load.js?v=20261020h
+- CDP 18/18 (status 17: sp 0 / qc 2 / route 20, route row 6 cells last=M9)

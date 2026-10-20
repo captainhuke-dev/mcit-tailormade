@@ -352,6 +352,7 @@
               "<th>" + "รหัสสินค้า" + "</th>" + '<th class="center">' + "กลุ่มสินค้า" + "</th>" +
               "<th>" + "ชื่อสินค้า" + "</th>" + "<th>" + "ชื่อสินค้า" + "</th>" +
               '<th class="center number">' + "จำนวน" + "</th>" +
+              '<th class="center">' + "Route" + "</th>" +
               "</tr></thead>" +
               '<tbody id="p083RtRouteRows"></tbody></table></div>' +
             "</div>" +
@@ -567,16 +568,22 @@
     if (state.searching) return;
     state.searching = true;
     el.searchBtn.disabled = true;
-    apiPost(API.search, { connectionId: MAC5_CONNECTION_ID, status: $("p083Status").value })
+    apiPost(API.search, {
+      connectionId: MAC5_CONNECTION_ID,
+      status: $("p083Status").value,
+      route: $("p083Route").value,
+      warehouses: selectedWarehouses()
+    })
       .then(function (d) {
         if (!d.ok) throw new Error(d.error);
         var sp = d.sp || [];
         var qc = d.qc || [];
-        state.searchRows = { route: [], sp: sp, qc: qc };
-        state.view = (sp.length || qc.length) ? "search" : null;
+        var route = d.route || [];
+        state.searchRows = { route: route, sp: sp, qc: qc };
+        state.view = (sp.length || qc.length || route.length) ? "search" : null;
         renderResultTables();
         renderSearch();
-        if (sp.length || qc.length) showToast(TH_PHOB + " " + (sp.length + qc.length) + " " + TH_RIALANG);
+        if (sp.length || qc.length || route.length) showToast(TH_PHOB + " " + (sp.length + qc.length + route.length) + " " + TH_RIALANG);
         else showToast(TH_NOFOUND);
       })
       .catch(function (e) {
@@ -602,6 +609,7 @@
           + "<td>" + esc(r.STKdescT1) + "</td>"
           + "<td>" + esc(r.STKdescT2) + "</td>"
           + '<td class="center number">' + (r.qty == null ? "" : r.qty) + "</td>"
+          + (key === "route" ? '<td class="center">' + esc(r.Route) + "</td>" : "")
           + "</tr>";
       }
       $(map[key] + "Rows").innerHTML = h;
@@ -616,7 +624,7 @@
       el.subtitle.textContent = "";
       return;
     }
-    el.subtitle.textContent = TH_SANAT + " " + statusLabel($("p083Status").value);
+    el.subtitle.textContent = TH_SANAT + " " + statusLabel($("p083Status").value) + " — " + routeLabel($("p083Route").value);
   }
 
   function mount(mountEl) {
