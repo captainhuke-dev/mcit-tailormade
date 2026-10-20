@@ -559,6 +559,7 @@
   var TH_NOFOUND = "ไม่พบรายการตามเงื่อนไขที่ค้นหา";
   var TH_SANGSHOW = "แสดง";
   var TH_SANAT = "สถานะ";
+  var TH_NEEDSEARCH = "ฟรอด ค้นหา ด้ว";
 
   var MAC5_CONNECTION_ID = "c1788406814359";
   var API = { search: "api/p083_search.php", generate: "api/p083_generate.php" };
@@ -640,6 +641,11 @@
   /* ---------- generate (api/p083_generate.php -> modal A4, C# clone) ---------- */
   function doGenerate() {
     if (state.searching) return;
+    var sr = state.searchRows || { route: [], sp: [], qc: [] };
+    if (!sr.route.length && !sr.sp.length && !sr.qc.length) {
+      showToast(TH_NEEDSEARCH);
+      return;
+    }
     var wh = selectedWarehouses();
     if (!wh.length) {
       showToast("ลั่ก กลุ่มคลังสินค้า");
