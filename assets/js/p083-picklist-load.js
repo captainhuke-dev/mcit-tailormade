@@ -169,7 +169,7 @@
     ".p083-group-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px 10px}",
     ".p083-group-option{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;cursor:pointer}",
     ".p083-group-option input{width:16px;height:16px;accent-color:#2563eb;cursor:pointer}",
-    ".p083-generate{display:inline-flex;height:50px;align-items:center;gap:10px;padding:0 24px;color:#fff;border:0;border-radius:12px;background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 10px 22px rgba(37,99,235,0.28);font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;transition:0.16s ease}",
+    ".p083-generate{display:inline-flex;height:44px;align-items:center;gap:8px;padding:0 18px;color:#fff;border:0;border-radius:11px;background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 9px 20px rgba(37,99,235,0.26);font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;transition:0.16s ease}",
     ".p083-generate:hover{transform:translateY(-2px);filter:brightness(1.06)}",
     ".p083-generate svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
       ".p083-header-right{display:flex;align-items:center;gap:10px}",
@@ -230,7 +230,7 @@
     ".p083-rep-body iframe{width:100%;height:100%;min-height:520px;border:1px solid #e2e8f0;border-radius:8px;background:#fff}",
     ".p083-rep-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-top:1px solid #e2e8f0}",
     ".p083-rep-hint{color:#64748b;font-size:12px}",
-    "@media (max-width:1050px){.p083-launcher-body{grid-template-columns:1fr}.p083-generate{grid-column:1/-1;width:100%;justify-content:center}.p083-group-grid{grid-template-columns:repeat(2,1fr)}}",
+    "@media (max-width:1050px){.p083-launcher-body{grid-template-columns:1fr}.p083-search{grid-column:1/-1;width:100%;justify-content:center}.p083-group-grid{grid-template-columns:repeat(2,1fr)}}",
     "@media (max-width:680px){.p083-launcher-body{grid-template-columns:1fr}.p083-group-grid{grid-template-columns:repeat(2,1fr)}}"
   ];
 
@@ -323,7 +323,7 @@
               '<label class="p083-group-title">' + "กลุ่มคลังสินค้า" + "</label>" +
               '<div class="p083-group-grid">' + groupOptionsHtml() + "</div>" +
             "</div>" +
-            '<button class="p083-generate" id="p083GenBtn" type="submit">' + icon("pen") + "สร้างเอกสาร" + "</button>" +
+            '<button class="p083-search" id="p083SearchBtn" type="button">' + icon("search") + "ค้นหา" + "</button>" +
           "</form>" +
         "</section>" +
         '<section class="p083-panel">' +
@@ -335,7 +335,7 @@
             '<div class="p083-header-right">' +
             '<span class="p083-mode-badge" id="p083ModeBadge" style="display:none">' + "ผลค้นหา" + "</span>" +
             '<div class="p083-header-actions">' +
-            '<button class="p083-search" id="p083SearchBtn" type="button">' + icon("search") + "ค้นหา" + "</button>" +
+            '<button class="p083-generate" id="p083GenBtn" type="submit" form="p083Form">' + icon("pen") + "สร้างเอกสาร" + "</button>" +
             "</div>" +
             "</div>" +
           "</div>" +
