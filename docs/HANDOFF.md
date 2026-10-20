@@ -80,12 +80,12 @@
 - คำไทย extra จาก demo (codepoint-exact) — word สินค้า = `0E2A 0E34 0E19` (SARA I)
 - แก้ P081 backLabel misspell กลับั่→กลับ ใน portal.js ด้วย
 - cache `p083 v=20261019h`, `portal.js v=20261019a` — **ยังไม่ ready** — ถัดไป: API + SQL from C# (search + generate, status 17 only — sample data)
-### 20/10 — P083 API get tbSP/tbQC + 3 result tables
-- API **new** (uncommitted): `api/p083_search.php` (tbSP+tbQC — clone C# `getFilter`: status + colv2 + group filter — tbSP = tb_GroupSparepart OR LIKE %SP%, tbQC = tb_GroupBattery — no warehouse/route) + `api/p083_generate.php` (3 sections sp/qc/route — route=all = loop Route1,Route2,M6-M9 per C# `dtroute`; grandTotal = clone C# `getTotalStk` single SQL) — curl real: search status 17 = 220 rows; generate = 22 items (qc 2, route M9 20)
-- JS wire API (uncommitted): doSearch -> `apiPost('p083_search.php')` (rows -> search table + badge), doGenerate -> `apiPost('p083_generate.php')` (sections -> modal paper 3 sections + count) — CDP 11/11 real data (polling — DB latency ~15.5s search / ~23s generate)
-- 20/10: 3 result tables below panel (order: รายการสินค้า By Route / รายการสินค้า บาลาห่น / รายการสินค้า แบตเตอรี่แห้ง) — white rounded box + blue title bar + count badge — 5 columns (รหัสสินค้า / กลุ่มสินค้า / ชื่อสินค้า x2 / จำนวน) — sample data — commit `1239e3e`
-- cache `p083 v=20261020b` — **ยังไม่ ready** — next: wire 3 result tables -> API data (sample only now) + commit API/JS wiring
-
+### 20/10 — P083 search -> API -> 3 result tables
+- `api/p083_search.php` (committed `fcc04e8`) — user SQL: 2 queries, same status param (dropdown) for both — sp = `STKgroup IN (tb_GroupSparepart Active) OR STKgroup LIKE '%SP%'`; qc = `STKgroup IN (tb_GroupBattery Active)`; `SUM(MILquan/MILconv) qty`, GROUP BY stk, colv2 first-char filter, `MIHtype='IS'` `MILcut=-1` `MIHcancel=0` — response `{ok, sp:[], qc:[]}` — curl real: status 17 -> qc 2; status 52 -> qc 7 (no sp rows in live data yet)
+- JS (committed `fcc04e8`): search button -> `apiPost('p083_search.php')` -> fill 3 result tables (sp + qc from API, รายการสินค้า By Route = pending/empty). Removed old single search panel / footer / mode badge / sample data. Button disables while loading; toast สถานะ label in subtitle
+- 3 result tables (order: รายการสินค้า By Route / รายการสินค้า บาลาห่น / รายการสินค้า แบตเตอรี่แห้ง) — white rounded box + blue title bar + count badge — 5 columns (รหัสสินค้า / กลุ่มสินค้า / ชื่อสินค้า x2 / จำนวน)
+- CDP 15/15 real data (status 52 -> sp 0 / qc 7 / route 0, badge + row + subtitle verified)
+- cache `p083 v=20261020c` — **ยังไม่ ready** — next: รายการสินค้า By Route section (By Route SQL) + wire generate button
 
 ### 17/10 — P080 ปุ่มตั้งค่ากลุ่มสินค้าแบตเตอรี (CRUD `tb_GroupBattery`) — `api/p080_groups.php`
 - ปุ่ม `⚙ ตั้งค่ากลุ่มสินค้าแบตเตอรี` อยู่ระดับเดียวกันกับ back link `← กลับไป PickList (Trade)` — `portal.js` ครอบ flex row + `<span id="p080SettingsWrap">` แล้ว JS สร้าง `#p080SettingsBtn` ใน `mount()`
