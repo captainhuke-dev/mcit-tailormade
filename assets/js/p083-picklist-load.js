@@ -158,7 +158,7 @@
   var CSS = [
     ".p083-app{display:flex;flex-direction:column;gap:14px}",
     ".p083-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
-    ".p083-launcher-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr) auto auto;gap:18px;align-items:center;padding:20px;background:linear-gradient(180deg,#e3f7fb,#eefbfd)}",
+    ".p083-launcher-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr) auto;gap:18px;align-items:center;padding:20px;background:linear-gradient(180deg,#e3f7fb,#eefbfd)}",
     ".p083-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
     ".p083-input-wrap{position:relative}",
     ".p083-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
@@ -172,7 +172,9 @@
     ".p083-generate{display:inline-flex;height:50px;align-items:center;gap:10px;padding:0 24px;color:#fff;border:0;border-radius:12px;background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 10px 22px rgba(37,99,235,0.28);font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;transition:0.16s ease}",
     ".p083-generate:hover{transform:translateY(-2px);filter:brightness(1.06)}",
     ".p083-generate svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
-      ".p083-search{display:inline-flex;height:50px;align-items:center;gap:10px;padding:0 20px;color:#fff;border:0;border-radius:12px;background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 10px 22px rgba(5,150,105,0.26);font-size:14px;font-weight:700;white-space:nowrap;cursor:pointer;transition:0.16s ease}",
+      ".p083-header-right{display:flex;align-items:center;gap:10px}",
+      ".p083-header-actions{display:flex;align-items:center;gap:8px}",
+      ".p083-search{display:inline-flex;height:44px;align-items:center;gap:8px;padding:0 18px;color:#fff;border:0;border-radius:11px;background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 9px 20px rgba(5,150,105,0.26);font-size:13px;font-weight:700;white-space:nowrap;cursor:pointer;transition:0.16s ease}",
       ".p083-search:hover{transform:translateY(-2px);filter:brightness(1.06)}",
       ".p083-search svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
       ".p083-panel{display:flex;flex-direction:column;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.08)}",
@@ -322,7 +324,6 @@
               '<div class="p083-group-grid">' + groupOptionsHtml() + "</div>" +
             "</div>" +
             '<button class="p083-generate" id="p083GenBtn" type="submit">' + icon("pen") + "สร้างเอกสาร" + "</button>" +
-          '<button class="p083-search" id="p083SearchBtn" type="button">' + icon("search") + "ค้นหา" + "</button>" +
           "</form>" +
         "</section>" +
         '<section class="p083-panel">' +
@@ -331,7 +332,12 @@
               "<h2>" + "ผลการสร้างเอกสาร ค้นหา PickList To Load" + "</h2>" +
               '<p id="p083Sub"></p>' +
             "</div>" +
+            '<div class="p083-header-right">' +
             '<span class="p083-mode-badge" id="p083ModeBadge" style="display:none">' + "ผลค้นหา" + "</span>" +
+            '<div class="p083-header-actions">' +
+            '<button class="p083-search" id="p083SearchBtn" type="button">' + icon("search") + "ค้นหา" + "</button>" +
+            "</div>" +
+            "</div>" +
           "</div>" +
           '<div class="p083-table-container" id="p083SearchContainer" style="display:none">' +
             '<table class="p083-stable">' +
