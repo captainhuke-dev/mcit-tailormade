@@ -356,7 +356,7 @@
               '<tbody id="p083RtRouteRows"></tbody></table></div>' +
             "</div>" +
             '<div class="p083-rt" id="p083RtSp">' +
-              '<div class="p083-rt-title">' + "รายการสินค้า บาอะห฻ล่" + '<span class="p083-rt-count" id="p083RtSpCount"></span></div>' +
+              '<div class="p083-rt-title">' + "รายการสินค้า บาอะห้ล่" + '<span class="p083-rt-count" id="p083RtSpCount"></span></div>' +
               '<div class="p083-rt-wrap"><table class="p083-stable p083-rtable">' +
               "<thead><tr>" +
               "<th>" + "รหัสสินค้า" + "</th>" + '<th class="center">' + "กลุ่มสินค้า" + "</th>" +
