@@ -335,7 +335,7 @@
         '<section class="p083-panel">' +
           '<div class="p083-panel-header">' +
             '<div class="p083-panel-title">' +
-              "<h2>" + "ผลการสร้างเอกสาร ค้นหา PickList To Load" + "</h2>" +
+              "<h2>" + "ผลแการค้นหา PickList To Load" + "</h2>" +
               '<p id="p083Sub"></p>' +
             "</div>" +
             '<div class="p083-header-right">' +
@@ -356,7 +356,7 @@
               '<tbody id="p083RtRouteRows"></tbody></table></div>' +
             "</div>" +
             '<div class="p083-rt" id="p083RtSp">' +
-              '<div class="p083-rt-title">' + "รายการสินค้า บาลาห่น" + '<span class="p083-rt-count" id="p083RtSpCount"></span></div>' +
+              '<div class="p083-rt-title">' + "รายการสินค้า บาอะห฻ล่" + '<span class="p083-rt-count" id="p083RtSpCount"></span></div>' +
               '<div class="p083-rt-wrap"><table class="p083-stable p083-rtable">' +
               "<thead><tr>" +
               "<th>" + "รหัสสินค้า" + "</th>" + '<th class="center">' + "กลุ่มสินค้า" + "</th>" +
@@ -366,7 +366,7 @@
               '<tbody id="p083RtSpRows"></tbody></table></div>' +
             "</div>" +
             '<div class="p083-rt" id="p083RtQc">' +
-              '<div class="p083-rt-title">' + "รายการสินค้า แบตเตอรี่แห้ง" + '<span class="p083-rt-count" id="p083RtQcCount"></span></div>' +
+              '<div class="p083-rt-title">' + "รายการสินค้า บาตตเ่อรี" + '<span class="p083-rt-count" id="p083RtQcCount"></span></div>' +
               '<div class="p083-rt-wrap"><table class="p083-stable p083-rtable">' +
               "<thead><tr>" +
               "<th>" + "รหัสสินค้า" + "</th>" + '<th class="center">' + "กลุ่มสินค้า" + "</th>" +
