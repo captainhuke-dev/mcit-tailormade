@@ -620,3 +620,10 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - ค้นหารหัส (prefix) / ชื่อ (substring) + require * + toast ไม่พบข้อมูล
 - Layout: panel ลูกหนี้ (รหัส+ชื่อ/ที่อยู่/โทร/เริ่มค้าขาย) + 6 cards (วงเงินเครดิต/INV/Due/ค้างชำระ/SO/ผู้แทน) + table หนี้ค้าง 6-col (badge เกินกำหนด=red/amber, รอชำระ=yellow) + table เช็ค/เงินโอน 6-col (ผ่านแล้ว/สำเร็จ=green, รอ clearing=yellow) + timeline ทวงหนี้ — tables pagination 15
 - **รอ user:** SQL MAC5 (ค้นหาลูกหนี้, 6 cards, หนี้ค้าง, เช็ค/เงินโอน, ประวัติทวงหนี้ — table timeline มีใน DB ไหม?) → status ready
+
+### 20/10 — P083: fix result-panel Thai titles (commit 14fca44)
+- Result panel H2: ผลแการค้นหา PickList To Load (was old generate-doc prefix)
+- Table 2 title: รายการสินค้า บาอะห฻ล่
+- Table 3 title: รายการสินค้า บาตตเ่อรี
+- cache bump index.php p083-picklist-load.js?v=20261020f
+- Verified via codepoint dump (unicodedata) — all Thai strings correct
