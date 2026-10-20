@@ -83,7 +83,7 @@
 ### 20/10 — P083 API get tbSP/tbQC + 3 result tables
 - API **new** (uncommitted): `api/p083_search.php` (tbSP+tbQC — clone C# `getFilter`: status + colv2 + group filter — tbSP = tb_GroupSparepart OR LIKE %SP%, tbQC = tb_GroupBattery — no warehouse/route) + `api/p083_generate.php` (3 sections sp/qc/route — route=all = loop Route1,Route2,M6-M9 per C# `dtroute`; grandTotal = clone C# `getTotalStk` single SQL) — curl real: search status 17 = 220 rows; generate = 22 items (qc 2, route M9 20)
 - JS wire API (uncommitted): doSearch -> `apiPost('p083_search.php')` (rows -> search table + badge), doGenerate -> `apiPost('p083_generate.php')` (sections -> modal paper 3 sections + count) — CDP 11/11 real data (polling — DB latency ~15.5s search / ~23s generate)
-- 20/10: 3 result tables below panel (order: รายการชื่อสินค้า By Route / รายการชื่อสินค้า บาลาห่น / รายการชื่อสินค้า แบตเตอรี่แห้ง) — white rounded box + blue title bar + count badge — 5 columns (รหัสสินค้า / กลุ่มชื่อสินค้า / ชื่อชื่อสินค้า x2 / จำนวน) — sample data — commit `1239e3e`
+- 20/10: 3 result tables below panel (order: รายการสินค้า By Route / รายการสินค้า บาลาห่น / รายการสินค้า แบตเตอรี่แห้ง) — white rounded box + blue title bar + count badge — 5 columns (รหัสสินค้า / กลุ่มสินค้า / ชื่อสินค้า x2 / จำนวน) — sample data — commit `1239e3e`
 - cache `p083 v=20261020b` — **ยังไม่ ready** — next: wire 3 result tables -> API data (sample only now) + commit API/JS wiring
 
 
