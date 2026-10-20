@@ -272,33 +272,38 @@
     return h;
   }
 
-  function sectionTable(products) {
-    var h = "<table class=\"p083-table\"><thead><tr>"
-      + '<th style="width:12.7%">' + "รหัส + ชื่อสินค้า" + "</th>"
-      + '<th style="width:40%">' + "ชื่อลูกค้า" + "</th>"
-      + '<th style="width:12.7%">' + "เลขที่ใบสำคัญ" + "</th>"
-      + '<th class="center" style="width:11.8%">' + "วันที่" + "</th>"
-      + '<th class="center" style="width:10.9%">' + "จำนวน" + "</th>"
-      + '<th class="center" colspan="2" style="width:11.9%">' + "หน่วย/คลัง" + "</th>"
+  function sectionTable(products, secKey) {
+    var isRoute = secKey === "route";
+    var w = isRoute ? ["80", "200", "70", "65", "60", "30", "35"] : ["70", "220", "70", "65", "60", "30", "35"];
+    var cg = "<colgroup>";
+    for (var x = 0; x < w.length; x++) cg += '<col style="width:' + w[x] + 'pt">';
+    cg += "</colgroup>";
+    var h = "<table class=\"p083-table\">" + cg + "<thead><tr>"
+      + '<th>' + "รหัส + ชื่อสินค้า" + "</th>"
+      + '<th>' + "ชื่อลูกค้า" + "</th>"
+      + '<th>' + "เลขที่ใบสำคัญ" + "</th>"
+      + '<th>' + "วันที่" + "</th>"
+      + '<th>' + "จำนวน" + "</th>"
+      + '<th colspan="2">' + "หน่วย/คลัง" + "</th>"
       + "</tr></thead><tbody>";
     for (var i = 0; i < products.length; i++) {
       var p = products[i];
       h +=
         '<tr class="p083-grow">'
-        + '<td colspan="4" class="p083-prod">' + esc(p.productCode) + ", " + esc(p.productName) + "</td>"
-        + '<td colspan="2" class="center p083-qty">' + p.totalQty + "</td>"
-        + '<td class="right"><span class="p083-wh">[' + esc(p.warehouse) + "]</span></td>"
+        + '<td colspan="4"><b>' + esc(p.productCode) + ", </b>" + esc(p.productName) + "</td>"
+        + '<td colspan="2" class="p083-qty"><b>' + p.totalQty + "</b></td>"
+        + '<td class="p083-whcell"><b>[' + esc(p.warehouse) + "]</b></td>"
         + "</tr>";
       for (var j = 0; j < p.customers.length; j++) {
         var c = p.customers[j];
         h +=
           '<tr class="p083-crow">'
-          + "<td></td>"
+          + (isRoute ? '<td class="center">' + esc(c.route) + "</td>" : "<td></td>")
           + '<td class="p083-cust">' + esc(c.name) + "</td>"
-          + '<td class="p083-doc">' + esc(c.document) + "</td>"
+          + '<td class="center">' + esc(c.document) + "</td>"
           + '<td class="center">' + fmtDate(c.date) + "</td>"
-          + '<td class="number">' + c.qty + "</td>"
-          + '<td colspan="2" class="center">' + esc(c.unit) + "</td>"
+          + '<td class="right">' + c.qty + "</td>"
+          + '<td colspan="2">' + esc(c.unit) + "</td>"
           + "</tr>";
       }
     }
@@ -307,14 +312,15 @@
 
   function sectionHtml(sec, mStatus, mPrinted, mUser) {
     return (
-      '<section class="p083-sec">'
+      '<section class="p083-page">'
       + '<h1 class="p083-paper-title">' + esc(sec.title) + "</h1>"
       + '<div class="p083-paper-meta">'
-      + "<div>" + "สถานะ" + ': <span>' + esc(mStatus) + "</span></div>"
-      + "<div>" + "พิมพ์เมื่อ" + ': <span>' + esc(mPrinted) + "</span></div>"
-      + "<div>" + "โดย" + ': <span>' + esc(mUser) + "</span></div>"
+      + "<b>" + "สถานะ" + ' : </b>' + esc(mStatus)
+      + "    <b>" + "พิมพ์เมื่อ" + ' : </b>' + esc(mPrinted)
+      + "    <b>" + "โดย" + ' : </b>' + esc(mUser)
       + "</div>"
-      + sectionTable(sec.products)
+      + sectionTable(sec.products, sec.key)
+      + '<div class="p083-pagefoot">' + TH_NAA + ' <span class="p083-pgno">1</span></div>'
       + "</section>"
     );
   }
@@ -432,34 +438,33 @@
 
   /* ---------- modal report (P081 pattern: overlay + iframe srcdoc + zoom) ---------- */
   function reportDocHtml(paperInner) {
+    // C# A4: Document(PageSize.A4, 20f, 20f, 30f, 30f) = left 20pt right 20pt top 30pt bottom 30pt
     var css = [
       "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew.ttf') format('truetype');font-weight:400;font-style:normal;font-display:block}",
       "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:block}",
-      "@page{size:A4;margin:20mm 15mm}",
+      "@page{size:A4;margin:30pt 20pt}",
       "body{margin:0;background:#f1f5f9}",
-      ".p083-paper{width:210mm;margin:0 auto;padding:20mm 15mm;box-sizing:border-box;background:#fff;font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}",
-      ".p083-sec{margin-bottom:26px}",
-      ".p083-sec:last-child{margin-bottom:0}",
-      ".p083-paper-title{font-size:20px;text-align:center;color:#0f172a;font-weight:800}",
-      ".p083-paper-meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;color:#1d4ed8;font-size:12px;font-weight:700}",
-      ".p083-paper-meta span{color:#475569;font-weight:600}",
-      ".p083-table{width:100%;margin-top:10px;border-collapse:collapse;table-layout:fixed}",
-      ".p083-grow td.right{text-align:right}",
-      ".p083-table thead th{padding:8px 10px;color:#1d4ed8;border-top:2px solid #1d4ed8;border-bottom:2px solid #1d4ed8;background:#eff6ff;font-size:12px;font-weight:700;text-align:left}",
-      ".p083-table thead th.center{text-align:center}",
-      ".p083-grow td{padding:9px 10px 6px;border-bottom:1px solid #cbd5e1;background:#f1f5f9;font-size:13px;font-weight:700}",
-      ".p083-grow .p083-prod{color:#0f172a}",
-      ".p083-grow td.center{text-align:center}",
-      ".p083-crow td{padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:12.5px}",
+      ".p083-page{box-sizing:border-box;display:flex;flex-direction:column;width:210mm;height:297mm;overflow:hidden;margin:0 auto;padding:30pt 20pt;background:#fff;font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}",
+      ".p083-page+.p083-page{margin-top:10px}",
+      ".p083-pagefoot{margin-top:auto;text-align:left;font-size:12pt}",
+      ".p083-paper-title{text-align:center;font-size:18pt;font-weight:bold;margin:0 0 6px}",
+      ".p083-paper-meta{font-size:14pt;margin:0 0 5px}",
+      ".p083-table{width:550pt;margin:0 auto;border-collapse:collapse;table-layout:fixed}",
+      ".p083-table th{padding:2px 4px 5px;background:#e6e6e6;text-align:center;font-size:14pt;font-weight:bold}",
+      ".p083-table td{padding:2px 4px;font-size:14pt;vertical-align:middle}",
+      ".p083-grow td{padding:2px 4px 5px;background:#f8f8f8;font-size:14pt}",
+      ".p083-grow .p083-qty{border:1px solid #000;text-align:left}",
+      ".p083-grow .p083-whcell{border:1px solid #000;text-align:right;vertical-align:bottom}",
+      ".p083-crow td{font-size:14pt}",
       ".p083-crow td.center{text-align:center}",
-      ".p083-crow td.number{text-align:right;font-family:Arial,sans-serif}",
-      ".p083-cust{color:#334155}",
-      ".p083-doc{color:#1d4ed8;font-family:Arial,sans-serif;font-weight:700}",
-      ".p083-qty{font-family:Arial,sans-serif;font-weight:700}",
-      ".p083-wh{display:inline-flex;min-width:28px;justify-content:center;padding:1px 7px;color:#047857;border-radius:6px;background:#d1fae5;font-family:Arial,sans-serif;font-size:11px;font-weight:700}",
-      "@media print{body{display:block;background:#fff;zoom:1}.p083-paper{width:100%;margin:0;padding:0;background:#fff;box-shadow:none}}"
+      ".p083-crow td.right{text-align:right;padding-right:5px}",
+      "@media print{body{display:block;background:#fff;zoom:1}.p083-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;background:#fff;box-shadow:none;page-break-after:always}.p083-page:last-child{page-break-after:auto}.p083-table tr{page-break-inside:avoid}}"
     ].join("\n");
-    var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',fit);window.setZoom=function(z){document.body.style.zoom=z};</scr" + "ipt>";
+    var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var m=window.__MAN;if(m){document.body.style.zoom=m;return}var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',function(){fit();pag()});window.setZoom=function(z){window.__MAN=z;fit();pag()};" +
+      "function rowOver(row){var s=row.closest('section.p083-page');if(!s)return false;var sr=s.getBoundingClientRect();var lr=row.getBoundingClientRect();var pb=parseFloat(getComputedStyle(s).paddingBottom)||0;return lr.bottom>sr.bottom-pb}" +
+      "function renumber(){var s=document.querySelectorAll('section.p083-page');for(var i=0;i<s.length;i++){var f=s[i].querySelector('.p083-pgno');if(f)f.textContent=i+1}}" +
+      "function pag(){var secs=Array.prototype.slice.call(document.querySelectorAll('section.p083-page'));if(!secs.length)return;var groups=[];secs.forEach(function(s){if(!s.classList.contains('p083-cont'))groups.push([s]);else groups[groups.length-1].push(s)});groups.forEach(function(g){var first=g[0];var t=first.querySelector('table');for(var i=1;i<g.length;i++){var t2=g[i].querySelector('table');while(t2.tBodies[0].rows.length)t.tBodies[0].appendChild(t2.tBodies[0].rows[0]);g[i].parentNode.removeChild(g[i])}var rows=Array.prototype.slice.call(t.tBodies[0].rows);t.tBodies[0].innerHTML='';var cur=first,curT=t;rows.forEach(function(row){curT.tBodies[0].appendChild(row);if(curT.tBodies[0].rows.length>1&&rowOver(row)){curT.tBodies[0].removeChild(row);var s2=document.createElement('section');s2.className='p083-page p083-cont';var ft=cur.querySelector('.p083-pagefoot');s2.innerHTML='<table class=\"p083-table\">'+(t.querySelector('colgroup')?t.querySelector('colgroup').outerHTML:'')+'<thead>'+t.tHead.innerHTML+'</thead><tbody></tbody></table><div class=\"p083-pagefoot\">'+'หน้่า '+'<span class=\"p083-pgno\">1</span>'+'</div>';cur.parentNode.insertBefore(s2,cur.nextSibling);cur=s2;curT=s2.querySelector('table');curT.tBodies[0].appendChild(row)}})});renumber()}" +
+      "function runPag(){fit();pag()}if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){pag()})}else{pag()}window.addEventListener('load',function(){pag()});setTimeout(pag,300);</scr" + "ipt>";
     return '<!doctype html><html><head><meta charset="utf-8"><title>PickList To Load</title><style>' + css + "</style></head><body>" + paperInner + fit + "</body></html>";
   }
 
@@ -560,6 +565,7 @@
   var TH_SANGSHOW = "แสดง";
   var TH_SANAT = "สถานะ";
   var TH_NEEDSEARCH = "ฟรอด ค้นหา ด้ว";
+  var TH_NAA = "หน้่า";
 
   var MAC5_CONNECTION_ID = "c1788406814359";
   var API = { search: "api/p083_search.php", generate: "api/p083_generate.php" };
@@ -672,7 +678,7 @@
             var customers = [];
             for (var b = 0; b < it.rows.length; b++) {
               var rr = it.rows[b];
-              customers.push({ name: rr.name + " " + rr.contact, document: rr.vnos, date: rr.date, qty: rr.qty, unit: rr.unit });
+              customers.push({ name: rr.name + " " + rr.contact, document: rr.vnos, date: rr.date, qty: rr.qty, unit: rr.unit, route: rr.route || "" });
             }
             products.push({ productCode: it.stk, productName: it.desc1, totalQty: it.grand + "     " + it.unit, totalBase: "", warehouse: it.sto, customers: customers });
           }

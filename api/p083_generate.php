@@ -144,7 +144,7 @@ function toItems($db, $rows) {
     $i = $idx[$stk];
     $items[$i]["_quan"] += (float) $r["MILquan"];
     $qty = is_numeric($r["qty"]) ? rtrim(rtrim(number_format((float) $r["qty"], 2, ".", ","), "0"), ".") : (string) $r["qty"];
-    $items[$i]["rows"][] = array(
+    $row = array(
       "name" => (string) $r["DEBnameT"],
       "contact" => (string) $r["DEBcontactT"],
       "vnos" => (string) $r["MILvnos"],
@@ -152,6 +152,8 @@ function toItems($db, $rows) {
       "qty" => $qty,
       "unit" => (string) $r["MILuname"]
     );
+    if (isset($r["Route"])) $row["route"] = (string) $r["Route"];
+    $items[$i]["rows"][] = $row;
   }
   foreach ($items as &$it) {
     $g = grandTotal($db, $it["stk"], $it["_quan"]);
