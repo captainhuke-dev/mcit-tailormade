@@ -633,3 +633,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - JS: search sends status+route+warehouses; By Route table = 6 cols (5 + Route); subtitle = status + route label; count/toast include route rows
 - cache bump p083-picklist-load.js?v=20261020h
 - CDP 18/18 (status 17: sp 0 / qc 2 / route 20, route row 6 cells last=M9)
+
+### 20/10 - P083: search button loading spinner (3a9f8e7)
+- CSS spinner (p083-spin) in search button: hidden by default, .searching class toggles display + 0.7s rotation during API call; button disabled + cursor:wait
+- cache bump p083-picklist-load.js?v=20261020i
+- CDP 10/10 (spinner hidden->visible+animating->hidden)
