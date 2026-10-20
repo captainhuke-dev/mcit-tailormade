@@ -645,3 +645,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - sectionTable grand cell: single string grand + 5 spaces + unit (C# getTotalStk format)
 - cache bump p083-picklist-load.js?v=20261020j
 - CDP 14/14 (status 17 route all: 2 sections Zone QC + Route M9, 22 product rows, modal sub 22 items)
+
+### 20/10 - P083: generate guard (4d727f8)
+- doGenerate() blocks when all 3 search tables (route/sp/qc) are empty: toast (Thai, codepoint-verified) + no API call
+- cache bump p083-picklist-load.js?v=20261020k
+- CDP 7/7 (no-modal/no-spin/enabled before search; toast cps exact; modal opens after search with 22 rows)
