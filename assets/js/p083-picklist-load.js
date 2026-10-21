@@ -274,7 +274,7 @@
 
   function sectionTable(products, secKey) {
     var isRoute = secKey === "route";
-    var w = ["70", "220", "70", "65", "60", "30", "35"];
+    var w = ["70", "220", "70", "65", "60", "30", "45"];
     var cg = "<colgroup>";
     for (var x = 0; x < w.length; x++) cg += '<col style="width:' + w[x] + 'pt">';
     cg += "</colgroup>";
@@ -448,7 +448,7 @@
       ".p083-pagefoot{margin-top:auto;text-align:left;font-size:12pt}",
       ".p083-paper-title{text-align:center;font-size:18pt;font-weight:bold;margin:0 0 6px}",
       ".p083-paper-meta{font-size:14pt;margin:0 0 5px}",
-      ".p083-table{width:550pt;margin:0 auto;border-collapse:collapse;table-layout:fixed}",
+      ".p083-table{width:560pt;margin:0 auto;border-collapse:collapse;table-layout:fixed}",
       ".p083-table th{padding:2px 4px 5px;background:#e6e6e6;text-align:center;font-size:14pt;font-weight:bold}",
       ".p083-table td{padding:2px 4px;font-size:14pt;vertical-align:middle}",
       ".p083-grow td{padding:2px 4px 5px;background:#f8f8f8;font-size:14pt}",
