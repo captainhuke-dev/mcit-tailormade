@@ -450,6 +450,7 @@
       ".p083-paper-meta{font-size:14pt;margin:0 0 5px}",
       ".p083-table{width:560pt;margin:0 auto;border-collapse:collapse;table-layout:fixed}",
       ".p083-table th{padding:2px 4px 5px;background:#e6e6e6;text-align:center;font-size:14pt;font-weight:bold}",
+      ".p083-table th,.p083-table td{border:1px solid #000}",
       ".p083-table td{padding:2px 4px;font-size:14pt;vertical-align:middle}",
       ".p083-grow td{padding:2px 4px 5px;background:#f8f8f8;font-size:14pt}",
       ".p083-grow .p083-qty{border:1px solid #000;text-align:left}",
