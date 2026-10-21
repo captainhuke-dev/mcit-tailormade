@@ -207,7 +207,7 @@ return [
                     ["id" => "P080", "name" => "PickList QC", "status" => "ready"],
                     ["id" => "P081", "name" => "PickList By Route", "status" => "ready"],
                     ["id" => "P082", "name" => "PickList To Pack"],
-                    ["id" => "P083", "name" => "PickList To Load V2"],
+                    ["id" => "P083", "name" => "PickList To Load V2", "status" => "ready"],
                 ],
             ],
             [

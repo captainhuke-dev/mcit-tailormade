@@ -63,6 +63,9 @@
 | P103 | ตรวจสอบต้นทุนปัจจุบัน vs นำเข้า+ค่าขนส่ง | ready (clone demo/P103_demo + C# frm_CheckCOST_GUI/frm_selectSTK — 2 APIs `p103_stk`/`p103_cost` — launcher (รหัส/ชื่อ + ปุ่มเลือก picker **limit 15** + **ปุ่มค้นหาต่อชื่อสินค้า** + กลุ่มคลัง 9 default G01+G06 **กรอบ border+bg อ่อน**) + **stock cards 5** + **tables 3** (PR/PO/RE TOP 5 — **เต็มพื้นไม่มี scrollbar**) — **4 กาด summary ตัดออก** — user ยืนยัน 2026-10-12 — cache v=20261012d) |
 | P045 | ตรวจสอบบิลลูกค้าเดียวกัน | ready (clone demo/P045-demo + C# **AppForCheck/frm_CheckBillMorethanOne_GUI** (user ยืนยัน 2026-10-13) — 2 APIs `p045_samebill`/`p045_detail` — launcher (วันที่ default วันนี้ + รหัสลูกค้า + ปุ่มค้นหา) + table 5 คอลั่น (badge สี 2=ฟ้า 3=เหลือง >=4=แดง) + sort + quick search + footer — **modal view detail (คลิกลูกค้า): ตาราง 3 คอลั่น (วันที่/เลขที่ + สถานะ/จำนวน + รายการสินค้า) — item-row (ลำดับ+รหัส | qty หน่วย | ชื่อ) — expand ทั้งหมดตั้งแต่เปิด — ตัด modal search — appendChild body + min-height:0 = centered + scroll** — user ยืนยัน 2026-10-13 — cache v=20261013g) |
 | P039 | ตรวจสอบตัดของเกิน SO | ready (clone demo/P039_demo + C# FrmCheckCutSOGUI — 1 API `p039_cutso` (3 modes: **product** stkCUT>stkREQ / **amount** sumREQ>sumCUT1 + STKgroup≠SV / **complete** stkCUT=stkREQ + STKgroup≠SV — CPS LEFT JOIN DEB/STK + CPSclearUSER=0/CPSclearALL=0 + date range) — launcher (date from-to default -90d + **mode 3 ปุ่ม = กดค้นหาทันที** — ตัดปุ่มค้นหา) + table 11 คอลั่น (sort + quick search + excess highlight) — **4 กาด summary ตัดออก** — user ยืนยัน 2026-10-12 — cache v=20261012b) |
+| P080 | PickList QC | ready (clone C# — real data MAC5 — cache v=20261017e) |
+| P081 | PickList By Route | ready (clone C# bgWorker_DoWork — API `p081_generate.php` — modal A4 report + pagination + zoom + print — cache v=20261014ff) |
+| P083 | PickList To Load V2 | ready (clone C# frm_PickListToLOAD_v2 — 2 APIs `p083_search`/`p083_generate` — launcher (status 12 + route 7 + warehouse groups 9 + search btn spinner) + 3 result tables (By Route / Zone SparePart / Zone QC) + generate btn (guard >=1 row + spinner) + modal A4 report 210x297mm (header per page, 7-col table 70/220/70/65/60/30/45, grid borders, grow row no inner line, footer, pagination) — user confirmed 2026-10-20 — cache v=20261020r) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
 ---
@@ -553,7 +556,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ## 4. สถานะปัจจุบัน + สิ่งที่ทำต่อได้
 
-### เสร็จแล้ว (ready): P006, P008, P013, P015, P019, P022, P031, P032, P033, P034, P035, P037, P047, P050, P051, P052, P053, P054, P063, P064, P092, P106, P111, P115, P128, P129, P130
+### เสร็จแล้ว (ready): P006, P008, P013, P015, P019, P022, P031, P032, P033, P034, P035, P037, P039, P045, P047, P050, P051, P052, P053, P054, P059, P063, P064, P080, P081, P083, P092, P103, P106, P111, P115, P128, P129, P130
 
 ### ทำต่อได้
 - P036+ (บัญชี), P112, P113-P119 ฯลฯ — placeholders
