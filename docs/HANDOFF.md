@@ -667,3 +667,6 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - pagination: continuation pages (.p083-cont) now repeat section title + meta (copied from first page) before thead
 - cache bump p083-picklist-load.js?v=20261020m
 - CDP 15/15 (A4 793.7x1122.5, table 733.8px, e6e6e6/f8f8f8, 14pt, footer, 2 unique section titles, 3 pages seq, cont-page has header+meta, meta no machine)
+
+### 20/10 - P083: table col7 45pt (816294e)
+- report table widths 70/220/70/65/60/30/45 (total 560pt), cache 20261020n, CDP 15/15 (table 747.2px)
