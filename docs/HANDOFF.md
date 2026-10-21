@@ -659,3 +659,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - route section: col1 = Route per row (API toItems now forwards Route), grow wh cell colspan 2
 - cache bump p083-picklist-load.js?v=20261020l
 - CDP 13/13 (page 793.7x1122.5, table 733.8px, colors, 14pt=18.667px, footer cps, 3 pages seq 1-2-3)
+
+### 20/10 - P083: report header per page + uniform 7-col table (a10a359)
+- User spec: header (title+meta) split per page; section titles: Zone SparePart / Zone QC / Route M1-M2-M3 (Route1), M4-M5 (Route2), M6..M9 direct
+- ALL tables (sp/qc/route) = same 7 cols 70/220/70/65/60/30/35pt (route no longer 80/200/...)
+- meta row = status + printed date only (removed machine/ดอย)
+- pagination: continuation pages (.p083-cont) now repeat section title + meta (copied from first page) before thead
+- cache bump p083-picklist-load.js?v=20261020m
+- CDP 15/15 (A4 793.7x1122.5, table 733.8px, e6e6e6/f8f8f8, 14pt, footer, 2 unique section titles, 3 pages seq, cont-page has header+meta, meta no machine)
