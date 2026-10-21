@@ -680,3 +680,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 ### 20/10 - P083: result table titles Zone SparePart / Zone QC (6da1b7f)
 - table 2 title = รายการ Zone SparePart, table 3 = รายการ Zone QC (Thai word copied from TH_RIALANG constant)
 - cache 20261020q, CDP 10/10 (sp-title/qc-title/rt-title exact)
+
+### 20/10 - P083: panel H2 = 'PickList To Load' (cba4f1b)
+- H2 removed Thai prefix, now exactly 'PickList To Load' (all ASCII)
+- cache 20261020r, CDP 11/11 (h2-title exact)
