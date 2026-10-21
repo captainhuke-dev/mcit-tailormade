@@ -347,7 +347,7 @@
         '<section class="p083-panel">' +
           '<div class="p083-panel-header">' +
             '<div class="p083-panel-title">' +
-              "<h2>" + "ผลแการค้นหา PickList To Load" + "</h2>" +
+              "<h2>" + "PickList To Load" + "</h2>" +
               '<p id="p083Sub"></p>' +
             "</div>" +
             '<div class="p083-header-right">' +
