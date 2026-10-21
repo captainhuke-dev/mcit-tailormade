@@ -676,3 +676,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ### 20/10 - P083: grow row no inner vertical line (ab9a4ff)
 - .p083-grow .p083-qty border-right:none + .p083-whcell border-left:none (C# borders: qty TOP|LEFT|BOTTOM, wh TOP|RIGHT|BOTTOM), cache 20261020p, CDP 17/17
+
+### 20/10 - P083: result table titles Zone SparePart / Zone QC (6da1b7f)
+- table 2 title = รายการ Zone SparePart, table 3 = รายการ Zone QC (Thai word copied from TH_RIALANG constant)
+- cache 20261020q, CDP 10/10 (sp-title/qc-title/rt-title exact)
