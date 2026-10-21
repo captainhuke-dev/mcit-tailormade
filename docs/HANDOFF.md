@@ -65,6 +65,7 @@
 | P039 | ตรวจสอบตัดของเกิน SO | ready (clone demo/P039_demo + C# FrmCheckCutSOGUI — 1 API `p039_cutso` (3 modes: **product** stkCUT>stkREQ / **amount** sumREQ>sumCUT1 + STKgroup≠SV / **complete** stkCUT=stkREQ + STKgroup≠SV — CPS LEFT JOIN DEB/STK + CPSclearUSER=0/CPSclearALL=0 + date range) — launcher (date from-to default -90d + **mode 3 ปุ่ม = กดค้นหาทันที** — ตัดปุ่มค้นหา) + table 11 คอลั่น (sort + quick search + excess highlight) — **4 กาด summary ตัดออก** — user ยืนยัน 2026-10-12 — cache v=20261012b) |
 | P080 | PickList QC | ready (clone C# — real data MAC5 — cache v=20261017e) |
 | P081 | PickList By Route | ready (clone C# bgWorker_DoWork — API `p081_generate.php` — modal A4 report + pagination + zoom + print — cache v=20261014ff) |
+| P082 | PickList To Pack | in development (UI clone P080 + search API — generate รอ C# reference — cache v=20261021b) |
 | P083 | PickList To Load V2 | ready (clone C# frm_PickListToLOAD_v2 — 2 APIs `p083_search`/`p083_generate` — launcher (status 12 + route 7 + warehouse groups 9 + search btn spinner) + 3 result tables (By Route / Zone SparePart / Zone QC) + generate btn (guard >=1 row + spinner) + modal A4 report 210x297mm (header per page, 7-col table 70/220/70/65/60/30/45, grid borders, grow row no inner line, footer, pagination) — user confirmed 2026-10-20 — cache v=20261020r) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
 
@@ -692,3 +693,9 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Fullscreen overlay: img auto-fit on load (scale to stage, max 100%), mouse wheel zoom 20%-800% (x1.1/step), zoom % badge in fs-bar, close = X button / Esc / click backdrop (existing)
 - CSS: .p022-fs-stage img max-width/max-height none (scale via transform), .p022-fs-zoom badge
 - cache v=20261021a (first ?v= on p022-billing-doc.js), CDP 7/7 (fit 73%, wheel in 73->80, out 80->73, close btn)
+
+### 21/10 - P082: UI clone P080 + search API (5c71733)
+- P082 PickList To Pack: UI clone from P080 (launcher date+status 12+search btn, panel 5-col table, empty state, toast) — `assets/js/p082-picklist-pack.js` (IIFE P082PickListPack), portal.js branch+mount (p082Root), index.php ?v=20261021b
+- `api/p082_search.php` — clone P080 SQL, STKgroup NOT IN tb_GroupSparepart(Active) AND NOT IN tb_GroupBattery(Active) (P080 = IN battery only)
+- Verified: status 42 → P080=3 (battery), P082=238, overlap=empty; CDP 16/16 (render + real search 238 rows)
+- Generate button = stub (toast) — waiting C# reference
