@@ -673,3 +673,6 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ### 20/10 - P083: report table grid borders (2657dee)
 - .p083-table th,td border 1px solid #000 (all 3 tables), cache 20261020o, CDP 16/16
+
+### 20/10 - P083: grow row no inner vertical line (ab9a4ff)
+- .p083-grow .p083-qty border-right:none + .p083-whcell border-left:none (C# borders: qty TOP|LEFT|BOTTOM, wh TOP|RIGHT|BOTTOM), cache 20261020p, CDP 17/17
