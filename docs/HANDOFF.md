@@ -670,3 +670,6 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ### 20/10 - P083: table col7 45pt (816294e)
 - report table widths 70/220/70/65/60/30/45 (total 560pt), cache 20261020n, CDP 15/15 (table 747.2px)
+
+### 20/10 - P083: report table grid borders (2657dee)
+- .p083-table th,td border 1px solid #000 (all 3 tables), cache 20261020o, CDP 16/16
