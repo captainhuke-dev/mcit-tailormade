@@ -687,3 +687,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 ### 20/10 - P083: panel H2 = 'PickList To Load' (cba4f1b)
 - H2 removed Thai prefix, now exactly 'PickList To Load' (all ASCII)
 - cache 20261020r, CDP 11/11 (h2-title exact)
+
+### 21/10 - P022: fullscreen mouse-wheel zoom + auto-fit (pending commit)
+- Fullscreen overlay: img auto-fit on load (scale to stage, max 100%), mouse wheel zoom 20%-800% (x1.1/step), zoom % badge in fs-bar, close = X button / Esc / click backdrop (existing)
+- CSS: .p022-fs-stage img max-width/max-height none (scale via transform), .p022-fs-zoom badge
+- cache v=20261021a (first ?v= on p022-billing-doc.js), CDP 7/7 (fit 73%, wheel in 73->80, out 80->73, close btn)

@@ -223,7 +223,8 @@
     ".p022-fs-title{color:#fff;font-size:14px;font-weight:700;white-space:nowrap;}",
     ".p022-fs-url{color:#94a3b8;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}",
     ".p022-fs-stage{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;padding:24px;overflow:auto;}",
-    ".p022-fs-stage img{max-width:100%;max-height:100%;border-radius:6px;background:#fff;box-shadow:0 25px 70px rgba(0,0,0,.5);}",
+    ".p022-fs-stage img{max-width:none;max-height:none;border-radius:6px;background:#fff;box-shadow:0 25px 70px rgba(0,0,0,.5);}",
+    ".p022-fs-zoom{color:#fff;font-size:13px;font-weight:600;min-width:52px;text-align:center;border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:2px 6px;}",
     ".p022-fs-close{position:absolute;top:14px;right:16px;z-index:1;display:grid;width:40px;height:40px;place-items:center;color:#fff;",
     "  border:1px solid rgba(255,255,255,.25);border-radius:10px;background:rgba(255,255,255,.1);cursor:pointer;transition:.15s ease;}",
     ".p022-fs-close svg{width:18px;height:18px;}",
@@ -362,6 +363,7 @@
         <button class="p022-fs-close" id="p022FullClose" type="button" title="ปิด (Esc)">${icon("close")}</button>
         <div class="p022-fs-bar">
           <span class="p022-fs-title" id="p022FsTitle"></span>
+          <span class="p022-fs-zoom" id="p022FsZoom">100%</span>
           <span class="p022-fs-url" id="p022FsUrl"></span>
         </div>
         <div class="p022-fs-stage">
@@ -576,7 +578,15 @@
       showToast("คืนค่ามุมมองรูปทั้งหมดแล้ว");
     }
 
-    /* ---------- เต็มจอ (overlay ทั้งจอ — Esc / ปุ่ม X ปิด) ---------- */
+    /* ---------- fullscreen (Esc / X button close + mouse-wheel zoom) ---------- */
+    var fsZoom = 1;
+
+    function applyFsZoom() {
+      var fsImg = $("p022FsImg");
+      fsImg.style.transform = "scale(" + fsZoom + ")";
+      $("p022FsZoom").textContent = Math.round(fsZoom * 100) + "%";
+    }
+
     function openFullscreen(n) {
       var s = state.slots[n];
       if (!s.url) {
@@ -591,6 +601,14 @@
         fsImg.removeAttribute("src");
         showToast("❌ โหลดภาพไม่สำเร็จ", 4200);
       };
+      fsImg.onload = function () {
+        var stage = fsImg.parentElement;
+        var fit = Math.min(stage.clientWidth / fsImg.naturalWidth, stage.clientHeight / fsImg.naturalHeight, 1);
+        fsZoom = fit > 0 ? fit : 1;
+        applyFsZoom();
+      };
+      fsZoom = 1;
+      applyFsZoom();
       fsImg.src = s.url;
       $("p022Fullscreen").classList.add("show");
       document.body.style.overflow = "hidden";
@@ -599,6 +617,7 @@
     function closeFullscreen() {
       $("p022Fullscreen").classList.remove("show");
       $("p022FsImg").removeAttribute("src");
+      fsZoom = 1;
       document.body.style.overflow = "";
     }
 
@@ -691,6 +710,12 @@
     $("p022Fullscreen").addEventListener("click", function (e) {
       if (e.target === this) closeFullscreen();
     });
+    $("p022FsImg").addEventListener("wheel", function (e) {
+      if (!$("p022Fullscreen").classList.contains("show")) return;
+      e.preventDefault();
+      fsZoom = Math.min(8, Math.max(0.2, fsZoom * (e.deltaY < 0 ? 1.1 : 1 / 1.1)));
+      applyFsZoom();
+    }, { passive: false });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape" && $("p022Fullscreen").classList.contains("show")) {
         closeFullscreen();

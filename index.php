@@ -183,7 +183,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p130-invoice-mcit-bkk.js?v=20261008a"></script>
   <script src="assets/js/p115-view-picture.js"></script>
   <script src="assets/js/p128-view-picture.js"></script>
-  <script src="assets/js/p022-billing-doc.js"></script>
+  <script src="assets/js/p022-billing-doc.js?v=20261021a"></script>
   <script src="assets/js/p111-SO_PendingTransfer.js"></script>
   <script src="assets/js/p031-transfer-report.js"></script>
   <script src="assets/js/p106-print-barcode.js"></script>
