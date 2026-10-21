@@ -193,6 +193,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p081-picklist-route.js?v=20261014ff"></script>
   <script src="assets/js/p080-picklist-qc.js?v=20261017e"></script>
   <script src="assets/js/p083-picklist-load.js?v=20261020r"></script>
+  <script src="assets/js/p082-picklist-pack.js?v=20261021b"></script>
   <script src="assets/js/p050-billing.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <script src="assets/js/qrcode.min.js"></script>
@@ -215,6 +216,6 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20261019a"></script>
+  <script src="assets/js/portal.js?v=20261021a"></script>
 </body>
 </html>
