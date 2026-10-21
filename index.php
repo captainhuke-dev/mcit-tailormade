@@ -192,7 +192,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p045-same-bill.js?v=20261014e"></script>
   <script src="assets/js/p081-picklist-route.js?v=20261014ff"></script>
   <script src="assets/js/p080-picklist-qc.js?v=20261017e"></script>
-  <script src="assets/js/p083-picklist-load.js?v=20261020l"></script>
+  <script src="assets/js/p083-picklist-load.js?v=20261020m"></script>
   <script src="assets/js/p050-billing.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <script src="assets/js/qrcode.min.js"></script>

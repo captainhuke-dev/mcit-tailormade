@@ -274,7 +274,7 @@
 
   function sectionTable(products, secKey) {
     var isRoute = secKey === "route";
-    var w = isRoute ? ["80", "200", "70", "65", "60", "30", "35"] : ["70", "220", "70", "65", "60", "30", "35"];
+    var w = ["70", "220", "70", "65", "60", "30", "35"];
     var cg = "<colgroup>";
     for (var x = 0; x < w.length; x++) cg += '<col style="width:' + w[x] + 'pt">';
     cg += "</colgroup>";
@@ -317,7 +317,6 @@
       + '<div class="p083-paper-meta">'
       + "<b>" + "สถานะ" + ' : </b>' + esc(mStatus)
       + "    <b>" + "พิมพ์เมื่อ" + ' : </b>' + esc(mPrinted)
-      + "    <b>" + "โดย" + ' : </b>' + esc(mUser)
       + "</div>"
       + sectionTable(sec.products, sec.key)
       + '<div class="p083-pagefoot">' + TH_NAA + ' <span class="p083-pgno">1</span></div>'
@@ -463,7 +462,7 @@
     var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var m=window.__MAN;if(m){document.body.style.zoom=m;return}var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',function(){fit();pag()});window.setZoom=function(z){window.__MAN=z;fit();pag()};" +
       "function rowOver(row){var s=row.closest('section.p083-page');if(!s)return false;var sr=s.getBoundingClientRect();var lr=row.getBoundingClientRect();var pb=parseFloat(getComputedStyle(s).paddingBottom)||0;return lr.bottom>sr.bottom-pb}" +
       "function renumber(){var s=document.querySelectorAll('section.p083-page');for(var i=0;i<s.length;i++){var f=s[i].querySelector('.p083-pgno');if(f)f.textContent=i+1}}" +
-      "function pag(){var secs=Array.prototype.slice.call(document.querySelectorAll('section.p083-page'));if(!secs.length)return;var groups=[];secs.forEach(function(s){if(!s.classList.contains('p083-cont'))groups.push([s]);else groups[groups.length-1].push(s)});groups.forEach(function(g){var first=g[0];var t=first.querySelector('table');for(var i=1;i<g.length;i++){var t2=g[i].querySelector('table');while(t2.tBodies[0].rows.length)t.tBodies[0].appendChild(t2.tBodies[0].rows[0]);g[i].parentNode.removeChild(g[i])}var rows=Array.prototype.slice.call(t.tBodies[0].rows);t.tBodies[0].innerHTML='';var cur=first,curT=t;rows.forEach(function(row){curT.tBodies[0].appendChild(row);if(curT.tBodies[0].rows.length>1&&rowOver(row)){curT.tBodies[0].removeChild(row);var s2=document.createElement('section');s2.className='p083-page p083-cont';var ft=cur.querySelector('.p083-pagefoot');s2.innerHTML='<table class=\"p083-table\">'+(t.querySelector('colgroup')?t.querySelector('colgroup').outerHTML:'')+'<thead>'+t.tHead.innerHTML+'</thead><tbody></tbody></table><div class=\"p083-pagefoot\">'+'หน้่า '+'<span class=\"p083-pgno\">1</span>'+'</div>';cur.parentNode.insertBefore(s2,cur.nextSibling);cur=s2;curT=s2.querySelector('table');curT.tBodies[0].appendChild(row)}})});renumber()}" +
+      "function pag(){var secs=Array.prototype.slice.call(document.querySelectorAll('section.p083-page'));if(!secs.length)return;var groups=[];secs.forEach(function(s){if(!s.classList.contains('p083-cont'))groups.push([s]);else groups[groups.length-1].push(s)});groups.forEach(function(g){var first=g[0];var t=first.querySelector('table');for(var i=1;i<g.length;i++){var t2=g[i].querySelector('table');while(t2.tBodies[0].rows.length)t.tBodies[0].appendChild(t2.tBodies[0].rows[0]);g[i].parentNode.removeChild(g[i])}var rows=Array.prototype.slice.call(t.tBodies[0].rows);t.tBodies[0].innerHTML='';var cur=first,curT=t;rows.forEach(function(row){curT.tBodies[0].appendChild(row);if(curT.tBodies[0].rows.length>1&&rowOver(row)){curT.tBodies[0].removeChild(row);var s2=document.createElement('section');s2.className='p083-page p083-cont';var ht=first.querySelector('.p083-paper-title');var mt=first.querySelector('.p083-paper-meta');s2.innerHTML=(ht?'<h1 class=\\\"p083-paper-title\\\">'+ht.textContent+'</h1>':'')+(mt?'<div class=\\\"p083-paper-meta\\\">'+mt.innerHTML+'</div>':'')+'<table class=\\\"p083-table\\\">'+(t.querySelector('colgroup')?t.querySelector('colgroup').outerHTML:'')+'<thead>'+t.tHead.innerHTML+'</thead><tbody></tbody></table>'+'<div class=\\\"p083-pagefoot\\\">'+'หน้่า '+'<span class=\\\"p083-pgno\\\">1</span>'+'</div>';cur.parentNode.insertBefore(s2,cur.nextSibling);cur=s2;curT=s2.querySelector('table');curT.tBodies[0].appendChild(row)}})});renumber()}" +
       "function runPag(){fit();pag()}if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){pag()})}else{pag()}window.addEventListener('load',function(){pag()});setTimeout(pag,300);</scr" + "ipt>";
     return '<!doctype html><html><head><meta charset="utf-8"><title>PickList To Load</title><style>' + css + "</style></head><body>" + paperInner + fit + "</body></html>";
   }
