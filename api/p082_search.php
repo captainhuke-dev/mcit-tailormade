@@ -1,10 +1,11 @@
 <?php
 /**
  * P082 - search button -> 3 result tables (Zone 01 / Zone SparePart / Zone QC)
- * SQL: MIH+MIL+STK, MILcut=-1, MILsto='01' + SBLqty subquery (SBLsto 01/03/04)
- *   Zone 01        = STKgroup NOT IN tb_GroupSparepart(Active) AND NOT IN tb_GroupBattery(Active)
- *   Zone SparePart = STKgroup IN tb_GroupSparepart(Active)
- *   Zone QC        = STKgroup IN tb_GroupBattery(Active)
+ * SQL (user 2026-10-22): MIH+MIL+STK, MIHstatus=?, MIHtype='IS', MILcut=-1, MIHcancel=0,
+ *   MILvCol2 first-char IN ('a'..'k') for all 3 tables
+ *   Zone 01        = + JOIN JOB_TransportRoute, NOT IN (sp UNION bat), NOT LIKE '%SP%'
+ *   Zone SparePart = IN tb_GroupSparepart(Active) OR LIKE '%SP%'
+ *   Zone QC        = IN tb_GroupBattery(Active)
  * POST { connectionId, status }
  * { ok, count, zone01:[...], sp:[...], qc:[...], rows:[...] }
  * PHP 7.3-compatible
@@ -38,31 +39,60 @@ try {
 }
 
 try {
-  // base filter: same as P080 (MILsto='01'), 3 zones
-  $base = "SELECT B.MILstk AS STKcode,"
-    . " C.STKgroup,"
-    . " CONVERT(VARCHAR(255), C.STKdescT1) AS STKdescT1,"
-    . " CONVERT(VARCHAR(255), C.STKdescT2) AS STKdescT2,"
-    . " (SELECT SUM(SBLquan) FROM SBL WHERE SBLsto IN ('01','03','04') AND SBLstk = B.MILstk) AS SBLqty"
-    . " FROM MIH A"
-    . " LEFT JOIN MIL B ON A.MIHvnos = B.MILvnos"
-    . " LEFT JOIN STK C ON B.MILstk = C.STKcode"
-    . " WHERE A.MIHstatus = ?"
-    . " AND A.MIHtype = 'IS'"
-    . " AND B.MILsto = '01'"
-    . " AND B.MILcut = -1"
-    . " AND ";
+  $colv2 = "'a','b','c','d','e','f','g','h','i','j','k'";
 
-  $tail = " GROUP BY B.MILstk, C.STKgroup, CONVERT(VARCHAR(255), C.STKdescT1), CONVERT(VARCHAR(255), C.STKdescT2)"
-    . " ORDER BY B.MILstk";
+  // Zone 01
+  $sql01 = "SELECT STKcode, STKgroup,"
+    . " CONVERT(VARCHAR(255), STKdescT1) AS STKdescT1,"
+    . " CONVERT(VARCHAR(255), STKdescT2) AS STKdescT2,"
+    . " SUM(MILquan / MILconv) AS qty"
+    . " FROM MIH"
+    . " LEFT JOIN MIL ON MIHvnos = MILvnos"
+    . " LEFT JOIN STK ON MILstk = STKcode"
+    . " LEFT JOIN BI_CUBE.dbo.[JOB_TransportRoute] D ON MILjob = D.JOBcode"
+    . " WHERE MIHstatus = ?"
+    . " AND MIHtype = 'IS'"
+    . " AND MILcut = -1"
+    . " AND MIHcancel = 0"
+    . " AND LOWER(SUBSTRING(TRIM(CONVERT(nvarchar(100), MILvCol2)), 1, 1)) IN (" . $colv2 . ")"
+    . " AND STKgroup NOT IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupSparepart] WHERE STGstatus = 'Active' UNION ALL SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupBattery] WHERE STGstatus = 'Active')"
+    . " AND STKgroup NOT LIKE '%SP%'"
+    . " GROUP BY STKcode, STKgroup, CONVERT(VARCHAR(255), STKdescT1), CONVERT(VARCHAR(255), STKdescT2)"
+    . " ORDER BY STKcode";
 
-  // Zone 01 = excludes spare/battery groups (current P082 search)
-  $sql01 = $base . "C.STKgroup NOT IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupSparepart] WHERE STGstatus = 'Active')"
-    . " AND C.STKgroup NOT IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupBattery] WHERE STGstatus = 'Active')" . $tail;
   // Zone SparePart
-  $sqlSp = $base . "C.STKgroup IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupSparepart] WHERE STGstatus = 'Active')" . $tail;
-  // Zone QC (batteries)
-  $sqlQc = $base . "C.STKgroup IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupBattery] WHERE STGstatus = 'Active')" . $tail;
+  $sqlSp = "SELECT MILstk AS STKcode, STKgroup,"
+    . " CONVERT(VARCHAR(255), STKdescT1) AS STKdescT1,"
+    . " CONVERT(VARCHAR(255), STKdescT2) AS STKdescT2,"
+    . " SUM(MILquan / MILconv) AS qty"
+    . " FROM MIH"
+    . " LEFT JOIN MIL ON MIHvnos = MILvnos"
+    . " LEFT JOIN STK ON MILstk = STKcode"
+    . " WHERE MIHstatus = ?"
+    . " AND MIHtype = 'IS'"
+    . " AND MILcut = -1"
+    . " AND MIHcancel = 0"
+    . " AND LOWER(SUBSTRING(TRIM(CONVERT(nvarchar(100), MILvCol2)), 1, 1)) IN (" . $colv2 . ")"
+    . " AND (STKgroup IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupSparepart] WHERE STGstatus = 'Active') OR STKgroup LIKE '%SP%')"
+    . " GROUP BY MILstk, STKgroup, CONVERT(VARCHAR(255), STKdescT1), CONVERT(VARCHAR(255), STKdescT2)"
+    . " ORDER BY MILstk";
+
+  // Zone QC
+  $sqlQc = "SELECT MILstk AS STKcode, STKgroup,"
+    . " CONVERT(VARCHAR(255), STKdescT1) AS STKdescT1,"
+    . " CONVERT(VARCHAR(255), STKdescT2) AS STKdescT2,"
+    . " SUM(MILquan / MILconv) AS qty"
+    . " FROM MIH"
+    . " LEFT JOIN MIL ON MIHvnos = MILvnos"
+    . " LEFT JOIN STK ON MILstk = STKcode"
+    . " WHERE MIHstatus = ?"
+    . " AND MIHtype = 'IS'"
+    . " AND MILcut = -1"
+    . " AND MIHcancel = 0"
+    . " AND LOWER(SUBSTRING(TRIM(CONVERT(nvarchar(100), MILvCol2)), 1, 1)) IN (" . $colv2 . ")"
+    . " AND STKgroup IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupBattery] WHERE STGstatus = 'Active')"
+    . " GROUP BY MILstk, STKgroup, CONVERT(VARCHAR(255), STKdescT1), CONVERT(VARCHAR(255), STKdescT2)"
+    . " ORDER BY MILstk";
 
   $st = $db->prepare($sql01);
   $st->execute(array($status));

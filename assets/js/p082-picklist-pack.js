@@ -120,7 +120,7 @@
         '<td class="center">' + esc(r.STKgroup) + "</td>" +
         "<td>" + esc(r.STKdescT1) + "</td>" +
         "<td>" + esc(r.STKdescT2) + "</td>" +
-        '<td class="center number">' + (r.SBLqty == null ? "" : esc(r.SBLqty)) + "</td>" +
+        '<td class="center number">' + (r.qty == null ? "" : esc(r.qty)) + "</td>" +
         "</tr>";
     });
     return html;
