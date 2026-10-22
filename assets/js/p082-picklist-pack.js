@@ -27,7 +27,8 @@
   var root = null;
   var el = {};
   var state = {
-    searchRows: [], zone01: [], sp: [], qc: [], view: null, searching: false
+    searchRows: [], zone01: [], sp: [], qc: [], view: null, searching: false,
+    zoom: 100, escBound: false, paperHtml: "", sections: [], products: 0, filters: null
   };
   var toastTimer = null;
 
@@ -56,7 +57,7 @@
   }
 
   var MAC5_CONNECTION_ID = "c1788406814359";
-  var API = { search: "api/p082_search.php", spGroups: "api/p082_sparepart_groups.php", batGroups: "api/p082_battery_groups.php" };
+  var API = { search: "api/p082_search.php", generate: "api/p082_generate.php", spGroups: "api/p082_sparepart_groups.php", batGroups: "api/p082_battery_groups.php" };
 
   function apiPost(url, data) {
     return fetch(url, {
@@ -110,7 +111,48 @@
   }
 
   function doGenerate() {
-    showToast("P082 — ปุ่ มสร้างเอกสารกำลังพัฒนา");
+    if (state.searching) return;
+    state.searching = true;
+    el.genBtn.disabled = true;
+    el.genBtn.classList.add("loading");
+    apiPost(API.generate, { connectionId: MAC5_CONNECTION_ID, status: el.status.value })
+      .then(function (d) {
+        if (!d.ok) throw new Error(d.error);
+        var titles = { sp: "PickList [To Pack][Zone SparePart]", qc: "PickList [To Pack][Zone QC]", z01: "PickList [To Pack][Zone 01]" };
+        var sections = [];
+        for (var i = 0; i < d.sections.length; i++) {
+          var s = d.sections[i];
+          var products = [];
+          for (var a = 0; a < s.items.length; a++) {
+            var it = s.items[a];
+            var customers = [];
+            for (var b = 0; b < it.rows.length; b++) {
+              var rr = it.rows[b];
+              customers.push({ name: rr.name + " " + rr.contact, document: rr.vnos, date: rr.date, qty: rr.qty, unit: rr.unit });
+            }
+            products.push({ productCode: it.stk, productName: it.desc1, totalQty: it.grand + "     " + it.unit, warehouse: it.sto, customers: customers });
+          }
+          sections.push({ title: titles[s.key] || ("PickList [To Pack][" + s.key + "]"), products: products });
+        }
+        state.filters = { status: el.status.value };
+        state.sections = sections;
+        state.products = d.count;
+        var mStatus = statusLabel(el.status.value);
+        var mPrinted = fmtStamp();
+        var mUser = machineName();
+        var h = "";
+        for (var j = 0; j < sections.length; j++) h += sectionHtml(sections[j], mStatus, mPrinted, mUser);
+        state.paperHtml = h;
+        openReport();
+      })
+      .catch(function (e) {
+        showToast("สร้างเอกสารไม่สำเร็จ: " + e.message);
+      })
+      .then(function () {
+        state.searching = false;
+        el.genBtn.disabled = false;
+        el.genBtn.classList.remove("loading");
+      });
   }
 
   function zoneRowsHtml(rows) {
@@ -244,7 +286,23 @@
     ".p082-ztable td.number{text-align:right;font-family:Arial,sans-serif}",
     ".p082-ztable tbody tr:nth-child(even){background:#fbfdff}",
     ".p082-ztable tbody tr:hover{background:#f0f7ff}",
-    "@media (max-width:680px){.p082-panel-header{align-items:flex-start;flex-direction:column}}"
+    "@media (max-width:680px){.p082-panel-header{align-items:flex-start;flex-direction:column}}",
+    ".p082-rep-overlay{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:10px;background:rgba(15,23,42,0.55)}",
+    ".p082-rep-overlay.show{display:flex}",
+    ".p082-rep-modal{display:flex;flex-direction:column;overflow:hidden;width:100%;height:100%;max-width:100%;max-height:100%;border-radius:10px;background:#fff;box-shadow:0 20px 50px rgba(0,0,0,0.35)}",
+    ".p082-rep-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-bottom:1px solid #e2e8f0}",
+    ".p082-rep-title{font-size:15px;font-weight:700;color:#0f172a}",
+    ".p082-rep-sub{margin-top:2px;color:#64748b;font-size:12px}",
+    ".p082-rep-btns{display:flex;gap:8px}",
+    ".p082-rep-btn{padding:6px 12px;color:#334155;border:1px solid #cbd5e1;border-radius:8px;background:#f8fafc;font-size:13px;cursor:pointer}",
+    ".p082-rep-btn:hover{background:#e2e8f0}",
+    ".p082-rep-zoomlabel{display:inline-flex;min-width:48px;align-items:center;justify-content:center;color:#334155;font-size:12px;font-weight:600}",
+    ".p082-rep-btn-primary{color:#fff;border-color:#0a5bc4;background:#0a5bc4}",
+    ".p082-rep-btn-primary:hover{background:#084a9e}",
+    ".p082-rep-body{flex:1;min-height:0;overflow:auto;padding:12px;background:#f1f5f9}",
+    ".p082-rep-body iframe{width:100%;height:100%;min-height:520px;border:1px solid #e2e8f0;border-radius:8px;background:#fff}",
+    ".p082-rep-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-top:1px solid #e2e8f0}",
+    ".p082-rep-hint{color:#64748b;font-size:12px}"
   ].join("\n");
 
   /* ---------- HTML ---------- */
@@ -327,6 +385,190 @@
       '<div class="p082-toast" id="p082Toast"><span id="p082ToastMsg"></span></div>' +
       "</div>";
   }
+
+  /* ---------- report (clone C# frm_PickListToPack + P083 modal pattern) ---------- */
+function fmtDate(value) {
+    var m = String(value || "").split("-");
+    if (m.length !== 3) return String(value || "");
+    return m[2] + "/" + m[1] + "/" + (parseInt(m[0], 10) + 543);
+  }
+function fmtStamp() {
+    var d = new Date();
+    var p = function (n) { return (n < 10 ? "0" : "") + n; };
+    return p(d.getDate()) + "/" + p(d.getMonth() + 1) + "/" + (d.getFullYear() + 543) + " " + p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+  }
+function machineName() {
+    if (window.ERP_USER && window.ERP_USER.name) return window.ERP_USER.name;
+    return "PORTAL";
+  }
+function reportDocHtml(paperInner) {
+    // C# A4: Document(PageSize.A4, 20f, 20f, 30f, 30f) = left 20pt right 20pt top 30pt bottom 30pt
+    var css = [
+      "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew.ttf') format('truetype');font-weight:400;font-style:normal;font-display:block}",
+      "@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:block}",
+      "@page{size:A4;margin:30pt 20pt}",
+      "body{margin:0;background:#f1f5f9}",
+      ".p082-page{box-sizing:border-box;display:flex;flex-direction:column;width:210mm;height:297mm;overflow:hidden;margin:0 auto;padding:30pt 20pt;background:#fff;font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}",
+      ".p082-page+.p082-page{margin-top:10px}",
+      ".p082-pagefoot{margin-top:auto;text-align:left;font-size:12pt}",
+      ".p082-paper-title{text-align:center;font-size:18pt;font-weight:bold;margin:0 0 6px}",
+      ".p082-paper-meta{font-size:14pt;margin:0 0 5px}",
+      ".p082-table{width:560pt;margin:0 auto;border-collapse:collapse;table-layout:fixed}",
+      ".p082-table th{padding:2px 4px 5px;background:#e6e6e6;text-align:center;font-size:14pt;font-weight:bold}",
+      ".p082-table th,.p082-table td{border:1px solid #000}",
+      ".p082-table td{padding:2px 4px;font-size:14pt;vertical-align:middle}",
+      ".p082-grow td{padding:2px 4px 5px;background:#f8f8f8;font-size:14pt}",
+      ".p082-grow .p082-qty{border:1px solid #000;border-right:none;text-align:left}",
+      ".p082-grow .p082-whcell{border:1px solid #000;border-left:none;text-align:right;vertical-align:bottom}",
+      ".p082-crow td{font-size:14pt}",
+      ".p082-crow td.center{text-align:center}",
+      ".p082-crow td.right{text-align:right;padding-right:5px}",
+      "@media print{body{display:block;background:#fff;zoom:1}.p082-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;background:#fff;box-shadow:none;page-break-after:always}.p082-page:last-child{page-break-after:auto}.p082-table tr{page-break-inside:avoid}}"
+    ].join("\n");
+    var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var m=window.__MAN;if(m){document.body.style.zoom=m;return}var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',function(){fit();pag()});window.setZoom=function(z){window.__MAN=z;fit();pag()};" +
+      "function rowOver(row){var s=row.closest('section.p082-page');if(!s)return false;var sr=s.getBoundingClientRect();var lr=row.getBoundingClientRect();var pb=parseFloat(getComputedStyle(s).paddingBottom)||0;return lr.bottom>sr.bottom-pb}" +
+      "function renumber(){var s=document.querySelectorAll('section.p082-page');for(var i=0;i<s.length;i++){var f=s[i].querySelector('.p082-pgno');if(f)f.textContent=i+1}}" +
+      "function pag(){var secs=Array.prototype.slice.call(document.querySelectorAll('section.p082-page'));if(!secs.length)return;var groups=[];secs.forEach(function(s){if(!s.classList.contains('p082-cont'))groups.push([s]);else groups[groups.length-1].push(s)});groups.forEach(function(g){var first=g[0];var t=first.querySelector('table');for(var i=1;i<g.length;i++){var t2=g[i].querySelector('table');while(t2.tBodies[0].rows.length)t.tBodies[0].appendChild(t2.tBodies[0].rows[0]);g[i].parentNode.removeChild(g[i])}var rows=Array.prototype.slice.call(t.tBodies[0].rows);t.tBodies[0].innerHTML='';var cur=first,curT=t;rows.forEach(function(row){curT.tBodies[0].appendChild(row);if(curT.tBodies[0].rows.length>1&&rowOver(row)){curT.tBodies[0].removeChild(row);var s2=document.createElement('section');s2.className='p082-page p082-cont';var ht=first.querySelector('.p082-paper-title');var mt=first.querySelector('.p082-paper-meta');s2.innerHTML=(ht?'<h1 class=\\\"p082-paper-title\\\">'+ht.textContent+'</h1>':'')+(mt?'<div class=\\\"p082-paper-meta\\\">'+mt.innerHTML+'</div>':'')+'<table class=\\\"p082-table\\\">'+(t.querySelector('colgroup')?t.querySelector('colgroup').outerHTML:'')+'<thead>'+t.tHead.innerHTML+'</thead><tbody></tbody></table>'+'<div class=\\\"p082-pagefoot\\\">'+'หน้่า '+'<span class=\\\"p082-pgno\\\">1</span>'+'</div>';cur.parentNode.insertBefore(s2,cur.nextSibling);cur=s2;curT=s2.querySelector('table');curT.tBodies[0].appendChild(row)}})});renumber()}" +
+      "function runPag(){fit();pag()}if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){pag()})}else{pag()}window.addEventListener('load',function(){pag()});setTimeout(pag,300);</scr" + "ipt>";
+    return '<!doctype html><html><head><meta charset="utf-8"><title>PickList To Load</title><style>' + css + "</style></head><body>" + paperInner + fit + "</body></html>";
+  }
+  function openReport() {
+    var overlay = document.getElementById("p082ReportOverlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.id = "p082ReportOverlay";
+      overlay.className = "p082-rep-overlay";
+      overlay.innerHTML =
+        '<div class="p082-rep-modal">' +
+          '<div class="p082-rep-head">' +
+            "<div>" +
+              '<div class="p082-rep-title">' + "อกสาร" + " PickList To Pack" + "</div>" +
+              '<div class="p082-rep-sub" id="p082RepSub"></div>' +
+            "</div>" +
+            '<div class="p082-rep-btns">' +
+              '<button class="p082-rep-btn" type="button" id="p082RepZoomOut" title="zoom out">\u2212</button>' +
+              '<span class="p082-rep-zoomlabel" id="p082RepZoom">100%</span>' +
+              '<button class="p082-rep-btn" type="button" id="p082RepZoomIn" title="zoom in">+</button>' +
+              '<button class="p082-rep-btn" type="button" id="p082RepClose" title="close (Esc)">\u2715</button>' +
+            "</div>" +
+          "</div>" +
+          '<div class="p082-rep-body"><iframe id="p082RepFrame" title="PickList To Pack"></iframe></div>' +
+          '<div class="p082-rep-foot">' +
+            '<div class="p082-rep-hint">' + "อกสาร" + " A4 \u2014 " + "พิมพ์" + "</div>" +
+            '<button class="p082-rep-btn p082-rep-btn-primary" type="button" id="p082RepPrint">' + "พิมพ์" + "</button>" +
+          "</div>" +
+        "</div>";
+      document.body.appendChild(overlay);
+      overlay.addEventListener("click", function (e) { if (e.target === overlay) closeReport(); });
+      overlay.querySelector("#p082RepClose").addEventListener("click", closeReport);
+      overlay.querySelector("#p082RepZoomOut").addEventListener("click", function () { setZoomLevel(state.zoom - 25); });
+      overlay.querySelector("#p082RepZoomIn").addEventListener("click", function () { setZoomLevel(state.zoom + 25); });
+      overlay.querySelector("#p082RepPrint").addEventListener("click", function () {
+        var f = $("p082RepFrame");
+        if (f && f.contentWindow) { try { f.contentWindow.focus(); f.contentWindow.print(); } catch (err) { } }
+      });
+      if (!state.escBound) {
+        state.escBound = true;
+        document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeReport(); });
+      }
+    }
+    $("p082RepSub").textContent = statusLabel(state.filters.status) + " \u2014 " + state.products + " " + "จำนวน";
+    var zb = overlay.querySelector("#p082RepZoom");
+    if (zb) zb.textContent = state.zoom + "%";
+    var f = overlay.querySelector("#p082RepFrame");
+    f.srcdoc = reportDocHtml(state.paperHtml);
+    overlay.classList.add("show");
+    overlay.style.display = "flex";
+    applyZoom();
+  }
+
+function setZoomLevel(z) {
+    state.zoom = Math.max(50, Math.min(200, z));
+    var zb = $("p082RepZoom");
+    if (zb) zb.textContent = state.zoom + "%";
+    applyZoom();
+  }
+
+  function applyZoom() {
+    var f = $("p082RepFrame");
+    if (!f) return;
+    var tryIt = function () {
+      try {
+        if (f.contentWindow && f.contentWindow.setZoom) {
+          f.contentWindow.setZoom(state.zoom / 100);
+          return true;
+        }
+      } catch (e) { /* iframe not ready */ }
+      return false;
+    };
+    if (tryIt()) return;
+    var n2 = 0;
+    var t = setInterval(function () {
+      n2++;
+      if (tryIt() || n2 > 50) clearInterval(t);
+    }, 100);
+  }
+
+  function closeReport() {
+    var overlay = $("p082ReportOverlay");
+    if (!overlay) return;
+    overlay.classList.remove("show");
+    overlay.style.display = "none";
+    var f = overlay.querySelector("#p082RepFrame");
+    if (f) f.srcdoc = "";
+  }
+  function sectionTable(products) {
+    var w = ["70","220","70","70","60","30","35"];
+    var cg = "<colgroup>";
+    for (var x = 0; x < w.length; x++) cg += '<col style="width:' + w[x] + 'pt">';
+    cg += "</colgroup>";
+    var h = "<table class=\"p082-table\">" + cg + "<thead><tr>"
+      + "<th>" + "รหัส + ชื่อสินค้า" + "</th>"
+      + "<th>" + "ชื่อลูกค้า" + "</th>"
+      + "<th>" + "เลขที่ใบสำคัญ" + "</th>"
+      + "<th>" + "วันที่" + "</th>"
+      + "<th>" + "จำนวน" + "</th>"
+      + '<th colspan="2">' + "หน่วย/คลัง" + "</th>"
+      + "</tr></thead><tbody>";
+    for (var i = 0; i < products.length; i++) {
+      var p = products[i];
+      h +=
+        '<tr class="p082-grow">'
+        + '<td colspan="4"><b>' + esc(p.productCode) + ", </b>" + esc(p.productName) + "</td>"
+        + '<td colspan="2" class="p082-qty"><b>' + p.totalQty + "</b></td>"
+        + '<td class="p082-whcell"><b>[' + esc(p.warehouse) + "]</b></td>"
+        + "</tr>";
+      for (var j = 0; j < p.customers.length; j++) {
+        var c = p.customers[j];
+        h +=
+          '<tr class="p082-crow">'
+          + "<td></td>"
+          + '<td class="p082-cust">' + esc(c.name) + "</td>"
+          + '<td class="center">' + esc(c.document) + "</td>"
+          + '<td class="center">' + fmtDate(c.date) + "</td>"
+          + '<td class="right">' + c.qty + "</td>"
+          + '<td colspan="2">' + esc(c.unit) + "</td>"
+          + "</tr>";
+      }
+    }
+    return h + "</tbody></table>";
+  }
+
+  function sectionHtml(sec, mStatus, mPrinted, mUser) {
+    return (
+      '<section class="p082-page">'
+      + '<h1 class="p082-paper-title">' + esc(sec.title) + "</h1>"
+      + '<div class="p082-paper-meta">'
+      + "<b>" + "สถานะ" + ' : </b>' + esc(mStatus)
+      + "    <b>" + "พิมพ์เมื่อ" + ' : </b>' + esc(mPrinted)
+      + "    <b>" + "พิมพ์เมื่อ" + ' : </b>' + esc(mUser)
+      + "</div>"
+      + sectionTable(sec.products)
+      + '<div class="p082-pagefoot">' + "หน้่า" + ' <span class="p082-pgno">1</span></div>'
+      + "</section>"
+    );
+  }
+
 
   /* ---------- group settings modal (clone P080 — Sparepart) ---------- */
   var GRP_STATE = { open: false, rows: [], mode: "sp" };
@@ -532,6 +774,8 @@
     root = mountEl;
     var oldg = document.getElementById("p082GrpOverlay");
     if (oldg) oldg.parentNode.removeChild(oldg);
+    var oldr = document.querySelectorAll("body > .p082-rep-overlay");
+    for (var ri = 0; ri < oldr.length; ri++) oldr[ri].parentNode.removeChild(oldr[ri]);
     root.innerHTML = html();
     addSettingsButtons();
     if (!document.getElementById("p082Style")) {
