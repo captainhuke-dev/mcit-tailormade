@@ -757,3 +757,9 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - doSearch: when count=0, now clears all 3 zone tables (rows01/rowsSp/rowsQc innerHTML) + counts (c01/cSp/cQc = 0) + state arrays before render — previously old rows stayed visible
 - Cache: p082-picklist-pack.js?v=20261022j - CDP: search 65 (112/16/1) then search 6 (empty) -> all 3 tables + counts = 0
+
+## P082 Compact Panel Header + Title (2026-10-22)
+
+- Panel H2: "ผลการสร้างเอกสาร PickList To Pack" -> "PickList To Pack" (user request)
+- Header compact 77px -> 49px: .p082-panel-title h2 margin:0 (browser default h2 margin was the gap), p margin:1px 0 0, .p082-panel-header min-height 40 padding 6px 15px, header gen button inline row (flex-direction:row, min-height 34)
+- Cache: p082-picklist-pack.js?v=20261022k - CDP: title="PickList To Pack", header 49px
