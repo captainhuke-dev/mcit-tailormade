@@ -723,3 +723,15 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Grp modal now mode-aware (sp/bat): `GRP_STATE.mode`, `grpApi()` picks endpoint, `openGrpModal(mode)`, title from GRP_TITLES
 - Cache: p082-picklist-pack.js?v=20261022d
 - CDP: 9/9 (2 buttons, battery modal 25 rows, add/delete round-trip, sparepart modal still 58 rows; test row cleaned up)
+
+## P082 3 Result Tables (2026-10-22)
+
+- Panel "ผลการสร้างเอกสาร PickList To Pack" = 3 tables (clone P083 pattern): Zone 01 (excl. spare/battery groups) / Zone SparePart (tb_GroupSparepart Active) / Zone QC (tb_GroupBattery Active)
+- 5 cols each: รหัสสินค้า | กลุ่มสินค้า | ชื่อสินค้า | ชื่อสินค้า | จำนวน (SBLqty)
+- api/p082_search.php: 3 queries, same base (MIH+MIL+STK, MILsto='01', MILcut=-1, SBLqty subquery SBLsto 01/03/04), group filter differs; returns zone01/sp/qc + count
+- Cache: p082-picklist-pack.js?v=20261022e — CDP 10/10 (status 6: 25/1/0, counts + footer match)
+
+## P082 Zone Tables Always Visible (2026-10-22)
+
+- 3 zone tables (Zone 01 / Zone SparePart / Zone QC) now always visible on the panel — no more display:none before search (removed the show/hide toggle in render + HTML)
+- Cache: p082-picklist-pack.js?v=20261022f — CDP 5/5 (visible before search with 0 rows, rows fill after search)
