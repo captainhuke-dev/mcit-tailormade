@@ -55,7 +55,7 @@
   }
 
   var MAC5_CONNECTION_ID = "c1788406814359";
-  var API = { search: "api/p082_search.php", spGroups: "api/p082_sparepart_groups.php" };
+  var API = { search: "api/p082_search.php", spGroups: "api/p082_sparepart_groups.php", batGroups: "api/p082_battery_groups.php" };
 
   function apiPost(url, data) {
     return fetch(url, {
@@ -281,7 +281,7 @@
   }
 
   /* ---------- group settings modal (clone P080 — Sparepart) ---------- */
-  var GRP_STATE = { open: false, rows: [] };
+  var GRP_STATE = { open: false, rows: [], mode: "sp" };
   var G_CODE = "รหัสกลุ่ม";
   var G_NAME = "ชื่อกลุ่ม";
   var G_STAT = "สถานะ";
@@ -298,10 +298,10 @@
   var G_ON = "ใช้งาน";
   var G_OFF = "ไม่ใช้งาน";
 
-  var GRP_TITLES = { sp: 'ตั้งค่ากลุ่มสินค้าช่าง (Sparepart)' };
+  var GRP_TITLES = { sp: 'ตั้งค่ากลุ่มสินค้าช่าง (Sparepart)', bat: 'ตั้งค่ากลุ่มสินค้าแบตเตอรี (Battery)' };
 
   function grpApi() {
-    return API.spGroups;
+    return GRP_STATE.mode === "bat" ? API.batGroups : API.spGroups;
   }
 
   function grpRowsHtml() {
@@ -407,7 +407,8 @@
     if (ov) ov.classList.remove("show");
   }
 
-  function openGrpModal() {
+  function openGrpModal(mode) {
+    GRP_STATE.mode = mode;
     var ov = document.getElementById("p082GrpOverlay");
     if (!ov) {
       ov = document.createElement("div");
@@ -453,7 +454,7 @@
         if (e.key === "Escape" && GRP_STATE.open) closeGrpModal();
       });
     }
-    document.getElementById("p082GrpTitle").textContent = GRP_TITLES.sp;
+    document.getElementById("p082GrpTitle").textContent = GRP_TITLES[mode];
     GRP_STATE.open = true;
     GRP_STATE.rows = [];
     ov.classList.add("show");
@@ -468,8 +469,14 @@
     b1.type = "button";
     b1.className = "p082-settings-btn";
     b1.textContent = "\u2699 " + GRP_TITLES.sp;
-    b1.addEventListener("click", function () { openGrpModal(); });
+    b1.addEventListener("click", function () { openGrpModal("sp"); });
+    var b2 = document.createElement("button");
+    b2.type = "button";
+    b2.className = "p082-settings-btn";
+    b2.textContent = "\u2699 " + GRP_TITLES.bat;
+    b2.addEventListener("click", function () { openGrpModal("bat"); });
     sw.appendChild(b1);
+    sw.appendChild(b2);
   }
 
 
