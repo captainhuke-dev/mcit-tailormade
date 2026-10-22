@@ -1105,12 +1105,9 @@
         <div class="breadcrumb">
           หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
         </div>
-        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
-          <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
-            ${backLabel}
-          </button>
-          <span id="p083SettingsWrap" style="display:inline-flex;gap:8px"></span>
-        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
         <div id="p083Root" style="margin-top:20px"></div>
       `;
     }

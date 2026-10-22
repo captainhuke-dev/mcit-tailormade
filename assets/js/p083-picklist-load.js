@@ -244,37 +244,8 @@
     ".p083-rep-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-top:1px solid #e2e8f0}",
     ".p083-rep-hint{color:#64748b;font-size:12px}",
     "@media (max-width:1050px){.p083-launcher-body{grid-template-columns:1fr}.p083-search{grid-column:1/-1;width:100%;justify-content:center}.p083-group-grid{grid-template-columns:repeat(2,1fr)}}",
-    "@media (max-width:680px){.p083-launcher-body{grid-template-columns:1fr}.p083-group-grid{grid-template-columns:repeat(2,1fr)}}",
-    ".p083-settings-btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;background:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,0.10)}",
-    ".p083-settings-btn:hover{background:#eff6ff}",
-    ".p083-grp-overlay{position:fixed;inset:0;z-index:10000;display:none;background:rgba(15,23,42,0.55)}",
-    ".p083-grp-overlay.show{display:block}",
-    ".p083-grp-modal{position:relative;margin:4vh auto;width:min(900px,94vw);max-height:92vh;display:flex;flex-direction:column;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(15,23,42,0.35);overflow:hidden}",
-    ".p083-grp-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #dbe3ef;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
-    ".p083-grp-head h3{margin:0;font-size:15px;font-weight:800;color:#0f172a}",
-    ".p083-grp-x{width:32px;height:32px;border:none;border-radius:9px;background:#e2e8f0;color:#475569;font-size:14px;cursor:pointer}",
-    ".p083-grp-body{padding:18px 20px;overflow:auto}",
-    ".p083-grp-form{display:grid;grid-template-columns:170px 1fr 130px auto;gap:10px;align-items:end;margin-bottom:14px;padding:12px;border:1px solid #dbe3ef;border-radius:12px;background:#f8fafc}",
-    ".p083-grp-form label{display:block;margin-bottom:5px;color:#475569;font-size:11px;font-weight:700}",
-    ".p083-grp-form input,.p083-grp-form select{width:100%;height:38px;padding:0 10px;color:#172033;border:1px solid #dbe3ef;border-radius:9px;outline:none;background:#fff;font-size:13px}",
-    ".p083-grp-btns{display:flex;gap:8px}",
-    ".p083-grp-save{height:38px;padding:0 18px;border:none;border-radius:9px;background:linear-gradient(135deg,#34d399,#059669);color:#fff;font-size:13px;font-weight:700;cursor:pointer}",
-    ".p083-grp-new{height:38px;padding:0 12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#334155;font-size:12px;font-weight:700;cursor:pointer}",
-    ".p083-grp-table{width:100%;border-collapse:collapse}",
-    ".p083-grp-table th{padding:9px 12px;color:#475569;border-bottom:1px solid #dbe3ef;background:#f8fafc;font-size:12px;font-weight:700;text-align:left}",
-    ".p083-grp-table td{padding:9px 12px;border-bottom:1px solid #eef2f7;font-size:13px;color:#0f172a}",
-    ".p083-grp-table tr:hover td{background:#f0f7ff}",
-    ".p083-grp-act{display:inline-flex;gap:6px}",
-    ".p083-grp-mini{padding:4px 10px;border:1px solid #dbe3ef;border-radius:7px;background:#fff;font-size:11px;font-weight:700;cursor:pointer;color:#334155}",
-    ".p083-grp-mini.danger{color:#dc2626;border-color:#fecaca}",
-    ".p083-grp-on{display:inline-block;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:11px;font-weight:700}",
-    ".p083-grp-off{display:inline-block;padding:2px 8px;border-radius:999px;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:700}",
-    ".p083-grp-empty{padding:28px;text-align:center;color:#94a3b8;font-size:13px}",
-    ".p083-grp-mode{display:flex;align-items:center;gap:8px;margin:0 0 8px;color:#1d4ed8;font-size:12px;font-weight:800}",
-    ".p083-grp-mode .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18)}",
-    ".p083-grp-mode small{color:#64748b;font-weight:600}",
-    ".p083-grp-form.flash{animation:p083flash .7s ease}",
-    "@keyframes p083flash{0%{box-shadow:0 0 0 0 rgba(52,211,153,.65)}100%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}",  ].join("\n");
+    "@media (max-width:680px){.p083-launcher-body{grid-template-columns:1fr}.p083-group-grid{grid-template-columns:repeat(2,1fr)}}"
+  ];
 
   function groupOptionsHtml() {
     var h = "";
@@ -431,13 +402,10 @@
   }
 
   function showToast(msg, ms) {
-    var toast = $("p083Toast");
-    var msgEl = $("p083ToastMsg");
-    if (!toast || !msgEl) return;
-    msgEl.textContent = msg;
+    $("p083ToastMsg").textContent = msg;
     clearTimeout(toastTimer);
-    toast.classList.add("show");
-    toastTimer = setTimeout(function () { toast.classList.remove("show"); }, ms || 2600);
+    el.toast.classList.add("show");
+    toastTimer = setTimeout(function () { el.toast.classList.remove("show"); }, ms || 2600);
   }
 
   function renderDocument(filters) {
@@ -490,8 +458,8 @@
       ".p083-crow td{font-size:14pt}",
       ".p083-crow td.center{text-align:center}",
       ".p083-crow td.right{text-align:right;padding-right:5px}",
-      "@media print{body{display:block;background:#fff;zoom:1}.p083-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;background:#fff;box-shadow:none;page-break-after:always}.p083-page:last-child{page-break-after:auto}.p083-table tr{page-break-inside:avoid}}",
-  ].join("\n");
+      "@media print{body{display:block;background:#fff;zoom:1}.p083-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;background:#fff;box-shadow:none;page-break-after:always}.p083-page:last-child{page-break-after:auto}.p083-table tr{page-break-inside:avoid}}"
+    ].join("\n");
     var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var m=window.__MAN;if(m){document.body.style.zoom=m;return}var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',function(){fit();pag()});window.setZoom=function(z){window.__MAN=z;fit();pag()};" +
       "function rowOver(row){var s=row.closest('section.p083-page');if(!s)return false;var sr=s.getBoundingClientRect();var lr=row.getBoundingClientRect();var pb=parseFloat(getComputedStyle(s).paddingBottom)||0;return lr.bottom>sr.bottom-pb}" +
       "function renumber(){var s=document.querySelectorAll('section.p083-page');for(var i=0;i<s.length;i++){var f=s[i].querySelector('.p083-pgno');if(f)f.textContent=i+1}}" +
@@ -600,7 +568,7 @@
   var TH_NAA = "หน้่า";
 
   var MAC5_CONNECTION_ID = "c1788406814359";
-  var API = { search: "api/p083_search.php", generate: "api/p083_generate.php", spGroups: "api/p083_sparepart_groups.php", batGroups: "api/p083_battery_groups.php" };
+  var API = { search: "api/p083_search.php", generate: "api/p083_generate.php" };
 
   function apiPost(url, data) {
     return fetch(url, {
@@ -736,214 +704,11 @@
         el.genBtn.classList.remove("generating");
       });
   }
-
-  /* ---------- group settings modal (clone P080 — Sparepart / Battery) ---------- */
-  var GRP_STATE = { open: false, rows: [], mode: "sp" };
-  var G_CODE = "รหัสกลุ่ม";
-  var G_NAME = "ชื่อกลุ่ม";
-  var G_STAT = "สถานะ";
-  var G_SAVE = "บันทึก";
-  var G_CLOSE = "ปิด";
-  var G_EDIT = "แก้ไข";
-  var G_DEL = "ลบ";
-  var G_NEW = "เพิ่มกลุ่มใหม่";
-  var G_EMPTY = "ยังไม่มีกลุ่มสินค้า";
-  var G_REQ = "กรุณาระบุรหัสกลุ่ม";
-  var G_DONE = "บันทึกแล้ว";
-  var G_DELOK = "ลบแล้ว";
-  var G_CONF = "ยืนยันการลบกลุ่ม";
-  var G_ON = "ใช้งาน";
-  var G_OFF = "ไม่ใช้งาน";
-
-  var GRP_TITLES = { sp: 'ตั้งค่ากลุ่มสินค้าช่าง (Sparepart)', bat: 'ตั้งค่ากลุ่มสินค้าแบตเตอรี (Battery)' };
-
-  function grpApi() {
-    return GRP_STATE.mode === "bat" ? API.batGroups : API.spGroups;
-  }
-
-  function grpRowsHtml() {
-    if (!GRP_STATE.rows.length) {
-      return '<div class="p083-grp-empty">' + G_EMPTY + "</div>";
-    }
-    var h = '<table class="p083-grp-table"><thead><tr>';
-    h += "<th>" + G_CODE + "</th><th>" + G_NAME + "</th><th>" + G_STAT + '</th><th style="width:150px"></th>';
-    h += "</tr></thead><tbody>";
-    for (var i = 0; i < GRP_STATE.rows.length; i++) {
-      var g = GRP_STATE.rows[i];
-      h += "<tr>";
-      h += "<td><strong>" + esc(g.code) + "</strong></td>";
-      h += "<td>" + esc(g.descT) + "</td>";
-      h += "<td>" + (g.status === "Active"
-        ? '<span class="p083-grp-on">' + G_ON + "</span>"
-        : '<span class="p083-grp-off">' + G_OFF + "</span>") + "</td>";
-      h += '<td><div class="p083-grp-act">';
-      h += '<button class="p083-grp-mini" type="button" data-grp-edit="' + esc(g.code) + '">' + G_EDIT + "</button>";
-      h += '<button class="p083-grp-mini danger" type="button" data-grp-del="' + esc(g.code) + '">' + G_DEL + "</button>";
-      h += "</div></td></tr>";
-    }
-    return h + "</tbody></table>";
-  }
-
-  function grpLoad() {
-    apiPost(grpApi(), { connectionId: MAC5_CONNECTION_ID, action: "list" })
-      .then(function (d) {
-        if (!d.ok) { showToast(d.error || "error"); return; }
-        GRP_STATE.rows = d.rows || [];
-        var box = document.getElementById("p083GrpRows");
-        if (box) box.innerHTML = grpRowsHtml();
-      })
-      .catch(function (e) { showToast(e.message); });
-  }
-
-  function grpSetMode(text) {
-    var t = document.getElementById("p083GrpModeText");
-    if (t) t.textContent = text;
-  }
-
-  function grpResetForm() {
-    var c = document.getElementById("p083GrpCode");
-    var n = document.getElementById("p083GrpDesc");
-    var t = document.getElementById("p083GrpStatus");
-    var f = document.getElementById("p083GrpForm");
-    if (c) { c.value = ""; c.readOnly = false; }
-    if (n) n.value = "";
-    if (t) t.value = "Active";
-    grpSetMode(G_NEW);
-    if (f) {
-      f.classList.remove("flash");
-      void f.offsetWidth;
-      f.classList.add("flash");
-    }
-    if (c) c.focus();
-  }
-
-  function grpEdit(code) {
-    var g = null;
-    for (var i = 0; i < GRP_STATE.rows.length; i++) {
-      if (GRP_STATE.rows[i].code === code) { g = GRP_STATE.rows[i]; break; }
-    }
-    if (!g) return;
-    var c = document.getElementById("p083GrpCode");
-    c.value = g.code;
-    c.readOnly = true;
-    document.getElementById("p083GrpDesc").value = g.descT;
-    document.getElementById("p083GrpStatus").value = g.status;
-    grpSetMode(G_EDIT + " " + g.code);
-    document.getElementById("p083GrpDesc").focus();
-  }
-
-  function grpDel(code) {
-    if (!window.confirm(G_CONF + " " + code + " ?")) return;
-    apiPost(grpApi(), { connectionId: MAC5_CONNECTION_ID, action: "delete", code: code })
-      .then(function (d) {
-        if (!d.ok) { showToast(d.error || "error"); return; }
-        showToast(G_DELOK + " " + code);
-        grpLoad();
-      })
-      .catch(function (e) { showToast(e.message); });
-  }
-
-  function grpSave() {
-    var code = (document.getElementById("p083GrpCode").value || "").trim();
-    var descT = (document.getElementById("p083GrpDesc").value || "").trim();
-    var status = document.getElementById("p083GrpStatus").value;
-    if (!code) { showToast(G_REQ); return; }
-    apiPost(grpApi(), { connectionId: MAC5_CONNECTION_ID, action: "upsert", code: code, descT: descT, status: status })
-      .then(function (d) {
-        if (!d.ok) { showToast(d.error || "error"); return; }
-        showToast(G_DONE + " " + code);
-        grpResetForm();
-        grpLoad();
-      })
-      .catch(function (e) { showToast(e.message); });
-  }
-
-  function closeGrpModal() {
-    GRP_STATE.open = false;
-    var ov = document.getElementById("p083GrpOverlay");
-    if (ov) ov.classList.remove("show");
-  }
-
-  function openGrpModal(mode) {
-    GRP_STATE.mode = mode;
-    var ov = document.getElementById("p083GrpOverlay");
-    if (!ov) {
-      ov = document.createElement("div");
-      ov.id = "p083GrpOverlay";
-      ov.className = "p083-grp-overlay";
-      ov.innerHTML =
-        '<div class="p083-grp-modal">' +
-          '<div class="p083-grp-head">' +
-            "<h3 id=\"p083GrpTitle\"></h3>" +
-            '<button class="p083-grp-x" id="p083GrpClose" type="button" title="' + G_CLOSE + '">✕</button>' +
-          "</div>" +
-          '<div class="p083-grp-body">' +
-            '<div class="p083-grp-mode" id="p083GrpMode"><span class="dot"></span><span id="p083GrpModeText"></span><small>(' + G_SAVE + ')</small></div>' +
-            '<form class="p083-grp-form" id="p083GrpForm">' +
-              "<div><label>" + G_CODE + '</label><input id="p083GrpCode" maxlength="20" placeholder="1036-0300"></div>' +
-              "<div><label>" + G_NAME + '</label><input id="p083GrpDesc" maxlength="120" placeholder=""></div>' +
-              "<div><label>" + G_STAT + '</label><select id="p083GrpStatus"><option value="Active">' + G_ON + '</option><option value="Inactive">' + G_OFF + "</option></select></div>" +
-              '<div class="p083-grp-btns">' +
-                '<button class="p083-grp-save" type="submit">' + G_SAVE + "</button>" +
-                '<button class="p083-grp-new" id="p083GrpNew" type="button">' + G_NEW + "</button>" +
-              "</div>" +
-            "</form>" +
-            '<div id="p083GrpRows"></div>' +
-          "</div>" +
-        "</div>";
-      document.body.appendChild(ov);
-
-      ov.addEventListener("click", function (e) { if (e.target === ov) closeGrpModal(); });
-      document.getElementById("p083GrpClose").addEventListener("click", closeGrpModal);
-      document.getElementById("p083GrpNew").addEventListener("click", grpResetForm);
-      document.getElementById("p083GrpForm").addEventListener("submit", function (e) {
-        e.preventDefault();
-        grpSave();
-      });
-      document.getElementById("p083GrpRows").addEventListener("click", function (e) {
-        var b = e.target.closest ? e.target.closest("button[data-grp-edit],button[data-grp-del]") : null;
-        if (!b) return;
-        var ec = b.getAttribute("data-grp-edit");
-        var dc = b.getAttribute("data-grp-del");
-        if (ec) grpEdit(ec); else if (dc) grpDel(dc);
-      });
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && GRP_STATE.open) closeGrpModal();
-      });
-    }
-    document.getElementById("p083GrpTitle").textContent = GRP_TITLES[mode];
-    GRP_STATE.open = true;
-    GRP_STATE.rows = [];
-    ov.classList.add("show");
-    grpResetForm();
-    grpLoad();
-  }
-
-  function addSettingsButtons() {
-    var sw = document.getElementById("p083SettingsWrap");
-    if (!sw || sw.firstChild) return;
-    var b1 = document.createElement("button");
-    b1.type = "button";
-    b1.className = "p083-settings-btn";
-    b1.textContent = "\u2699 " + GRP_TITLES.sp;
-    b1.addEventListener("click", function () { openGrpModal("sp"); });
-    var b2 = document.createElement("button");
-    b2.type = "button";
-    b2.className = "p083-settings-btn";
-    b2.textContent = "\u2699 " + GRP_TITLES.bat;
-    b2.addEventListener("click", function () { openGrpModal("bat"); });
-    sw.appendChild(b1);
-    sw.appendChild(b2);
-  }
-
   function mount(mountEl) {
     root = mountEl;
     var olds = document.querySelectorAll("body > .p083-rep-overlay");
     for (var oi = 0; oi < olds.length; oi++) olds[oi].parentNode.removeChild(olds[oi]);
-    var oldg = document.getElementById("p083GrpOverlay");
-    if (oldg) oldg.parentNode.removeChild(oldg);
     root.innerHTML = html();
-    addSettingsButtons();
     if (!document.getElementById("p083Style")) {
       var st = document.createElement("style");
       st.id = "p083Style";
