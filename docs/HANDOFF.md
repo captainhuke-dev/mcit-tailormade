@@ -699,3 +699,5 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - `api/p082_search.php` — clone P080 SQL, STKgroup NOT IN tb_GroupSparepart(Active) AND NOT IN tb_GroupBattery(Active) (P080 = IN battery only)
 - Verified: status 42 → P080=3 (battery), P082=238, overlap=empty; CDP 16/16 (render + real search 238 rows)
 - Generate button = stub (toast) — waiting C# reference
+
+- 21/10: P082 remove head-date field (edcc5ad) - launcher = status + search only, subtitle no date, cache 20261021c, CDP 17/17
