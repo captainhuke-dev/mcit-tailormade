@@ -26,7 +26,7 @@
   var root = null;
   var el = {};
   var state = {
-    searchRows: [], view: null, searching: false
+    searchRows: [], zone01: [], sp: [], qc: [], view: null, searching: false
   };
   var toastTimer = null;
 
@@ -90,7 +90,10 @@
           showToast("ไม่พบรายการตามเงื่อนไขที่ค้นหา");
           return;
         }
-        state.searchRows = d.rows;
+        state.searchRows = d.zone01 || [];
+        state.zone01 = d.zone01 || [];
+        state.sp = d.sp || [];
+        state.qc = d.qc || [];
         state.view = "search";
         render();
         showToast("พบ " + d.count + " รายการ");
@@ -109,25 +112,7 @@
     showToast("P082 — ปุ่ มสร้างเอกสารกำลังพัฒนา");
   }
 
-  /* ---------- render (ผลค้นหา) ---------- */
-  function render() {
-    var isSearch = state.view === "search";
-    if (!isSearch) {
-      el.searchContainer.style.display = "none";
-      el.footer.style.display = "none";
-      el.modeBadge.style.display = "none";
-      el.emptyState.style.display = "flex";
-      el.subtitle.textContent = "ยังไม่ได้ค้นหา/สร้างรายงาน";
-      return;
-    }
-    var rows = state.searchRows;
-    el.emptyState.style.display = "none";
-    el.footer.style.display = "flex";
-    el.searchContainer.style.display = "block";
-    el.modeBadge.style.display = "inline-flex";
-    el.modeBadge.textContent = "ผลค้นหา";
-    el.modeBadge.className = "p082-mode-badge search";
-    el.subtitle.textContent = "สถานะ " + statusLabel(el.status.value);
+  function zoneRowsHtml(rows) {
     var html = "";
     rows.forEach(function (r) {
       html += "<tr>" +
@@ -138,8 +123,35 @@
         '<td class="center number">' + (r.SBLqty == null ? "" : esc(r.SBLqty)) + "</td>" +
         "</tr>";
     });
-    el.searchRows.innerHTML = html;
-    el.footerText.textContent = "แสดง " + rows.length + " รายการ";
+    return html;
+  }
+
+  /* ---------- render (ผลค้นหา) ---------- */
+  function render() {
+    var isSearch = state.view === "search";
+    if (!isSearch) {
+      el.resTables.style.display = "none";
+      el.footer.style.display = "none";
+      el.modeBadge.style.display = "none";
+      el.emptyState.style.display = "flex";
+      el.subtitle.textContent = "ยังไม่ได้ค้นหา/สร้างรายงาน";
+      return;
+    }
+    el.emptyState.style.display = "none";
+    el.footer.style.display = "flex";
+    el.resTables.style.display = "flex";
+    el.modeBadge.style.display = "inline-flex";
+    el.modeBadge.textContent = "ผลค้นหา";
+    el.modeBadge.className = "p082-mode-badge search";
+    el.subtitle.textContent = "สถานะ " + statusLabel(el.status.value);
+    el.rows01.innerHTML = zoneRowsHtml(state.zone01);
+    el.rowsSp.innerHTML = zoneRowsHtml(state.sp);
+    el.rowsQc.innerHTML = zoneRowsHtml(state.qc);
+    el.count01.textContent = String(state.zone01.length);
+    el.countSp.textContent = String(state.sp.length);
+    el.countQc.textContent = String(state.qc.length);
+    var total = state.zone01.length + state.sp.length + state.qc.length;
+    el.footerText.textContent = "แสดง " + total + " รายการ";
   }
 
   /* ---------- CSS (clone P080) ---------- */
@@ -221,6 +233,18 @@
     ".p082-grp-mode small{color:#64748b;font-weight:600}",
     ".p082-grp-form.flash{animation:p082flash .7s ease}",
     "@keyframes p082flash{0%{box-shadow:0 0 0 0 rgba(52,211,153,.65)}100%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}",
+    ".p082-res-tables{display:flex;flex-direction:column;gap:16px;padding:14px 15px;background:#f8fafc}",
+    ".p082-rt{background:#fff;border:1px solid #dbe3ef;border-radius:12px;overflow:hidden}",
+    ".p082-rt-title{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#1d4ed8;border-bottom:1px solid #dbe3ef;background:#eff6ff;font-size:13px;font-weight:700}",
+    ".p082-rt-count{color:#475569;background:#fff;border:1px solid #dbe3ef;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:600}",
+    ".p082-rt-wrap{max-height:280px;overflow:auto}",
+    ".p082-ztable{width:100%;min-width:720px;border-collapse:separate;border-spacing:0;white-space:nowrap}",
+    ".p082-ztable th{position:sticky;top:0;z-index:2;padding:11px 14px;color:#475569;border-bottom:1px solid #dbe3ef;background:#f8fafc;box-shadow:inset 0 -1px #dbe3ef;font-size:12px;font-weight:700;text-align:left}",
+    ".p082-ztable td{padding:10px 14px;border-bottom:1px solid #edf1f6;font-size:12px;line-height:1.4}",
+    ".p082-ztable th.center,.p082-ztable td.center{text-align:center}",
+    ".p082-ztable td.number{text-align:right;font-family:Arial,sans-serif}",
+    ".p082-ztable tbody tr:nth-child(even){background:#fbfdff}",
+    ".p082-ztable tbody tr:hover{background:#f0f7ff}",
     "@media (max-width:680px){.p082-panel-header{align-items:flex-start;flex-direction:column}}"
   ].join("\n");
 
@@ -256,15 +280,40 @@
           "</div>" +
           "</div>" +
         "</div>" +
-        '<div class="p082-table-container" id="p082SearchContainer" style="display:none">' +
-          '<table class="p082-table p082-search-table">' +
+        '<div class="p082-res-tables" id="p082ResTables" style="display:none">' +
+          '<div class="p082-rt">' +
+            '<div class="p082-rt-title">' + "รายการสินค้า" + ' Zone 01' + '<span class="p082-rt-count" id="p082Count01"></span></div>' +
+            '<div class="p082-rt-wrap"><table class="p082-ztable">' +
             "<thead><tr>" +
-            "<th>" + "รหัสสินค้า" + '</th><th class="center">' + "กลุ่ ม" + "</th>" +
-            "<th>" + "ชื่อสินค้า (1)" + '</th><th>' + "ชื่อสินค้า (2)" + "</th>" +
-            '<th class="center number">' + "คงเหลือ" + "</th>" +
+            "<th>" + "รหัสสินค้า" + "</th><th class=\"center\">" + "กลุ่มสินค้า" + "</th>" +
+            "<th>" + "ชื่อสินค้า" + "</th><th>" + "ชื่อสินค้า" + "</th>" +
+            '<th class="center number">' + "จำนวน" + "</th>" +
             "</tr></thead>" +
-            '<tbody id="p082SearchRows"></tbody>' +
-          "</table>" +
+            '<tbody id="p082Rows01"></tbody>' +
+            "</table></div>" +
+          "</div>" +
+          '<div class="p082-rt">' +
+            '<div class="p082-rt-title">' + "รายการสินค้า" + ' Zone SparePart' + '<span class="p082-rt-count" id="p082CountSp"></span></div>' +
+            '<div class="p082-rt-wrap"><table class="p082-ztable">' +
+            "<thead><tr>" +
+            "<th>" + "รหัสสินค้า" + "</th><th class=\"center\">" + "กลุ่มสินค้า" + "</th>" +
+            "<th>" + "ชื่อสินค้า" + "</th><th>" + "ชื่อสินค้า" + "</th>" +
+            '<th class="center number">' + "จำนวน" + "</th>" +
+            "</tr></thead>" +
+            '<tbody id="p082RowsSp"></tbody>' +
+            "</table></div>" +
+          "</div>" +
+          '<div class="p082-rt">' +
+            '<div class="p082-rt-title">' + "รายการสินค้า" + ' Zone QC' + '<span class="p082-rt-count" id="p082CountQc"></span></div>' +
+            '<div class="p082-rt-wrap"><table class="p082-ztable">' +
+            "<thead><tr>" +
+            "<th>" + "รหัสสินค้า" + "</th><th class=\"center\">" + "กลุ่มสินค้า" + "</th>" +
+            "<th>" + "ชื่อสินค้า" + "</th><th>" + "ชื่อสินค้า" + "</th>" +
+            '<th class="center number">' + "จำนวน" + "</th>" +
+            "</tr></thead>" +
+            '<tbody id="p082RowsQc"></tbody>' +
+            "</table></div>" +
+          "</div>" +
         "</div>" +
         '<div class="p082-empty-state" id="p082EmptyState">' +
           "<div>" + icon("check") +
@@ -495,8 +544,6 @@
     el.status = $("p082Status");
     el.genBtn = $("p082Gen");
     el.searchBtn = $("p082SearchBtn");
-    el.searchContainer = $("p082SearchContainer");
-    el.searchRows = $("p082SearchRows");
     el.subtitle = $("p082Subtitle");
     el.modeBadge = $("p082ModeBadge");
     el.emptyState = $("p082EmptyState");
@@ -509,6 +556,13 @@
       doGenerate();
     });
     el.searchBtn.addEventListener("click", function (e) {
+    el.resTables = $("p082ResTables");
+    el.rows01 = $("p082Rows01");
+    el.rowsSp = $("p082RowsSp");
+    el.rowsQc = $("p082RowsQc");
+    el.count01 = $("p082Count01");
+    el.countSp = $("p082CountSp");
+    el.countQc = $("p082CountQc");
       e.preventDefault();
       doSearch();
     });

@@ -1,11 +1,12 @@
 <?php
 /**
- * P082 — ปุ่ มค้นหา → รายการสินค้า (clone P080 — ตัดกลุ่ ม SparePart + Battery ออก)
- * SQL: MIH+MIL+STK, MILcut=-1, MILsto='01'
- *   STKgroup NOT IN tb_GroupSparepart(Active) AND NOT IN tb_GroupBattery(Active)
- *   + SBLqty subquery (SBLsto 01/03/04)
+ * P082 - search button -> 3 result tables (Zone 01 / Zone SparePart / Zone QC)
+ * SQL: MIH+MIL+STK, MILcut=-1, MILsto='01' + SBLqty subquery (SBLsto 01/03/04)
+ *   Zone 01        = STKgroup NOT IN tb_GroupSparepart(Active) AND NOT IN tb_GroupBattery(Active)
+ *   Zone SparePart = STKgroup IN tb_GroupSparepart(Active)
+ *   Zone QC        = STKgroup IN tb_GroupBattery(Active)
  * POST { connectionId, status }
- * { ok, count, rows:[{STKcode,STKgroup,STKdescT1,STKdescT2,SBLqty}] }
+ * { ok, count, zone01:[...], sp:[...], qc:[...], rows:[...] }
  * PHP 7.3-compatible
  */
 header("Content-Type: application/json; charset=utf-8");
@@ -37,9 +38,8 @@ try {
 }
 
 try {
-  // SQL ตามแบบ — CONVERT(nvarchar) สำหรับ GROUP BY, SBLqty subquery
-  $sql = "SELECT"
-    . " B.MILstk AS STKcode,"
+  // base filter: same as P080 (MILsto='01'), 3 zones
+  $base = "SELECT B.MILstk AS STKcode,"
     . " C.STKgroup,"
     . " CONVERT(VARCHAR(255), C.STKdescT1) AS STKdescT1,"
     . " CONVERT(VARCHAR(255), C.STKdescT2) AS STKdescT2,"
@@ -51,19 +51,38 @@ try {
     . " AND A.MIHtype = 'IS'"
     . " AND B.MILsto = '01'"
     . " AND B.MILcut = -1"
-    . " AND C.STKgroup NOT IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupSparepart] WHERE STGstatus = 'Active')"
-    . " AND C.STKgroup NOT IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupBattery] WHERE STGstatus = 'Active')"
-    . " GROUP BY B.MILstk, C.STKgroup, CONVERT(VARCHAR(255), C.STKdescT1), CONVERT(VARCHAR(255), C.STKdescT2)"
+    . " AND ";
+
+  $tail = " GROUP BY B.MILstk, C.STKgroup, CONVERT(VARCHAR(255), C.STKdescT1), CONVERT(VARCHAR(255), C.STKdescT2)"
     . " ORDER BY B.MILstk";
 
-  $st = $db->prepare($sql);
+  // Zone 01 = excludes spare/battery groups (current P082 search)
+  $sql01 = $base . "C.STKgroup NOT IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupSparepart] WHERE STGstatus = 'Active')"
+    . " AND C.STKgroup NOT IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupBattery] WHERE STGstatus = 'Active')" . $tail;
+  // Zone SparePart
+  $sqlSp = $base . "C.STKgroup IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupSparepart] WHERE STGstatus = 'Active')" . $tail;
+  // Zone QC (batteries)
+  $sqlQc = $base . "C.STKgroup IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupBattery] WHERE STGstatus = 'Active')" . $tail;
+
+  $st = $db->prepare($sql01);
   $st->execute(array($status));
-  $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+  $zone01 = $st->fetchAll(PDO::FETCH_ASSOC);
+
+  $st = $db->prepare($sqlSp);
+  $st->execute(array($status));
+  $sp = $st->fetchAll(PDO::FETCH_ASSOC);
+
+  $st = $db->prepare($sqlQc);
+  $st->execute(array($status));
+  $qc = $st->fetchAll(PDO::FETCH_ASSOC);
 
   echo json_encode(array(
     "ok" => true,
-    "count" => count($rows),
-    "rows" => $rows
+    "count" => count($zone01) + count($sp) + count($qc),
+    "zone01" => $zone01,
+    "sp" => $sp,
+    "qc" => $qc,
+    "rows" => $zone01
   ), JSON_UNESCAPED_UNICODE);
 } catch (Exception $e) {
   http_response_code(500);
