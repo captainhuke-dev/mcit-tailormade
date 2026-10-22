@@ -779,3 +779,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - User: remove 65 from status dropdown (test data done) - STATUS_OPTIONS back to 12 (last = 55-PL ถอนั BKK)
 - Cache: p082-picklist-pack.js?v=20261022m - CDP: 12 options, no 65
+
+## P079 UI Only (2026-10-22)
+
+- User: P079 next - UI only, clone demo/P079_demo.html (PickList Marketplace)
+- assets/js/p079-marketplace.js (new): IIFE window.P079Marketplace={mount} - launcher (doc date range + head date + status 27-Marketplace fixed disabled + customer group all/jam/beer/mkt + generate button)
+  + summary 4 cards (docs/products/qty/group) + panel paper (7-col table, product grow rows + order rows, group tags jam/beer/mkt, platform tags) + empty state + print button (window.print)
+- Data = 10 mock rows from demo (no API yet); filter by date range + group; group by productCode; dates พ.ศ. (+543)
+- Thai: all extracted from demo file (file->file splice, no typed Thai); summary card labels composed from trusted fragments (จำนวน+เอกสาร/สินค้า)
+- portal.js: P079 branch + mount (byte-identical to P082 block) - index.php: p079-marketplace.js?v=20261022b, portal.js?v=20261022b
+- CDP 18/18 PASS (labels/status/h2/badge/summary 9/5/34/paper 5+9 rows/empty state)
