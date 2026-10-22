@@ -716,3 +716,10 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Also fixed P082 `showToast` el.toast undefined bug (same as P083)
 - Cache: p082-picklist-pack.js?v=20261022c, portal.js?v=20261022a
 - CDP: 11/11 (button + modal + add/edit/delete round-trip + search still works; test row cleaned up)
+
+## P082 Battery Group Settings (2026-10-22)
+
+- Second settings button next to back link: Battery group -> CRUD `BI_CUBE.dbo.tb_GroupBattery` via `api/p082_battery_groups.php`
+- Grp modal now mode-aware (sp/bat): `GRP_STATE.mode`, `grpApi()` picks endpoint, `openGrpModal(mode)`, title from GRP_TITLES
+- Cache: p082-picklist-pack.js?v=20261022d
+- CDP: 9/9 (2 buttons, battery modal 25 rows, add/delete round-trip, sparepart modal still 58 rows; test row cleaned up)
