@@ -88,6 +88,15 @@
         if (!d.ok) throw new Error(d.error);
         if (d.count === 0) {
           state.view = null;
+          state.zone01 = [];
+          state.sp = [];
+          state.qc = [];
+          el.rows01.innerHTML = "";
+          el.rowsSp.innerHTML = "";
+          el.rowsQc.innerHTML = "";
+          el.count01.textContent = "0";
+          el.countSp.textContent = "0";
+          el.countQc.textContent = "0";
           render();
           showToast("ไม่พบรายการตามเงื่อนไขที่ค้นหา");
           return;
