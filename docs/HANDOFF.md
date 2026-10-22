@@ -704,5 +704,6 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ## P082 Status Dropdown Width (2026-10-22)
 
-- Status dropdown (invoice status) shortened to 50% of launcher cell: `.p082-field{width:50%}`
-- Cache: p082-picklist-pack.js?v=20261022a — CDP measured ratio 0.43 of body (field = half of grid cell)
+- Status dropdown (invoice status) shortened to 50% of launcher: `.p082-field{width:50%}`
+- Launcher changed grid -> flex: search button sits right after the dropdown (gap 14px); mobile rule -> flex-wrap + field 100%
+- Cache: p082-picklist-pack.js?v=20261022b — CDP: field = 48% of body, gap to button 14px
