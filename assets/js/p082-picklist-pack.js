@@ -206,7 +206,7 @@
 
   /* ---------- CSS (clone P080) ---------- */
   var CSS = [
-    ".p082-app{display:flex;flex-direction:column;gap:14px}",
+    ".p082-app{display:flex;flex-direction:column;gap:10px}",
     ".p082-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
     ".p082-launcher-body{display:flex;align-items:end;gap:14px;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p082-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
@@ -226,7 +226,7 @@
     ".p082-action-button.loading svg{animation:p082spin 1s linear infinite}",
     "@keyframes p082spin{to{transform:rotate(360deg)}}",
     ".p082-panel{display:flex;flex-direction:column;min-height:420px;flex:1;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.08)}",
-    ".p082-panel-header{display:flex;min-height:40px;align-items:center;justify-content:space-between;gap:12px;padding:6px 15px;border-bottom:1px solid #dbe3ef}",
+    ".p082-panel-header{display:flex;min-height:40px;align-items:center;justify-content:space-between;gap:12px;padding:4px 15px 2px;border-bottom:1px solid #dbe3ef}",
     ".p082-panel-heading{display:flex;min-width:0;align-items:center;gap:10px}",
     ".p082-panel-icon{display:grid;width:36px;height:36px;flex:0 0 auto;place-items:center;color:#2563eb;border-radius:10px;background:#eff6ff}",
     ".p082-panel-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
@@ -283,7 +283,7 @@
     ".p082-grp-mode small{color:#64748b;font-weight:600}",
     ".p082-grp-form.flash{animation:p082flash .7s ease}",
     "@keyframes p082flash{0%{box-shadow:0 0 0 0 rgba(52,211,153,.65)}100%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}",
-    ".p082-res-tables{display:flex;flex-direction:column;gap:16px;padding:14px 15px;background:#f8fafc}",
+    ".p082-res-tables{display:flex;flex-direction:column;gap:12px;padding:8px 15px;background:#f8fafc}",
     ".p082-rt{background:#fff;border:1px solid #dbe3ef;border-radius:12px;overflow:hidden}",
     ".p082-rt-title{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#1d4ed8;border-bottom:1px solid #dbe3ef;background:#eff6ff;font-size:13px;font-weight:700}",
     ".p082-rt-count{color:#475569;background:#fff;border:1px solid #dbe3ef;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:600}",
