@@ -130,7 +130,6 @@
   function render() {
     var isSearch = state.view === "search";
     if (!isSearch) {
-      el.resTables.style.display = "none";
       el.footer.style.display = "none";
       el.modeBadge.style.display = "none";
       el.emptyState.style.display = "flex";
@@ -139,7 +138,6 @@
     }
     el.emptyState.style.display = "none";
     el.footer.style.display = "flex";
-    el.resTables.style.display = "flex";
     el.modeBadge.style.display = "inline-flex";
     el.modeBadge.textContent = "ผลค้นหา";
     el.modeBadge.className = "p082-mode-badge search";
@@ -280,7 +278,7 @@
           "</div>" +
           "</div>" +
         "</div>" +
-        '<div class="p082-res-tables" id="p082ResTables" style="display:none">' +
+        '<div class="p082-res-tables" id="p082ResTables">' +
           '<div class="p082-rt">' +
             '<div class="p082-rt-title">' + "รายการสินค้า" + ' Zone 01' + '<span class="p082-rt-count" id="p082Count01"></span></div>' +
             '<div class="p082-rt-wrap"><table class="p082-ztable">' +
