@@ -752,3 +752,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - JS: state += zoom/escBound/paperHtml/sections/products/filters; API.generate; copied from P083: fmtDate/fmtStamp/machineName/reportDocHtml/openReport/setZoomLevel/applyZoom/closeReport (renamed p083->p082); fresh: sectionTable/sectionHtml/doGenerate; rep-* CSS added to array
 - Cache: p082-picklist-pack.js?v=20261022i - CDP: status 65 (129 rows) -> modal opens (flex), 12 pages (Zone 01 112 items paginate), 3 titles, thead 6 headers correct, 129 grow rows, footer หน้่า 1
 - NOTE: test data now in status **65 (65-Test)** = 129 rows (sp 16 / qc 1 / z01 112); status 43/6/17/etc = 0 (user moved data to 65)
+
+## P082 Clear Tables on Empty Search (2026-10-22)
+
+- doSearch: when count=0, now clears all 3 zone tables (rows01/rowsSp/rowsQc innerHTML) + counts (c01/cSp/cQc = 0) + state arrays before render — previously old rows stayed visible
+- Cache: p082-picklist-pack.js?v=20261022j - CDP: search 65 (112/16/1) then search 6 (empty) -> all 3 tables + counts = 0
