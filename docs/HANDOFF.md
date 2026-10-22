@@ -701,3 +701,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Generate button = stub (toast) — waiting C# reference
 
 - 21/10: P082 remove head-date field (edcc5ad) - launcher = status + search only, subtitle no date, cache 20261021c, CDP 17/17
+
+## P082 Status Dropdown Width (2026-10-22)
+
+- Status dropdown (invoice status) shortened to 50% of launcher cell: `.p082-field{width:50%}`
+- Cache: p082-picklist-pack.js?v=20261022a — CDP measured ratio 0.43 of body (field = half of grid cell)
