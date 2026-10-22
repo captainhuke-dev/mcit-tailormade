@@ -707,3 +707,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Status dropdown (invoice status) shortened to 50% of launcher: `.p082-field{width:50%}`
 - Launcher changed grid -> flex: search button sits right after the dropdown (gap 14px); mobile rule -> flex-wrap + field 100%
 - Cache: p082-picklist-pack.js?v=20261022b — CDP: field = 48% of body, gap to button 14px
+
+## P082 Sparepart Group Settings (2026-10-22)
+
+- Settings button on the same row as the back link: Sparepart group -> CRUD `BI_CUBE.dbo.tb_GroupSparepart` via `api/p082_sparepart_groups.php` (clone of the reverted P083 pattern, single table)
+- Modal: list + add/edit/delete, flash on save, confirm on delete, Esc/X/backdrop close
+- portal.js: `#p082SettingsWrap` span next to back button (same flex row)
+- Also fixed P082 `showToast` el.toast undefined bug (same as P083)
+- Cache: p082-picklist-pack.js?v=20261022c, portal.js?v=20261022a
+- CDP: 11/11 (button + modal + add/edit/delete round-trip + search still works; test row cleaned up)
