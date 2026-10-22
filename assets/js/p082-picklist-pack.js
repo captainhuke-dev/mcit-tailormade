@@ -20,8 +20,7 @@
     ["52", "52-Picking List ปกติ"],
     ["53", "53-Picking List ด่วน"],
     ["54", "54-PL ปกติ BKK"],
-    ["55", "55-PL ด่วน BKK"],
-    ["65", "65-Test"]
+    ["55", "55-PL ด่วน BKK"]
   ];
 
   var root = null;
