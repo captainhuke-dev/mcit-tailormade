@@ -145,6 +145,7 @@
     ".p082-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
     ".p082-launcher-body{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p082-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
+    ".p082-field{width:50%}",
     ".p082-input-wrap{position:relative}",
     ".p082-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
     ".p082-input-wrap input,.p082-input-wrap select{width:100%;height:44px;padding:0 36px 0 12px;color:#172033;border:1px solid #dbe3ef;border-radius:10px;outline:none;background:#fff;font-size:13px}",
