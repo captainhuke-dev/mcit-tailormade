@@ -226,16 +226,16 @@
     ".p082-action-button.loading svg{animation:p082spin 1s linear infinite}",
     "@keyframes p082spin{to{transform:rotate(360deg)}}",
     ".p082-panel{display:flex;flex-direction:column;min-height:420px;flex:1;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.08)}",
-    ".p082-panel-header{display:flex;min-height:60px;align-items:center;justify-content:space-between;gap:12px;padding:10px 15px;border-bottom:1px solid #dbe3ef}",
+    ".p082-panel-header{display:flex;min-height:40px;align-items:center;justify-content:space-between;gap:12px;padding:6px 15px;border-bottom:1px solid #dbe3ef}",
     ".p082-panel-heading{display:flex;min-width:0;align-items:center;gap:10px}",
     ".p082-panel-icon{display:grid;width:36px;height:36px;flex:0 0 auto;place-items:center;color:#2563eb;border-radius:10px;background:#eff6ff}",
     ".p082-panel-icon svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
-    ".p082-panel-title h2{overflow:hidden;font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}",
-    ".p082-panel-title p{overflow:hidden;margin-top:1px;color:#64748b;font-size:11px;text-overflow:ellipsis;white-space:nowrap}",
+    ".p082-panel-title h2{margin:0;overflow:hidden;font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}",
+    ".p082-panel-title p{overflow:hidden;margin:1px 0 0;color:#64748b;font-size:11px;text-overflow:ellipsis;white-space:nowrap}",
     ".p082-mode-badge{padding:5px 10px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}",
     ".p082-header-right{display:flex;align-items:center;gap:10px}",
     ".p082-header-actions{display:flex;align-items:center;gap:8px}",
-    ".p082-header-actions .p082-action-button{min-height:38px;width:140px;padding:6px 8px;border-radius:9px;font-size:12px}",
+    ".p082-header-actions .p082-action-button{min-height:34px;width:140px;flex-direction:row;gap:6px;padding:5px 10px;border-radius:9px;font-size:12px}",
     ".p082-mode-badge.search{color:#047857;background:#d1fae5}",
     ".p082-table-container{min-height:0;flex:1;overflow:auto}",
     ".p082-table{width:100%;min-width:820px;border-collapse:separate;border-spacing:0;white-space:nowrap}",
@@ -335,7 +335,7 @@
           '<div class="p082-panel-heading">' +
             '<div class="p082-panel-icon">' + icon("grid") + "</div>" +
             '<div class="p082-panel-title">' +
-              "<h2>" + "ผลการสร้างเอกสาร PickList To Pack" + "</h2>" +
+              "<h2>" + "PickList To Pack" + "</h2>" +
               '<p id="p082Subtitle">' + "ยังไม่ได้ค้นหา/สร้างรายงาน" + "</p>" +
             "</div>" +
           "</div>" +
