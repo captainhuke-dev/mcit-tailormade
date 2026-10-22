@@ -557,7 +557,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ## 4. สถานะปัจจุบัน + สิ่งที่ทำต่อได้
 
-### เสร็จแล้ว (ready): P006, P008, P013, P015, P019, P022, P031, P032, P033, P034, P035, P037, P039, P045, P047, P050, P051, P052, P053, P054, P059, P063, P064, P080, P081, P083, P092, P103, P106, P111, P115, P128, P129, P130
+### เสร็จแล้ว (ready): P006, P008, P013, P015, P019, P022, P031, P032, P033, P034, P035, P037, P039, P045, P047, P050, P051, P052, P053, P054, P059, P063, P064, P080, P081, P082, P083, P092, P103, P106, P111, P115, P128, P129, P130
 
 ### ทำต่อได้
 - P036+ (บัญชี), P112, P113-P119 ฯลฯ — placeholders
@@ -768,3 +768,9 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - Gap below H2 reduced: .p082-panel-header padding 4px 15px 2px, .p082-res-tables padding 8px 15px gap 12, .p082-app gap 10
 - Cache: p082-picklist-pack.js?v=20261022l - CDP: header 43px, gap below title 8px
+
+## P082 READY (2026-10-22)
+
+- User: P082 ready - data/modules.php: P082 status=ready + ready list updated (P082 added after P081)
+- P082 full: search (user SQL, 3 zones a-k, qty=SUM) + empty search clears 3 tables + grp settings sp/bat + status 65-Test + generate -> A4 report modal (clone C# frm_PickListToPack) + compact header/title
+- Cache: p082-picklist-pack.js?v=20261022l
