@@ -1,7 +1,7 @@
 
 /* P082 — PickList To Pack (UI only — clone UI from P080)
  * IIFE — window.P082PickListPack = { mount }
- * UI clone P080 — launcher (วันที่หัวเอกสาร + สถานะ + ปุ่ มค้นหา) + panel ตาราง 5 คอลั่ น
+ * UI clone P080 - launcher (status + search btn) + panel 5-col table
  * search → api/p082_search.php (clone P080 — ตัดกลุ่ ม SparePart + Battery ออก)
  * สร้างเอกสาร = stub (toast — รอ C# reference)
  */
@@ -23,9 +23,6 @@
     ["55", "55-PL ด่วน BKK"]
   ];
 
-  var MONTHS_TH = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"];
-
   var root = null;
   var el = {};
   var state = {
@@ -44,23 +41,10 @@
       doc: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12"></path><path d="M14 2v6h6M8 13h8M8 17h5"></path>',
       grid: '<path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path>',
       check: '<path d="m9 11 3 3L22 4"></path><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>',
-      cal: '<rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path>',
       chevron: '<path d="m6 9 6 6 6-6"></path>',
       search: '<circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path>'
     };
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + (paths[name] || "") + "</svg>";
-  }
-
-  function fmtDate(d) {
-    if (!d) return "";
-    var m = String(d).match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (!m) return String(d);
-    return m[3] + "/" + m[2] + "/" + (parseInt(m[1], 10) + 543);
-  }
-
-  function isoDate(d) {
-    var p = function (n) { return (n < 10 ? "0" : "") + n; };
-    return d.getFullYear() + "-" + p(d.getMonth() + 1) + "-" + p(d.getDate());
   }
 
   function statusLabel(v) {
@@ -140,7 +124,7 @@
     el.modeBadge.style.display = "inline-flex";
     el.modeBadge.textContent = "ผลค้นหา";
     el.modeBadge.className = "p082-mode-badge search";
-    el.subtitle.textContent = "สถานะ " + statusLabel(el.status.value) + " · " + fmtDate(el.headDate.value);
+    el.subtitle.textContent = "สถานะ " + statusLabel(el.status.value);
     var html = "";
     rows.forEach(function (r) {
       html += "<tr>" +
@@ -159,7 +143,7 @@
   var CSS = [
     ".p082-app{display:flex;flex-direction:column;gap:14px}",
     ".p082-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
-    ".p082-launcher-body{display:grid;grid-template-columns:1fr 1fr auto;gap:14px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
+    ".p082-launcher-body{display:grid;grid-template-columns:1fr auto;gap:14px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p082-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
     ".p082-input-wrap{position:relative}",
     ".p082-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
@@ -212,14 +196,9 @@
     STATUS_OPTIONS.forEach(function (s) {
       statusHtml += '<option value="' + s[0] + '"' + (s[0] === "6" ? " selected" : "") + ">" + esc(s[1]) + "</option>";
     });
-    var today = new Date();
     return '<div class="p082-app">' +
       '<section class="p082-launcher-card">' +
         '<form class="p082-launcher-body" id="p082Form">' +
-          '<div class="p082-field">' +
-            '<label for="p082HeadDate">' + "วันที่หัวเอกสาร" + '</label>' +
-            '<div class="p082-input-wrap">' + icon("cal") + '<input id="p082HeadDate" type="date" value="' + isoDate(today) + '"></div>' +
-          "</div>" +
           '<div class="p082-field">' +
             '<label for="p082Status">' + "สถานะใบแจ้งหนี้" + '</label>' +
             '<div class="p082-input-wrap">' + icon("chevron") + '<select id="p082Status">' + statusHtml + "</select></div>" +
@@ -276,7 +255,6 @@
       st.textContent = CSS;
       document.head.appendChild(st);
     }
-    el.headDate = $("p082HeadDate");
     el.status = $("p082Status");
     el.genBtn = $("p082Gen");
     el.searchBtn = $("p082SearchBtn");
