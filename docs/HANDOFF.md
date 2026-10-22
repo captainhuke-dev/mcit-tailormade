@@ -763,3 +763,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Panel H2: "ผลการสร้างเอกสาร PickList To Pack" -> "PickList To Pack" (user request)
 - Header compact 77px -> 49px: .p082-panel-title h2 margin:0 (browser default h2 margin was the gap), p margin:1px 0 0, .p082-panel-header min-height 40 padding 6px 15px, header gen button inline row (flex-direction:row, min-height 34)
 - Cache: p082-picklist-pack.js?v=20261022k - CDP: title="PickList To Pack", header 49px
+
+## P082 Tighter Gap Below Title (2026-10-22)
+
+- Gap below H2 reduced: .p082-panel-header padding 4px 15px 2px, .p082-res-tables padding 8px 15px gap 12, .p082-app gap 10
+- Cache: p082-picklist-pack.js?v=20261022l - CDP: header 43px, gap below title 8px
