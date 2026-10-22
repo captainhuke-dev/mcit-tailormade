@@ -735,3 +735,10 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - 3 zone tables (Zone 01 / Zone SparePart / Zone QC) now always visible on the panel — no more display:none before search (removed the show/hide toggle in render + HTML)
 - Cache: p082-picklist-pack.js?v=20261022f — CDP 5/5 (visible before search with 0 rows, rows fill after search)
+
+## P082 Search SQL = User Version (2026-10-22)
+
+- api/p082_search.php rewritten to the user's exact SQL: all 3 tables use MIHstatus=? + MIHtype='IS' + MILcut=-1 + MIHcancel=0 + MILvCol2 first-char IN ('a'..'k'); NO MILsto='01', NO SBLqty — qty = SUM(MILquan/MILconv)
+- Zone 01: + LEFT JOIN JOB_TransportRoute, NOT IN (sp UNION bat), NOT LIKE '%SP%' / Zone SparePart: IN tb_GroupSparepart(Active) OR LIKE '%SP%' / Zone QC: IN tb_GroupBattery(Active)
+- JS: qty column reads r.qty (was r.SBLqty)
+- Cache: p082-picklist-pack.js?v=20261022g — CDP 5/5 (status 43: 14/4/0 = 18 rows; status 6/17/42/50-55 = 0 rows — data currently has colv2 a-k only in status 43)
