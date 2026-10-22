@@ -742,3 +742,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Zone 01: + LEFT JOIN JOB_TransportRoute, NOT IN (sp UNION bat), NOT LIKE '%SP%' / Zone SparePart: IN tb_GroupSparepart(Active) OR LIKE '%SP%' / Zone QC: IN tb_GroupBattery(Active)
 - JS: qty column reads r.qty (was r.SBLqty)
 - Cache: p082-picklist-pack.js?v=20261022g — CDP 5/5 (status 43: 14/4/0 = 18 rows; status 6/17/42/50-55 = 0 rows — data currently has colv2 a-k only in status 43)
+
+## P082 Generate -> A4 Report Modal (2026-10-22)
+
+- สร้างเอกสาร button (was stub/toast) now works - clone C# `demo/file_ref/Tailor_Made/AppPickList/frm_PickListToPack.cs`
+- `api/p082_generate.php` (NEW): POST {connectionId, status} -> 3 sections via `getPackFilter` (sp/qc/z01, clone C# getFilter 4-param: MILvCol2 a-k, sp=IN tb_GroupSparepart OR LIKE %SP%, qc=IN tb_GroupBattery, z01=NOT IN both + NOT LIKE %SP%) + `grandTotal` (clone C# getTotalStk: STKconv1/STKunit1-5, GrandTotal + uname). Returns sections:[{key,items:[{stk,desc1,sto,grand,unit,rows:[{name,contact,vnos,date,qty,unit}]}]}]
+- Modal A4 report (clone P083 pattern): overlay + iframe srcdoc + zoom 50-200% (25% steps) + print + Esc. `reportDocHtml` builds the A4 doc (THSarabunNew, @page A4 margin 30pt 20pt, table 7col 70/220/70/70/60/30/35pt, grow row = รหัส + ชื่อสินค้า / grand total / [sto], page footer หน้่า N). `doGenerate` maps API sections -> sectionHtml, opens modal
+- 3 sections in C# order: Zone SparePart (page 1) / Zone QC (page 2) / Zone 01 (page 3); titles `PickList [To Pack][Zone SparePart|QC|01]`
+- JS: state += zoom/escBound/paperHtml/sections/products/filters; API.generate; copied from P083: fmtDate/fmtStamp/machineName/reportDocHtml/openReport/setZoomLevel/applyZoom/closeReport (renamed p083->p082); fresh: sectionTable/sectionHtml/doGenerate; rep-* CSS added to array
+- Cache: p082-picklist-pack.js?v=20261022i - CDP: status 65 (129 rows) -> modal opens (flex), 12 pages (Zone 01 112 items paginate), 3 titles, thead 6 headers correct, 129 grow rows, footer หน้่า 1
+- NOTE: test data now in status **65 (65-Test)** = 129 rows (sp 16 / qc 1 / z01 112); status 43/6/17/etc = 0 (user moved data to 65)
