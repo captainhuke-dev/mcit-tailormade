@@ -1084,6 +1084,20 @@
       `;
     }
 
+    // P079: PickList Marketplace
+    if (programId === "P079") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p079Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P082: PickList To Pack
     if (programId === "P082") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1805,6 +1819,12 @@
     if (page.type === "program" && page.programId === "P080" && window.P080PickListQC) {
       const root = document.getElementById("p080Root");
       if (root) window.P080PickListQC.mount(root);
+    }
+
+    // P079: mount PickList Marketplace app
+    if (page.type === "program" && page.programId === "P079" && window.P079Marketplace) {
+      const root = document.getElementById("p079Root");
+      if (root) window.P079Marketplace.mount(root);
     }
 
     // P082: mount PickList To Pack app

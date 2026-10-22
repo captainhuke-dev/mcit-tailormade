@@ -1,0 +1,363 @@
+
+/* P079 - PickList Marketplace (UI only - clone demo/P079_demo.html)
+ * IIFE - window.P079Marketplace = { mount }
+ * UI clone demo: launcher (doc date range + head date + status 27 fixed + customer group + generate)
+ *   + summary 4 cards + panel paper (grouped product rows)
+ * Data = mock from demo (no API yet)
+ */
+(function () {
+  "use strict";
+
+  var GROUP_INFO = {
+    jam: { label: "EC-Ecom-(แยม)", cls: "jam" },
+    beer: { label: "EC-Ecom-(เบียร์)", cls: "beer" },
+    mkt: { label: "EC-Ecom-MKT", cls: "mkt" }
+  };
+
+  var CAL = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>';
+  var CHEV = '<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
+  var DOC_ICON = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"></path></svg>';
+  var BOX_ICON = '<svg viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="M3.3 7 12 12l8.7-5M12 22V12"></path></svg>';
+  var CHART_ICON = '<svg viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M18 17V9M13 17V5M8 17v-3"></path></svg>';
+  var USERS_ICON = '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+  var PRINT_ICON = '<svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16"></path><rect x="6" y="14" width="12" height="8"></rect></svg>';
+  var INBOX_ICON = '<svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>';
+  var TABLE_ICON = '<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path></svg>';
+
+  var GROUP_FILTER_LABELS = {
+    all: "EC-Ecom-ทั้งหมด",
+    jam: "EC-Ecom-(แยม)",
+    beer: "EC-Ecom-(เบียร์)",
+    mkt: "EC-Ecom-MKT"
+  };
+
+  var MOCK_ORDERS = [
+      { document: "MKTN6910-0101", date: "2026-10-19", group: "jam", platform: "Shopee", customer: "Shopee - คุณสมชาย ใจดี", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 2, unit: "Ea" },
+      { document: "MKTN6910-0102", date: "2026-10-19", group: "jam", platform: "Lazada", customer: "Lazada - คุณมาลี สุขสบาย", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 1, unit: "Ea" },
+      { document: "MKTN6910-0108", date: "2026-10-20", group: "beer", platform: "TikTok", customer: "TikTok - คุณวิชัย รักดี", productCode: "10360018", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-12Ah [6Ea/CT]", qty: 3, unit: "Ea" },
+      { document: "MKTN6910-0111", date: "2026-10-20", group: "beer", platform: "Shopee", customer: "Shopee - คุณนภา แสงทอง", productCode: "10010246", productName: "กรองแสง-3เข็ม(ไก่ชน-MCT) 80% ดำ 2*90m [Ea]", qty: 5, unit: "Ea" },
+      { document: "MKTN6910-0115", date: "2026-10-21", group: "mkt", platform: "Lazada", customer: "Lazada - ร้านพิมพ์ใจ", productCode: "10010246", productName: "กรองแสง-3เข็ม(ไก่ชน-MCT) 80% ดำ 2*90m [Ea]", qty: 10, unit: "Ea" },
+      { document: "MKTN6910-0118", date: "2026-10-21", group: "mkt", platform: "Shopee", customer: "Shopee - คุณประเสริฐ มั่งมี", productCode: "10010378", productName: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*100m", qty: 4, unit: "Ea" },
+      { document: "MKTN6910-0121", date: "2026-10-22", group: "jam", platform: "TikTok", customer: "TikTok - คุณอรทัย ดีเลิศ", productCode: "10010378", productName: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*100m", qty: 6, unit: "Ea" },
+      { document: "MKTN6910-0124", date: "2026-10-22", group: "beer", platform: "Lazada", customer: "Lazada - คุณธีรพงษ์ ศรีสุข", productCode: "11650095", productName: "รองเท้าบู๊ทตายาว 11(A2900) [12Pair/Carton]", qty: 2, unit: "Carton" },
+      { document: "MKTN6910-0126", date: "2026-10-22", group: "mkt", platform: "Shopee", customer: "Shopee - คุณกานดา เพชรงาม", productCode: "11650095", productName: "รองเท้าบู๊ทตายาว 11(A2900) [12Pair/Carton]", qty: 1, unit: "Carton" },
+      { document: "MKTN6910-0130", date: "2026-10-23", group: "jam", platform: "Shopee", customer: "Shopee - คุณสุรชัย พัฒนา", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 2, unit: "Ea" }
+  ];
+
+  var root = null;
+  var el = {};
+  var state = { filters: null, rows: [], loading: false };
+
+  var CSS = [
+    ".p079-app{display:flex;flex-direction:column;gap:12px}",
+    ".p079-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
+    ".p079-launcher-body{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:14px 16px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
+    ".p079-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
+    ".p079-field.span-2{grid-column:span 2}",
+    ".p079-date-range{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center}",
+    ".p079-date-separator{color:#475569;font-size:12px;font-weight:700}",
+    ".p079-input-wrap{position:relative}",
+    ".p079-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}",
+    ".p079-input-wrap input,.p079-input-wrap select{width:100%;height:44px;padding:0 36px 0 12px;color:#172033;border:1px solid #dbe3ef;border-radius:10px;outline:none;background:#fff;font-size:13px}",
+    ".p079-input-wrap select{cursor:pointer;appearance:none}",
+    ".p079-input-wrap select:disabled{color:#475569;background:#eef2f7;cursor:not-allowed}",
+    ".p079-input-wrap input:focus,.p079-input-wrap select:focus{border-color:#60a5fa;box-shadow:0 0 0 4px rgba(96,165,250,0.14)}",
+    ".p079-generate-button{display:inline-flex;height:44px;align-items:center;justify-content:center;gap:9px;padding:0 24px;color:#fff;border:0;border-radius:11px;background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 9px 20px rgba(37,99,235,0.26);font-size:14px;font-weight:700;white-space:nowrap;transition:0.16s ease}",
+    ".p079-generate-button:hover{transform:translateY(-2px);filter:brightness(1.06)}",
+    ".p079-generate-button svg{width:19px;height:19px}",
+    ".p079-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:12px}",
+    ".p079-summary-card{display:flex;min-width:0;align-items:center;gap:12px;padding:13px 15px;border:1px solid #dbe3ef;border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,0.04)}",
+    ".p079-summary-icon{display:grid;width:42px;height:42px;flex:0 0 auto;place-items:center;color:#2563eb;border-radius:12px;background:#eff6ff}",
+    ".p079-summary-card.green .p079-summary-icon{color:#059669;background:#ecfdf5}",
+    ".p079-summary-card.orange .p079-summary-icon{color:#d97706;background:#fffbeb}",
+    ".p079-summary-card.purple .p079-summary-icon{color:#7c3aed;background:#f5f3ff}",
+    ".p079-summary-text{min-width:0}",
+    ".p079-summary-text span{display:block;color:#64748b;font-size:10px}",
+    ".p079-summary-text strong{display:block;overflow:hidden;margin-top:2px;font-size:17px;text-overflow:ellipsis;white-space:nowrap}",
+    ".p079-panel{display:flex;min-height:440px;flex:1;flex-direction:column;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.08)}",
+    ".p079-panel-header{display:flex;min-height:56px;align-items:center;justify-content:space-between;gap:12px;padding:8px 15px;border-bottom:1px solid #dbe3ef}",
+    ".p079-panel-heading{display:flex;min-width:0;align-items:center;gap:10px}",
+    ".p079-panel-icon{display:grid;width:36px;height:36px;flex:0 0 auto;place-items:center;color:#2563eb;border-radius:10px;background:#eff6ff}",
+    ".p079-panel-title h2{margin:0;overflow:hidden;font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}",
+    ".p079-panel-title p{overflow:hidden;margin:1px 0 0;color:#64748b;font-size:11px;text-overflow:ellipsis;white-space:nowrap}",
+    ".p079-panel-actions{display:flex;align-items:center;gap:8px}",
+    ".p079-print-button{display:inline-flex;height:36px;align-items:center;gap:6px;padding:0 14px;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:9px;background:#eff6ff;font-size:12px;font-weight:700}",
+    ".p079-print-button:hover{color:#fff;background:#2563eb}",
+    ".p079-print-button svg{width:15px;height:15px}",
+    ".p079-badge{padding:5px 10px;color:#1d4ed8;border-radius:999px;background:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap}",
+    ".p079-document-area{min-height:0;flex:1;overflow:auto;padding:18px;background:#eef2f7}",
+    ".p079-paper{width:100%;max-width:1100px;margin:0 auto;padding:26px 30px 34px;background:#fff;box-shadow:0 10px 28px rgba(15,23,42,0.12)}",
+    ".p079-paper-title{font-size:19px;text-align:center}",
+    ".p079-paper-meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin:12px 0 14px;color:#475569;font-size:12px}",
+    ".p079-paper-meta strong{color:#0f172a}",
+    ".p079-paper-table{width:100%;border-collapse:collapse}",
+    ".p079-paper-table thead th{padding:8px 10px;color:#1d4ed8;border-top:2px solid #1d4ed8;border-bottom:2px solid #1d4ed8;background:#eff6ff;font-size:12px;font-weight:700;text-align:left;white-space:nowrap}",
+    ".p079-paper-table th.center,.p079-paper-table td.center{text-align:center}",
+    ".p079-product-row td{padding:9px 10px 7px;border-bottom:1px solid #cbd5e1;background:#f1f5f9;font-size:13px;font-weight:700}",
+    ".p079-order-row td{padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:12.5px}",
+    ".p079-order-row:hover td{background:#f8fbff}",
+    ".p079-doc-number{color:#1d4ed8;font-family:Arial,sans-serif;font-weight:700}",
+    ".p079-qty{font-family:Arial,sans-serif;font-weight:700}",
+    ".p079-group-tag{display:inline-flex;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}",
+    ".p079-group-tag.jam{color:#b45309;background:#fef3c7}",
+    ".p079-group-tag.beer{color:#047857;background:#d1fae5}",
+    ".p079-group-tag.mkt{color:#6d28d9;background:#ede9fe}",
+    ".p079-platform-tag{display:inline-flex;padding:2px 8px;color:#334155;border-radius:6px;background:#e2e8f0;font-size:11px;font-weight:700}",
+    ".p079-empty-state{display:flex;min-height:320px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
+    ".p079-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
+    "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}.p079-field.span-2{grid-column:1/-1}.p079-generate-button{grid-column:1/-1}.p079-summary-grid{grid-template-columns:repeat(2,1fr)}}",
+    "@media (max-width:680px){.p079-launcher-body,.p079-summary-grid{grid-template-columns:1fr}.p079-date-range{grid-template-columns:1fr}.p079-date-separator{display:none}.p079-panel-header{align-items:flex-start;flex-direction:column}.p079-paper{padding:16px}}"
+  ].join("\n");
+
+  function esc(v) {
+    return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function pad(n) {
+    return String(n).padStart(2, "0");
+  }
+
+  function fmtDate(v) {
+    var p = v.split("-");
+    return p[2] + "/" + p[1] + "/" + (Number(p[0]) + 543);
+  }
+
+  function fmtStamp(d) {
+    return pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + "/" + (d.getFullYear() + 543) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
+  }
+
+  function isoToday() {
+    var d = new Date();
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+
+  function isoDaysAgo(n) {
+    var d = new Date();
+    d.setDate(d.getDate() - n);
+    return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  }
+
+  function filterOrders(f) {
+    return MOCK_ORDERS.filter(function (o) {
+      var md = (!f.docDateFrom || o.date >= f.docDateFrom) && (!f.docDateTo || o.date <= f.docDateTo);
+      var mg = f.group === "all" || o.group === f.group;
+      return md && mg;
+    });
+  }
+
+  function groupByProduct(list) {
+    var map = {};
+    var order = [];
+    list.forEach(function (o) {
+      if (!map[o.productCode]) {
+        map[o.productCode] = { productCode: o.productCode, productName: o.productName, unit: o.unit, totalQty: 0, orders: [] };
+        order.push(o.productCode);
+      }
+      var p = map[o.productCode];
+      p.totalQty += o.qty;
+      p.orders.push(o);
+    });
+    return order.sort(function (a, b) { return a.localeCompare(b); }).map(function (k) { return map[k]; });
+  }
+
+  function html() {
+    return "" +
+    "<div class=\"p079-app\">" +
+      "<section class=\"p079-launcher-card\">" +
+        "<form class=\"p079-launcher-body\" id=\"p079Form\">" +
+          "<div class=\"p079-field span-2\">" +
+            "<label>" + "วันที่เอกสาร" + "</label>" +
+            "<div class=\"p079-date-range\">" +
+              "<div class=\"p079-input-wrap\"><input id=\"p079DocFrom\" type=\"date\" value=\"" + isoDaysAgo(3) + "\">" + CAL + "</div>" +
+              "<span class=\"p079-date-separator\">" + "ถึง" + "</span>" +
+              "<div class=\"p079-input-wrap\"><input id=\"p079DocTo\" type=\"date\" value=\"" + isoToday() + "\">" + CAL + "</div>" +
+            "</div>" +
+          "</div>" +
+          "<div class=\"p079-field\">" +
+            "<label for=\"p079HeadDate\">" + "วันที่หัวเอกสาร" + "</label>" +
+            "<div class=\"p079-input-wrap\"><input id=\"p079HeadDate\" type=\"date\" value=\"" + isoToday() + "\">" + CAL + "</div>" +
+          "</div>" +
+          "<div class=\"p079-field\"></div>" +
+          "<div class=\"p079-field span-2\">" +
+            "<label for=\"p079Status\">" + "สถานะใบแจ้งหนี้" + "</label>" +
+            "<div class=\"p079-input-wrap\"><select id=\"p079Status\" disabled><option value=\"27\" selected>" + "27-Marketplace" + "</option></select>" + CHEV + "</div>" +
+          "</div>" +
+          "<div class=\"p079-field span-2\">" +
+            "<label for=\"p079Group\">" + "กลุ่มลูกค้า" + "</label>" +
+            "<div class=\"p079-input-wrap\"><select id=\"p079Group\">" +
+              "<option value=\"all\" selected>" + "EC-Ecom-ทั้งหมด" + "</option>" +
+              "<option value=\"jam\">" + "EC-Ecom-(แยม)" + "</option>" +
+              "<option value=\"beer\">" + "EC-Ecom-(เบียร์)" + "</option>" +
+              "<option value=\"mkt\">" + "EC-Ecom-MKT" + "</option>" +
+            "</select>" + CHEV + "</div>" +
+          "</div>" +
+          "<button class=\"p079-generate-button\" id=\"p079Gen\" type=\"submit\">" + DOC_ICON + "สร้างเอกสาร" + "</button>" +
+        "</form>" +
+      "</section>" +
+      "<section class=\"p079-summary-grid\">" +
+        "<div class=\"p079-summary-card\"><div class=\"p079-summary-icon\">" + DOC_ICON + "</div><div class=\"p079-summary-text\"><span>" + "จำนวนเอกสาร" + "</span><strong id=\"p079SumOrd\">0 " + "ใบ" + "</strong></div></div>" +
+        "<div class=\"p079-summary-card green\"><div class=\"p079-summary-icon\">" + BOX_ICON + "</div><div class=\"p079-summary-text\"><span>" + "จำนวนสินค้า" + "</span><strong id=\"p079SumProd\">0 " + "รายการ" + "</strong></div></div>" +
+        "<div class=\"p079-summary-card orange\"><div class=\"p079-summary-icon\">" + CHART_ICON + "</div><div class=\"p079-summary-text\"><span>" + "จำนวน" + "</span><strong id=\"p079SumQty\">0</strong></div></div>" +
+        "<div class=\"p079-summary-card purple\"><div class=\"p079-summary-icon\">" + USERS_ICON + "</div><div class=\"p079-summary-text\"><span>" + "กลุ่มลูกค้า" + "</span><strong id=\"p079SumGrp\">" + "EC-Ecom-ทั้งหมด" + "</strong></div></div>" +
+      "</section>" +
+      "<section class=\"p079-panel\">" +
+        "<div class=\"p079-panel-header\">" +
+          "<div class=\"p079-panel-heading\">" +
+            "<div class=\"p079-panel-icon\">" + TABLE_ICON + "</div>" +
+            "<div class=\"p079-panel-title\">" +
+              "<h2>" + "เอกสาร PickList Marketplace" + "</h2>" +
+              "<p id=\"p079Subtitle\">" + "ยังไม่ได้สร้างเอกสาร" + "</p>" +
+            "</div>" +
+          "</div>" +
+          "<div class=\"p079-panel-actions\">" +
+            "<button class=\"p079-print-button\" id=\"p079Print\" type=\"button\">" + PRINT_ICON + "พิมพ์เอกสาร" + "</button>" +
+            "<span class=\"p079-badge\" id=\"p079Badge\">0 " + "รายการ" + "</span>" +
+          "</div>" +
+        "</div>" +
+        "<div class=\"p079-document-area\">" +
+          "<div class=\"p079-empty-state\" id=\"p079Empty\">" +
+            "<div>" + INBOX_ICON +
+              "<strong id=\"p079EmptyStrong\">" + "ยังไม่มีเอกสารที่สร้าง" + "</strong>" +
+              "<p style=\"margin-top:5px;font-size:11px\">" + "กำหนดเงื่อนไขด้านบน แล้วกด \"สร้างเอกสาร\"" + "</p>" +
+            "</div>" +
+          "</div>" +
+          "<article class=\"p079-paper\" id=\"p079Paper\" style=\"display:none\">" +
+            "<h1 class=\"p079-paper-title\">PickList [Marketplace]</h1>" +
+            "<div class=\"p079-paper-meta\">" +
+              "<div>" + "สถานะ" + " : <strong>" + "27-Marketplace" + "</strong></div>" +
+              "<div>" + "กลุ่มลูกค้า" + " : <strong id=\"p079MetaGrp\">-</strong></div>" +
+              "<div>" + "วันที่เอกสาร" + " : <strong id=\"p079MetaDoc\">-</strong></div>" +
+              "<div>" + "วันที่หัวเอกสาร" + " : <strong id=\"p079MetaHead\">-</strong></div>" +
+              "<div>" + "พิมพ์เมื่อ" + " : <strong id=\"p079MetaPrint\">-</strong></div>" +
+            "</div>" +
+            "<table class=\"p079-paper-table\">" +
+              "<thead><tr>" +
+                "<th style=\"width:11%\">" + "กลุ่มลูกค้า" + "</th>" +
+                "<th style=\"width:9%\">" + "แพลตฟอร์ม" + "</th>" +
+                "<th>" + "ชื่อลูกค้า" + "</th>" +
+                "<th style=\"width:15%\">" + "เลขที่ใบสำคัญ" + "</th>" +
+                "<th class=\"center\" style=\"width:11%\">" + "วันที่" + "</th>" +
+                "<th class=\"center\" style=\"width:9%\">" + "จำนวน" + "</th>" +
+                "<th class=\"center\" style=\"width:8%\">" + "หน่วย" + "</th>" +
+              "</tr></thead>" +
+              "<tbody id=\"p079Body\"></tbody>" +
+            "</table>" +
+          "</article>" +
+        "</div>" +
+      "</section>" +
+    "</div>";
+  }
+
+  function renderDocument(filters) {
+    var list = filterOrders(filters);
+    var products = groupByProduct(list);
+
+    el.badge.textContent = list.length + " " + "รายการ";
+    el.subtitle.textContent = GROUP_FILTER_LABELS[filters.group] + " \u00b7 " + "วันที่เอกสาร" + " " + fmtDate(filters.docDateFrom) + " " + "ถึง" + " " + fmtDate(filters.docDateTo);
+
+    var docs = {};
+    list.forEach(function (o) { docs[o.document] = 1; });
+    el.sumOrd.textContent = Object.keys(docs).length + " " + "ใบ";
+    el.sumProd.textContent = products.length + " " + "รายการ";
+    el.sumQty.textContent = list.reduce(function (s, o) { return s + o.qty; }, 0);
+    el.sumGrp.textContent = GROUP_FILTER_LABELS[filters.group];
+
+    if (!list.length) {
+      el.empty.style.display = "flex";
+      el.emptyStrong.textContent = "ไม่พบรายการตามเงื่อนไขที่เลือก";
+      el.paper.style.display = "none";
+      state.rows = [];
+      return;
+    }
+
+    el.empty.style.display = "none";
+    el.paper.style.display = "block";
+
+    el.metaGrp.textContent = GROUP_FILTER_LABELS[filters.group];
+    el.metaDoc.textContent = fmtDate(filters.docDateFrom) + " - " + fmtDate(filters.docDateTo);
+    el.metaHead.textContent = fmtDate(filters.headDate);
+    el.metaPrint.textContent = fmtStamp(new Date());
+
+    el.body.innerHTML = products.map(function (p) {
+      var header = "<tr class=\"p079-product-row\"><td colspan=\"5\">" + esc(p.productCode) + ", " + esc(p.productName) + "</td><td class=\"center p079-qty\">" + p.totalQty + "</td><td class=\"center\">" + esc(p.unit) + "</td></tr>";
+      var rows = p.orders.map(function (o) {
+        var info = GROUP_INFO[o.group];
+        return "<tr class=\"p079-order-row\">" +
+          "<td><span class=\"p079-group-tag " + info.cls + "\">" + esc(info.label.replace("EC-Ecom-", "")) + "</span></td>" +
+          "<td><span class=\"p079-platform-tag\">" + esc(o.platform) + "</span></td>" +
+          "<td>" + esc(o.customer) + "</td>" +
+          "<td class=\"p079-doc-number\">" + esc(o.document) + "</td>" +
+          "<td class=\"center\">" + fmtDate(o.date) + "</td>" +
+          "<td class=\"center p079-qty\">" + o.qty + "</td>" +
+          "<td class=\"center\">" + esc(o.unit) + "</td>" +
+        "</tr>";
+      }).join("");
+      return header + rows;
+    }).join("");
+    state.rows = list;
+  }
+
+  function doGenerate() {
+    if (state.loading) return;
+    state.loading = true;
+    var f = {
+      docDateFrom: el.docFrom.value,
+      docDateTo: el.docTo.value,
+      headDate: el.headDate.value,
+      group: el.group.value
+    };
+    if (!f.docDateFrom || !f.docDateTo || f.docDateFrom > f.docDateTo) {
+      state.loading = false;
+      return;
+    }
+    state.filters = f;
+    renderDocument(f);
+    state.loading = false;
+  }
+
+  function doPrint() {
+    if (el.paper.style.display === "none") {
+      alert("กรุณาสร้างเอกสารก่อนพิมพ์");
+      return;
+    }
+    window.print();
+  }
+
+  function mount(mountEl) {
+    root = mountEl;
+    root.innerHTML = "<style>" + CSS + "</style>" + html();
+    el = {
+      form: document.getElementById("p079Form"),
+      docFrom: document.getElementById("p079DocFrom"),
+      docTo: document.getElementById("p079DocTo"),
+      headDate: document.getElementById("p079HeadDate"),
+      status: document.getElementById("p079Status"),
+      group: document.getElementById("p079Group"),
+      gen: document.getElementById("p079Gen"),
+      print: document.getElementById("p079Print"),
+      badge: document.getElementById("p079Badge"),
+      subtitle: document.getElementById("p079Subtitle"),
+      sumOrd: document.getElementById("p079SumOrd"),
+      sumProd: document.getElementById("p079SumProd"),
+      sumQty: document.getElementById("p079SumQty"),
+      sumGrp: document.getElementById("p079SumGrp"),
+      empty: document.getElementById("p079Empty"),
+      emptyStrong: document.getElementById("p079EmptyStrong"),
+      paper: document.getElementById("p079Paper"),
+      body: document.getElementById("p079Body"),
+      metaGrp: document.getElementById("p079MetaGrp"),
+      metaDoc: document.getElementById("p079MetaDoc"),
+      metaHead: document.getElementById("p079MetaHead"),
+      metaPrint: document.getElementById("p079MetaPrint")
+    };
+    el.form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      doGenerate();
+    });
+    el.print.addEventListener("click", doPrint);
+
+    doGenerate();
+  }
+
+  window.P079Marketplace = { mount: mount };
+})();
