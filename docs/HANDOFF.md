@@ -774,3 +774,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - User: P082 ready - data/modules.php: P082 status=ready + ready list updated (P082 added after P081)
 - P082 full: search (user SQL, 3 zones a-k, qty=SUM) + empty search clears 3 tables + grp settings sp/bat + status 65-Test + generate -> A4 report modal (clone C# frm_PickListToPack) + compact header/title
 - Cache: p082-picklist-pack.js?v=20261022l
+
+## P082 Remove 65-Test Status (2026-10-22)
+
+- User: remove 65 from status dropdown (test data done) - STATUS_OPTIONS back to 12 (last = 55-PL ถอนั BKK)
+- Cache: p082-picklist-pack.js?v=20261022m - CDP: 12 options, no 65
