@@ -861,6 +861,20 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ## P079 Title + Remove Print Button (2026-10-23)
 
+---
+
+## P079 Report Modal (PDF ตาม C#)
+
+- ปุ่ม สร้างเอกสาร = search + เปิด report modal (A4) ตาม C# frm_PickListMarketplaceGUI.cs
+- report API แยก: `api/p079_report.php` (2 query: header group by stk+sto + detail ทั้งหมด; รวม total ใน PHP; ~2s)
+- modal: title ` Pick List Marketplace`, ` ประจำวันที่ <dd MMM yyyy พ.ศ.>`, ตาราง 1 (header ซ้ำ + gray row ซ้ำ ต่อ STO), cols รหัส/ชื่อสินค้า | STO | ชื่อลูกค้า | เลขที่ | วันที่ | ปริมาณ | หน่วยนับ + ` รวม ` row
+- footer: `พิมพ์เมื่อ d/m/Y H:i  โดย : <machine>` (machine = php_uname n)
+- ปุ่ม พิมพ์เอกสาร ใน modal head = window.print() (@media print = sheet เท่า A4) + ปิด = X
+- font THSarabunNew + Bold (assets/fonts/)
+- cache: p079-marketplace.js 20261022p
+- CDP PASS: modal show 8s (loading), sheet 1289 rows, Thai clean, total = sum detail 309/309
+
+
 - User: panel h2 "เอกสาร PickList Marketplace" -> "PickList Marketplace"; remove print button
 - Removed: p079Print button + doPrint() + el.print ref/listener + .p079-print-button CSS + PRINT_ICON
 - Cache: p079-marketplace.js?v=20261022o - CDP: h2="PickList Marketplace", printBtnExists=false, actions=[gen, badge] PASS

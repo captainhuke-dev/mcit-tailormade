@@ -11,6 +11,8 @@
 
   var CAL = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>';
   var SEARCH_ICON = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>';
+  var CLOSE_ICON = '<svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>';
+  var PRINT_ICON = '<svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16"></path><rect x="6" y="14" width="12" height="8"></rect></svg>';
   var CHEV = '<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
   var DOC_ICON = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"></path></svg>';
 
@@ -28,7 +30,7 @@
 
 
   var MAC5_CONNECTION_ID = "c1788406814359";
-  var API = { search: "api/p079_search.php" };
+  var API = { search: "api/p079_search.php", report: "api/p079_report.php" };
 
   function apiPost(url, data) {
     return fetch(url, {
@@ -105,6 +107,33 @@
     ".p079-search-button:disabled{opacity:0.7;transform:none}",
     ".p079-search-button.loading svg{animation:p079spin 1s linear infinite}",
     "@keyframes p079spin{to{transform:rotate(360deg)}}",
+    ".p079-modal{position:fixed;inset:0;z-index:300;display:none;flex-direction:column;background:rgba(15,23,42,0.55)}",
+    ".p079-modal.show{display:flex}",
+    ".p079-modal-head{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;color:#fff;background:#0f172a;font-size:13px;font-weight:700}",
+    ".p079-modal-close{display:grid;width:32px;height:32px;place-items:center;color:#fff;border:0;border-radius:8px;background:transparent;font-size:18px;cursor:pointer}",
+    ".p079-modal-close:hover{background:rgba(255,255,255,0.15)}",
+    ".p079-modal-print{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;color:#fff;border:0;border-radius:8px;background:#2563eb;font-size:12px;font-weight:700;cursor:pointer}",
+    ".p079-modal-print:hover{background:#1d4ed8}",
+    ".p079-modal-print svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
+    ".p079-modal-body{flex:1;overflow:auto;padding:16px 0 24px;background:#e2e8f0}",
+    ".p079-sheet{box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto;padding:20pt 20pt 25pt 10pt;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.25);font-family:THSarabunNew,TH Sarabun New,sans-serif;color:#000}",
+    ".p079-sheet-title{margin:0 0 2px;text-align:center;font-size:18px;font-weight:700}",
+    ".p079-sheet-asof{margin:0 0 4px;text-align:center;font-size:15px;font-weight:700}",
+    ".p079-sheet-spacer{height:6px}",
+    ".p079-rt2{table-layout:fixed;width:550px;margin:0 auto;border-collapse:collapse;font-size:14px}",
+    ".p079-rt2 td{padding:3px 5px;border:1px solid #000;vertical-align:middle;word-break:break-word}",
+    ".p079-rt2 .cap{font-size:12px;font-weight:400}",
+    ".p079-rt2 .h{font-weight:700;text-align:center;background:#fff}",
+    ".p079-rt2 .gh{font-weight:700;background:#f0f0f0}",
+    ".p079-rt2 .gh .prod{font-weight:400}",
+    ".p079-rt2 .c{text-align:center}",
+    ".p079-rt2 .r{text-align:right}",
+    ".p079-rt2 .tot{font-weight:700}",
+    ".p079-rt2 .sto{font-weight:700;text-align:center;vertical-align:middle}",
+    ".p079-rt2 .num{font-family:Arial,sans-serif}",
+    ".p079-modal-loading{display:flex;flex-direction:column;align-items:center;gap:10px;padding:60px 0;color:#475569;font-size:13px;font-weight:600}",
+    ".p079-modal-loading svg{width:34px;height:34px;color:#2563eb;animation:p079spin 1s linear infinite}",
+    "@media print{@page{size:A4;margin:20pt 20pt 25pt 10pt}body *{visibility:hidden}.p079-modal,.p079-modal *{visibility:visible}.p079-modal{position:absolute;inset:0;display:block;background:#fff}.p079-modal-head{display:none}.p079-modal-body{overflow:visible;padding:0;background:#fff}.p079-sheet{width:auto;min-height:0;margin:0;padding:0;box-shadow:none}}"
   ].join("\n");
 
 
@@ -203,6 +232,10 @@
         "</div>" +
       "</section>" +
       "<div class=\"p079-toast\" id=\"p079Toast\"><span id=\"p079ToastMsg\"></span></div>" +
+      "<div class=\"p079-modal\" id=\"p079Modal\">" +
+        "<div class=\"p079-modal-head\"><span>" + "Pick List Marketplace" + "</span><span style=\"display:inline-flex;gap:8px\"><button type=\"button\" class=\"p079-modal-print\" id=\"p079ModalPrint\">" + PRINT_ICON + "พิมพ์เอกสาร" + "</button><button type=\"button\" class=\"p079-modal-close\" id=\"p079ModalClose\">" + CLOSE_ICON + "</button></span></div>" +
+        "<div class=\"p079-modal-body\" id=\"p079ModalBody\"></div>" +
+      "</div>" +
     "</div>";
   }
 
@@ -242,6 +275,7 @@
         }).join("");
         el.subtitle.textContent = "พบ " + d.count + " รายการ";
         showToast("พบ " + d.count + " รายการ");
+        openReportModal();
       })
       .catch(function (e) {
         showToast("ค้นหาไม่สำเร็จ: " + e.message);
@@ -258,6 +292,82 @@
   }
 
 
+  function pad2(v) {
+    return (v < 10 ? "0" : "") + v;
+  }
+
+  function fmtThaiDate(iso) {
+    var p = iso.slice(0, 10).split("-");
+    return pad2(p[2]) + "/" + pad2(p[1]) + "/" + (Number(p[0]) + 543);
+  }
+
+  function fmtAsOf() {
+    var d = new Date();
+    var M = ["\u0e21\u0e01\u0e23\u0e32\u0e04\u0e21", "\u0e01\u0e38\u0e21\u0e20\u0e32\u0e1e\u0e31\u0e19\u0e18\u0e4c", "\u0e21\u0e35\u0e19\u0e32\u0e04\u0e21", "\u0e40\u0e21\u0e29\u0e32\u0e22\u0e19", "\u0e1e\u0e24\u0e29\u0e20\u0e32\u0e04\u0e21", "\u0e21\u0e34\u0e16\u0e38\u0e19\u0e32\u0e22\u0e19", "\u0e01\u0e23\u0e01\u0e0e\u0e32\u0e04\u0e21", "\u0e2a\u0e34\u0e07\u0e2b\u0e32\u0e04\u0e21", "\u0e01\u0e31\u0e19\u0e22\u0e32\u0e22\u0e19", "\u0e15\u0e38\u0e25\u0e32\u0e04\u0e21", "\u0e1e\u0e24\u0e28\u0e08\u0e34\u0e01\u0e32\u0e22\u0e19", "\u0e18\u0e31\u0e19\u0e27\u0e32\u0e04\u0e21"];
+    return d.getDate() + " " + M[d.getMonth()] + " " + (d.getFullYear() + 543);
+  }
+
+  function fmtNum(v) {
+    var x = Number(v) || 0;
+    return x.toLocaleString("en-US", { minimumFractionDigits: 0, maximumFractionDigits: 2 });
+  }
+
+  function openReportModal() {
+    if (!state.rows.length) return;
+    el.modalBody.innerHTML = "<div class=\"p079-modal-loading\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 12a9 9 0 1 1-6.2-8.56\"></path></svg></div>";
+    el.modal.classList.add("show");
+    apiPost(API.report, { connectionId: MAC5_CONNECTION_ID, status: el.status.value, dateFrom: el.docFrom.value, dateTo: el.docTo.value, group: el.group.value })
+      .then(function (d) {
+        if (!d.ok) throw new Error(d.error);
+        el.modalBody.innerHTML = renderReport(d);
+      })
+      .catch(function (e) {
+        el.modalBody.innerHTML = "";
+        showToast("ค้นหาไม่สำเร็จ: " + e.message);
+      });
+  }
+
+  function renderReport(d) {
+    var t = "<div class=\"p079-sheet\">" +
+      "<h1 class=\"p079-sheet-title\">" + " Pick List Marketplace" + "</h1>" +
+      "<p class=\"p079-sheet-asof\">" + " ประจำวันที่ " + fmtAsOf() + "</p>" +
+      "<div class=\"p079-sheet-spacer\"></div>" +
+      "<table class=\"p079-rt2\"><colgroup>" +
+        "<col style=\"width:50px\"><col style=\"width:20px\"><col style=\"width:250px\"><col style=\"width:70px\"><col style=\"width:60px\"><col style=\"width:50px\"><col style=\"width:50px\">" +
+      "</colgroup><tbody>" +
+      "<tr><td colspan=\"7\" class=\"cap\">" + "พิมพ์เมื่อ " + d.printedAt + "  โดย : " + d.machine + "</td></tr>" +
+      "<tr>" +
+        "<td colspan=\"2\" class=\"h\">" + "รหัส,ชื่อสินค้า" + "</td>" +
+        "<td class=\"h\">" + "ชื่อลูกค้า" + "</td>" +
+        "<td class=\"h\">" + "เลขที่ใบแจ้งหนี้" + "</td>" +
+        "<td class=\"h\">" + "วันที่ใบแจ้งหนี้" + "</td>" +
+        "<td class=\"h\">" + "ปริมาณ" + "</td>" +
+        "<td class=\"h\">" + "หน่วยนับ" + "</td>" +
+      "</tr>";
+    d.headers.forEach(function (h) {
+      t += "<tr>" +
+        "<td colspan=\"4\" class=\"gh\"><span class=\"prod\">" + esc(h.stk) + "  " + esc(h.desc) + " " + esc(h.desc2) + "</span></td>" +
+        "<td class=\"gh c tot\">" + " รวม " + "</td>" +
+        "<td class=\"gh r tot num\">" + fmtNum(h.total) + "</td>" +
+        "<td class=\"gh\"></td>" +
+      "</tr>";
+      h.rows.forEach(function (r, idx) {
+        t += "<tr>";
+        if (idx === 0) {
+          t += "<td class=\"sto\" rowspan=\" + h.rows.length + \">" + esc(h.sto) + "</td>";
+        }
+        t += "<td colspan=\"2\">" + esc(r.cust) + "</td>" +
+          "<td class=\"c\">" + esc(r.doc) + "</td>" +
+          "<td class=\"c\">" + fmtThaiDate(r.date) + "</td>" +
+          "<td class=\"r num\">" + fmtNum(r.qty) + "</td>" +
+          "<td class=\"r\">" + esc(r.unit) + "</td>" +
+        "</tr>";
+      });
+    });
+    t += "</tbody></table></div>";
+    return t;
+  }
+
   function mount(mountEl) {
     root = mountEl;
     root.innerHTML = "<style>" + CSS + "</style>" + html();
@@ -267,6 +377,10 @@
       docTo: document.getElementById("p079DocTo"),
       status: document.getElementById("p079Status"),
       group: document.getElementById("p079Group"),
+      modal: document.getElementById("p079Modal"),
+      modalBody: document.getElementById("p079ModalBody"),
+      modalClose: document.getElementById("p079ModalClose"),
+      modalPrint: document.getElementById("p079ModalPrint"),
       search: document.getElementById("p079Search"),
       gen: document.getElementById("p079Gen"),
       badge: document.getElementById("p079Badge"),
@@ -282,6 +396,12 @@
       doSearch();
     });
     el.gen.addEventListener("click", doGenerate);
+    el.modalClose.addEventListener("click", function () {
+      el.modal.classList.remove("show");
+    });
+    el.modalPrint.addEventListener("click", function () {
+      window.print();
+    });
 
     doGenerate();
   }
