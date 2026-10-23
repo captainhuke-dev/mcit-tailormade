@@ -75,8 +75,6 @@
     ".p079-badge{padding:5px 10px;color:#1d4ed8;border-radius:999px;background:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap}",
     ".p079-document-area{min-height:0;flex:1;overflow:auto;padding:18px;background:#eef2f7}",
     ".p079-paper{width:100%;max-width:1100px;margin:0 auto;padding:26px 30px 34px;background:#fff;box-shadow:0 10px 28px rgba(15,23,42,0.12)}",
-    ".p079-paper-meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin:0 0 14px;color:#475569;font-size:12px}",
-    ".p079-paper-meta strong{color:#0f172a}",
     ".p079-empty-state{display:flex;min-height:320px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
     ".p079-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
     "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}}",
@@ -93,9 +91,6 @@
     return p[2] + "/" + p[1] + "/" + (Number(p[0]) + 543);
   }
 
-  function fmtStamp(d) {
-    return pad(d.getDate()) + "/" + pad(d.getMonth() + 1) + "/" + (d.getFullYear() + 543) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()) + ":" + pad(d.getSeconds());
-  }
 
   function isoToday() {
     var d = new Date();
@@ -171,13 +166,6 @@
             "</div>" +
           "</div>" +
           "<article class=\"p079-paper\" id=\"p079Paper\" style=\"display:none\">" +
-            "<div class=\"p079-paper-meta\">" +
-              "<div>" + "สถานะ" + " : <strong>" + "27-Marketplace" + "</strong></div>" +
-              "<div>" + "กลุ่มลูกค้า" + " : <strong id=\"p079MetaGrp\">-</strong></div>" +
-              "<div>" + "วันที่เอกสาร" + " : <strong id=\"p079MetaDoc\">-</strong></div>" +
-              "<div>" + "วันที่หัวเอกสาร" + " : <strong id=\"p079MetaHead\">-</strong></div>" +
-              "<div>" + "พิมพ์เมื่อ" + " : <strong id=\"p079MetaPrint\">-</strong></div>" +
-            "</div>" +
           "</article>" +
         "</div>" +
       "</section>" +
@@ -202,10 +190,6 @@
     el.empty.style.display = "none";
     el.paper.style.display = "block";
 
-    el.metaGrp.textContent = GROUP_FILTER_LABELS[filters.group];
-    el.metaDoc.textContent = fmtDate(filters.docDateFrom) + " - " + fmtDate(filters.docDateTo);
-    el.metaHead.textContent = fmtDate(isoToday());
-    el.metaPrint.textContent = fmtStamp(new Date());
 
     state.rows = list;
   }
@@ -251,10 +235,6 @@
       empty: document.getElementById("p079Empty"),
       emptyStrong: document.getElementById("p079EmptyStrong"),
       paper: document.getElementById("p079Paper"),
-      metaGrp: document.getElementById("p079MetaGrp"),
-      metaDoc: document.getElementById("p079MetaDoc"),
-      metaHead: document.getElementById("p079MetaHead"),
-      metaPrint: document.getElementById("p079MetaPrint")
     };
     el.form.addEventListener("submit", function (e) {
       e.preventDefault();
