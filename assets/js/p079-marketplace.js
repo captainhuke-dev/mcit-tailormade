@@ -21,23 +21,23 @@
   var TABLE_ICON = '<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path></svg>';
 
   var GROUP_FILTER_LABELS = {
-    all: "EC-Ecom-ทั้งหมด",
-    jam: "EC-Ecom-(แยม)",
-    beer: "EC-Ecom-(เบียร์)",
-    mkt: "EC-Ecom-MKT"
+    EC: "EC-Ecom-ทั้งหมด",
+    EC01: "EC-Ecom-(แยม)",
+    EC02: "EC-Ecom-(เบียร์)",
+    EC03: "EC-Ecom-MKT"
   };
 
   var MOCK_ORDERS = [
-      { document: "MKTN6910-0101", date: "2026-10-19", group: "jam", platform: "Shopee", customer: "Shopee - คุณสมชาย ใจดี", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 2, unit: "Ea" },
-      { document: "MKTN6910-0102", date: "2026-10-19", group: "jam", platform: "Lazada", customer: "Lazada - คุณมาลี สุขสบาย", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 1, unit: "Ea" },
-      { document: "MKTN6910-0108", date: "2026-10-20", group: "beer", platform: "TikTok", customer: "TikTok - คุณวิชัย รักดี", productCode: "10360018", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-12Ah [6Ea/CT]", qty: 3, unit: "Ea" },
-      { document: "MKTN6910-0111", date: "2026-10-20", group: "beer", platform: "Shopee", customer: "Shopee - คุณนภา แสงทอง", productCode: "10010246", productName: "กรองแสง-3เข็ม(ไก่ชน-MCT) 80% ดำ 2*90m [Ea]", qty: 5, unit: "Ea" },
-      { document: "MKTN6910-0115", date: "2026-10-21", group: "mkt", platform: "Lazada", customer: "Lazada - ร้านพิมพ์ใจ", productCode: "10010246", productName: "กรองแสง-3เข็ม(ไก่ชน-MCT) 80% ดำ 2*90m [Ea]", qty: 10, unit: "Ea" },
-      { document: "MKTN6910-0118", date: "2026-10-21", group: "mkt", platform: "Shopee", customer: "Shopee - คุณประเสริฐ มั่งมี", productCode: "10010378", productName: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*100m", qty: 4, unit: "Ea" },
-      { document: "MKTN6910-0121", date: "2026-10-22", group: "jam", platform: "TikTok", customer: "TikTok - คุณอรทัย ดีเลิศ", productCode: "10010378", productName: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*100m", qty: 6, unit: "Ea" },
-      { document: "MKTN6910-0124", date: "2026-10-22", group: "beer", platform: "Lazada", customer: "Lazada - คุณธีรพงษ์ ศรีสุข", productCode: "11650095", productName: "รองเท้าบู๊ทตายาว 11(A2900) [12Pair/Carton]", qty: 2, unit: "Carton" },
-      { document: "MKTN6910-0126", date: "2026-10-22", group: "mkt", platform: "Shopee", customer: "Shopee - คุณกานดา เพชรงาม", productCode: "11650095", productName: "รองเท้าบู๊ทตายาว 11(A2900) [12Pair/Carton]", qty: 1, unit: "Carton" },
-      { document: "MKTN6910-0130", date: "2026-10-23", group: "jam", platform: "Shopee", customer: "Shopee - คุณสุรชัย พัฒนา", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 2, unit: "Ea" }
+      { document: "MKTN6910-0101", date: "2026-10-19", group: "EC01", platform: "Shopee", customer: "Shopee - คุณสมชาย ใจดี", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 2, unit: "Ea" },
+      { document: "MKTN6910-0102", date: "2026-10-19", group: "EC01", platform: "Lazada", customer: "Lazada - คุณมาลี สุขสบาย", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 1, unit: "Ea" },
+      { document: "MKTN6910-0108", date: "2026-10-20", group: "EC02", platform: "TikTok", customer: "TikTok - คุณวิชัย รักดี", productCode: "10360018", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-12Ah [6Ea/CT]", qty: 3, unit: "Ea" },
+      { document: "MKTN6910-0111", date: "2026-10-20", group: "EC02", platform: "Shopee", customer: "Shopee - คุณนภา แสงทอง", productCode: "10010246", productName: "กรองแสง-3เข็ม(ไก่ชน-MCT) 80% ดำ 2*90m [Ea]", qty: 5, unit: "Ea" },
+      { document: "MKTN6910-0115", date: "2026-10-21", group: "EC03", platform: "Lazada", customer: "Lazada - ร้านพิมพ์ใจ", productCode: "10010246", productName: "กรองแสง-3เข็ม(ไก่ชน-MCT) 80% ดำ 2*90m [Ea]", qty: 10, unit: "Ea" },
+      { document: "MKTN6910-0118", date: "2026-10-21", group: "EC03", platform: "Shopee", customer: "Shopee - คุณประเสริฐ มั่งมี", productCode: "10010378", productName: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*100m", qty: 4, unit: "Ea" },
+      { document: "MKTN6910-0121", date: "2026-10-22", group: "EC01", platform: "TikTok", customer: "TikTok - คุณอรทัย ดีเลิศ", productCode: "10010378", productName: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*100m", qty: 6, unit: "Ea" },
+      { document: "MKTN6910-0124", date: "2026-10-22", group: "EC02", platform: "Lazada", customer: "Lazada - คุณธีรพงษ์ ศรีสุข", productCode: "11650095", productName: "รองเท้าบู๊ทตายาว 11(A2900) [12Pair/Carton]", qty: 2, unit: "Carton" },
+      { document: "MKTN6910-0126", date: "2026-10-22", group: "EC03", platform: "Shopee", customer: "Shopee - คุณกานดา เพชรงาม", productCode: "11650095", productName: "รองเท้าบู๊ทตายาว 11(A2900) [12Pair/Carton]", qty: 1, unit: "Carton" },
+      { document: "MKTN6910-0130", date: "2026-10-23", group: "EC01", platform: "Shopee", customer: "Shopee - คุณสุรชัย พัฒนา", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 2, unit: "Ea" }
   ];
 
   var root = null;
@@ -121,7 +121,7 @@
   function filterOrders(f) {
     return MOCK_ORDERS.filter(function (o) {
       var md = (!f.docDateFrom || o.date >= f.docDateFrom) && (!f.docDateTo || o.date <= f.docDateTo);
-      var mg = f.group === "all" || o.group === f.group;
+      var mg = f.group === "EC" || o.group === f.group;
       return md && mg;
     });
   }
@@ -147,10 +147,10 @@
           "<div class=\"p079-field\">" +
             "<label for=\"p079Group\">" + "กลุ่มลูกค้า" + "</label>" +
             "<div class=\"p079-input-wrap\"><select id=\"p079Group\">" +
-              "<option value=\"all\" selected>" + "EC-Ecom-ทั้งหมด" + "</option>" +
-              "<option value=\"jam\">" + "EC-Ecom-(แยม)" + "</option>" +
-              "<option value=\"beer\">" + "EC-Ecom-(เบียร์)" + "</option>" +
-              "<option value=\"mkt\">" + "EC-Ecom-MKT" + "</option>" +
+              "<option value=\"EC\" selected>" + "EC-Ecom-ทั้งหมด" + "</option>" +
+              "<option value=\"EC01\">" + "EC-Ecom-(แยม)" + "</option>" +
+              "<option value=\"EC02\">" + "EC-Ecom-(เบียร์)" + "</option>" +
+              "<option value=\"EC03\">" + "EC-Ecom-MKT" + "</option>" +
             "</select>" + CHEV + "</div>" +
           "</div>" +
           "<div class=\"p079-field\">" +
