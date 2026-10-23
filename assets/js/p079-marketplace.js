@@ -44,6 +44,10 @@
   var el = {};
   var state = { filters: null, rows: [], loading: false };
 
+  function esc(v) {
+    return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
   var CSS = [
     ".p079-app{display:flex;flex-direction:column;gap:12px}",
     ".p079-app svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
@@ -75,6 +79,10 @@
     ".p079-badge{padding:5px 10px;color:#1d4ed8;border-radius:999px;background:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap}",
     ".p079-document-area{min-height:0;flex:1;overflow:auto;padding:18px;background:#eef2f7}",
     ".p079-paper{width:100%;max-width:1100px;margin:0 auto;padding:26px 30px 34px;background:#fff;box-shadow:0 10px 28px rgba(15,23,42,0.12)}",
+    ".p079-items-table{width:100%;border-collapse:collapse;font-size:12px}",
+    ".p079-items-table th,.p079-items-table td{padding:7px 10px;border:1px solid #cbd5e1;text-align:left;color:#172033}",
+    ".p079-items-table th{background:#eff6ff;color:#1e3a5f;font-weight:700}",
+    ".p079-items-table th.center,.p079-items-table td.center{text-align:center}",
     ".p079-empty-state{display:flex;min-height:320px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
     ".p079-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
     "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}}",
@@ -166,6 +174,16 @@
             "</div>" +
           "</div>" +
           "<article class=\"p079-paper\" id=\"p079Paper\" style=\"display:none\">" +
+            "<table class=\"p079-items-table\">" +
+              "<thead><tr>" +
+                "<th style=\"width:16%\">" + "รหัสสินค้า" + "</th>" +
+                "<th>" + "ชื่อสินค้า" + "</th>" +
+                "<th>" + "ชื่อสินค้า" + "</th>" +
+                "<th class=\"center\" style=\"width:12%\">" + "จำนวน" + "</th>" +
+                "<th class=\"center\" style=\"width:12%\">" + "หน่วย" + "</th>" +
+              "</tr></thead>" +
+              "<tbody id=\"p079ItemsBody\"></tbody>" +
+            "</table>" +
           "</article>" +
         "</div>" +
       "</section>" +
@@ -192,6 +210,15 @@
 
 
     state.rows = list;
+    el.itemsBody.innerHTML = list.map(function (o) {
+      return "<tr>" +
+        "<td>" + esc(o.productCode) + "</td>" +
+        "<td>" + esc(o.productName) + "</td>" +
+        "<td></td>" +
+        "<td class=\"center\">" + o.qty + "</td>" +
+        "<td class=\"center\">" + esc(o.unit) + "</td>" +
+      "</tr>";
+    }).join("");
   }
 
   function doGenerate() {
@@ -235,6 +262,7 @@
       empty: document.getElementById("p079Empty"),
       emptyStrong: document.getElementById("p079EmptyStrong"),
       paper: document.getElementById("p079Paper"),
+      itemsBody: document.getElementById("p079ItemsBody"),
     };
     el.form.addEventListener("submit", function (e) {
       e.preventDefault();
