@@ -18,7 +18,6 @@
 
 
 
-  var INBOX_ICON = '<svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>';
   var TABLE_ICON = '<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path></svg>';
 
   var GROUP_FILTER_LABELS = {
@@ -98,13 +97,12 @@
     ".p079-ztable td.number{text-align:right;font-family:Arial,sans-serif}",
     ".p079-ztable tbody tr:nth-child(even){background:#fbfdff}",
     ".p079-ztable tbody tr:hover{background:#f0f7ff}",
-    ".p079-empty-state{display:flex;min-height:320px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
-    ".p079-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
     "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}}",
     "@media (max-width:680px){.p079-launcher-body{grid-template-columns:1fr}.p079-panel-header{align-items:flex-start;flex-direction:column}}",
     ".p079-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;box-shadow:0 12px 32px rgba(15,23,42,0.3);opacity:0;pointer-events:none;transition:0.2s ease}",
     ".p079-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}",
     ".p079-search-button:disabled{opacity:0.7;transform:none}",
+    ".p079-generate-button:disabled{opacity:0.5;cursor:not-allowed}",
     ".p079-search-button.loading svg{animation:p079spin 1s linear infinite}",
     "@keyframes p079spin{to{transform:rotate(360deg)}}",
     ".p079-modal{position:fixed;inset:0;z-index:300;display:none;flex-direction:column;background:rgba(15,23,42,0.55)}",
@@ -203,18 +201,12 @@
             "</div>" +
           "</div>" +
           "<div class=\"p079-panel-actions\">" +
-            "<button class=\"p079-generate-button\" id=\"p079Gen\" type=\"button\">" + DOC_ICON + "สร้างเอกสาร" + "</button>" +
+            "<button class=\"p079-generate-button\" id=\"p079Gen\" type=\"button\" disabled>" + DOC_ICON + "สร้างเอกสาร" + "</button>" +
             "<span class=\"p079-badge\" id=\"p079Badge\">0 " + "รายการ" + "</span>" +
           "</div>" +
         "</div>" +
         "<div class=\"p079-document-area\">" +
-          "<div class=\"p079-empty-state\" id=\"p079Empty\">" +
-            "<div>" + INBOX_ICON +
-              "<strong id=\"p079EmptyStrong\">" + "ยังไม่มีเอกสารที่สร้าง" + "</strong>" +
-              "<p style=\"margin-top:5px;font-size:11px\">" + "กำหนดเงื่อนไขด้านบน แล้วกด \"สร้างเอกสาร\"" + "</p>" +
-            "</div>" +
-          "</div>" +
-          "<div class=\"p079-res-tables\" id=\"p079Paper\" style=\"display:none\">" +
+          "<div class=\"p079-res-tables\" id=\"p079Paper\">" +
             "<div class=\"p079-rt\">" +
               "<div class=\"p079-rt-title\">" + "รายการสินค้า" + " Pick List Marketplace" + "<span class=\"p079-rt-count\" id=\"p079ItemsCount\"></span></div>" +
               "<div class=\"p079-rt-wrap\"><table class=\"p079-ztable\">" +
@@ -253,17 +245,14 @@
           el.itemsBody.innerHTML = "";
           el.itemsCount.textContent = "0";
           el.badge.textContent = "0 รายการ";
-          el.paper.style.display = "none";
-          el.empty.style.display = "flex";
-          el.emptyStrong.textContent = "ไม่พบรายการตามเงื่อนไขที่เลือก";
-          el.subtitle.textContent = "ยังไม่ได้ค้นหา/สร้างรายงาน";
+          el.gen.disabled = true;
+          el.subtitle.textContent = "พบ 0 รายการ";
           showToast("ไม่พบรายการตามเงื่อนไขที่ค้นหา");
           return;
         }
-        el.empty.style.display = "none";
-        el.paper.style.display = "flex";
         el.itemsCount.textContent = d.count;
         el.badge.textContent = d.count + " รายการ";
+        el.gen.disabled = false;
         el.itemsBody.innerHTML = state.rows.map(function (o) {
           return "<tr>" +
             "<td>" + esc(o.STKcode) + "</td>" +
@@ -287,6 +276,10 @@
   }
 
   function doGenerate() {
+    if (!state.rows.length) {
+      showToast("ค้นหาไม่มีข้อมูล - กด ปุ่มค้นหา ก่อน");
+      return;
+    }
     openReportModal();
   }
 
@@ -383,8 +376,6 @@
       gen: document.getElementById("p079Gen"),
       badge: document.getElementById("p079Badge"),
       subtitle: document.getElementById("p079Subtitle"),
-      empty: document.getElementById("p079Empty"),
-      emptyStrong: document.getElementById("p079EmptyStrong"),
       paper: document.getElementById("p079Paper"),
       itemsCount: document.getElementById("p079ItemsCount"),
       itemsBody: document.getElementById("p079ItemsBody"),

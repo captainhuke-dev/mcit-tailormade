@@ -864,19 +864,21 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - h2 = PickList Marketplace (no prefix) + panel print button removed
 - Cache: p079-marketplace.js?v=20261022o
 
-## P079 Report Modal (PDF า่ม C#)
+## P079 Report Modal (PDF ตาม C#)
 
-- ยแ่ํอ่ย้ สร้างเอกสาร = สร้างเอกสาร + เแิ่ report modal (A4) า่ม C# frm_PickListMarketplaceGUI.cs
-- report API แยั้: api/p079_report.php (2 query: header + detail, รวม total ใใ PHP, ~2s)
-- modal: title Pick List Marketplace + ประจำวันที่ (พศ) + gray row ต่อ STO + row รวม
-- footer: พิมพ์เมื่อ d/m/Y H:i โดย machine + ยแ่ํอ่ย้ พิมพ์เอกสาร (window.print) + เใด X
+- ปุ่ม สร้างเอกสาร = สร้างเอกสาร + เปิด report modal (A4) ตาม C# frm_PickListMarketplaceGUI.cs
+- report API = api/p079_report.php (2 query: header + detail, รวม total นู PHP, ~2s)
+- modal: title Pick List Marketplace + ประจำวันที่ (พศ.) + gray row ต่อ STO + row รวม
+- footer: พิมพ์เมื่อ d/m/Y H:i โดย machine + ปุ่ม พิมพ์เอกสาร (window.print) + ปิด X
 - font THSarabunNew + Bold
 
-## P079 Separate Search / Generate (2026-10-23)
+## P079 Table Always Visible + Generate Gate (2026-10-23)
 
-- ยแ่ํอ่ย้ ค้นหา = ค้นหา table only (no modal)
-- ยแ่ํอ่ย้ สร้างเอกสาร = report modal (api/p079_report.php) - แยั้ช้อด่ใ้
-- ฺัแ่ เแิ่ หแัาัแ P079 แา ยแ่ํอ่ย้ ค้นหา ไม่่าเวาหย่ออิัเัะัิอัิ้ถใ้ - ่าเวาหย่อัิเ้กดยแ่ํอ่ย้ ค้นหาเแ่ยัั้ใ้
-- Cache: p079-marketplace.js?v=20261022q
-- CDP PASS: mount idle (no auto run), search=300 rows no modal, generate=modal+sheet
+- table + ตาราง always visible (no empty state, no display none)
+- search 0 rows: table + ตาราง + 0 rows
+- ปุ่ม สร้างเอกสาร = disabled เมื่อ ตาราง 0 rows (no modal)
+- search >0 rows: ปุ่ม สร้างเอกสาร enabled -> report modal
+- removed: empty state (HTML+CSS+INBOX_ICON) + paper display none/show
+- Cache: p079-marketplace.js?v=20261022s
+- CDP PASS 5/5: mount disabled+table, gen empty blocked, search enables 300 rows, gen opens report, zero disables+keeps table
 
