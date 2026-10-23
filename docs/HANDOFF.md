@@ -801,3 +801,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - User: remove paper H1 "PickList [Marketplace]" - removed h1 + .p079-paper-title CSS, paper-meta margin-top 0
 - Cache: p079-marketplace.js?v=20261022d - CDP: title gone, paper+meta+5 rows ok
+
+## P079 Remove Paper Table (2026-10-22)
+
+- User: remove the whole paper table - removed table markup + tbody fill + groupByProduct + GROUP_INFO + esc + table/tag CSS (keep paper meta header: status/group/doc/head/printed)
+- Cache: p079-marketplace.js?v=20261022e - CDP: table gone, meta shows, badge 8, empty state ok
