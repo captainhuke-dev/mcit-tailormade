@@ -847,3 +847,9 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - p079-marketplace.js: MOCK_ORDERS + filterOrders + renderDocument + old doGenerate removed; added MAC5_CONNECTION_ID, API, apiPost(), showToast() (+toast markup/CSS/spin), doSearch() (date validation, loading state on search button, render 5-col rows, badge + subtitle + toast, empty state on 0 rows), doGenerate -> doSearch, form submit -> doSearch
 - Data note: EC-group status-27 data exists 2025-05-28..06 (2026 empty) - CDP 2025-05-28..06-05: EC=300 rows, EC01=104 rows; 2026 dates: 0 rows -> empty state + toast "ไม่พบรายการตามเงื่อนไขที่ค้นหา"
 - Cache: p079-marketplace.js?v=20261022l - CDP: mount+search+rows+badge+Thai PASS
+
+## P079 Status 65-test (2026-10-23)
+
+- User: status select + 65-test (27-Marketplace default) - select now enabled (was disabled); API already parameterized on status
+- Data: status 65 = 30 MIH (groups CRE-F/DEP-F, not EC) - EC + 65 = 0 rows correct
+- Cache: p079-marketplace.js?v=20261022m - CDP: 2 options, switch to 65 OK

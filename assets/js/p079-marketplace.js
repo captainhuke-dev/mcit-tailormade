@@ -150,7 +150,9 @@
           "</div>" +
           "<div class=\"p079-field\">" +
             "<label for=\"p079Status\">" + "สถานะใบแจ้งหนี้" + "</label>" +
-            "<div class=\"p079-input-wrap\"><select id=\"p079Status\" disabled><option value=\"27\" selected>" + "27-Marketplace" + "</option></select>" + CHEV + "</div>" +
+            "<div class=\"p079-input-wrap\"><select id=\"p079Status\"><option value=\"27\" selected>" + "27-Marketplace" + "</option>" +
+              "<option value=\"65\">65-test</option>" +
+            "</select>" + CHEV + "</div>" +
           "</div>" +
           "<div class=\"p079-field\">" +
             "<label for=\"p079Group\">" + "กลุ่มลูกค้า" + "</label>" +
