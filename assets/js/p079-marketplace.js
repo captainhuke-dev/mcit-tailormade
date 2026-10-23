@@ -78,8 +78,7 @@
     ".p079-badge{padding:5px 10px;color:#1d4ed8;border-radius:999px;background:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap}",
     ".p079-document-area{min-height:0;flex:1;overflow:auto;padding:18px;background:#eef2f7}",
     ".p079-paper{width:100%;max-width:1100px;margin:0 auto;padding:26px 30px 34px;background:#fff;box-shadow:0 10px 28px rgba(15,23,42,0.12)}",
-    ".p079-paper-title{font-size:19px;text-align:center}",
-    ".p079-paper-meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin:12px 0 14px;color:#475569;font-size:12px}",
+    ".p079-paper-meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin:0 0 14px;color:#475569;font-size:12px}",
     ".p079-paper-meta strong{color:#0f172a}",
     ".p079-paper-table{width:100%;border-collapse:collapse}",
     ".p079-paper-table thead th{padding:8px 10px;color:#1d4ed8;border-top:2px solid #1d4ed8;border-bottom:2px solid #1d4ed8;background:#eff6ff;font-size:12px;font-weight:700;text-align:left;white-space:nowrap}",
@@ -207,7 +206,6 @@
             "</div>" +
           "</div>" +
           "<article class=\"p079-paper\" id=\"p079Paper\" style=\"display:none\">" +
-            "<h1 class=\"p079-paper-title\">PickList [Marketplace]</h1>" +
             "<div class=\"p079-paper-meta\">" +
               "<div>" + "สถานะ" + " : <strong>" + "27-Marketplace" + "</strong></div>" +
               "<div>" + "กลุ่มลูกค้า" + " : <strong id=\"p079MetaGrp\">-</strong></div>" +
