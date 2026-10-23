@@ -1,7 +1,7 @@
 
 /* P079 - PickList Marketplace (UI only - clone demo/P079_demo.html)
  * IIFE - window.P079Marketplace = { mount }
- * UI clone demo: launcher (doc date range + head date + status 27 fixed + customer group + generate)
+ * UI clone demo: launcher row (from/to/status/group/search) + generate btn in panel header
  *   + panel paper (meta only, no table)
  * Data = mock from demo (no API yet)
  */
@@ -10,6 +10,7 @@
 
 
   var CAL = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>';
+  var SEARCH_ICON = '<svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m21 21-4.3-4.3"></path></svg>';
   var CHEV = '<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
   var DOC_ICON = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"></path></svg>';
 
@@ -46,11 +47,11 @@
   var CSS = [
     ".p079-app{display:flex;flex-direction:column;gap:12px}",
     ".p079-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
-    ".p079-launcher-body{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:14px 16px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
+    ".p079-launcher-body{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 12px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p079-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
-    ".p079-field.span-2{grid-column:span 2}",
-    ".p079-date-range{display:grid;width:100%;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center}",
-    ".p079-date-separator{color:#475569;font-size:12px;font-weight:700}",
+    ".p079-search-button{width:100%;height:44px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 12px;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff;font-size:13px;font-weight:700;white-space:nowrap}",
+    ".p079-search-button:hover{color:#fff;background:#2563eb}",
+    ".p079-search-button svg{width:16px;height:16px}",
     ".p079-input-wrap{position:relative}",
     ".p079-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}",
     ".p079-input-wrap input,.p079-input-wrap select{width:100%;height:44px;padding:0 36px 0 12px;color:#172033;border:1px solid #dbe3ef;border-radius:10px;outline:none;background:#fff;font-size:13px}",
@@ -77,8 +78,8 @@
     ".p079-paper-meta strong{color:#0f172a}",
     ".p079-empty-state{display:flex;min-height:320px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
     ".p079-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
-    "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}.p079-field.span-2{grid-column:1/-1}.p079-generate-button{grid-column:1/-1}}",
-    "@media (max-width:680px){.p079-launcher-body{grid-template-columns:1fr}.p079-date-range{grid-template-columns:1fr}.p079-date-separator{display:none}.p079-panel-header{align-items:flex-start;flex-direction:column}.p079-paper{padding:16px}}"
+    "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}}",
+    "@media (max-width:680px){.p079-launcher-body{grid-template-columns:1fr}.p079-panel-header{align-items:flex-start;flex-direction:column}.p079-paper{padding:16px}}"
   ].join("\n");
 
 
@@ -120,24 +121,19 @@
     "<div class=\"p079-app\">" +
       "<section class=\"p079-launcher-card\">" +
         "<form class=\"p079-launcher-body\" id=\"p079Form\">" +
-          "<div class=\"p079-field span-2\">" +
-            "<label>" + "วันที่เอกสาร" + "</label>" +
-            "<div class=\"p079-date-range\">" +
-              "<div class=\"p079-input-wrap\"><input id=\"p079DocFrom\" type=\"date\" value=\"" + isoDaysAgo(3) + "\">" + CAL + "</div>" +
-              "<span class=\"p079-date-separator\">" + "ถึง" + "</span>" +
-              "<div class=\"p079-input-wrap\"><input id=\"p079DocTo\" type=\"date\" value=\"" + isoToday() + "\">" + CAL + "</div>" +
-            "</div>" +
+          "<div class=\"p079-field\">" +
+            "<label for=\"p079DocFrom\">" + "วันที่เริ่ม" + "</label>" +
+            "<div class=\"p079-input-wrap\"><input id=\"p079DocFrom\" type=\"date\" value=\"" + isoDaysAgo(3) + "\">" + CAL + "</div>" +
           "</div>" +
           "<div class=\"p079-field\">" +
-            "<label for=\"p079HeadDate\">" + "วันที่หัวเอกสาร" + "</label>" +
-            "<div class=\"p079-input-wrap\"><input id=\"p079HeadDate\" type=\"date\" value=\"" + isoToday() + "\">" + CAL + "</div>" +
+            "<label for=\"p079DocTo\">" + "ถึงวันที่" + "</label>" +
+            "<div class=\"p079-input-wrap\"><input id=\"p079DocTo\" type=\"date\" value=\"" + isoToday() + "\">" + CAL + "</div>" +
           "</div>" +
-          "<div class=\"p079-field\"></div>" +
-          "<div class=\"p079-field span-2\">" +
+          "<div class=\"p079-field\">" +
             "<label for=\"p079Status\">" + "สถานะใบแจ้งหนี้" + "</label>" +
             "<div class=\"p079-input-wrap\"><select id=\"p079Status\" disabled><option value=\"27\" selected>" + "27-Marketplace" + "</option></select>" + CHEV + "</div>" +
           "</div>" +
-          "<div class=\"p079-field span-2\">" +
+          "<div class=\"p079-field\">" +
             "<label for=\"p079Group\">" + "กลุ่มลูกค้า" + "</label>" +
             "<div class=\"p079-input-wrap\"><select id=\"p079Group\">" +
               "<option value=\"all\" selected>" + "EC-Ecom-ทั้งหมด" + "</option>" +
@@ -146,7 +142,9 @@
               "<option value=\"mkt\">" + "EC-Ecom-MKT" + "</option>" +
             "</select>" + CHEV + "</div>" +
           "</div>" +
-          "<button class=\"p079-generate-button\" id=\"p079Gen\" type=\"submit\">" + DOC_ICON + "สร้างเอกสาร" + "</button>" +
+          "<div class=\"p079-field\">" +
+            "<div class=\"p079-input-wrap\"><button class=\"p079-search-button\" id=\"p079Search\" type=\"submit\">" + SEARCH_ICON + "ค้นหา" + "</button></div>" +
+          "</div>" +
         "</form>" +
       "</section>" +
       "<section class=\"p079-panel\">" +
@@ -159,6 +157,7 @@
             "</div>" +
           "</div>" +
           "<div class=\"p079-panel-actions\">" +
+            "<button class=\"p079-generate-button\" id=\"p079Gen\" type=\"button\">" + DOC_ICON + "สร้างเอกสาร" + "</button>" +
             "<button class=\"p079-print-button\" id=\"p079Print\" type=\"button\">" + PRINT_ICON + "พิมพ์เอกสาร" + "</button>" +
             "<span class=\"p079-badge\" id=\"p079Badge\">0 " + "รายการ" + "</span>" +
           "</div>" +
@@ -204,7 +203,7 @@
 
     el.metaGrp.textContent = GROUP_FILTER_LABELS[filters.group];
     el.metaDoc.textContent = fmtDate(filters.docDateFrom) + " - " + fmtDate(filters.docDateTo);
-    el.metaHead.textContent = fmtDate(filters.headDate);
+    el.metaHead.textContent = fmtDate(isoToday());
     el.metaPrint.textContent = fmtStamp(new Date());
 
     state.rows = list;
@@ -216,7 +215,6 @@
     var f = {
       docDateFrom: el.docFrom.value,
       docDateTo: el.docTo.value,
-      headDate: el.headDate.value,
       group: el.group.value
     };
     if (!f.docDateFrom || !f.docDateTo || f.docDateFrom > f.docDateTo) {
@@ -243,7 +241,6 @@
       form: document.getElementById("p079Form"),
       docFrom: document.getElementById("p079DocFrom"),
       docTo: document.getElementById("p079DocTo"),
-      headDate: document.getElementById("p079HeadDate"),
       status: document.getElementById("p079Status"),
       group: document.getElementById("p079Group"),
       gen: document.getElementById("p079Gen"),
@@ -263,6 +260,7 @@
       doGenerate();
     });
     el.print.addEventListener("click", doPrint);
+    el.gen.addEventListener("click", doGenerate);
 
     doGenerate();
   }
