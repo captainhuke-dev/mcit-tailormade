@@ -16,7 +16,6 @@
 
 
 
-  var PRINT_ICON = '<svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16"></path><rect x="6" y="14" width="12" height="8"></rect></svg>';
   var INBOX_ICON = '<svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>';
   var TABLE_ICON = '<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path></svg>';
 
@@ -83,9 +82,6 @@
     ".p079-panel-title h2{margin:0;overflow:hidden;font-size:14px;font-weight:700;text-overflow:ellipsis;white-space:nowrap}",
     ".p079-panel-title p{overflow:hidden;margin:1px 0 0;color:#64748b;font-size:11px;text-overflow:ellipsis;white-space:nowrap}",
     ".p079-panel-actions{display:flex;align-items:center;gap:8px}",
-    ".p079-print-button{display:inline-flex;height:36px;align-items:center;gap:6px;padding:0 14px;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:9px;background:#eff6ff;font-size:12px;font-weight:700}",
-    ".p079-print-button:hover{color:#fff;background:#2563eb}",
-    ".p079-print-button svg{width:15px;height:15px}",
     ".p079-badge{padding:5px 10px;color:#1d4ed8;border-radius:999px;background:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap}",
     ".p079-document-area{min-height:0;flex:1;overflow:auto;padding:18px;background:#eef2f7}",
     ".p079-res-tables{display:flex;flex-direction:column;gap:12px}",
@@ -173,13 +169,12 @@
           "<div class=\"p079-panel-heading\">" +
             "<div class=\"p079-panel-icon\">" + TABLE_ICON + "</div>" +
             "<div class=\"p079-panel-title\">" +
-              "<h2>" + "เอกสาร PickList Marketplace" + "</h2>" +
+              "<h2>" + "PickList Marketplace" + "</h2>" +
               "<p id=\"p079Subtitle\">" + "ยังไม่ได้สร้างเอกสาร" + "</p>" +
             "</div>" +
           "</div>" +
           "<div class=\"p079-panel-actions\">" +
             "<button class=\"p079-generate-button\" id=\"p079Gen\" type=\"button\">" + DOC_ICON + "สร้างเอกสาร" + "</button>" +
-            "<button class=\"p079-print-button\" id=\"p079Print\" type=\"button\">" + PRINT_ICON + "พิมพ์เอกสาร" + "</button>" +
             "<span class=\"p079-badge\" id=\"p079Badge\">0 " + "รายการ" + "</span>" +
           "</div>" +
         "</div>" +
@@ -263,14 +258,6 @@
   }
 
 
-  function doPrint() {
-    if (el.paper.style.display === "none") {
-      alert("กรุณาสร้างเอกสารก่อนพิมพ์");
-      return;
-    }
-    window.print();
-  }
-
   function mount(mountEl) {
     root = mountEl;
     root.innerHTML = "<style>" + CSS + "</style>" + html();
@@ -282,7 +269,6 @@
       group: document.getElementById("p079Group"),
       search: document.getElementById("p079Search"),
       gen: document.getElementById("p079Gen"),
-      print: document.getElementById("p079Print"),
       badge: document.getElementById("p079Badge"),
       subtitle: document.getElementById("p079Subtitle"),
       empty: document.getElementById("p079Empty"),
@@ -295,7 +281,6 @@
       e.preventDefault();
       doSearch();
     });
-    el.print.addEventListener("click", doPrint);
     el.gen.addEventListener("click", doGenerate);
 
     doGenerate();

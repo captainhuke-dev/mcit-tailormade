@@ -858,3 +858,9 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - User: 65-test -> 77-test (value 77)
 - Cache: p079-marketplace.js?v=20261022n
+
+## P079 Title + Remove Print Button (2026-10-23)
+
+- User: panel h2 "เอกสาร PickList Marketplace" -> "PickList Marketplace"; remove print button
+- Removed: p079Print button + doPrint() + el.print ref/listener + .p079-print-button CSS + PRINT_ICON
+- Cache: p079-marketplace.js?v=20261022o - CDP: h2="PickList Marketplace", printBtnExists=false, actions=[gen, badge] PASS
