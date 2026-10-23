@@ -853,3 +853,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - User: status select + 65-test (27-Marketplace default) - select now enabled (was disabled); API already parameterized on status
 - Data: status 65 = 30 MIH (groups CRE-F/DEP-F, not EC) - EC + 65 = 0 rows correct
 - Cache: p079-marketplace.js?v=20261022m - CDP: 2 options, switch to 65 OK
+
+## P079 Status 65 -> 77-test (2026-10-23)
+
+- User: 65-test -> 77-test (value 77)
+- Cache: p079-marketplace.js?v=20261022n
