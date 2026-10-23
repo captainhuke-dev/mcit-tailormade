@@ -2,17 +2,12 @@
 /* P079 - PickList Marketplace (UI only - clone demo/P079_demo.html)
  * IIFE - window.P079Marketplace = { mount }
  * UI clone demo: launcher (doc date range + head date + status 27 fixed + customer group + generate)
- *   + panel paper (grouped product rows)
+ *   + panel paper (meta only, no table)
  * Data = mock from demo (no API yet)
  */
 (function () {
   "use strict";
 
-  var GROUP_INFO = {
-    jam: { label: "EC-Ecom-(แยม)", cls: "jam" },
-    beer: { label: "EC-Ecom-(เบียร์)", cls: "beer" },
-    mkt: { label: "EC-Ecom-MKT", cls: "mkt" }
-  };
 
   var CAL = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>';
   var CHEV = '<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
@@ -80,28 +75,12 @@
     ".p079-paper{width:100%;max-width:1100px;margin:0 auto;padding:26px 30px 34px;background:#fff;box-shadow:0 10px 28px rgba(15,23,42,0.12)}",
     ".p079-paper-meta{display:flex;flex-wrap:wrap;gap:6px 20px;margin:0 0 14px;color:#475569;font-size:12px}",
     ".p079-paper-meta strong{color:#0f172a}",
-    ".p079-paper-table{width:100%;border-collapse:collapse}",
-    ".p079-paper-table thead th{padding:8px 10px;color:#1d4ed8;border-top:2px solid #1d4ed8;border-bottom:2px solid #1d4ed8;background:#eff6ff;font-size:12px;font-weight:700;text-align:left;white-space:nowrap}",
-    ".p079-paper-table th.center,.p079-paper-table td.center{text-align:center}",
-    ".p079-product-row td{padding:9px 10px 7px;border-bottom:1px solid #cbd5e1;background:#f1f5f9;font-size:13px;font-weight:700}",
-    ".p079-order-row td{padding:7px 10px;border-bottom:1px solid #f1f5f9;font-size:12.5px}",
-    ".p079-order-row:hover td{background:#f8fbff}",
-    ".p079-doc-number{color:#1d4ed8;font-family:Arial,sans-serif;font-weight:700}",
-    ".p079-qty{font-family:Arial,sans-serif;font-weight:700}",
-    ".p079-group-tag{display:inline-flex;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;white-space:nowrap}",
-    ".p079-group-tag.jam{color:#b45309;background:#fef3c7}",
-    ".p079-group-tag.beer{color:#047857;background:#d1fae5}",
-    ".p079-group-tag.mkt{color:#6d28d9;background:#ede9fe}",
-    ".p079-platform-tag{display:inline-flex;padding:2px 8px;color:#334155;border-radius:6px;background:#e2e8f0;font-size:11px;font-weight:700}",
     ".p079-empty-state{display:flex;min-height:320px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
     ".p079-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
     "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}.p079-field.span-2{grid-column:1/-1}.p079-generate-button{grid-column:1/-1}}",
     "@media (max-width:680px){.p079-launcher-body{grid-template-columns:1fr}.p079-date-range{grid-template-columns:1fr}.p079-date-separator{display:none}.p079-panel-header{align-items:flex-start;flex-direction:column}.p079-paper{padding:16px}}"
   ].join("\n");
 
-  function esc(v) {
-    return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-  }
 
   function pad(n) {
     return String(n).padStart(2, "0");
@@ -135,20 +114,6 @@
     });
   }
 
-  function groupByProduct(list) {
-    var map = {};
-    var order = [];
-    list.forEach(function (o) {
-      if (!map[o.productCode]) {
-        map[o.productCode] = { productCode: o.productCode, productName: o.productName, unit: o.unit, totalQty: 0, orders: [] };
-        order.push(o.productCode);
-      }
-      var p = map[o.productCode];
-      p.totalQty += o.qty;
-      p.orders.push(o);
-    });
-    return order.sort(function (a, b) { return a.localeCompare(b); }).map(function (k) { return map[k]; });
-  }
 
   function html() {
     return "" +
@@ -213,18 +178,6 @@
               "<div>" + "วันที่หัวเอกสาร" + " : <strong id=\"p079MetaHead\">-</strong></div>" +
               "<div>" + "พิมพ์เมื่อ" + " : <strong id=\"p079MetaPrint\">-</strong></div>" +
             "</div>" +
-            "<table class=\"p079-paper-table\">" +
-              "<thead><tr>" +
-                "<th style=\"width:11%\">" + "กลุ่มลูกค้า" + "</th>" +
-                "<th style=\"width:9%\">" + "แพลตฟอร์ม" + "</th>" +
-                "<th>" + "ชื่อลูกค้า" + "</th>" +
-                "<th style=\"width:15%\">" + "เลขที่ใบสำคัญ" + "</th>" +
-                "<th class=\"center\" style=\"width:11%\">" + "วันที่" + "</th>" +
-                "<th class=\"center\" style=\"width:9%\">" + "จำนวน" + "</th>" +
-                "<th class=\"center\" style=\"width:8%\">" + "หน่วย" + "</th>" +
-              "</tr></thead>" +
-              "<tbody id=\"p079Body\"></tbody>" +
-            "</table>" +
           "</article>" +
         "</div>" +
       "</section>" +
@@ -233,7 +186,6 @@
 
   function renderDocument(filters) {
     var list = filterOrders(filters);
-    var products = groupByProduct(list);
 
     el.badge.textContent = list.length + " " + "รายการ";
     el.subtitle.textContent = GROUP_FILTER_LABELS[filters.group] + " \u00b7 " + "วันที่เอกสาร" + " " + fmtDate(filters.docDateFrom) + " " + "ถึง" + " " + fmtDate(filters.docDateTo);
@@ -255,22 +207,6 @@
     el.metaHead.textContent = fmtDate(filters.headDate);
     el.metaPrint.textContent = fmtStamp(new Date());
 
-    el.body.innerHTML = products.map(function (p) {
-      var header = "<tr class=\"p079-product-row\"><td colspan=\"5\">" + esc(p.productCode) + ", " + esc(p.productName) + "</td><td class=\"center p079-qty\">" + p.totalQty + "</td><td class=\"center\">" + esc(p.unit) + "</td></tr>";
-      var rows = p.orders.map(function (o) {
-        var info = GROUP_INFO[o.group];
-        return "<tr class=\"p079-order-row\">" +
-          "<td><span class=\"p079-group-tag " + info.cls + "\">" + esc(info.label.replace("EC-Ecom-", "")) + "</span></td>" +
-          "<td><span class=\"p079-platform-tag\">" + esc(o.platform) + "</span></td>" +
-          "<td>" + esc(o.customer) + "</td>" +
-          "<td class=\"p079-doc-number\">" + esc(o.document) + "</td>" +
-          "<td class=\"center\">" + fmtDate(o.date) + "</td>" +
-          "<td class=\"center p079-qty\">" + o.qty + "</td>" +
-          "<td class=\"center\">" + esc(o.unit) + "</td>" +
-        "</tr>";
-      }).join("");
-      return header + rows;
-    }).join("");
     state.rows = list;
   }
 
@@ -317,7 +253,6 @@
       empty: document.getElementById("p079Empty"),
       emptyStrong: document.getElementById("p079EmptyStrong"),
       paper: document.getElementById("p079Paper"),
-      body: document.getElementById("p079Body"),
       metaGrp: document.getElementById("p079MetaGrp"),
       metaDoc: document.getElementById("p079MetaDoc"),
       metaHead: document.getElementById("p079MetaHead"),
