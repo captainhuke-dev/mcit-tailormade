@@ -882,3 +882,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Cache: p079-marketplace.js?v=20261022s
 - CDP PASS 5/5: mount disabled+table, gen empty blocked, search enables 300 rows, gen opens report, zero disables+keeps table
 
+## P079 Search Block Layout 6 Fields (2026-10-23)
+
+- search block = 6 fields, 3 cols x 2 rows (grid repeat(3,1fr))
+- row 1: วันที่เริ่ม / ถึงวันที่ / วันที่หัวเอกสาร
+- row 2: สถานะใบแจ้งหนี้ / กลุ่มลูกค้า / search button
+- วันที่หัวเอกสาร = report as-of date (C# dateTimeHeader) - not a search filter; default today
+- report modal asof = fmtAsOf(el.headDate.value) -> dd <month> yyyy BE
+- Cache: p079-marketplace.js?v=20261022u
+- CDP PASS 2/2: layout 6 fields 3col + asof = head date (2025-06-01 -> dd month 2568)

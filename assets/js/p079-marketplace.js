@@ -62,7 +62,7 @@
     ".p079-app{display:flex;flex-direction:column;gap:12px}",
     ".p079-app svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
     ".p079-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
-    ".p079-launcher-body{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 12px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
+    ".p079-launcher-body{display:grid;grid-template-columns:repeat(3,1fr);gap:10px 12px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p079-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
     ".p079-search-button{width:100%;height:44px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 12px;color:#fff;border:0;border-radius:10px;background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 9px 20px rgba(5,150,105,0.26);font-size:13px;font-weight:700;white-space:nowrap;transition:0.16s ease}",
     ".p079-search-button:hover{transform:translateY(-2px);filter:brightness(1.06)}",
@@ -171,6 +171,9 @@
             "<label for=\"p079DocTo\">" + "ถึงวันที่" + "</label>" +
             "<div class=\"p079-input-wrap\"><input id=\"p079DocTo\" type=\"date\" value=\"" + isoToday() + "\">" + CAL + "</div>" +
           "</div>" +
+          "<div class=\"p079-field\">" +
+            "<label for=\"p079HeadDate\">วันที่หัวเอกสาร</label>" +
+            "<div class=\"p079-input-wrap\"><input id=\"p079HeadDate\" type=\"date\" value=\"" + isoToday() + "\"></div>" + CAL + "</div>" +
           "<div class=\"p079-field\">" +
             "<label for=\"p079Status\">" + "สถานะใบแจ้งหนี้" + "</label>" +
             "<div class=\"p079-input-wrap\"><select id=\"p079Status\"><option value=\"27\" selected>" + "27-Marketplace" + "</option>" +
@@ -293,8 +296,9 @@
     return pad2(p[2]) + "/" + pad2(p[1]) + "/" + (Number(p[0]) + 543);
   }
 
-  function fmtAsOf() {
-    var d = new Date();
+  function fmtAsOf(iso) {
+    var p = (iso && iso.length >= 10) ? iso.slice(0, 10).split("-") : null;
+    var d = p ? new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2])) : new Date();
     var M = ["\u0e21\u0e01\u0e23\u0e32\u0e04\u0e21", "\u0e01\u0e38\u0e21\u0e20\u0e32\u0e1e\u0e31\u0e19\u0e18\u0e4c", "\u0e21\u0e35\u0e19\u0e32\u0e04\u0e21", "\u0e40\u0e21\u0e29\u0e32\u0e22\u0e19", "\u0e1e\u0e24\u0e29\u0e20\u0e32\u0e04\u0e21", "\u0e21\u0e34\u0e16\u0e38\u0e19\u0e32\u0e22\u0e19", "\u0e01\u0e23\u0e01\u0e0e\u0e32\u0e04\u0e21", "\u0e2a\u0e34\u0e07\u0e2b\u0e32\u0e04\u0e21", "\u0e01\u0e31\u0e19\u0e22\u0e32\u0e22\u0e19", "\u0e15\u0e38\u0e25\u0e32\u0e04\u0e21", "\u0e1e\u0e24\u0e28\u0e08\u0e34\u0e01\u0e32\u0e22\u0e19", "\u0e18\u0e31\u0e19\u0e27\u0e32\u0e04\u0e21"];
     return d.getDate() + " " + M[d.getMonth()] + " " + (d.getFullYear() + 543);
   }
@@ -321,7 +325,7 @@
   function renderReport(d) {
     var t = "<div class=\"p079-sheet\">" +
       "<h1 class=\"p079-sheet-title\">" + " Pick List Marketplace" + "</h1>" +
-      "<p class=\"p079-sheet-asof\">" + " ประจำวันที่ " + fmtAsOf() + "</p>" +
+      "<p class=\"p079-sheet-asof\">" + " ประจำวันที่ " + fmtAsOf(el.headDate.value) + "</p>" +
       "<div class=\"p079-sheet-spacer\"></div>" +
       "<table class=\"p079-rt2\"><colgroup>" +
         "<col style=\"width:50px\"><col style=\"width:20px\"><col style=\"width:250px\"><col style=\"width:70px\"><col style=\"width:60px\"><col style=\"width:50px\"><col style=\"width:50px\">" +
@@ -366,6 +370,7 @@
       form: document.getElementById("p079Form"),
       docFrom: document.getElementById("p079DocFrom"),
       docTo: document.getElementById("p079DocTo"),
+      headDate: document.getElementById("p079HeadDate"),
       status: document.getElementById("p079Status"),
       group: document.getElementById("p079Group"),
       modal: document.getElementById("p079Modal"),
