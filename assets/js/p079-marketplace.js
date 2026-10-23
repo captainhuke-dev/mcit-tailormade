@@ -46,14 +46,15 @@
 
   var CSS = [
     ".p079-app{display:flex;flex-direction:column;gap:12px}",
+    ".p079-app svg{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
     ".p079-launcher-card{overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 10px 26px rgba(15,23,42,0.08)}",
     ".p079-launcher-body{display:grid;grid-template-columns:repeat(6,1fr);gap:10px 12px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p079-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
-    ".p079-search-button{width:100%;height:44px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 12px;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;background:#eff6ff;font-size:13px;font-weight:700;white-space:nowrap}",
-    ".p079-search-button:hover{color:#fff;background:#2563eb}",
+    ".p079-search-button{width:100%;height:44px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:0 12px;color:#fff;border:0;border-radius:10px;background:linear-gradient(135deg,#34d399,#059669);box-shadow:0 9px 20px rgba(5,150,105,0.26);font-size:13px;font-weight:700;white-space:nowrap;transition:0.16s ease}",
+    ".p079-search-button:hover{transform:translateY(-2px);filter:brightness(1.06)}",
     ".p079-search-button svg{width:16px;height:16px}",
     ".p079-input-wrap{position:relative}",
-    ".p079-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}",
+    ".p079-input-wrap > svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}",
     ".p079-input-wrap input,.p079-input-wrap select{width:100%;height:44px;padding:0 36px 0 12px;color:#172033;border:1px solid #dbe3ef;border-radius:10px;outline:none;background:#fff;font-size:13px}",
     ".p079-input-wrap select{cursor:pointer;appearance:none}",
     ".p079-input-wrap select:disabled{color:#475569;background:#eef2f7;cursor:not-allowed}",
