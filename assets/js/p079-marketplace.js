@@ -173,7 +173,8 @@
           "</div>" +
           "<div class=\"p079-field\">" +
             "<label for=\"p079HeadDate\">วันที่หัวเอกสาร</label>" +
-            "<div class=\"p079-input-wrap\"><input id=\"p079HeadDate\" type=\"date\" value=\"" + isoToday() + "\"></div>" + CAL + "</div>" +
+            "<div class=\"p079-input-wrap\"><input id=\"p079HeadDate\" type=\"date\" value=\"" + isoToday() + "\">" + CAL + "</div>" +
+          "</div>" +
           "<div class=\"p079-field\">" +
             "<label for=\"p079Status\">" + "สถานะใบแจ้งหนี้" + "</label>" +
             "<div class=\"p079-input-wrap\"><select id=\"p079Status\"><option value=\"27\" selected>" + "27-Marketplace" + "</option>" +

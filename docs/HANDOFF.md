@@ -889,5 +889,5 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - row 2: สถานะใบแจ้งหนี้ / กลุ่มลูกค้า / search button
 - วันที่หัวเอกสาร = report as-of date (C# dateTimeHeader) - not a search filter; default today
 - report modal asof = fmtAsOf(el.headDate.value) -> dd <month> yyyy BE
-- Cache: p079-marketplace.js?v=20261022u
+- Cache: p079-marketplace.js?v=20261022v
 - CDP PASS 2/2: layout 6 fields 3col + asof = head date (2025-06-01 -> dd month 2568)
