@@ -796,3 +796,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Removed: summary grid section + 4 cards + el.sum* refs + summary CSS + unused BOX/CHART/USERS icons
 - Status field: span-2 (same 785px as doc-date field; empty spacer div after head date keeps row alignment); date-range width:100%
 - Cache: p079-marketplace.js?v=20261022c - CDP: summaryCards=0, docFieldW=statusFieldW=785
+
+## P079 Remove Paper Title (2026-10-22)
+
+- User: remove paper H1 "PickList [Marketplace]" - removed h1 + .p079-paper-title CSS, paper-meta margin-top 0
+- Cache: p079-marketplace.js?v=20261022d - CDP: title gone, paper+meta+5 rows ok
