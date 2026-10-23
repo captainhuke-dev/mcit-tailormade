@@ -78,15 +78,22 @@
     ".p079-print-button svg{width:15px;height:15px}",
     ".p079-badge{padding:5px 10px;color:#1d4ed8;border-radius:999px;background:#dbeafe;font-size:11px;font-weight:700;white-space:nowrap}",
     ".p079-document-area{min-height:0;flex:1;overflow:auto;padding:18px;background:#eef2f7}",
-    ".p079-paper{width:100%;max-width:1100px;margin:0 auto;padding:26px 30px 34px;background:#fff;box-shadow:0 10px 28px rgba(15,23,42,0.12)}",
-    ".p079-items-table{width:100%;border-collapse:collapse;font-size:12px}",
-    ".p079-items-table th,.p079-items-table td{padding:7px 10px;border:1px solid #cbd5e1;text-align:left;color:#172033}",
-    ".p079-items-table th{background:#eff6ff;color:#1e3a5f;font-weight:700}",
-    ".p079-items-table th.center,.p079-items-table td.center{text-align:center}",
+    ".p079-res-tables{display:flex;flex-direction:column;gap:12px}",
+    ".p079-rt{background:#fff;border:1px solid #dbe3ef;border-radius:12px;overflow:hidden}",
+    ".p079-rt-title{display:flex;align-items:center;gap:10px;padding:10px 14px;color:#1d4ed8;border-bottom:1px solid #dbe3ef;background:#eff6ff;font-size:13px;font-weight:700}",
+    ".p079-rt-count{color:#475569;background:#fff;border:1px solid #dbe3ef;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:600}",
+    ".p079-rt-wrap{max-height:520px;overflow:auto}",
+    ".p079-ztable{width:100%;min-width:560px;border-collapse:separate;border-spacing:0;white-space:nowrap}",
+    ".p079-ztable th{position:sticky;top:0;z-index:2;padding:11px 14px;color:#475569;border-bottom:1px solid #dbe3ef;background:#f8fafc;box-shadow:inset 0 -1px #dbe3ef;font-size:12px;font-weight:700;text-align:left}",
+    ".p079-ztable td{padding:10px 14px;border-bottom:1px solid #edf1f6;font-size:12px;line-height:1.4}",
+    ".p079-ztable th.center,.p079-ztable td.center{text-align:center}",
+    ".p079-ztable td.number{text-align:right;font-family:Arial,sans-serif}",
+    ".p079-ztable tbody tr:nth-child(even){background:#fbfdff}",
+    ".p079-ztable tbody tr:hover{background:#f0f7ff}",
     ".p079-empty-state{display:flex;min-height:320px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
     ".p079-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
     "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}}",
-    "@media (max-width:680px){.p079-launcher-body{grid-template-columns:1fr}.p079-panel-header{align-items:flex-start;flex-direction:column}.p079-paper{padding:16px}}"
+    "@media (max-width:680px){.p079-launcher-body{grid-template-columns:1fr}.p079-panel-header{align-items:flex-start;flex-direction:column}}"
   ].join("\n");
 
 
@@ -173,18 +180,21 @@
               "<p style=\"margin-top:5px;font-size:11px\">" + "กำหนดเงื่อนไขด้านบน แล้วกด \"สร้างเอกสาร\"" + "</p>" +
             "</div>" +
           "</div>" +
-          "<article class=\"p079-paper\" id=\"p079Paper\" style=\"display:none\">" +
-            "<table class=\"p079-items-table\">" +
-              "<thead><tr>" +
-                "<th style=\"width:16%\">" + "รหัสสินค้า" + "</th>" +
-                "<th>" + "ชื่อสินค้า" + "</th>" +
-                "<th>" + "ชื่อสินค้า" + "</th>" +
-                "<th class=\"center\" style=\"width:12%\">" + "จำนวน" + "</th>" +
-                "<th class=\"center\" style=\"width:12%\">" + "หน่วย" + "</th>" +
-              "</tr></thead>" +
-              "<tbody id=\"p079ItemsBody\"></tbody>" +
-            "</table>" +
-          "</article>" +
+          "<div class=\"p079-res-tables\" id=\"p079Paper\" style=\"display:none\">" +
+            "<div class=\"p079-rt\">" +
+              "<div class=\"p079-rt-title\">" + "รายการสินค้า" + " Pick List Marketplace" + "<span class=\"p079-rt-count\" id=\"p079ItemsCount\"></span></div>" +
+              "<div class=\"p079-rt-wrap\"><table class=\"p079-ztable\">" +
+                "<thead><tr>" +
+                  "<th style=\"width:15%\">" + "รหัสสินค้า" + "</th>" +
+                  "<th>" + "ชื่อสินค้า" + "</th>" +
+                  "<th>" + "ชื่อสินค้า" + "</th>" +
+                  "<th class=\"center number\" style=\"width:10%\">" + "จำนวน" + "</th>" +
+                  "<th class=\"center\" style=\"width:10%\">" + "หน่วย" + "</th>" +
+                "</tr></thead>" +
+                "<tbody id=\"p079ItemsBody\"></tbody>" +
+              "</table></div>" +
+            "</div>" +
+          "</div>" +
         "</div>" +
       "</section>" +
     "</div>";
@@ -193,7 +203,7 @@
   function renderDocument(filters) {
     var list = filterOrders(filters);
 
-    el.badge.textContent = list.length + " " + "รายการ";
+    el.itemsCount.textContent = list.length;
     el.subtitle.textContent = GROUP_FILTER_LABELS[filters.group] + " \u00b7 " + "วันที่เอกสาร" + " " + fmtDate(filters.docDateFrom) + " " + "ถึง" + " " + fmtDate(filters.docDateTo);
 
 
@@ -215,7 +225,7 @@
         "<td>" + esc(o.productCode) + "</td>" +
         "<td>" + esc(o.productName) + "</td>" +
         "<td></td>" +
-        "<td class=\"center\">" + o.qty + "</td>" +
+        "<td class=\"center number\">" + o.qty + "</td>" +
         "<td class=\"center\">" + esc(o.unit) + "</td>" +
       "</tr>";
     }).join("");
@@ -262,6 +272,7 @@
       empty: document.getElementById("p079Empty"),
       emptyStrong: document.getElementById("p079EmptyStrong"),
       paper: document.getElementById("p079Paper"),
+      itemsCount: document.getElementById("p079ItemsCount"),
       itemsBody: document.getElementById("p079ItemsBody"),
     };
     el.form.addEventListener("submit", function (e) {
