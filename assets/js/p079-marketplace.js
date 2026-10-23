@@ -275,7 +275,6 @@
         }).join("");
         el.subtitle.textContent = "พบ " + d.count + " รายการ";
         showToast("พบ " + d.count + " รายการ");
-        openReportModal();
       })
       .catch(function (e) {
         showToast("ค้นหาไม่สำเร็จ: " + e.message);
@@ -288,7 +287,7 @@
   }
 
   function doGenerate() {
-    doSearch();
+    openReportModal();
   }
 
 
@@ -313,7 +312,6 @@
   }
 
   function openReportModal() {
-    if (!state.rows.length) return;
     el.modalBody.innerHTML = "<div class=\"p079-modal-loading\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 12a9 9 0 1 1-6.2-8.56\"></path></svg></div>";
     el.modal.classList.add("show");
     apiPost(API.report, { connectionId: MAC5_CONNECTION_ID, status: el.status.value, dateFrom: el.docFrom.value, dateTo: el.docTo.value, group: el.group.value })
@@ -403,7 +401,6 @@
       window.print();
     });
 
-    doGenerate();
   }
 
   window.P079Marketplace = { mount: mount };
