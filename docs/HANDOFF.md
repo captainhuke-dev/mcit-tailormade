@@ -789,3 +789,10 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Thai: all extracted from demo file (file->file splice, no typed Thai); summary card labels composed from trusted fragments (จำนวน+เอกสาร/สินค้า)
 - portal.js: P079 branch + mount (byte-identical to P082 block) - index.php: p079-marketplace.js?v=20261022b, portal.js?v=20261022b
 - CDP 18/18 PASS (labels/status/h2/badge/summary 9/5/34/paper 5+9 rows/empty state)
+
+## P079 UI Tweak (2026-10-22)
+
+- User: remove 4 summary cards; status field same size as doc-date
+- Removed: summary grid section + 4 cards + el.sum* refs + summary CSS + unused BOX/CHART/USERS icons
+- Status field: span-2 (same 785px as doc-date field; empty spacer div after head date keeps row alignment); date-range width:100%
+- Cache: p079-marketplace.js?v=20261022c - CDP: summaryCards=0, docFieldW=statusFieldW=785
