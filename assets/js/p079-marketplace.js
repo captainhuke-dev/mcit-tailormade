@@ -27,22 +27,32 @@
     EC03: "EC-Ecom-MKT"
   };
 
-  var MOCK_ORDERS = [
-      { document: "MKTN6910-0101", date: "2026-10-19", group: "EC01", platform: "Shopee", customer: "Shopee - คุณสมชาย ใจดี", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 2, unit: "Ea" },
-      { document: "MKTN6910-0102", date: "2026-10-19", group: "EC01", platform: "Lazada", customer: "Lazada - คุณมาลี สุขสบาย", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 1, unit: "Ea" },
-      { document: "MKTN6910-0108", date: "2026-10-20", group: "EC02", platform: "TikTok", customer: "TikTok - คุณวิชัย รักดี", productCode: "10360018", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-12Ah [6Ea/CT]", qty: 3, unit: "Ea" },
-      { document: "MKTN6910-0111", date: "2026-10-20", group: "EC02", platform: "Shopee", customer: "Shopee - คุณนภา แสงทอง", productCode: "10010246", productName: "กรองแสง-3เข็ม(ไก่ชน-MCT) 80% ดำ 2*90m [Ea]", qty: 5, unit: "Ea" },
-      { document: "MKTN6910-0115", date: "2026-10-21", group: "EC03", platform: "Lazada", customer: "Lazada - ร้านพิมพ์ใจ", productCode: "10010246", productName: "กรองแสง-3เข็ม(ไก่ชน-MCT) 80% ดำ 2*90m [Ea]", qty: 10, unit: "Ea" },
-      { document: "MKTN6910-0118", date: "2026-10-21", group: "EC03", platform: "Shopee", customer: "Shopee - คุณประเสริฐ มั่งมี", productCode: "10010378", productName: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*100m", qty: 4, unit: "Ea" },
-      { document: "MKTN6910-0121", date: "2026-10-22", group: "EC01", platform: "TikTok", customer: "TikTok - คุณอรทัย ดีเลิศ", productCode: "10010378", productName: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*100m", qty: 6, unit: "Ea" },
-      { document: "MKTN6910-0124", date: "2026-10-22", group: "EC02", platform: "Lazada", customer: "Lazada - คุณธีรพงษ์ ศรีสุข", productCode: "11650095", productName: "รองเท้าบู๊ทตายาว 11(A2900) [12Pair/Carton]", qty: 2, unit: "Carton" },
-      { document: "MKTN6910-0126", date: "2026-10-22", group: "EC03", platform: "Shopee", customer: "Shopee - คุณกานดา เพชรงาม", productCode: "11650095", productName: "รองเท้าบู๊ทตายาว 11(A2900) [12Pair/Carton]", qty: 1, unit: "Carton" },
-      { document: "MKTN6910-0130", date: "2026-10-23", group: "EC01", platform: "Shopee", customer: "Shopee - คุณสุรชัย พัฒนา", productCode: "10360017", productName: "แบตเตอรี่แห้ง(LightingAll) 12V-8Ah [10Ea/CT]", qty: 2, unit: "Ea" }
-  ];
+
+  var MAC5_CONNECTION_ID = "c1788406814359";
+  var API = { search: "api/p079_search.php" };
+
+  function apiPost(url, data) {
+    return fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    }).then(function (r) { return r.json(); });
+  }
+
+  var toastTimer = null;
+  function showToast(msg, ms) {
+    var t = document.getElementById("p079Toast");
+    var m = document.getElementById("p079ToastMsg");
+    if (!t || !m) return;
+    m.textContent = msg;
+    t.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { t.classList.remove("show"); }, ms || 2600);
+  }
 
   var root = null;
   var el = {};
-  var state = { filters: null, rows: [], loading: false };
+  var state = { rows: [], searching: false };
 
   function esc(v) {
     return String(v).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
@@ -93,7 +103,12 @@
     ".p079-empty-state{display:flex;min-height:320px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
     ".p079-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
     "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}}",
-    "@media (max-width:680px){.p079-launcher-body{grid-template-columns:1fr}.p079-panel-header{align-items:flex-start;flex-direction:column}}"
+    "@media (max-width:680px){.p079-launcher-body{grid-template-columns:1fr}.p079-panel-header{align-items:flex-start;flex-direction:column}}",
+    ".p079-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;box-shadow:0 12px 32px rgba(15,23,42,0.3);opacity:0;pointer-events:none;transition:0.2s ease}",
+    ".p079-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}",
+    ".p079-search-button:disabled{opacity:0.7;transform:none}",
+    ".p079-search-button.loading svg{animation:p079spin 1s linear infinite}",
+    "@keyframes p079spin{to{transform:rotate(360deg)}}",
   ].join("\n");
 
 
@@ -118,13 +133,6 @@
     return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   }
 
-  function filterOrders(f) {
-    return MOCK_ORDERS.filter(function (o) {
-      var md = (!f.docDateFrom || o.date >= f.docDateFrom) && (!f.docDateTo || o.date <= f.docDateTo);
-      var mg = f.group === "EC" || o.group === f.group;
-      return md && mg;
-    });
-  }
 
 
   function html() {
@@ -197,56 +205,61 @@
           "</div>" +
         "</div>" +
       "</section>" +
+      "<div class=\"p079-toast\" id=\"p079Toast\"><span id=\"p079ToastMsg\"></span></div>" +
     "</div>";
   }
 
-  function renderDocument(filters) {
-    var list = filterOrders(filters);
-
-    el.itemsCount.textContent = list.length;
-    el.subtitle.textContent = GROUP_FILTER_LABELS[filters.group] + " \u00b7 " + "วันที่เอกสาร" + " " + fmtDate(filters.docDateFrom) + " " + "ถึง" + " " + fmtDate(filters.docDateTo);
-
-
-    if (!list.length) {
-      el.empty.style.display = "flex";
-      el.emptyStrong.textContent = "ไม่พบรายการตามเงื่อนไขที่เลือก";
-      el.paper.style.display = "none";
-      state.rows = [];
-      return;
-    }
-
-    el.empty.style.display = "none";
-    el.paper.style.display = "block";
-
-
-    state.rows = list;
-    el.itemsBody.innerHTML = list.map(function (o) {
-      return "<tr>" +
-        "<td>" + esc(o.productCode) + "</td>" +
-        "<td>" + esc(o.productName) + "</td>" +
-        "<td></td>" +
-        "<td class=\"center number\">" + o.qty + "</td>" +
-        "<td class=\"center\">" + esc(o.unit) + "</td>" +
-      "</tr>";
-    }).join("");
+  function doSearch() {
+    if (state.searching) return;
+    if (!el.docFrom.value || !el.docTo.value || el.docFrom.value > el.docTo.value) return;
+    state.searching = true;
+    el.search.classList.add("loading");
+    el.search.disabled = true;
+    apiPost(API.search, { connectionId: MAC5_CONNECTION_ID, status: el.status.value, dateFrom: el.docFrom.value, dateTo: el.docTo.value, group: el.group.value })
+      .then(function (d) {
+        if (!d.ok) throw new Error(d.error);
+        state.rows = d.rows || [];
+        if (d.count === 0) {
+          el.itemsBody.innerHTML = "";
+          el.itemsCount.textContent = "0";
+          el.badge.textContent = "0 รายการ";
+          el.paper.style.display = "none";
+          el.empty.style.display = "flex";
+          el.emptyStrong.textContent = "ไม่พบรายการตามเงื่อนไขที่เลือก";
+          el.subtitle.textContent = "ยังไม่ได้ค้นหา/สร้างรายงาน";
+          showToast("ไม่พบรายการตามเงื่อนไขที่ค้นหา");
+          return;
+        }
+        el.empty.style.display = "none";
+        el.paper.style.display = "flex";
+        el.itemsCount.textContent = d.count;
+        el.badge.textContent = d.count + " รายการ";
+        el.itemsBody.innerHTML = state.rows.map(function (o) {
+          return "<tr>" +
+            "<td>" + esc(o.STKcode) + "</td>" +
+            "<td>" + esc(o.STKdescT1) + "</td>" +
+            "<td>" + esc(o.STKdescT2) + "</td>" +
+            "<td class=\"center number\">" + o.qty + "</td>" +
+            "<td class=\"center\">" + esc(o.MILuname) + "</td>" +
+          "</tr>";
+        }).join("");
+        el.subtitle.textContent = "พบ " + d.count + " รายการ";
+        showToast("พบ " + d.count + " รายการ");
+      })
+      .catch(function (e) {
+        showToast("ค้นหาไม่สำเร็จ: " + e.message);
+      })
+      .then(function () {
+        state.searching = false;
+        el.search.classList.remove("loading");
+        el.search.disabled = false;
+      });
   }
 
   function doGenerate() {
-    if (state.loading) return;
-    state.loading = true;
-    var f = {
-      docDateFrom: el.docFrom.value,
-      docDateTo: el.docTo.value,
-      group: el.group.value
-    };
-    if (!f.docDateFrom || !f.docDateTo || f.docDateFrom > f.docDateTo) {
-      state.loading = false;
-      return;
-    }
-    state.filters = f;
-    renderDocument(f);
-    state.loading = false;
+    doSearch();
   }
+
 
   function doPrint() {
     if (el.paper.style.display === "none") {
@@ -265,6 +278,7 @@
       docTo: document.getElementById("p079DocTo"),
       status: document.getElementById("p079Status"),
       group: document.getElementById("p079Group"),
+      search: document.getElementById("p079Search"),
       gen: document.getElementById("p079Gen"),
       print: document.getElementById("p079Print"),
       badge: document.getElementById("p079Badge"),
@@ -277,7 +291,7 @@
     };
     el.form.addEventListener("submit", function (e) {
       e.preventDefault();
-      doGenerate();
+      doSearch();
     });
     el.print.addEventListener("click", doPrint);
     el.gen.addEventListener("click", doGenerate);

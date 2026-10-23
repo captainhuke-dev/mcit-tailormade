@@ -806,3 +806,44 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - User: remove the whole paper table - removed table markup + tbody fill + groupByProduct + GROUP_INFO + esc + table/tag CSS (keep paper meta header: status/group/doc/head/printed)
 - Cache: p079-marketplace.js?v=20261022e - CDP: table gone, meta shows, badge 8, empty state ok
+
+## P079 Single-Row Launcher + Generate in Panel (2026-10-22)
+
+- User: status = from-date width, group = to-date width, search button at end, generate btn moved to print area, head date removed
+- Launcher now 1 row 6-col grid: [วันที่เริ่ม][ถึงวันที่][สถานะ][กลุ่มลูกค้า][ค้นหา] - from=status=192.8px, to=group=192.8px (CDP verified)
+- Search button (type=submit, blue) in form; generate button (gradient) moved to panel header next to print; head date field removed (metaHead = isoToday)
+- Thai labels from trusted bytes: วันที่เริ่ม (P013), ถึงวันที่ (P008), ค้นหา (P006); SEARCH_ICON from P082
+- Cache: p079-marketplace.js?v=20261022f - CDP: labels/widths/buttons all ok, search+gen click work (8 รายการ)
+
+## P079 Green Search Button + Icon Colors (2026-10-22)
+
+- User: search button green + magnifier icon; icons must not be black
+- Search button: green gradient (#34d399->#059669), white text/icon, magnifier (circle+handle) SEARCH_ICON
+- Global rule `.p079-app svg{fill:none;stroke:currentColor;...}` - all icons inherit container color (cal/chev gray, panel blue, print blue, gen/search white)
+- Fixed: `.p079-input-wrap svg` -> `.p079-input-wrap > svg` (search btn is inside input-wrap; old rule grayed + absolute-positioned its icon)
+- Cache: p079-marketplace.js?v=20261022g - CDP: green bg, white magnifier, no black strokes
+
+## P079 Remove Paper Meta Block (2026-10-22)
+
+- User: remove paper meta lines (status/group/doc date/head date/printed) - removed .p079-paper-meta markup + el.meta* refs + assignments + fmtStamp + CSS; paper now empty article
+- Cache: p079-marketplace.js?v=20261022h - CDP: paperMeta=false, paper empty, search/gen/badge ok
+
+## P079 P082-Style Result Section (2026-10-22)
+
+- User: not paper style - like P082 but 1 table - paper article replaced by .p079-res-tables > .p079-rt (white card) > .p079-rt-title (blue bar: รายการสินค้า Pick List Marketplace + count badge) > .p079-rt-wrap > .p079-ztable (5 cols: รหัสสินค้า/ชื่อสินค้า/ชื่อสินค้า/จำนวน/หน่วย, zebra+sticky+hover cloned from P082)
+- id p079Paper kept on res-tables div (doPrint/empty toggle unchanged); count badge p079ItemsCount = row count; qty col number class
+- Cache: p079-marketplace.js?v=20261022j - CDP: title+count+5 ths+8 rows PASS
+
+## P079 Group Values EC/EC01/EC02/EC03 (2026-10-22)
+
+- User: group values - EC=EC-Ecom-ทั้งหมด, EC01=EC-Ecom-(แยม), EC02=EC-Ecom-(เบียร์), EC03=EC-Ecom-MKT (labels unchanged)
+- Changed: GROUP_FILTER_LABELS keys, MOCK_ORDERS group values, option values, filterOrders check ("all" -> "EC")
+- Cache: p079-marketplace.js?v=20261022k - CDP: 4 options, filter EC=8 = EC01(2)+EC02(3)+EC03(3) PASS
+
+## P079 API Search (2026-10-23)
+
+- User: ปุ่มค้นหา = real SQL (MIH/MIL/STK + DEB EC group, status 27, MILtype IS, MILcut=-1, date range on MILday/month/year)
+- api/p079_search.php (new): POST {connectionId, status, dateFrom, dateTo, group} - parameterized; group param -> DEBgroup LIKE 'EC%' (EC) / 'EC01%' etc; returns {ok, count, rows:[STKcode, STKdescT1, STKdescT2, qty, MILuname]}; connectionId MAC5 c1788406814359
+- p079-marketplace.js: MOCK_ORDERS + filterOrders + renderDocument + old doGenerate removed; added MAC5_CONNECTION_ID, API, apiPost(), showToast() (+toast markup/CSS/spin), doSearch() (date validation, loading state on search button, render 5-col rows, badge + subtitle + toast, empty state on 0 rows), doGenerate -> doSearch, form submit -> doSearch
+- Data note: EC-group status-27 data exists 2025-05-28..06 (2026 empty) - CDP 2025-05-28..06-05: EC=300 rows, EC01=104 rows; 2026 dates: 0 rows -> empty state + toast "ไม่พบรายการตามเงื่อนไขที่ค้นหา"
+- Cache: p079-marketplace.js?v=20261022l - CDP: mount+search+rows+badge+Thai PASS
