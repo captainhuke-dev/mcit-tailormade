@@ -2,7 +2,7 @@
 /* P079 - PickList Marketplace (UI only - clone demo/P079_demo.html)
  * IIFE - window.P079Marketplace = { mount }
  * UI clone demo: launcher (doc date range + head date + status 27 fixed + customer group + generate)
- *   + summary 4 cards + panel paper (grouped product rows)
+ *   + panel paper (grouped product rows)
  * Data = mock from demo (no API yet)
  */
 (function () {
@@ -17,9 +17,9 @@
   var CAL = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"></rect><path d="M16 3v4M8 3v4M3 10h18"></path></svg>';
   var CHEV = '<svg viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"></path></svg>';
   var DOC_ICON = '<svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"></path></svg>';
-  var BOX_ICON = '<svg viewBox="0 0 24 24"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><path d="M3.3 7 12 12l8.7-5M12 22V12"></path></svg>';
-  var CHART_ICON = '<svg viewBox="0 0 24 24"><path d="M3 3v18h18"></path><path d="M18 17V9M13 17V5M8 17v-3"></path></svg>';
-  var USERS_ICON = '<svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg>';
+
+
+
   var PRINT_ICON = '<svg viewBox="0 0 24 24"><path d="M6 9V2h12v7"></path><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16"></path><rect x="6" y="14" width="12" height="8"></rect></svg>';
   var INBOX_ICON = '<svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><path d="M3 6h18"></path><path d="M16 10a4 4 0 0 1-8 0"></path></svg>';
   var TABLE_ICON = '<svg viewBox="0 0 24 24"><path d="M3 3h18v18H3z"></path><path d="M3 9h18M9 3v18"></path></svg>';
@@ -54,7 +54,7 @@
     ".p079-launcher-body{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:14px 16px;align-items:end;padding:20px;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
     ".p079-field label{display:block;margin-bottom:7px;color:#334155;font-size:12px;font-weight:700}",
     ".p079-field.span-2{grid-column:span 2}",
-    ".p079-date-range{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center}",
+    ".p079-date-range{display:grid;width:100%;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center}",
     ".p079-date-separator{color:#475569;font-size:12px;font-weight:700}",
     ".p079-input-wrap{position:relative}",
     ".p079-input-wrap svg{position:absolute;top:50%;right:12px;width:17px;height:17px;color:#94a3b8;transform:translateY(-50%);pointer-events:none}",
@@ -65,15 +65,6 @@
     ".p079-generate-button{display:inline-flex;height:44px;align-items:center;justify-content:center;gap:9px;padding:0 24px;color:#fff;border:0;border-radius:11px;background:linear-gradient(135deg,#38bdf8,#1d4ed8);box-shadow:0 9px 20px rgba(37,99,235,0.26);font-size:14px;font-weight:700;white-space:nowrap;transition:0.16s ease}",
     ".p079-generate-button:hover{transform:translateY(-2px);filter:brightness(1.06)}",
     ".p079-generate-button svg{width:19px;height:19px}",
-    ".p079-summary-grid{display:grid;grid-template-columns:repeat(4,minmax(170px,1fr));gap:12px}",
-    ".p079-summary-card{display:flex;min-width:0;align-items:center;gap:12px;padding:13px 15px;border:1px solid #dbe3ef;border-radius:14px;background:#fff;box-shadow:0 4px 14px rgba(15,23,42,0.04)}",
-    ".p079-summary-icon{display:grid;width:42px;height:42px;flex:0 0 auto;place-items:center;color:#2563eb;border-radius:12px;background:#eff6ff}",
-    ".p079-summary-card.green .p079-summary-icon{color:#059669;background:#ecfdf5}",
-    ".p079-summary-card.orange .p079-summary-icon{color:#d97706;background:#fffbeb}",
-    ".p079-summary-card.purple .p079-summary-icon{color:#7c3aed;background:#f5f3ff}",
-    ".p079-summary-text{min-width:0}",
-    ".p079-summary-text span{display:block;color:#64748b;font-size:10px}",
-    ".p079-summary-text strong{display:block;overflow:hidden;margin-top:2px;font-size:17px;text-overflow:ellipsis;white-space:nowrap}",
     ".p079-panel{display:flex;min-height:440px;flex:1;flex-direction:column;overflow:hidden;border:1px solid #dbe3ef;border-radius:16px;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.08)}",
     ".p079-panel-header{display:flex;min-height:56px;align-items:center;justify-content:space-between;gap:12px;padding:8px 15px;border-bottom:1px solid #dbe3ef}",
     ".p079-panel-heading{display:flex;min-width:0;align-items:center;gap:10px}",
@@ -105,8 +96,8 @@
     ".p079-platform-tag{display:inline-flex;padding:2px 8px;color:#334155;border-radius:6px;background:#e2e8f0;font-size:11px;font-weight:700}",
     ".p079-empty-state{display:flex;min-height:320px;align-items:center;justify-content:center;color:#64748b;text-align:center}",
     ".p079-empty-state svg{width:48px;height:48px;margin:0 auto 10px}",
-    "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}.p079-field.span-2{grid-column:1/-1}.p079-generate-button{grid-column:1/-1}.p079-summary-grid{grid-template-columns:repeat(2,1fr)}}",
-    "@media (max-width:680px){.p079-launcher-body,.p079-summary-grid{grid-template-columns:1fr}.p079-date-range{grid-template-columns:1fr}.p079-date-separator{display:none}.p079-panel-header{align-items:flex-start;flex-direction:column}.p079-paper{padding:16px}}"
+    "@media (max-width:1000px){.p079-launcher-body{grid-template-columns:1fr 1fr}.p079-field.span-2{grid-column:1/-1}.p079-generate-button{grid-column:1/-1}}",
+    "@media (max-width:680px){.p079-launcher-body{grid-template-columns:1fr}.p079-date-range{grid-template-columns:1fr}.p079-date-separator{display:none}.p079-panel-header{align-items:flex-start;flex-direction:column}.p079-paper{padding:16px}}"
   ].join("\n");
 
   function esc(v) {
@@ -194,12 +185,6 @@
           "<button class=\"p079-generate-button\" id=\"p079Gen\" type=\"submit\">" + DOC_ICON + "สร้างเอกสาร" + "</button>" +
         "</form>" +
       "</section>" +
-      "<section class=\"p079-summary-grid\">" +
-        "<div class=\"p079-summary-card\"><div class=\"p079-summary-icon\">" + DOC_ICON + "</div><div class=\"p079-summary-text\"><span>" + "จำนวนเอกสาร" + "</span><strong id=\"p079SumOrd\">0 " + "ใบ" + "</strong></div></div>" +
-        "<div class=\"p079-summary-card green\"><div class=\"p079-summary-icon\">" + BOX_ICON + "</div><div class=\"p079-summary-text\"><span>" + "จำนวนสินค้า" + "</span><strong id=\"p079SumProd\">0 " + "รายการ" + "</strong></div></div>" +
-        "<div class=\"p079-summary-card orange\"><div class=\"p079-summary-icon\">" + CHART_ICON + "</div><div class=\"p079-summary-text\"><span>" + "จำนวน" + "</span><strong id=\"p079SumQty\">0</strong></div></div>" +
-        "<div class=\"p079-summary-card purple\"><div class=\"p079-summary-icon\">" + USERS_ICON + "</div><div class=\"p079-summary-text\"><span>" + "กลุ่มลูกค้า" + "</span><strong id=\"p079SumGrp\">" + "EC-Ecom-ทั้งหมด" + "</strong></div></div>" +
-      "</section>" +
       "<section class=\"p079-panel\">" +
         "<div class=\"p079-panel-header\">" +
           "<div class=\"p079-panel-heading\">" +
@@ -255,12 +240,6 @@
     el.badge.textContent = list.length + " " + "รายการ";
     el.subtitle.textContent = GROUP_FILTER_LABELS[filters.group] + " \u00b7 " + "วันที่เอกสาร" + " " + fmtDate(filters.docDateFrom) + " " + "ถึง" + " " + fmtDate(filters.docDateTo);
 
-    var docs = {};
-    list.forEach(function (o) { docs[o.document] = 1; });
-    el.sumOrd.textContent = Object.keys(docs).length + " " + "ใบ";
-    el.sumProd.textContent = products.length + " " + "รายการ";
-    el.sumQty.textContent = list.reduce(function (s, o) { return s + o.qty; }, 0);
-    el.sumGrp.textContent = GROUP_FILTER_LABELS[filters.group];
 
     if (!list.length) {
       el.empty.style.display = "flex";
@@ -337,10 +316,6 @@
       print: document.getElementById("p079Print"),
       badge: document.getElementById("p079Badge"),
       subtitle: document.getElementById("p079Subtitle"),
-      sumOrd: document.getElementById("p079SumOrd"),
-      sumProd: document.getElementById("p079SumProd"),
-      sumQty: document.getElementById("p079SumQty"),
-      sumGrp: document.getElementById("p079SumGrp"),
       empty: document.getElementById("p079Empty"),
       emptyStrong: document.getElementById("p079EmptyStrong"),
       paper: document.getElementById("p079Paper"),
