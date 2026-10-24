@@ -11,8 +11,7 @@
   "use strict";
 
   var STATUS_OPTIONS = [
-    ["18", "18-PickList[IRW][Zone QC]/PD"],
-    ["26", "26-PD/QC"]
+    ["18", "18-PickList QC/PD"]
   ];
 
   var MONTHS_TH = ["มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
