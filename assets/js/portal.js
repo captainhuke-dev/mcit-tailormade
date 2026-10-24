@@ -1129,6 +1129,23 @@
       `;
     }
 
+    // P084: PickList[IRW][Zone QC]
+    if (programId === "P084") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+          <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+            ${backLabel}
+          </button>
+          <span id="p084SettingsWrap" style="display:inline-flex"></span>
+        </div>
+        <div id="p084Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P050: ใบวางบิล
     if (programId === "P050") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1837,6 +1854,12 @@
     if (page.type === "program" && page.programId === "P083" && window.P083PickListLoad) {
       const root = document.getElementById("p083Root");
       if (root) window.P083PickListLoad.mount(root);
+    }
+
+    // P084: mount PickList[IRW][Zone QC] app
+    if (page.type === "program" && page.programId === "P084" && window.P084PickListIrw) {
+      const root = document.getElementById("p084Root");
+      if (root) window.P084PickListIrw.mount(root);
     }
   }
 

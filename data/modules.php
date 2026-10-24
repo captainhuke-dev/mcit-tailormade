@@ -215,7 +215,7 @@ return [
                 "name"        => "PickList (PD/QC)",
                 "description" => "PickList สำหรับ PD/QC",
                 "programs"   => [
-                    ["id" => "P084", "name" => "PickList[IRW][Zone QC]"],
+                    ["id" => "P084", "name" => "PickList[IRW][Zone QC]", "status" => "ready"],
                 ],
             ],
         ],
