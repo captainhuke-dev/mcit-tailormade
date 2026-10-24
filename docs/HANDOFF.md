@@ -925,3 +925,15 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - qty/total numbers font Arial -> THSarabunNew (.p079-rt2 .num)
 - CDP PASS 7/7: cols pt, title, stline, no cap row, dates, no status div, num font Sarabun
 - Cache: p079-marketplace.js?v=20261023a
+
+## P079 Report A4 Pagination (2026-10-24)
+
+- sheet -> section.p079-page (210x297mm, overflow hidden, flex column)
+- client-side pag(): split rows at page bottom, new section per page
+- header (title + asof + table thead) repeated on every page
+- page number "หน้า N" bottom-right (margin-top:auto), renumber after split
+- STO rowspan rebuilt per page via data-sto + fixSto (groups split across pages)
+- table width 550pt centered; @page margin 20pt 10pt (C#: L10 R10 T20 B20)
+- zoom 50-200% still works (setZoom -> fit + pag)
+- CDP PASS 7/7: 37 pages, pgno 1-37, thead each page, no data-sto left, sto cells, foot น, rows 1288; zoom 125 + page2 header verified
+- Cache: p079-marketplace.js?v=20261023b
