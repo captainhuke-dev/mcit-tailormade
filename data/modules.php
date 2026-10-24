@@ -203,7 +203,7 @@ return [
                     ["id" => "P076", "name" => "PickList ห้าง"],
                     ["id" => "P077", "name" => "PickList EM"],
                     ["id" => "P078", "name" => "PickList By INV"],
-                    ["id" => "P079", "name" => "PickList Marketplace"],
+                    ["id" => "P079", "name" => "PickList Marketplace", "status" => "ready"],
                     ["id" => "P080", "name" => "PickList QC", "status" => "ready"],
                     ["id" => "P081", "name" => "PickList By Route", "status" => "ready"],
                     ["id" => "P082", "name" => "PickList To Pack", "status" => "ready"],

@@ -937,3 +937,14 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - zoom 50-200% still works (setZoom -> fit + pag)
 - CDP PASS 7/7: 37 pages, pgno 1-37, thead each page, no data-sto left, sto cells, foot น, rows 1288; zoom 125 + page2 header verified
 - Cache: p079-marketplace.js?v=20261023b
+
+## P079 PickList Marketplace — READY (2026-10-24)
+
+- user ยืนยันพร้อมใช้งาน — modules.php P079 -> status: ready (39 modules ready)
+- สรุป: UI clone demo + search API (p079_search) + report modal P083-style (overlay + iframe srcdoc A4)
+- search block 6 fields 3x2 (วันที่เริ่ม/ถึง/วันที่หัวเอกสาร + สถานะ 27/กลุ่ม/ค้นหา) — วันที่หัวเอกสาร = report as-of
+- generate button disabled ถ้าตารางว่าง + ตารางแสดงเสมอ
+- report: 7 cols pt (50/20/250/70/60/50/50), title/asof กลาง, stline (สถานะ/พิมพ์เมื่อ) row แรกไม่มีเส้น, STO rowspan, dates dd/mm/yyyy พ.ศ., font THSarabunNew ทั้งหมด
+- A4 pagination: แบ่งหน้า 297mm + หน้า N + header ซ้ำทุกหน้า + table กึ่งกลาง + margin ตาม C#
+- zoom 50-200% step 25 + print + Esc/overlay close
+- Cache: p079-marketplace.js?v=20261023c
