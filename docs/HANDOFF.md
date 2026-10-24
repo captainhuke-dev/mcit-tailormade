@@ -957,6 +957,6 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
   - api/p084_search.php + p084_generate.php + p084_groups.php (SQL ยัง = P080 — รอ user ให้ SQL P084)
 - wiring: portal.js program block P084 (breadcrumb + p084SettingsWrap + p084Root) + mount P084PickListIrw
 - index.php: p084-picklist-irw.js?v=20261024a
-- modules.php: P084 -> ready (39 modules)
+- modules.php: P084 = placeholder (NOT ready - user ยืนยันรอ SQL P084)
 - CDP PASS: root mount + settings btn + export P084PickListIrw + breadcrumb (ธุรการ › PickList (PD/QC) › P084)
 - ต่อไป: user ให้ SQL P084 -> ดับเบิลเข้า p084_search.php + p084_generate.php
