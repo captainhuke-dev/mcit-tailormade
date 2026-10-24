@@ -1007,3 +1007,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - CDP PASS (status 26 = 99 rows = 7 หน้า): page1 15 rows prev disabled, page3 31-45, next 46-60, page7 9 rows next disabled, prev 76-90, active btn blue
 - Thai literals: harvest จาก function เก่า + cross-check P080 (codepoint verify) — ทุกคำตรง
 - Cache: p084-picklist-irw.js?v=20261024h
+
+## P084 Generate Button Gate (2026-10-24)
+
+- user: ปุ่มสร้างรายงาน ไม่ทำงานถ้าไม่มีข้อมูลในตาราง
+- syncGenBtn(): disabled = !(view=search && rows>0) — เรียกใน render ทั้ง 2 branch + doGenerate finally
+- doGenerate guard: return ถ้าไม่มีข้อมูล; mount เรียก render() ตอนแรก (ปุ่ม disabled ในสถานะว่าง)
+- CDP PASS: initial disabled, click guard (no loading/modal), search 26 (99 rows) -> enabled
+- Cache: p084-picklist-irw.js?v=20261024i
