@@ -997,3 +997,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - commit 3b21b90 รวมชื่อเป็น 1 ช่องผิด spec → ย้อนกลับเป็น 5 คอลัมน์ (ชื่อสินค้า (1)/(2) แยก) commit 4365db2
 - CDP PASS: 5 cols [100,100,479,479,100], Thai headers ตรง P080 (codepoint verify)
 - Cache: p084-picklist-irw.js?v=20261024g
+
+## P084 Pagination + h2 (2026-10-24)
+
+- user: h2 = PickList[IRW][Zone QC] (ตัด 'ผลการสร้างเอกสาร') + ตารางผลค้นหาแบ่งหน้า 15 รายการ/หน้า + ปุ่มหน้าให้ดูสวยงาม
+- h2: 'ผลการสร้างเอกสาร PickList[IRW][Zone QC]' -> 'PickList[IRW][Zone QC]'
+- pagination: PER_PAGE=15, state.page, doSearch reset page=1, slice rows
+- footer: 'แสดง X - Y · N รายการ' + pager (prev ‹ / numbers / next ›, ellipsis เมื่อ >7 หน้า, active = น้ำเงิน #1d4ed8, disabled opacity .4)
+- CDP PASS (status 26 = 99 rows = 7 หน้า): page1 15 rows prev disabled, page3 31-45, next 46-60, page7 9 rows next disabled, prev 76-90, active btn blue
+- Thai literals: harvest จาก function เก่า + cross-check P080 (codepoint verify) — ทุกคำตรง
+- Cache: p084-picklist-irw.js?v=20261024h
