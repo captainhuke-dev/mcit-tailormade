@@ -918,3 +918,10 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - rowspan STO per product group; dates dd/mm/yyyy พ.ศ. (Number() fix)
 - CDP PASS 5/5: cols pt, title, status line, no cap row, dates ddmmyyyy
 - Cache: p079-marketplace.js?v=20261022z
+
+## P079 Report stline Row + Num Font (2026-10-24)
+
+- status+printed line moved from under asof into first table row: colspan=7, border:0 (class .stline)
+- qty/total numbers font Arial -> THSarabunNew (.p079-rt2 .num)
+- CDP PASS 7/7: cols pt, title, stline, no cap row, dates, no status div, num font Sarabun
+- Cache: p079-marketplace.js?v=20261023a
