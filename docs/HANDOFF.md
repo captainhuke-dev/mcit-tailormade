@@ -960,3 +960,9 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - modules.php: P084 = placeholder (NOT ready - user ยืนยันรอ SQL P084)
 - CDP PASS: root mount + settings btn + export P084PickListIrw + breadcrumb (ธุรการ › PickList (PD/QC) › P084)
 - ต่อไป: user ให้ SQL P084 -> ดับเบิลเข้า p084_search.php + p084_generate.php
+
+## P084 Status Options (2026-10-24)
+
+- user: status = 18-PickList QC/PD + 26-PD/QC (เพิ่ม 18 + ตัด status อื่นออก)
+- CDP PASS: 2 options (18 default)
+- Cache: p084-picklist-irw.js?v=20261024c
