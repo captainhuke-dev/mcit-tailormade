@@ -975,3 +975,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - CDP PASS: root mount, settings wrap/btn หาย, status 18/26 (18 default), search status 18 = 1 row (SQL IRW/ICS ทำงาน)
 - Cache: p084-picklist-irw.js?v=20261024d
 - P084 ยัง placeholder (รอ SQL generate + user ยืนยันพร้อม)
+
+## P084 Search SQL (2026-10-24)
+
+- user ยืนยัน SQL ปุ่มค้นหา = เดียวกับที่อยู่ใน p084_search.php แล้ว (commit 483b20c) — ไม่มีอะไรเพิ่ม
+- CDP PASS: search status 18 = 1 row (10360017)
