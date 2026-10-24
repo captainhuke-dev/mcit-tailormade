@@ -987,6 +987,6 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - ตัดปุ่ม สร้างรายงาน (ซ่อนชื่อสินค้า) ออก (clone P080 มี 2 ปุ่ม — ปุ่ม ซ่อนชื่อสินค้า ไม่ใช่แบบ P084) + mode tech / barcode page ไม่ใช้งานแล้ว
 - ชื่อ modal + sheet title = ' Pick List[IRW][Zone QC]' (แทน ' Pick List QC')
 - ตารางผลค้นหา: table-layout fixed, colgroup (รหัส 110px, กลุ่ม 110px, ชื่อ 1/2 flex, คงเหลือ 90px), ชื่อสินค้า ยาว ellipsis
-- CDP PASS: search 18 = 1 row, table fixed [110,110,474,474,90]
-- Cache: p084-picklist-irw.js?v=20261024e
+- CDP PASS: search 18 = 1 row, table fixed [100,100,479,479,100]
+- Cache: p084-picklist-irw.js?v=20261024f
 - P084 ยัง placeholder — รอปุ่น SQL สร้างรายงาน (p084_generate.php ยัง = P080)
