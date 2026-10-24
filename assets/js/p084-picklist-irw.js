@@ -3,7 +3,7 @@
  * IIFE — window.P084PickListIrw = { mount }
  * clone demo/P080_demo.html + C# AppPackingListBucketParts/FrmPackingListBatteryGUI:
  *   - ปุ่มค้นหา → api/p084_search.php (ตาราง 5 คอลั่ม)
- *   - ปุ่มสร้างรายงาน → api/p084_generate.php → modal รายงาน A4 "Pick List QC" (หัวกลุ่ม)
+ *   - ปุ่มสร้างรายงาน → api/p084_generate.php → modal รายงาน A4 "Pick List[IRW][Zone QC]" (หัวกลุ่ม)
  *   - ปุ่มสร้างรายงาน (ซ่อนชื่อสินค้า) → modal รายงาน A4 "Packing List ช่าง" (flat + หน้า barcode)
  * รายงาน modal clone pattern P081 (srcdoc iframe + paginate + zoom + print)
  */
@@ -11,7 +11,7 @@
   "use strict";
 
   var STATUS_OPTIONS = [
-    ["18", "18-PickList QC/PD"],
+    ["18", "18-PickList[IRW][Zone QC]/PD"],
     ["26", "26-PD/QC"]
   ];
 
@@ -192,7 +192,7 @@
   }
 
   /* ---------- รายงาน A4 (clone C# bgWorker_DoWork / bgWorker_DoWork_TEST + pattern P081) ----------
-     mode "qc"   = "Pick List QC" — หัวกลุ่ม (STGcode : STGdescT) + ชื่อสินค้า T1+T2
+     mode "qc"   = "Pick List[IRW][Zone QC]" — หัวกลุ่ม (STGcode : STGdescT) + ชื่อสินค้า T1+T2
      mode "tech" = "Packing List ช่าง" — flat (ไม่มี หัวกลุ่ม, ชื่อ T1) + หน้า barcode */
   function itemRowsHtml(items, hideNames) {
     var body = "";
@@ -230,7 +230,7 @@
   function reportDocHtml() {
     var d = state.report;
     var isTech = state.reportMode === "tech";
-    var title = isTech ? " Packing List ช่าง" : " Pick List QC";
+    var title = isTech ? " Packing List ช่าง" : " Pick List[IRW][Zone QC]";
     var lastCol = isTech ? "คงเหลือ /<br>หน่วยนับ" : "คงเหลือ<br>( 01,03,04 )";
 
     var css = [
@@ -317,7 +317,7 @@
   function openReport() {
     var d = state.report;
     var isTech = state.reportMode === "tech";
-    var title = isTech ? "รายงาน Packing List ช่าง" : "รายงาน Pick List QC";
+    var title = isTech ? "รายงาน Packing List ช่าง" : "รายงาน Pick List[IRW][Zone QC]";
     var overlay = document.getElementById("p084ReportOverlay");
     if (!overlay) {
       overlay = document.createElement("div");
@@ -477,6 +477,11 @@
     ".p084-table tbody tr:hover{background:#f0f7ff}",
     ".p084-doc-number{color:#1d4ed8;font-family:Arial,sans-serif;font-weight:700}",
     ".p084-product-code{color:#334155;font-family:Arial,sans-serif;font-weight:700}",
+    ".p084-search-table{table-layout:fixed;min-width:0}",
+    ".p084-search-table col.c-code{width:110px}",
+    ".p084-search-table col.c-grp{width:110px}",
+    ".p084-search-table col.c-qty{width:90px}",
+    ".p084-search-table th,.p084-search-table td{overflow:hidden;text-overflow:ellipsis}",
     ".p084-status-tag{display:inline-flex;padding:3px 9px;color:#92400e;border-radius:7px;background:#fef3c7;font-size:11px;font-weight:700;white-space:normal}",
     ".p084-empty-state{display:flex;min-height:320px;flex:1;align-items:center;justify-content:center;color:#64748b;text-align:center}",
     ".p084-empty-state svg{width:48px;height:48px;margin:0 auto 10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
@@ -530,7 +535,7 @@
           '<div class="p084-panel-heading">' +
             '<div class="p084-panel-icon">' + icon("grid") + "</div>" +
             '<div class="p084-panel-title">' +
-              "<h2>ผลการสร้างเอกสาร PickList QC</h2>" +
+              "<h2>ผลการสร้างเอกสาร PickList[IRW][Zone QC]</h2>" +
               '<p id="p084Subtitle">ยังไม่ได้ค้นหา/สร้างรายงาน</p>' +
             "</div>" +
           "</div>" +
@@ -543,6 +548,7 @@
         "</div>" +
         '<div class="p084-table-container" id="p084SearchContainer" style="display:none">' +
           '<table class="p084-table p084-search-table">' +
+            "<colgroup><col class=\"c-code\"><col class=\"c-grp\"><col><col><col class=\"c-qty\"></colgroup>" +
             "<thead><tr>" +
             "<th>รหัสสินค้า</th><th class=\"center\">กลุ่ม</th>" +
             "<th>ชื่อสินค้า (1)</th><th>ชื่อสินค้า (2)</th>" +
