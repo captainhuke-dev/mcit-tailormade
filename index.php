@@ -195,7 +195,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p083-picklist-load.js?v=20261020r"></script>
   <script src="assets/js/p079-marketplace.js?v=20261023c"></script>
   <script src="assets/js/p082-picklist-pack.js?v=20261022m"></script>
-  <script src="assets/js/p084-picklist-irw.js?v=20261024g"></script>
+  <script src="assets/js/p084-picklist-irw.js?v=20261024h"></script>
   <script src="assets/js/p050-billing.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <script src="assets/js/qrcode.min.js"></script>

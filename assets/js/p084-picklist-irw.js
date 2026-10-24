@@ -21,7 +21,7 @@
   var root = null;
   var el = {};
   var state = {
-    searchRows: [], view: null, searching: false,
+    searchRows: [], view: null, searching: false, page: 1,
     loading: false, report: null, reportMode: "qc", zoom: 100, escBound: false
   };
   var toastTimer = null;
@@ -112,6 +112,7 @@
         }
         state.searchRows = d.rows;
         state.view = "search";
+        state.page = 1;
         render();
         showToast("พบ " + d.count + " รายการ");
       })
@@ -159,6 +160,8 @@
   }
 
   /* ---------- render (ผลค้นหา) ---------- */
+    var PER_PAGE = 15;
+
   function render() {
     var isSearch = state.view === "search";
     if (!isSearch) {
@@ -176,9 +179,15 @@
     el.modeBadge.style.display = "inline-flex";
     el.modeBadge.textContent = "ผลค้นหา";
     el.modeBadge.className = "p084-mode-badge search";
-    el.subtitle.textContent = "สถานะ " + statusLabel(el.status.value) + " · " + fmtDate(el.headDate.value);
+    el.subtitle.textContent = "สถานะ " + statusLabel(el.status.value) + " \u00b7 " + fmtDate(el.headDate.value);
+    var total = rows.length;
+    var pages = Math.max(1, Math.ceil(total / PER_PAGE));
+    if (state.page < 1) state.page = 1;
+    if (state.page > pages) state.page = pages;
+    var start = (state.page - 1) * PER_PAGE;
+    var pageRows = rows.slice(start, start + PER_PAGE);
     var html = "";
-    rows.forEach(function (r) {
+    pageRows.forEach(function (r) {
       html += "<tr>" +
         '<td class="p084-product-code">' + esc(r.STKcode) + "</td>" +
         '<td class="center">' + esc(r.STKgroup) + "</td>" +
@@ -188,7 +197,32 @@
         "</tr>";
     });
     el.searchRows.innerHTML = html;
-    el.footerText.textContent = "แสดง " + rows.length + " รายการ";
+    el.footerText.textContent = "แสดง " + (total ? (start + 1) : 0) + " - " + (start + pageRows.length) + " \u00b7 " + total + " " + " รายการ";
+    renderPager(pages);
+  }
+
+  function renderPager(pages) {
+    if (!el.pager) return;
+    if (pages <= 1) { el.pager.innerHTML = ""; return; }
+    var cur = state.page;
+    var h = "";
+    h += '<button type="button" class="p084-pg" data-pg="prev"' + (cur <= 1 ? " disabled" : "") + ">&lsaquo;</button>";
+    var nums = [];
+    if (pages <= 7) {
+      for (var i = 1; i <= pages; i++) nums.push(i);
+    } else {
+      nums.push(1);
+      if (cur > 3) nums.push("...");
+      for (var j = Math.max(2, cur - 1); j <= Math.min(pages - 1, cur + 1); j++) nums.push(j);
+      if (cur < pages - 2) nums.push("...");
+      nums.push(pages);
+    }
+    nums.forEach(function (n) {
+      if (n === "...") { h += '<span class="p084-pg ell">&hellip;</span>'; return; }
+      h += '<button type="button" class="p084-pg' + (n === cur ? " active" : "") + '" data-pg="' + n + '">' + n + "</button>";
+    });
+    h += '<button type="button" class="p084-pg" data-pg="next"' + (cur >= pages ? " disabled" : "") + ">&rsaquo;</button>";
+    el.pager.innerHTML = h;
   }
 
   /* ---------- รายงาน A4 (clone C# bgWorker_DoWork / bgWorker_DoWork_TEST + pattern P081) ----------
@@ -487,6 +521,12 @@
     ".p084-empty-state svg{width:48px;height:48px;margin:0 auto 10px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}",
     ".p084-empty-state p{margin-top:5px;font-size:11px}",
     ".p084-table-footer{display:flex;min-height:50px;align-items:center;justify-content:space-between;gap:12px;padding:8px 15px;color:#64748b;border-top:1px solid #dbe3ef;background:#f8fafc;font-size:12px}",
+    ".p084-pager{display:flex;align-items:center;gap:5px}",
+    ".p084-pg{min-width:32px;height:32px;padding:0 9px;border:1px solid #dbe3ef;border-radius:9px;background:#fff;color:#334155;font-size:12px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s ease}",
+    ".p084-pg:hover:not(:disabled):not(.active){background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}",
+    ".p084-pg.active{background:#1d4ed8;border-color:#1d4ed8;color:#fff;box-shadow:0 4px 10px rgba(29,78,216,0.25)}",
+    ".p084-pg:disabled{opacity:.4;cursor:default}",
+    ".p084-pg.ell{border:0;background:transparent;cursor:default;color:#94a3b8}",
     ".p084-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);z-index:200;display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;background:#0f172a;color:#fff;font-size:13px;font-weight:600;box-shadow:0 12px 32px rgba(15,23,42,0.3);opacity:0;pointer-events:none;transition:0.2s ease}",
     ".p084-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}",
     ".p084-rep-overlay{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:10px;background:rgba(15,23,42,0.55)}",
@@ -535,7 +575,7 @@
           '<div class="p084-panel-heading">' +
             '<div class="p084-panel-icon">' + icon("grid") + "</div>" +
             '<div class="p084-panel-title">' +
-              "<h2>ผลการสร้างเอกสาร PickList[IRW][Zone QC]</h2>" +
+              "<h2>PickList[IRW][Zone QC]</h2>" +
               '<p id="p084Subtitle">ยังไม่ได้ค้นหา/สร้างรายงาน</p>' +
             "</div>" +
           "</div>" +
@@ -564,7 +604,7 @@
           "</div>" +
         "</div>" +
         '<div class="p084-table-footer" id="p084Footer" style="display:none">' +
-          '<span id="p084FooterText">แสดง 0 รายการ</span>' +
+          '<span id=\"p084FooterText\">แสดง 0 รายการ</span><div class=\"p084-pager\" id=\"p084Pager\"></div>' +
         "</div>" +
       "</section>" +
       '<div class="p084-toast" id="p084Toast"><span id="p084ToastMsg"></span></div>' +
@@ -597,7 +637,20 @@
     el.emptyState = $("p084EmptyState");
     el.footer = $("p084Footer");
     el.footerText = $("p084FooterText");
+    el.pager = $("p084Pager");
     el.toast = $("p084Toast");
+
+    if (el.pager) {
+      el.pager.addEventListener("click", function (e) {
+        var b = e.target.closest ? e.target.closest("button[data-pg]") : null;
+        if (!b || b.disabled) return;
+        var pg = b.getAttribute("data-pg");
+        if (pg === "prev") state.page = Math.max(1, state.page - 1);
+        else if (pg === "next") state.page = state.page + 1;
+        else state.page = parseInt(pg, 10);
+        render();
+      });
+    }
 
     el.genNormalBtn.addEventListener("click", function (e) {
       e.preventDefault();
