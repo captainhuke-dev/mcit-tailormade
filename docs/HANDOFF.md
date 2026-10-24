@@ -990,3 +990,10 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - CDP PASS: search 18 = 1 row, table fixed [100,100,479,479,100]
 - Cache: p084-picklist-irw.js?v=20261024f
 - P084 ยัง placeholder — รอปุ่น SQL สร้างรายงาน (p084_generate.php ยัง = P080)
+
+## P084 Search Table 5 Cols (2026-10-24)
+
+- user: รหัส/กลุ่ม/คงเหลือ = 100px, ชื่อสินค้า 1/2 ยืด — table-layout fixed + ellipsis
+- commit 3b21b90 รวมชื่อเป็น 1 ช่องผิด spec → ย้อนกลับเป็น 5 คอลัมน์ (ชื่อสินค้า (1)/(2) แยก) commit 4365db2
+- CDP PASS: 5 cols [100,100,479,479,100], Thai headers ตรง P080 (codepoint verify)
+- Cache: p084-picklist-irw.js?v=20261024g
