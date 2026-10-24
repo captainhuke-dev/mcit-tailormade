@@ -966,3 +966,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - user: status = 18-PickList QC/PD + 26-PD/QC (เพิ่ม 18 + ตัด status อื่นออก)
 - CDP PASS: 2 options (18 default)
 - Cache: p084-picklist-irw.js?v=20261024c
+
+## P084 Remove Settings + User SQL (2026-10-24)
+
+- user: เอาปุ่ม "ตั้งค่ากลุ่มสินค้าแบตเตอรี" ออก — ตัด CSS .p084-settings-btn + .p084-grp-* + grp JS (GRP_STATE/grpLoad/grpSave/grpEdit/grpDel/openGrpModal) + ปุ่มใน mount + p084SettingsWrap ใน portal.js + API.groups
+- default status = 18
+- user SQL ปุ่มค้นหา (verbatim): ตัด filter กลุ่มแบตเตอรี (tb_GroupBattery) + เพิ่ม (MIHvnos LIKE 'IRW%' OR MIHvnos LIKE 'ICS%') — เข้า p084_search.php
+- CDP PASS: root mount, settings wrap/btn หาย, status 18/26 (18 default), search status 18 = 1 row (SQL IRW/ICS ทำงาน)
+- Cache: p084-picklist-irw.js?v=20261024d
+- P084 ยัง placeholder (รอ SQL generate + user ยืนยันพร้อม)
