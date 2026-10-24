@@ -286,6 +286,10 @@
     return pad2(Number(p[2])) + "/" + pad2(Number(p[1])) + "/" + (Number(p[0]) + 543);
   }
 
+  function statusLabel() {
+    var opt = el.status.options[el.status.selectedIndex];
+    return opt ? opt.text : "";
+  }
   function fmtAsOf(iso) {
     var p = (iso && iso.length >= 10) ? iso.slice(0, 10).split("-") : null;
     var d = p ? new Date(Number(p[0]), Number(p[1]) - 1, Number(p[2])) : new Date();
@@ -338,6 +342,7 @@
       ".p079-sheet{box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto;padding:20pt 20pt 25pt 10pt;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.25);font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}",
       ".p079-sheet-title{margin:0 0 2px;text-align:center;font-size:18px;font-weight:700}",
       ".p079-sheet-asof{margin:0 0 4px;text-align:center;font-size:15px;font-weight:700}",
+      ".p079-sheet-status{margin:0 0 10px;font-size:12px;font-weight:400}",
       ".p079-sheet-spacer{height:6px}",
       ".p079-rt2{table-layout:fixed;width:550px;margin:0 auto;border-collapse:collapse;font-size:14px}",
       ".p079-rt2 td{padding:3px 5px;border:1px solid #000;vertical-align:middle;word-break:break-word}",
@@ -379,11 +384,11 @@
     var t = "<div class=\"p079-sheet\">" +
       "<h1 class=\"p079-sheet-title\">" + " Pick List Marketplace" + "</h1>" +
       "<p class=\"p079-sheet-asof\">" + " ประจำวันที่ " + fmtAsOf(el.headDate.value) + "</p>" +
+      "<div class=\"p079-sheet-status\">" + " สถานะ : " + statusLabel() + "  " + " พิมพ์เมื่อ : " + d.printedAt + "</div>" +
       "<div class=\"p079-sheet-spacer\"></div>" +
       "<table class=\"p079-rt2\"><colgroup>" +
-        "<col style=\"width:50px\"><col style=\"width:20px\"><col style=\"width:250px\"><col style=\"width:70px\"><col style=\"width:60px\"><col style=\"width:50px\"><col style=\"width:50px\">" +
+        "<col style=\"width:50pt\"><col style=\"width:20pt\"><col style=\"width:250pt\"><col style=\"width:70pt\"><col style=\"width:60pt\"><col style=\"width:50pt\"><col style=\"width:50pt\">" +
       "</colgroup><tbody>" +
-      "<tr><td colspan=\"7\" class=\"cap\">" + "พิมพ์เมื่อ " + d.printedAt + "  โดย : " + d.machine + "</td></tr>" +
       "<tr>" +
         "<td colspan=\"2\" class=\"h\">" + "รหัส,ชื่อสินค้า" + "</td>" +
         "<td class=\"h\">" + "ชื่อลูกค้า" + "</td>" +
