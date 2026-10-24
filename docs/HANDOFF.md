@@ -948,3 +948,15 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - A4 pagination: แบ่งหน้า 297mm + หน้า N + header ซ้ำทุกหน้า + table กึ่งกลาง + margin ตาม C#
 - zoom 50-200% step 25 + print + Esc/overlay close
 - Cache: p079-marketplace.js?v=20261023c
+
+## P084 PickList[IRW][Zone QC] — clone P080 (2026-10-24)
+
+- user: copy P080 มาเลย, แตกต่างกันที่ SQL (เดี๋ยว user ให้ SQL P084)
+- clone P080 (byte rename P080->P084, Thai ปลอดภัย):
+  - assets/js/p084-picklist-irw.js (834 บรรทัด, export window.P084PickListIrw)
+  - api/p084_search.php + p084_generate.php + p084_groups.php (SQL ยัง = P080 — รอ user ให้ SQL P084)
+- wiring: portal.js program block P084 (breadcrumb + p084SettingsWrap + p084Root) + mount P084PickListIrw
+- index.php: p084-picklist-irw.js?v=20261024a
+- modules.php: P084 -> ready (39 modules)
+- CDP PASS: root mount + settings btn + export P084PickListIrw + breadcrumb (ธุรการ › PickList (PD/QC) › P084)
+- ต่อไป: user ให้ SQL P084 -> ดับเบิลเข้า p084_search.php + p084_generate.php
