@@ -342,10 +342,10 @@
       ".p079-sheet{box-sizing:border-box;width:210mm;min-height:297mm;margin:0 auto;padding:20pt 20pt 25pt 10pt;background:#fff;box-shadow:0 12px 32px rgba(15,23,42,0.25);font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}",
       ".p079-sheet-title{margin:0 0 2px;text-align:center;font-size:18px;font-weight:700}",
       ".p079-sheet-asof{margin:0 0 4px;text-align:center;font-size:15px;font-weight:700}",
-      ".p079-sheet-status{margin:0 0 10px;font-size:12px;font-weight:400}",
       ".p079-sheet-spacer{height:6px}",
       ".p079-rt2{table-layout:fixed;width:550px;margin:0 auto;border-collapse:collapse;font-size:14px}",
       ".p079-rt2 td{padding:3px 5px;border:1px solid #000;vertical-align:middle;word-break:break-word}",
+      ".p079-rt2 .stline{border:0;font-size:12px;font-weight:400}",
       ".p079-rt2 .cap{font-size:12px;font-weight:400}",
       ".p079-rt2 .h{font-weight:700;text-align:center;background:#fff}",
       ".p079-rt2 .gh{font-weight:700;background:#f0f0f0}",
@@ -354,7 +354,7 @@
       ".p079-rt2 .r{text-align:right}",
       ".p079-rt2 .tot{font-weight:700}",
       ".p079-rt2 .sto{font-weight:700;text-align:center;vertical-align:middle}",
-      ".p079-rt2 .num{font-family:Arial,sans-serif}",
+      ".p079-rt2 .num{font-family:'THSarabunNew','TH Sarabun New',sans-serif}",
       "@media print{body{background:#fff}.p079-sheet{width:auto;min-height:0;margin:0;padding:0;box-shadow:none}}"
     ].join("\n");
     var fit = "<script>function fit(){if(!window.matchMedia('screen').matches)return;var m=window.__MAN;if(m){document.body.style.zoom=m;return}var w=window.innerWidth||document.documentElement.clientWidth;document.body.style.zoom=Math.min(1,w/794)}fit();window.addEventListener('resize',fit);window.setZoom=function(z){window.__MAN=z;fit()};</scr" + "ipt>";
@@ -384,11 +384,11 @@
     var t = "<div class=\"p079-sheet\">" +
       "<h1 class=\"p079-sheet-title\">" + " Pick List Marketplace" + "</h1>" +
       "<p class=\"p079-sheet-asof\">" + " ประจำวันที่ " + fmtAsOf(el.headDate.value) + "</p>" +
-      "<div class=\"p079-sheet-status\">" + " สถานะ : " + statusLabel() + "  " + " พิมพ์เมื่อ : " + d.printedAt + "</div>" +
       "<div class=\"p079-sheet-spacer\"></div>" +
       "<table class=\"p079-rt2\"><colgroup>" +
         "<col style=\"width:50pt\"><col style=\"width:20pt\"><col style=\"width:250pt\"><col style=\"width:70pt\"><col style=\"width:60pt\"><col style=\"width:50pt\"><col style=\"width:50pt\">" +
       "</colgroup><tbody>" +
+      "<tr><td colspan=\"7\" class=\"stline\">" + " สถานะ : " + statusLabel() + "  " + " พิมพ์เมื่อ : " + d.printedAt + "</td></tr>" +
       "<tr>" +
         "<td colspan=\"2\" class=\"h\">" + "รหัส,ชื่อสินค้า" + "</td>" +
         "<td class=\"h\">" + "ชื่อลูกค้า" + "</td>" +
