@@ -889,5 +889,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - row 2: สถานะใบแจ้งหนี้ / กลุ่มลูกค้า / search button
 - วันที่หัวเอกสาร = report as-of date (C# dateTimeHeader) - not a search filter; default today
 - report modal asof = fmtAsOf(el.headDate.value) -> dd <month> yyyy BE
-- Cache: p079-marketplace.js?v=20261022v
+- Cache: p079-marketplace.js?v=20261022w
 - CDP PASS 2/2: layout 6 fields 3col + asof = head date (2025-06-01 -> dd month 2568)
+
+## P079 Report Modal Zoom (2026-10-23)
+
+- modal head: zoom group (- / % / +) before print button; CSS zoom on modal body
+- range 50-200%, step 25, reset 100% on open; print CSS resets zoom to 1
+- CDP PASS 6/6: buttons+100%, 125%, 150%, min 50% clamp, max 200% clamp, sheet size scales (397-1587px)
+- Cache: p079-marketplace.js?v=20261022w
