@@ -182,7 +182,8 @@
       html += "<tr>" +
         '<td class="p084-product-code">' + esc(r.STKcode) + "</td>" +
         '<td class="center">' + esc(r.STKgroup) + "</td>" +
-        "<td>" + esc(r.STKdescT1) + " " + esc(r.STKdescT2) + "</td>" +
+        "<td>" + esc(r.STKdescT1) + "</td>" +
+        "<td>" + esc(r.STKdescT2) + "</td>" +
         '<td class="center number">' + (r.SBLqty == null ? "" : esc(r.SBLqty)) + "</td>" +
         "</tr>";
     });
@@ -547,10 +548,10 @@
         "</div>" +
         '<div class="p084-table-container" id="p084SearchContainer" style="display:none">' +
           '<table class="p084-table p084-search-table">' +
-            "<colgroup><col class=\"c-code\"><col class=\"c-grp\"><col><col class=\"c-qty\"></colgroup>" +
+            "<colgroup><col class=\"c-code\"><col class=\"c-grp\"><col><col><col class=\"c-qty\"></colgroup>" +
             "<thead><tr>" +
             "<th>รหัสสินค้า</th><th class=\"center\">กลุ่ม</th>" +
-            "<th>ชื่อสินค้า</th>" +
+            "<th>ชื่อสินค้า (1)</th><th>ชื่อสินค้า (2)</th>" +
             '<th class="center number">คงเหลือ</th>' +
             "</tr></thead>" +
             '<tbody id="p084SearchRows"></tbody>' +
