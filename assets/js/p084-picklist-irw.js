@@ -129,6 +129,7 @@
   /* ---------- สร้างรายงาน (ปกติ / ซ่อนชื่อสินค้า) — api/p084_generate.php ---------- */
   function doGenerate(hideNames) {
     if (state.loading) return;
+    if (!(state.view === "search" && state.searchRows.length > 0)) return;
     state.loading = true;
     el.genNormalBtn.disabled = true;
     el.genNormalBtn.classList.add("loading");
@@ -154,13 +155,17 @@
       })
       .then(function () {
         state.loading = false;
-        el.genNormalBtn.disabled = false;
+        syncGenBtn();
         el.genNormalBtn.classList.remove("loading");
       });
   }
 
   /* ---------- render (ผลค้นหา) ---------- */
     var PER_PAGE = 15;
+
+  function syncGenBtn() {
+    el.genNormalBtn.disabled = !(state.view === "search" && state.searchRows.length > 0);
+  }
 
   function render() {
     var isSearch = state.view === "search";
@@ -170,6 +175,7 @@
       el.modeBadge.style.display = "none";
       el.emptyState.style.display = "flex";
       el.subtitle.textContent = "ยังไม่ได้ค้นหา/สร้างรายงาน";
+      syncGenBtn();
       return;
     }
     var rows = state.searchRows;
@@ -199,6 +205,7 @@
     el.searchRows.innerHTML = html;
     el.footerText.textContent = "แสดง " + (total ? (start + 1) : 0) + " - " + (start + pageRows.length) + " \u00b7 " + total + " " + " รายการ";
     renderPager(pages);
+    syncGenBtn();
   }
 
   function renderPager(pages) {
@@ -665,6 +672,7 @@
       doSearch();
     });
 
+    render();
   }
 
   window.P084PickListIrw = { mount: mount };
