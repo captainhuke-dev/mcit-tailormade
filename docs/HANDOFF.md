@@ -898,3 +898,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - range 50-200%, step 25, reset 100% on open; print CSS resets zoom to 1
 - CDP PASS 6/6: buttons+100%, 125%, 150%, min 50% clamp, max 200% clamp, sheet size scales (397-1587px)
 - Cache: p079-marketplace.js?v=20261022w
+
+## P079 Report Modal = P083 Style (2026-10-23)
+
+- overlay + iframe srcdoc (own A4 doc, THSarabunNew fonts, @page A4)
+- head: title + sub (status — group — N รายการ) + zoom -/%/+ + close X
+- footer: hint รายงาน A4 — พิมพ + ปุ่มพิมพ์ (iframe print)
+- zoom 50-200% step 25 via iframe setZoom; reset 100% on open
+- close = X / Esc / overlay click; loading spinner until API done
+- CDP PASS 4/4: iframe sheet 1289 rows, zoom 125 applied, Esc closes
+- Cache: p079-marketplace.js?v=20261022y
