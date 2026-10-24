@@ -908,3 +908,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - close = X / Esc / overlay click; loading spinner until API done
 - CDP PASS 4/4: iframe sheet 1289 rows, zoom 125 applied, Esc closes
 - Cache: p079-marketplace.js?v=20261022y
+
+## P079 Report Sheet Spec (2026-10-24)
+
+- table 7 cols in pt: 50/20/250/70/60/50/50 (table-layout fixed)
+- title "Pick List Marketplace" centered; asof line centered (d MMMM yyyy พ.ศ.)
+- status line: สถานะ : [status]  พิมพ์เมื่อ : [printedAt] (left, under asof)
+- cap row (พิมพ์เมื่อ...โดย machine) removed from table
+- rowspan STO per product group; dates dd/mm/yyyy พ.ศ. (Number() fix)
+- CDP PASS 5/5: cols pt, title, status line, no cap row, dates ddmmyyyy
+- Cache: p079-marketplace.js?v=20261022z
