@@ -78,7 +78,7 @@
   }
 
   var MAC5_CONNECTION_ID = "c1788406814359";
-  var API = { search: "api/p084_search.php", generate: "api/p084_generate.php", groups: "api/p084_groups.php" };
+  var API = { search: "api/p084_search.php", generate: "api/p084_generate.php" };
 
   function apiPost(url, data) {
     return fetch(url, {
@@ -501,35 +501,6 @@
     ".p084-rep-hint{color:#64748b;font-size:12px}",
     "@media (max-width:950px){.p084-launcher-body{grid-template-columns:1fr}.p084-action-button{width:100%;flex-direction:row}}",
     "@media (max-width:680px){.p084-panel-header{align-items:flex-start;flex-direction:column}}",
-    ".p084-settings-btn{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 14px;color:#1d4ed8;border:1px solid #bfdbfe;border-radius:10px;background:#fff;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 12px rgba(37,99,235,0.10)}",
-    ".p084-settings-btn:hover{background:#eff6ff}",
-    ".p084-grp-overlay{position:fixed;inset:0;z-index:10000;display:none;background:rgba(15,23,42,0.55)}",
-    ".p084-grp-overlay.show{display:block}",
-    ".p084-grp-modal{position:relative;margin:4vh auto;width:min(900px,94vw);max-height:92vh;display:flex;flex-direction:column;background:#fff;border-radius:16px;box-shadow:0 24px 60px rgba(15,23,42,0.35);overflow:hidden}",
-    ".p084-grp-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #dbe3ef;background:linear-gradient(180deg,#eaf2ff,#f3f8ff)}",
-    ".p084-grp-head h3{margin:0;font-size:15px;font-weight:800;color:#0f172a}",
-    ".p084-grp-x{width:32px;height:32px;border:none;border-radius:9px;background:#e2e8f0;color:#475569;font-size:14px;cursor:pointer}",
-    ".p084-grp-body{padding:18px 20px;overflow:auto}",
-    ".p084-grp-form{display:grid;grid-template-columns:170px 1fr 130px auto;gap:10px;align-items:end;margin-bottom:14px;padding:12px;border:1px solid #dbe3ef;border-radius:12px;background:#f8fafc}",
-    ".p084-grp-form label{display:block;margin-bottom:5px;color:#475569;font-size:11px;font-weight:700}",
-    ".p084-grp-form input,.p084-grp-form select{width:100%;height:38px;padding:0 10px;color:#172033;border:1px solid #dbe3ef;border-radius:9px;outline:none;background:#fff;font-size:13px}",
-    ".p084-grp-btns{display:flex;gap:8px}",
-    ".p084-grp-save{height:38px;padding:0 18px;border:none;border-radius:9px;background:linear-gradient(135deg,#34d399,#059669);color:#fff;font-size:13px;font-weight:700;cursor:pointer}",
-    ".p084-grp-new{height:38px;padding:0 12px;border:1px solid #cbd5e1;border-radius:9px;background:#fff;color:#334155;font-size:12px;font-weight:700;cursor:pointer}",
-    ".p084-grp-table{width:100%;border-collapse:collapse}",
-    ".p084-grp-table th{padding:9px 12px;color:#475569;border-bottom:1px solid #dbe3ef;background:#f8fafc;font-size:12px;font-weight:700;text-align:left}",
-    ".p084-grp-table td{padding:9px 12px;border-bottom:1px solid #eef2f7;font-size:13px;color:#0f172a}",
-    ".p084-grp-table tr:hover td{background:#f0f7ff}",
-    ".p084-grp-act{display:inline-flex;gap:6px}",
-    ".p084-grp-mini{padding:4px 10px;border:1px solid #dbe3ef;border-radius:7px;background:#fff;font-size:11px;font-weight:700;cursor:pointer;color:#334155}",
-    ".p084-grp-mini.danger{color:#dc2626;border-color:#fecaca}",
-    ".p084-grp-on{display:inline-block;padding:2px 8px;border-radius:999px;background:#dcfce7;color:#15803d;font-size:11px;font-weight:700}",
-    ".p084-grp-off{display:inline-block;padding:2px 8px;border-radius:999px;background:#f1f5f9;color:#64748b;font-size:11px;font-weight:700}",
-    ".p084-grp-empty{padding:28px;text-align:center;color:#94a3b8;font-size:13px}",
-    ".p084-grp-mode{display:flex;align-items:center;gap:8px;margin:0 0 8px;color:#1d4ed8;font-size:12px;font-weight:800}",
-    ".p084-grp-mode .dot{width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 3px rgba(34,197,94,.18)}",
-    ".p084-grp-mode small{color:#64748b;font-weight:600}",
-    ".p084-grp-form.flash{animation:p084flash .7s ease}",
     "@keyframes p084flash{0%{box-shadow:0 0 0 0 rgba(52,211,153,.65)}100%{box-shadow:0 0 0 12px rgba(52,211,153,0)}}"
   ].join("\n");
 
@@ -537,7 +508,7 @@
   function html() {
     var statusHtml = "";
     STATUS_OPTIONS.forEach(function (s) {
-      statusHtml += '<option value="' + s[0] + '"' + (s[0] === "6" ? " selected" : "") + ">" + esc(s[1]) + "</option>";
+      statusHtml += '<option value="' + s[0] + '"' + (s[0] === "18" ? " selected" : "") + ">" + esc(s[1]) + "</option>";
     });
     var today = new Date();
     return '<div class="p084-app">' +
@@ -595,180 +566,7 @@
   }
 
 
-  /* ---------- ตั้งค่ากลุ่มสินค้าแบตเตอรี (tb_GroupBattery) ---------- */
-  var GRP_STATE = { open: false, rows: [] };
-  var G_CODE = "รหัสกลุ่ม";
-  var G_NAME = "ชื่อกลุ่ม";
-  var G_STAT = "สถานะ";
-  var G_SAVE = "บันทึก";
-  var G_CLOSE = "ปิด";
-  var G_EDIT = "แก้ไข";
-  var G_DEL = "ลบ";
-  var G_NEW = "เพิ่มกลุ่มใหม่";
-  var G_EMPTY = "ยังไม่มีกลุ่มสินค้า";
-  var G_REQ = "กรุณาระบุรหัสกลุ่ม";
-  var G_DONE = "บันทึกแล้ว";
-  var G_DELOK = "ลบแล้ว";
-  var G_CONF = "ยืนยันการลบกลุ่ม";
-  var G_ON = "ใช้งาน";
-  var G_OFF = "ไม่ใช้งาน";
-
-  function grpRowsHtml() {
-    if (!GRP_STATE.rows.length) {
-      return '<div class="p084-grp-empty">' + G_EMPTY + "</div>";
-    }
-    var h = '<table class="p084-grp-table"><thead><tr>';
-    h += "<th>" + G_CODE + "</th><th>" + G_NAME + "</th><th>" + G_STAT + '</th><th style="width:150px"></th>';
-    h += "</tr></thead><tbody>";
-    for (var i = 0; i < GRP_STATE.rows.length; i++) {
-      var g = GRP_STATE.rows[i];
-      h += "<tr>";
-      h += "<td><strong>" + esc(g.code) + "</strong></td>";
-      h += "<td>" + esc(g.descT) + "</td>";
-      h += "<td>" + (g.status === "Active"
-        ? '<span class="p084-grp-on">' + G_ON + "</span>"
-        : '<span class="p084-grp-off">' + G_OFF + "</span>") + "</td>";
-      h += '<td><div class="p084-grp-act">';
-      h += '<button class="p084-grp-mini" type="button" data-grp-edit="' + esc(g.code) + '">' + G_EDIT + "</button>";
-      h += '<button class="p084-grp-mini danger" type="button" data-grp-del="' + esc(g.code) + '">' + G_DEL + "</button>";
-      h += "</div></td></tr>";
-    }
-    return h + "</tbody></table>";
-  }
-
-  function grpLoad() {
-    apiPost(API.groups, { connectionId: MAC5_CONNECTION_ID, action: "list" })
-      .then(function (d) {
-        if (!d.ok) { showToast(d.error || "error"); return; }
-        GRP_STATE.rows = d.rows || [];
-        var box = document.getElementById("p084GrpRows");
-        if (box) box.innerHTML = grpRowsHtml();
-      })
-      .catch(function (e) { showToast(e.message); });
-  }
-
-  function grpSetMode(text) {
-    var t = document.getElementById("p084GrpModeText");
-    if (t) t.textContent = text;
-  }
-
-  function grpResetForm() {
-    var c = document.getElementById("p084GrpCode");
-    var n = document.getElementById("p084GrpDesc");
-    var t = document.getElementById("p084GrpStatus");
-    var f = document.getElementById("p084GrpForm");
-    if (c) { c.value = ""; c.readOnly = false; }
-    if (n) n.value = "";
-    if (t) t.value = "Active";
-    grpSetMode("เพิ่มกลุ่มใหม่");
-    if (f) {
-      f.classList.remove("flash");
-      void f.offsetWidth;
-      f.classList.add("flash");
-    }
-    if (c) c.focus();
-  }
-
-  function grpEdit(code) {
-    var g = null;
-    for (var i = 0; i < GRP_STATE.rows.length; i++) {
-      if (GRP_STATE.rows[i].code === code) { g = GRP_STATE.rows[i]; break; }
-    }
-    if (!g) return;
-    var c = document.getElementById("p084GrpCode");
-    c.value = g.code;
-    c.readOnly = true;
-    document.getElementById("p084GrpDesc").value = g.descT;
-    document.getElementById("p084GrpStatus").value = g.status;
-    grpSetMode("แก้ไขกลุ่ม " + g.code);
-    document.getElementById("p084GrpDesc").focus();
-  }
-
-  function grpDel(code) {
-    if (!window.confirm(G_CONF + " " + code + " ?")) return;
-    apiPost(API.groups, { connectionId: MAC5_CONNECTION_ID, action: "delete", code: code })
-      .then(function (d) {
-        if (!d.ok) { showToast(d.error || "error"); return; }
-        showToast(G_DELOK + " " + code);
-        grpLoad();
-      })
-      .catch(function (e) { showToast(e.message); });
-  }
-
-  function grpSave() {
-    var code = (document.getElementById("p084GrpCode").value || "").trim();
-    var descT = (document.getElementById("p084GrpDesc").value || "").trim();
-    var status = document.getElementById("p084GrpStatus").value;
-    if (!code) { showToast(G_REQ); return; }
-    apiPost(API.groups, { connectionId: MAC5_CONNECTION_ID, action: "upsert", code: code, descT: descT, status: status })
-      .then(function (d) {
-        if (!d.ok) { showToast(d.error || "error"); return; }
-        showToast(G_DONE + " " + code);
-        grpResetForm();
-        grpLoad();
-      })
-      .catch(function (e) { showToast(e.message); });
-  }
-
-  function closeGrpModal() {
-    GRP_STATE.open = false;
-    var ov = document.getElementById("p084GrpOverlay");
-    if (ov) ov.classList.remove("show");
-  }
-
-  function openGrpModal() {
-    var ov = document.getElementById("p084GrpOverlay");
-    if (!ov) {
-      ov = document.createElement("div");
-      ov.id = "p084GrpOverlay";
-      ov.className = "p084-grp-overlay";
-      ov.innerHTML =
-        '<div class="p084-grp-modal">' +
-          '<div class="p084-grp-head">' +
-            "<h3>" + "ตั้งค่ากลุ่มสินค้าแบตเตอรี" + "</h3>" +
-            '<button class="p084-grp-x" id="p084GrpClose" type="button" title="' + G_CLOSE + '">' + "\u2715" + "</button>" +
-          "</div>" +
-          '<div class="p084-grp-body">' +
-            '<div class="p084-grp-mode" id="p084GrpMode"><span class="dot"></span><span id="p084GrpModeText"></span><small>(พิมพ์แล้วกดบันทึก)</small></div>' +
-            '<form class="p084-grp-form" id="p084GrpForm">' +
-              "<div><label>" + G_CODE + '</label><input id="p084GrpCode" maxlength="20" placeholder="1036-0300"></div>' +
-              "<div><label>" + G_NAME + '</label><input id="p084GrpDesc" maxlength="120" placeholder="แบตเตอรี 12V 8AH"></div>' +
-              "<div><label>" + G_STAT + '</label><select id="p084GrpStatus"><option value="Active">' + G_ON + '</option><option value="Inactive">' + G_OFF + "</option></select></div>" +
-              '<div class="p084-grp-btns">' +
-                '<button class="p084-grp-save" type="submit">' + G_SAVE + "</button>" +
-                '<button class="p084-grp-new" id="p084GrpNew" type="button">' + G_NEW + "</button>" +
-              "</div>" +
-            "</form>" +
-            '<div id="p084GrpRows"></div>' +
-          "</div>" +
-        "</div>";
-      document.body.appendChild(ov);
-
-      ov.addEventListener("click", function (e) { if (e.target === ov) closeGrpModal(); });
-      document.getElementById("p084GrpClose").addEventListener("click", closeGrpModal);
-      document.getElementById("p084GrpNew").addEventListener("click", grpResetForm);
-      document.getElementById("p084GrpForm").addEventListener("submit", function (e) {
-        e.preventDefault();
-        grpSave();
-      });
-      document.getElementById("p084GrpRows").addEventListener("click", function (e) {
-        var b = e.target.closest ? e.target.closest("button[data-grp-edit],button[data-grp-del]") : null;
-        if (!b) return;
-        var ec = b.getAttribute("data-grp-edit");
-        var dc = b.getAttribute("data-grp-del");
-        if (ec) grpEdit(ec); else if (dc) grpDel(dc);
-      });
-      document.addEventListener("keydown", function (e) {
-        if (e.key === "Escape" && GRP_STATE.open) closeGrpModal();
-      });
-    }
-    GRP_STATE.open = true;
-    ov.classList.add("show");
-    var mt = document.getElementById("p084GrpModeText");
-    if (mt && !mt.textContent) mt.textContent = "เพิ่มกลุ่มใหม่";
-    grpLoad();
-  }
-
+  
   function mount(mountEl) {
     root = mountEl;
     var olds = document.querySelectorAll("body > .p084-rep-overlay");
@@ -808,16 +606,6 @@
       doSearch();
     });
 
-    var sw = document.getElementById("p084SettingsWrap");
-    if (sw && !sw.firstChild) {
-      var sb = document.createElement("button");
-      sb.type = "button";
-      sb.id = "p084SettingsBtn";
-      sb.className = "p084-settings-btn";
-      sb.textContent = "\u2699 " + "ตั้งค่ากลุ่มสินค้าแบตเตอรี";
-      sb.addEventListener("click", openGrpModal);
-      sw.appendChild(sb);
-    }
   }
 
   window.P084PickListIrw = { mount: mount };

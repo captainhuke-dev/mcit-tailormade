@@ -37,7 +37,8 @@ try {
 }
 
 try {
-  // SQL ตามแบบ — CONVERT(nvarchar) สำหรับ GROUP BY, SBLqty subquery
+  // SQL P084 (user): MIH+MIL+STK, MILcut=-1, MILsto='01', MIHvnos LIKE 'IRW%'/'ICS%'
+  // + SBLqty subquery (SBLsto 01/03/04) — ไม่มี filter กลุ่มแบตเตอรี
   $sql = "SELECT"
     . " B.MILstk AS STKcode,"
     . " C.STKgroup,"
@@ -49,9 +50,9 @@ try {
     . " LEFT JOIN STK C ON B.MILstk = C.STKcode"
     . " WHERE A.MIHstatus = ?"
     . " AND A.MIHtype = 'IS'"
+    . " AND (A.MIHvnos LIKE 'IRW%' OR A.MIHvnos LIKE 'ICS%')"
     . " AND B.MILsto = '01'"
     . " AND B.MILcut = -1"
-    . " AND C.STKgroup IN (SELECT STGcode FROM BI_CUBE.[dbo].[tb_GroupBattery] WHERE STGstatus = 'Active')"
     . " GROUP BY B.MILstk, C.STKgroup, CONVERT(VARCHAR(255), C.STKdescT1), CONVERT(VARCHAR(255), C.STKdescT2)"
     . " ORDER BY B.MILstk";
 
