@@ -1031,3 +1031,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Mock data ตาม demo (13 รายการ / ค้างส่ง 5.00 / จอง 1,933.00) — **ยังไม่มี API**
 - CDP verify: mount OK, 12 คอลัมน์, sort/select/print/print-new/filter/empty state/date toggle ตรงกับ demo ทุกจุด
 - `data/modules.php` ยังเป็น placeholder (UI only)
+
+## P038 UI tweaks (2026-10-24)
+
+- ตัดปุ่ม X (launcher-titlebar) ด้านบน launcher ออก + listener toggleLauncher
+- ย้ายปุ่ม Print / Print ใหม่ จาก launcher ลงไป panel header "รายการสินค้าค้างส่ง / จอง" ด้านขวา (ข้าง badge)
+- ตัด summary cards 4 ใบออก (จำนวนรายการ / ยอดค้างส่งรวม / ยอดเบิก/จองรวม / เลือกแล้ว) — HTML + CSS + JS update lines
+- ปุ่มค้นหายังอยู่ใน launcher (submit ใน form) ใช้งานปกติ
+- cache `p038-push-pending.js?v=20261024d`; CDP: titlebar/xbtn=false, panelBtns=[print,printNew], search+print work, no summary
