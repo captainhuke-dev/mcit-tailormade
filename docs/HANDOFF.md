@@ -1020,3 +1020,14 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - user ยืนยัน: p084_generate.php ใช้ SQL ของ P080 (battery) ร่วมกันได้ — ไม่มีอะไรเพิ่ม
 - P084 ครบชิ้นส่วน: search SQL (IRW/ICS) + generate SQL (P080) + UI + pagination + ready
+
+## P038 Pending Push Check — UI (2026-10-24)
+
+- Source: `demo/P038_demo.html` (1,345 lines) — clone UI ครบ (launcher filter + summary 4 ใบ + ตาราง 12 คอลัมน์ + print)
+- ไฟล์ใหม่: `assets/js/p038-push-pending.js` (~58 KB) — IIFE `window.P038PushPending = { mount }`
+- วิธีแปลง: Babel transpile ES5 (demo ใช้ arrow 44 / const-let / template literals) + CSS scope ใต้ `.p038-scope` + rename id เป็น `p038*`
+- **ไม่ rename class** — demo generate HTML จาก JS (template literal) ถ้า rename เฉพาะ CSS/HTML จะไม่ match; ใช้ wrapper scope + specificity แทน
+- Wiring: `portal.js` program block P038 (`p038Root`) + mount block; `index.php` script `?v=20261024b` + `portal.js?v=20261024k`
+- Mock data ตาม demo (13 รายการ / ค้างส่ง 5.00 / จอง 1,933.00) — **ยังไม่มี API**
+- CDP verify: mount OK, 12 คอลัมน์, sort/select/print/print-new/filter/empty state/date toggle ตรงกับ demo ทุกจุด
+- `data/modules.php` ยังเป็น placeholder (UI only)

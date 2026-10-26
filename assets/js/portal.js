@@ -1325,6 +1325,20 @@
       `;
     }
 
+    // P038: ตรวจสอบค้างส่งผลักดันสินค้า
+    if (programId === "P038") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p038Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P047: เช็คสถานะ Invoice
     if (programId === "P047") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1761,6 +1775,12 @@
     if (page.type === "program" && page.programId === "P037" && window.P037InvBooking) {
       const root = document.getElementById("p037Root");
       if (root) window.P037InvBooking.mount(root);
+    }
+
+    // P038: mount Pending Push Check app
+    if (page.type === "program" && page.programId === "P038" && window.P038PushPending) {
+      const root = document.getElementById("p038Root");
+      if (root) window.P038PushPending.mount(root);
     }
 
     // P047: mount Invoice Status Check app
