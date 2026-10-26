@@ -1015,3 +1015,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - doGenerate guard: return ถ้าไม่มีข้อมูล; mount เรียก render() ตอนแรก (ปุ่ม disabled ในสถานะว่าง)
 - CDP PASS: initial disabled, click guard (no loading/modal), search 26 (99 rows) -> enabled
 - Cache: p084-picklist-irw.js?v=20261024i
+
+## P084 Generate SQL = P080 (2026-10-24)
+
+- user ยืนยัน: p084_generate.php ใช้ SQL ของ P080 (battery) ร่วมกันได้ — ไม่มีอะไรเพิ่ม
+- P084 ครบชิ้นส่วน: search SQL (IRW/ICS) + generate SQL (P080) + UI + pagination + ready
