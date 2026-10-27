@@ -1077,3 +1077,17 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
   reserve = all (was has), status 14 + 31 both checked (was 31 only), statusAll checked
 - verified CDP: DEFAULTS {searchBy:code, text:"", reserve:all, statusAll:true, st14:true, st31:true};
   Enter on 10010249 -> 1 row, badge updates, button re-enabled
+
+## P038: Pagination 15/page (2026-10-27)
+
+- commit: (this entry)
+- cache: p038-push-pending.js?v=20261027b
+- PAGE_SIZE = 15, client-side pagination over currentItems (sorted)
+- pager div #p038pager under table: first/prev/numbers/next/last, ellipsis when
+  pages > 7 (1 ... n-1 n n+1 ... last), active page = blue gradient, disabled state
+- footer text: show range "from - to of N" (thai words harvested from file)
+- select-all checkbox now applies to current page (pageItems), selection persists
+  across pages via selectedIds
+- page resets to 1 on new search and on sort
+- verified CDP: P1 15 rows / badge 945 / footer range 1-15; next -> 16-30; last ->
+  931-945; vision: layout clean, ellipsis + active state correct
