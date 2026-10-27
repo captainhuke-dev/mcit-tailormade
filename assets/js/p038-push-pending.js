@@ -25,229 +25,8 @@ function _defineProperty(e, r, t) { return (r = _toPropertyKey(r)) in e ? Object
 function _toPropertyKey(t) { var i = _toPrimitive(t, "string"); return "symbol" == _typeof(i) ? i : i + ""; }
 function _toPrimitive(t, e) { if ("object" != _typeof(t) || !t) return t; var r; if ("undefined" != typeof Symbol && void 0 !== (r = t[Symbol.toPrimitive])) { var i = r.call(t, e || "default"); if ("object" != _typeof(i)) return i; throw new TypeError("@@toPrimitive must return a primitive value."); } return ("string" === e ? String : Number)(t); }
 /* ===== ข้อมูลตัวอย่าง (แทนที่ด้วยข้อมูลจริงจาก API/ฐานข้อมูลได้) ===== */
-var rawItems = [{
-  date: "2026-10-01",
-  groupCode: "1001-0312",
-  productCode: "10010249",
-  name: "กรองแสง-3เข็ม(ไก่ชน-MCT) 70% เขียว 2*90m [Ea]",
-  pending: 0,
-  reserved: 1,
-  pr: 0,
-  s01: [0, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-02",
-  groupCode: "1001-0312",
-  productCode: "10010247",
-  name: "กรองแสง-3เข็ม(ไก่ชน-MCT) 50% เขียว 2*90m [2Ea/มัด]",
-  pending: 0,
-  reserved: 10,
-  pr: 0,
-  s01: [37, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-13",
-  groupCode: "1001-0970",
-  productCode: "10011186",
-  name: "กรองแสงผ่น-6เข็ม-เจาะตาไก่ 90% ดำ 2*5m [Ea]",
-  pending: 0,
-  reserved: 10,
-  pr: 0,
-  s01: [18, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-17",
-  groupCode: "1001-0415",
-  productCode: "10010472",
-  name: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% เขียว 2*50m [2Ea/มัด]",
-  pending: 0,
-  reserved: 2,
-  pr: 0,
-  s01: [0, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-17",
-  groupCode: "1001-0415",
-  productCode: "10010468",
-  name: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*50m [2Ea/มัด]",
-  pending: 0,
-  reserved: 2,
-  pr: 0,
-  s01: [0, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-23",
-  groupCode: "1001-0905",
-  productCode: "10010562",
-  name: "กรองแสงผ่น-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*10m [5Ea/Bag]",
-  pending: 0,
-  reserved: 22,
-  pr: 0,
-  s01: [144, 1, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-24",
-  groupCode: "1001-0414",
-  productCode: "10010462",
-  name: "กรองแสง-1เข็มล็อคตา(No1-MCT) 80% เขียว 2*70m [Ea]",
-  pending: 0,
-  reserved: 7,
-  pr: 0,
-  s01: [0, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-24",
-  groupCode: "1001-0303",
-  productCode: "10011241",
-  name: "กรองแสง-3เข็ม(ไก่แจ้-MCT) 60% เขียว 1*80m [2Ea/มัด]",
-  pending: 0,
-  reserved: 2,
-  pr: 0,
-  s01: [18, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-26",
-  groupCode: "1001-0905",
-  productCode: "10010566",
-  name: "กรองแสงผ่น-1เข็มล็อคตา(No1-MCT) 80% ดำ 2*10m [5Ea/Bag]",
-  pending: 5,
-  reserved: 27,
-  pr: 0,
-  s01: [2, 0, 0],
-  s03: 14,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-26",
-  groupCode: "1001-0932",
-  productCode: "10011361",
-  name: "กรองแสงผ่น-3เข็ม(แรด) 60% ดำ 2*10m [5Ea/Bag]",
-  pending: 0,
-  reserved: 300,
-  pr: 0,
-  s01: [0, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-26",
-  groupCode: "1001-0931",
-  productCode: "10011359",
-  name: "กรองแสงผ่น-3เข็ม(แรด) 80% เขียว 2*5m [10Ea/Bag]",
-  pending: 0,
-  reserved: 900,
-  pr: 0,
-  s01: [0, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-26",
-  groupCode: "1001-0934",
-  productCode: "10011380",
-  name: "กรองแสงผ่น-3เข็ม(แรด) 50% เขียว 2*20m [5Ea/Bag]",
-  pending: 0,
-  reserved: 200,
-  pr: 0,
-  s01: [0, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, {
-  date: "2026-10-26",
-  groupCode: "1001-0932",
-  productCode: "10011367",
-  name: "กรองแสงผ่น-3เข็ม(แรด) 80% ดำ 2*10m [5Ea/Bag]",
-  pending: 0,
-  reserved: 450,
-  pr: 0,
-  s01: [0, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "31"
-}, /* ตัวอย่างเพิ่มเติมสถานะ 14 (รอโอน) เพื่อทดสอบการยกเว้นสถานะ และรายการไม่มีเบิก/จอง */
-{
-  date: "2026-10-20",
-  groupCode: "1001-0210",
-  productCode: "10010901",
-  name: "กรองแสงผ่น-3เข็ม(แรด) 70% ดำ 2*30m [5Ea/Bag]",
-  pending: 12,
-  reserved: 40,
-  pr: 0,
-  s01: [0, 0, 0],
-  s03: 6,
-  s04: [4, 0],
-  unit: "Ea",
-  status: "14"
-}, {
-  date: "2026-10-21",
-  groupCode: "1001-0210",
-  productCode: "10010903",
-  name: "กรองแสงผ่น-3เข็ม(แรด) 70% เขียว 2*30m [5Ea/Bag]",
-  pending: 0,
-  reserved: 15,
-  pr: 0,
-  s01: [8, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "14"
-}, {
-  date: "2026-10-22",
-  groupCode: "1001-0150",
-  productCode: "10010120",
-  name: "กรองแสง-1เข็มล็อคตา(No1-MCT) 50% ดำ 2*100m [Ea]",
-  pending: 3,
-  reserved: 0,
-  pr: 20,
-  s01: [0, 0, 0],
-  s03: 0,
-  s04: [0, 0],
-  unit: "Ea",
-  status: "00"
-}];
-var items = rawItems.map(function (item, index) {
-  return _objectSpread(_objectSpread({}, item), {}, {
-    id: index + 1,
-    stock01Total: item.s01.reduce(function (a, b) {
-      return a + b;
-    }, 0),
-    stock04Total: item.s04.reduce(function (a, b) {
-      return a + b;
-    }, 0)
-  });
-});
+var items = [];
 
-/* ===== ตัวเลือก Radio ===== */
 var radioGroups = [{
   key: "pending",
   title: "ค้างส่ง",
@@ -286,6 +65,18 @@ var sortDirection = "asc";
 var currentId = null;
 var selectedIds = new Set();
 var toastTimer;
+var API_SEARCH = "api/p038_search.php";
+var API_CONNECTION_ID = "c1788406814359";
+var apiRows = [];
+var apiSearching = false;
+
+function apiPost(url, data) {
+  return fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data)
+  }).then(function (r) { return r.json(); });
+}
 
 /* ===== Utilities ===== */
 var numberFormatter = new Intl.NumberFormat("en-US", {
@@ -485,6 +276,7 @@ function renderRows() {
     tr.dataset.id = item.id;
     if (selectedIds.has(item.id)) tr.classList.add("checked");
     if (item.id === currentId) tr.classList.add("current");
+    if (item.strsubs) tr.style.backgroundColor = "#d1f0d1";
     tr.innerHTML = "\n          <td class=\"check-cell\">\n            <input type=\"checkbox\" class=\"row-check\" ".concat(selectedIds.has(item.id) ? "checked" : "", ">\n          </td>\n          <td class=\"center\">").concat(formatDate(item.date), "</td>\n          <td class=\"group-code\">").concat(escapeHTML(item.groupCode), "</td>\n          <td class=\"product-code\">").concat(escapeHTML(item.productCode), "</td>\n          <td title=\"").concat(escapeHTML(item.name), "\">").concat(escapeHTML(item.name), "</td>\n          <td class=\"number\">").concat(qtyCell(item.pending, "pending"), "</td>\n          <td class=\"number\">").concat(qtyCell(item.reserved, "reserve"), "</td>\n          <td class=\"number ").concat(item.pr > 0 ? "" : "zero", "\">").concat(formatNumber(item.pr), "</td>\n          <td class=\"number ").concat(item.stock01Total > 0 ? "stock-ok" : "zero", "\">").concat(item.s01.join("+"), "</td>\n          <td class=\"number ").concat(item.s03 > 0 ? "stock-ok" : "zero", "\">").concat(formatNumber(item.s03), "</td>\n          <td class=\"number ").concat(item.stock04Total > 0 ? "stock-ok" : "zero", "\">").concat(item.s04.join("+"), "</td>\n          <td class=\"center\"><span class=\"unit-tag\">").concat(escapeHTML(item.unit), "</span></td>\n        ");
     els.rows.appendChild(tr);
   });
@@ -492,11 +284,50 @@ function renderRows() {
 }
 function search() {
   var showMessage = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+  if (apiSearching) return;
+  apiSearching = true;
+  var btn = document.querySelector(".action-button.search");
+  if (btn) { btn.disabled = true; btn.style.opacity = "0.6"; }
   appliedFilters = readFilters();
-  currentItems = filterItems(appliedFilters);
   renderConditions(appliedFilters);
-  renderRows();
-  if (showMessage) showToast("\u0E1E\u0E1A\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25 ".concat(currentItems.length, " \u0E23\u0E32\u0E22\u0E01\u0E32\u0E23"));
+  var payload = {
+    connectionId: API_CONNECTION_ID,
+    searchBy: appliedFilters.searchBy,
+    searchText: appliedFilters.searchText,
+    warehouse: appliedFilters.warehouse,
+    useDate: appliedFilters.useDate,
+    dateFrom: appliedFilters.dateFrom,
+    dateTo: appliedFilters.dateTo,
+    pending: appliedFilters.pending,
+    reserve: appliedFilters.reserve,
+    stock01: appliedFilters.stock01,
+    stock02: appliedFilters.stock02,
+    statusAll: appliedFilters.statusAll,
+    statusChecks: appliedFilters.statusChecks
+  };
+  apiPost(API_SEARCH, payload).then(function (d) {
+    if (!d.ok) throw new Error(d.error);
+    apiRows = d.rows;
+    items.length = 0;
+    for (var i = 0; i < apiRows.length; i++) {
+      var item = apiRows[i];
+      item.id = i + 1;
+      item.stock01Total = item.s01.reduce(function (a, b) { return a + b; }, 0);
+      item.stock04Total = item.s04.reduce(function (a, b) { return a + b; }, 0);
+      items.push(item);
+    }
+    currentItems = items.slice();
+    renderRows();
+    if (showMessage) {
+      if (currentItems.length) showToast("\u0E1E\u0E1A\u0E02\u0E49\u0E2D\u0E21\u0E39\u0E25 ".concat(currentItems.length, " \u0E23\u0E32\u0E22\u0E01\u0E32\u0E23"));
+      else showToast("\u0E44\u0E1B\u0E23\u0E01\u0E2D\u0E1B\u0E39\u0E40\u0E02\u0E47\u0E21");
+    }
+  }).catch(function (e) {
+    showToast("\u0E40\u0E04\u0E78\u0E32\u0E22\u0E27\u0E48\u0E32\u0E07: ".concat(e.message));
+  }).then(function () {
+    apiSearching = false;
+    if (btn) { btn.disabled = false; btn.style.opacity = ""; }
+  });
 }
 
 /* ===== Print ===== */
