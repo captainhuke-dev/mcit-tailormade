@@ -1091,3 +1091,35 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - page resets to 1 on new search and on sort
 - verified CDP: P1 15 rows / badge 945 / footer range 1-15; next -> 16-30; last ->
   931-945; vision: layout clean, ellipsis + active state correct
+
+## P038 item 2: row click -> detail modal + Edit -> comment modal (2026-10-27)
+
+**Commit:** `297bf37` — cache `p038-push-pending.js?v=20261027c`
+
+### UI
+- Click any product row (not the checkbox) -> **detail modal** opens:
+  - Title: "รายละเอียด — {productCode} {name}"
+  - Table 12 cols (C# GridDetail): Edit | รหัสลูกค้า | ชื่อลูกค้า | เกรด | วันที่ | เลขที่ใบสำคัญ | รหัสสินค้า | จำนวน ขาย/จอง | จำนวนที่ส่ง | จำนวนค้างส่ง | สถานะ | หมายเหตุ
+  - Loading / no-data / error states; X button + click-outside to close; hidden when printing
+- Click **Edit** button in a detail row -> **comment modal** (small):
+  - Title "Comment — {vnos}", textarea, ปิด / SAVE buttons
+  - GET current MIHdesc on open; SAVE updates + refreshes detail row + toast
+- CSS scope `.p038-scope`, ids: `p038detailOverlay/Title/Body/Close`, `p038commentOverlay/Title/Text/Save/Cancel/Close`
+
+### API (new, PHP 7.3-compatible, getDb($connectionId))
+- `api/p038_detail.php` — POST {connectionId, productCode, warehouse, useDate, dateFrom, dateTo, statusAll, statusChecks}
+  - SQL = C# `CPS()`: part1 MIH LEFT JOIN CPS (CPSclearALL=0, CPSsto IN, CPSstkID) + DEB + AR_S + mil(PS)
+    UNION ALL part2 RSV (MIHvnos LIKE 'RSV%', MILtype='SS', MIHcancel=0) + IC_S — ORDER BY CPScusID
+  - status where-clause same logic as p038_search.php (14/31/exception)
+  - Response {ok, count, rows:[{vnos,cusid,debname,debgrade,date,stkcode,req,cut,total,status,desc}]}
+  - **Pitfall fixed:** `CPSsto IN ($stoSql)` — $stoSql already contains parens; double parens `IN ((...))` = SQL syntax error
+- `api/p038_comment.php` — POST {connectionId, vnos} -> {ok, desc}; + desc -> UPDATE MIH SET MIHdesc (C# FrmEditComment.cs)
+  - vnos whitelist `^[A-Za-z0-9-]+$`
+
+### Tested
+- curl: detail 10010249 -> 1 row (RSV16902-0163, status "7"); comment GET/UPDATE/GET-back PASS (test value restored after)
+- CDP: 905 rows search, row click -> detail modal (12 th, 3 rows, Thai OK), edit click -> comment modal (ปิด/SAVE, Thai OK), both close OK; vision PASS both screenshots
+
+### Still open (P038, from C# FrmBalanceGUI.cs)
+- item 3: Print V2 (PDF landscape), item 4: Print V3 (PDF portrait), item 5: customer level (GridDetail click -> dtSubDetail)
+- data/modules.php still placeholder (not ready)
