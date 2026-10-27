@@ -1065,3 +1065,15 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
   browser CDP: mount=9 rows (group 1001-), search code 10010249=1 row, badge updates
 - NOTE: API takes ~7-9s (heavy query, master+RSV 2 rounds) — button shows "ค้นหา..." while loading
 - remaining: detail (item 2), print (item 3) — then ready + modules.php
+
+## P038: Enter + default filters (2026-10-27)
+
+- commit: (this entry)
+- cache: p038-push-pending.js?v=20261027a
+- 1. Enter key in search text box triggers search (keydown handler on p038searchText)
+- 2. search() now uses searchSeq token: new search cancels stale response (old
+  apiSearching guard blocked re-search while previous 7-9s query still running)
+- 3. defaults: searchBy = code (was group), searchText empty (was 1001-),
+  reserve = all (was has), status 14 + 31 both checked (was 31 only), statusAll checked
+- verified CDP: DEFAULTS {searchBy:code, text:"", reserve:all, statusAll:true, st14:true, st31:true};
+  Enter on 10010249 -> 1 row, badge updates, button re-enabled
