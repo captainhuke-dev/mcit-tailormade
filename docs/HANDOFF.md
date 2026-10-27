@@ -1123,3 +1123,15 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 ### Still open (P038, from C# FrmBalanceGUI.cs)
 - item 3: Print V2 (PDF landscape), item 4: Print V3 (PDF portrait), item 5: customer level (GridDetail click -> dtSubDetail)
 - data/modules.php still placeholder (not ready)
+
+## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
+
+**Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
+
+- No auto search on open: removed `search(false)` from init — table empty until user presses ค้นหา/Enter
+- Search button loading animation: `.action-button.search.loading` class toggled in search() — icon hidden, white spinner (::before + @keyframes p038spin), disabled while in flight
+- Modal centering: **root cause** — portal wrapper `#appContent` has a CSS transform (font-scale feature) so `position:fixed` inside it is relative to that box, not the viewport (overlay measured h=1291 vs viewport 956, modal stuck at bottom).
+  **Fix:** mount() moves both modal overlays (`p038detailOverlay`, `p038commentOverlay`) to `document.body` + adds `p038-scope` class to each; CSS selectors changed to `.p038-scope.p038-modal-overlay`. Stale overlays removed before re-mount.
+  **Pitfall:** `content: ""` inside the JS CSS string (double-quoted) breaks the string — use `content: ''`
+- Modal body max-height: `min(60vh, calc(100vh - 180px))`; overlay padding 24px, align-items center
+- CDP verified: no auto search (0 rows after open), spinner during search (loading=true), after search spinner gone (968 rows), detail modal centered (spaceTop=377=spaceBottom), comment modal centered; vision PASS
