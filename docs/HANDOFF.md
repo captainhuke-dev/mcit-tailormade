@@ -1039,3 +1039,29 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - ตัด summary cards 4 ใบออก (จำนวนรายการ / ยอดค้างส่งรวม / ยอดเบิก/จองรวม / เลือกแล้ว) — HTML + CSS + JS update lines
 - ปุ่มค้นหายังอยู่ใน launcher (submit ใน form) ใช้งานปกติ
 - cache `p038-push-pending.js?v=20261024d`; CDP: titlebar/xbtn=false, panelBtns=[print,printNew], search+print work, no summary
+
+## P038: Item 1 - Search API (2026-10-27)
+
+- commit: 4e1831d
+- `api/p038_search.php` (PHP 7.3, getDb($connectionId), PDO prepared statements)
+  - logic from `demo/file_ref/Tailor_Made/AppBalanceCPS/FrmBalanceGUI.cs` Load_DataGrid
+  - master: CPS (CPSclearALL=0, CPSsto IN warehouses, STKgroup<>'MKT', STKsnsv<>'3', REQ-CUT1<>0)
+    + SBL pivot 7 warehouses [01],[01-B],[01-CL],[02],[03],[04-1],[04-2] + CPXqty + STRsubs
+  - RSV: MIH+MIL (MILvnos LIKE 'RSV%', MILtype='SS', MIHcancel=0) merged with master
+    (update RSVqty if same productCode, else insert)
+  - date = TOP 1 CPSdateID per product (C# pattern); date filter applies to master only
+  - filters: searchBy code/name/group (LIKE), warehouse, date range, pending >0/=0,
+    reserve >0/=0, stock01 >0/=0, stock02 >0/=0, status 14 (MIHstatus='14', joinMIH) /
+    31 (MILvCol1<>'') — status filter applies to master only (same as C#)
+- `assets/js/p038-push-pending.js` (cache v=20261024f):
+  - mock data removed; apiPost() fetch POST; search() async;
+  - row with STRsubs => green background #d1f0d1 (C# pattern);
+  - API_SEARCH = "api/p038_search.php", API_CONNECTION_ID = "c1788406814359"
+- request: POST {connectionId, searchBy, searchText, warehouse, useDate, dateFrom, dateTo,
+  pending, reserve, stock01, stock02, statusAll, statusChecks:[{value,checked}]}
+- response: {ok, count, rows:[{date,groupCode,productCode,name,pending,reserved,pr,
+  s01[3],s03,s04[2],unit,strsubs}]}
+- verified: php -l OK; curl direct (status 14=347 / 31=301 / all-excl=873; date 10/20-31=655);
+  browser CDP: mount=9 rows (group 1001-), search code 10010249=1 row, badge updates
+- NOTE: API takes ~7-9s (heavy query, master+RSV 2 rounds) — button shows "ค้นหา..." while loading
+- remaining: detail (item 2), print (item 3) — then ready + modules.php
