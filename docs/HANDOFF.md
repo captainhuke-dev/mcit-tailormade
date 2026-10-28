@@ -1191,6 +1191,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Verify CDP: V3 modal centered (backdrop + A4 sheet + data rows), close works (display:none), row click opens detail modal normally, no console errors
 - cache 20261027l -> 20261027m
 - Lesson: when CSS inside a style element is not applied, dump style.textContent and check brace balance (an unclosed block swallows everything after it)
+## P038 V3 modal: near-fullscreen + auto-fit (2026-10-28)
+- User: enlarge V3 modal so the whole A4 sheet is visible
+- CSS: .p038v3-modal width calc(100vw - 24px) max-width 1400px, height calc(100vh - 16px) (height was missing before -> modal collapsed to 308px because iframe has no intrinsic height; max-height alone does not stretch)
+- JS: v3Fit() on open — waits for iframe pages, zoom = min(bodyW/794, bodyH/(pages*1123+(pages-1)*10))*100, clamped 25-200; zoom +/- buttons snap to multiples of 25
+- Added id="p038v3Body" to the body div
+- Verify CDP: modal 1400x884 @1440x900, zoom 67%, A4 sheet 532x752 fits fully (scrollTop 0), vision PASS
+- cache 20261027n -> 20261027o
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
