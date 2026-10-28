@@ -1124,6 +1124,40 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - item 3: Print V2 (PDF landscape), item 4: Print V3 (PDF portrait), item 5: customer level (GridDetail click -> dtSubDetail)
 - data/modules.php still placeholder (not ready)
 
+
+## P038 item 5: sub-detail table in detail modal (2026-10-28)
+
+- Detail modal: 2 tables stacked (C# GridDetail + GridView_SubDetail), modal max-width 1360px
+- Table 1 (rows from `api/p038_detail.php`) click -> loads Table 2 via `api/p038_subdetail.php`
+  (POST `{connectionId, cusid, warehouse}` — warehouse REQUIRED, e.g. "01,01-B,01-CL,03,04-1")
+  - SQL = C# `dtSubDetail(cusid)`: CPS (CPSclearALL=0, STKgroup!='MKT', STKsnsv!='3', qty!=0) UNION ALL RSV (MIHvnos LIKE 'RSV%', MILtype='SS', MIHcancel=0), ORDER BY CPSvnosID, CPSlistNo
+  - response: `{ok, cus:{code,name,contact,group,grade}, count, rows:[{vnos,date,listNo,stkcode,group,desc,qty,rsv,balance,unit}]}`
+- Table 2 always visible (empty until row click), print button `#p038subPrintButton` = C# btn_PrintCustomerCPSRSV (A4 landscape, 7 cols, RSV rows grey)
+- Scroll architecture (user requirement: headers stay, only table scrolls):
+  - modal-body `overflow: visible`
+  - `#p038detailBody` = `flex:1 1 auto; min-height:96px; overflow:auto` + sticky `th` (top:0)
+  - `.p038-sub` = flex column, `overflow:hidden`; `.p038-sub-head` (h4 + print btn) = `flex:0 0 auto` (fixed)
+  - `#p038subBody` = `flex:1 1 auto; min-height:48px; overflow:auto` + sticky `th`
+- CDP verified: sticky thTop-bodyTop=0 at scrollTop=500 (40 dummy rows), head fixed, both tables scroll independently; vision PASS
+
+## P038 item 3: Print V2 (2026-10-28)
+
+- Button "Print V2" in panel-header (after Print / Print ๋ม่) -> `printV2()` -> `api/p038_v2.php`
+- Request: `{connectionId, products:[stkcode...], warehouse, useDate, dateFrom, dateTo, statusAll, statusChecks}` (same filter shape as search; products = checked rows only — toast if none)
+- Response: `{ok, count, rows:[{group,stkcode,name,unit,sumstk,rsv,pending,balance,balance03,balance04,sumvalue, details:[{date,vnos,cus,msg,dep,order,rsv,balance,value,price,isRsv}]}]}`
+- SQL:
+  - header per product = C# `SumPriceCPS`: sumvalue (SBL 01 group), sumstk (SBL 03), pending (SBL 04-1/04-2), rsv (MIH/MIL RSV) — SBL subqueries use IN lists: sbl01=IN('01','01-CL','01-B'), sbl03=IN('03'), sbl04=IN('04-1','04-2'); CPSclearSTK=0 in sumvalue/sumstk only (NOT pending, NOT distinct)
+  - distinct products = CPS (CPSclearALL=0) UNION RSV (MIL) — RSV-only products must appear (C# master grid merges RSV)
+  - detail = C# `CPS_detailReport`: CPS UNION ALL RSV, 14 cols each branch (listno, vnostype, CPSdateID, datediff, CPSvnosID, CPScusID, DEBnameT, DEBgrade, DEBcontactT, total, MIHdesc, CPSper, DEPdescT, RSVqty, CPSstkREQ, CPSstkCUT1, CPSsumREQ, MILvCol1)
+  - param order (CRITICAL): header = (sto,dates) x3 then sto,stk,stk; detail = sto,stk,dates(,stk when !reportRSV31)
+- Report HTML (print area, A4 landscape via existing @page): title + "พิมพ์เมื่อ" stamp (ค.ศ.), 10 cols: กลุ่ม/วันที่, รหัส/เลขที่, ชื่อ/รายละเอียด, หน่วย/ฝ่ายขาย, สั่งซื้อ, จอง, ค้างส่ง, คงเหลือ [01...]+[03,04...], ยอดเงิน, ราคา/ทุน — product rows `.prow` (blue bg, bold), detail rows below; col widths via nth-child (6.9/8.8/36/6.9/6.9/6.9/6.3/8.8/6.3/6.3%)
+- CDP verified: 849 rows search -> select 2 -> Print V2 -> h1 + 10 th + product/detail rows rendered, Thai exact-match PASS, window.print called; vision PASS
+- cache: `p038-push-pending.js?v=20261027j`
+
+### Still open (P038, from C# FrmBalanceGUI.cs)
+
+- item 4: btn_printV3 / bgWorker_DoWorkV3 — PDF portrait (~390 lines C#)
+- C# btn_print (V1) is commented out — Web Print/Print ๋ม่ (browser print) exceeds it
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
