@@ -1173,6 +1173,17 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - item 4: btn_printV3 / bgWorker_DoWorkV3 — PDF portrait (~390 lines C#)
 - C# btn_print (V1) is commented out — Web Print/Print ๋ม่ (browser print) exceeds it
+
+## P038 Print V3 -> modal รายงาน A4 (2026-10-28)
+- เปลี่ยน Print V3 จาก direct print เป็นเปิด modal แสดงรายงาน (pattern P083)
+- Modal: overlay z-index 120 บน document.body, max-width 980px, head blue gradient, zoom -/+ (25-200% step 50%), ปุ่มพิมพ์, hint "A4 portrait - margins 20pt"
+- iframe srcdoc: A4 210x297mm, @page{size:A4;margin:20pt}, padding 20pt, ฟอนต์ THSarabunNew @font-face ใน srcdoc (relative url — resolve ต่อ base URL ของ parent)
+- ตาราง 1 header: 3 แถว — ชื่อ colspan6, พิมพ์เมื่อ colspan6, หัว 6 คอลัมน์ (กลุ่มสินค้า/วันที่, รหัสสินค้า/เลขที่ใบสำคัญ, ชื่อสินค้า/รายละเอียด, หน่วย/ฝ่ายขาย, สั่งซื้อ, ค้างส่ง)
+- ตาราง 2: 6 คอลัมน์กว้าง 55/70/255/55/55/55pt — แถวสินค้า (blue) + แถวกลุ่ม >15/<15 วัน (border-bottom) + แถวรายละเอียด
+- ไม่ auto-print — view ก่อนแล้วกดปุ่มพิมพ์เอง (print = window.print ใน iframe)
+- API ใช้ p038_v2.php เดิม (mี datediff)
+- CDP verify: A4 793.67x1122.52px, padding 26.67px=20pt, Thai exact, fonts 400+700 loaded
+- cache 20261027k -> 20261027l
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
