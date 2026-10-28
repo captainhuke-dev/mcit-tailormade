@@ -1184,6 +1184,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - API ใช้ p038_v2.php เดิม (mี datediff)
 - CDP verify: A4 793.67x1122.52px, padding 26.67px=20pt, Thai exact, fonts 400+700 loaded
 - cache 20261027k -> 20261027l
+
+## P038 fix: @media print missing closing brace (2026-10-28)
+- Bug: the @media print CSS block (added in V2 patch) was missing its closing brace -> all CSS rules after it (V3 modal styles) got swallowed into the print block -> V3 modal invisible on screen (rendered in normal flow below the page) and its overlay blocked row clicks
+- Fix: added the missing } to close @media print before .p038v3-overlay
+- Verify CDP: V3 modal centered (backdrop + A4 sheet + data rows), close works (display:none), row click opens detail modal normally, no console errors
+- cache 20261027l -> 20261027m
+- Lesson: when CSS inside a style element is not applied, dump style.textContent and check brace balance (an unclosed block swallows everything after it)
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
