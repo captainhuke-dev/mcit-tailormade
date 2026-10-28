@@ -1120,6 +1120,21 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - curl: detail 10010249 -> 1 row (RSV16902-0163, status "7"); comment GET/UPDATE/GET-back PASS (test value restored after)
 - CDP: 905 rows search, row click -> detail modal (12 th, 3 rows, Thai OK), edit click -> comment modal (ปิด/SAVE, Thai OK), both close OK; vision PASS both screenshots
 
+## P038 item 4: Print V3 (2026-10-28)
+
+- Button "Print V3" in panel-header (after Print V2) -> `printV3()` -> reuses `api/p038_v2.php` (same data: SumPriceCPS + CPS_detailReport)
+- `api/p038_v2.php` detail rows now also return `datediff` (days since CPSdateID) — used by V3 sections
+- Report = A4 PORTRAIT (C# PageSize.A4): named page `@page p038portrait { size: A4 }` + `#p038printArea.v3 { page: p038portrait }` (printArea gets class "v3" during print, reset after)
+- 6 cols (C# widths 55/70/255/55/55/55 of 550 -> 10/12.7/46.4/10/10/10%): {glu,wanthi} / {rhas,lexthee} / {chue,raialueat} / {nuy,phaai} / {sungsue} / {kaangseng} — grey thead (repeats per page via browser thead)
+- Product row `.prow` (blue, bold): group, stkcode, name, unit, sumstk, pending
+- Detail rows: date (right), vnos (center), msg (pre-line: cus (grade) name contact per + @MILvCol1 + #MIHdesc), dep (center), order (right), balance (right)
+- Section rows (C# datediff logic, once each per product on transition): "{up}" (colspan 2, bold, bottom border) when datediff > 15; "{down}" when <= 15
+- CDP verified: select 2 -> Print V3 -> 6 th exact Thai match, both section rows, 1 prow, areaClass=v3 at print time, window.print called
+- cache: `p038-push-pending.js?v=20261027k`
+
+### Still open (P038, from C# FrmBalanceGUI.cs)
+
+- (none — all C# features done: search, detail modal + comment, sub-detail table + customer print, Print V2 landscape, Print V3 portrait; C# btn_print V1 was commented out, Web Print/Print ๋ม่ exceeds it)
 ### Still open (P038, from C# FrmBalanceGUI.cs)
 - item 3: Print V2 (PDF landscape), item 4: Print V3 (PDF portrait), item 5: customer level (GridDetail click -> dtSubDetail)
 - data/modules.php still placeholder (not ready)

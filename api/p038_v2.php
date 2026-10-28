@@ -232,6 +232,7 @@ foreach ($products as $stk) {
     if ($isRsv) $price = p038v2_cost($db, $vnos, $stk, (string) $d["listno"]);
     $details[] = array(
       "date" => p038v2_date($d["CPSdateID"]),
+      "datediff" => p038v2_num($d["datediff"]),
       "vnos" => $vnos,
       "listno" => (string) $d["listno"],
       "cus" => (string) $d["CPScusID"],
