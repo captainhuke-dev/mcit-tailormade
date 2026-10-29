@@ -793,7 +793,7 @@ function v3DocHtml(paperInner) {
     ".p038v3-data td.c{text-align:center}",
     ".p038v3-data td.r{text-align:right;padding-right:5px}",
     ".p038v3-data td{border:0}",
-    ".p038v3-data tr.prow td{font-weight:bold;background:transparent;color:#1d4ed8;border:0;border-bottom:1px solid #000}",
+    ".p038v3-data tr.prow td{font-weight:bold;background:transparent;color:#1d4ed8;border:0;border-top:1px solid #000;border-bottom:1px solid #000}",
     ".p038v3-data tr.sec td{border:0;background:#fff}",
     ".p038v3-data tr.sec td.sectxt{border-bottom:1px solid #000;font-weight:bold}",
     "@media print{body{background:#fff;zoom:1}.p038v3-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;box-shadow:none;page-break-after:always}.p038v3-page:last-child{page-break-after:auto}.p038v3-tbl tr{page-break-inside:avoid}}"
