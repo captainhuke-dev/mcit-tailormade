@@ -1278,6 +1278,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - printV2() already toggles loading class; V2 modal = A4 portrait (210x297mm, 20pt margins)
 - Verify CDP: at click loadingClass=true disabled=true spinColor=rgb(29,78,216) spinW=16px; modal pageW=793.688 pageH=1122.52 padding=26.67px portrait=true; after modal btnLoadingAfter=false
 - cache 20261027z -> 20261027a2
+## P038 V2 modal portrait (2026-10-29)
+- User: from the screenshot, the V2 table showed A4 landscape while the modal was portrait — mismatch, fix it
+- Root cause: V2 modal was near-fullscreen wide (1400x884, landscape) while the A4 report inside is portrait (794x1123)
+- Fix: V2 modal CSS -> portrait: width:820px (A4 width + padding), height:auto, max-height:calc(100vh - 16px), overflow:auto; iframe height:1123px (A4 height at 100%)
+- Verify CDP: modal 820x884 (portrait), A4 page 794x1123 (portrait) — both match; vision confirmed both portrait
+- cache 20261027a2 -> 20261027a3
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
