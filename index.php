@@ -207,7 +207,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p054-packing.js?v=20260925w"></script>
   <script src="assets/js/p092-barcode.js?v=20260926k"></script>
   <script src="assets/js/p037-inv-booking.js?v=20260928i"></script>
-  <script src="assets/js/p038-push-pending.js?v=20261027z"></script>
+  <script src="assets/js/p038-push-pending.js?v=20261027a2"></script>
   <script src="assets/js/p047-invoice-status.js?v=20260929d"></script>
   <script src="assets/js/p015-bill-status.js?v=20260929g"></script>
   <script src="assets/js/p019-invoice-status.js?v=20261008a"></script>
