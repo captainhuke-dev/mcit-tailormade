@@ -1240,6 +1240,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - CSS: .p038v3-data tr.prow td now has border-top:1px solid #000 + border-bottom:1px solid #000 (no left/right, no background, blue text)
 - Verify CDP: prowBorderTop=1px black, prowBorderBottom=1px black
 - cache 20261027t -> 20261027u
+## P038 V3 button loading animation (2026-10-29)
+- User: Print V3 button must show an animation so the user knows it is working
+- CSS: #p038printV3Button.loading rules (pointer-events none, svg hidden, ::before spinner 16px + p038spin 0.7s) — same pattern as search button
+- JS printV3(): on click set btn.disabled=true + classList.add("loading"); on API success (after modal open) and on error, remove loading + re-enable
+- Verify CDP: at click loadingClass=true, disabled=true, ::before content="" width=16px animation=p038spin; after modal loadingClass=false, disabled=false
+- cache 20261027u -> 20261027v
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
