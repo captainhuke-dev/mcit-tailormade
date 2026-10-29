@@ -673,6 +673,28 @@ function printV2() {
     showToast("หูจบดาว่: " + e.message);
   });
 }
+var V3_HTML = [
+  '<div class="p038v3-overlay" id="p038v3Overlay">',
+  '  <div class="p038v3-modal">',
+  '    <div class="p038v3-head">',
+  '      <div class="p038v3-title">\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E1C\u0E25\u0E31\u0E01\u0E14\u0E31\u0E19\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32 (V3)</div>',
+  '      <div class="p038v3-btns">',
+  '        <button class="p038v3-btn" type="button" id="p038v3ZoomOut" title="zoom out">\u2212</button>',
+  '        <span class="p038v3-zoomlabel" id="p038v3Zoom">100%</span>',
+  '        <button class="p038v3-btn" type="button" id="p038v3ZoomIn" title="zoom in">+</button>',
+  '        <button class="p038v3-btn" type="button" id="p038v3Close" title="close">\u2715</button>',
+  '      </div>',
+  '    </div>',
+  '    <div class="p038v3-body" id="p038v3Body"><iframe id="p038v3Frame" title="\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E1C\u0E25\u0E31\u0E01\u0E14\u0E31\u0E19\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32"></iframe></div>',
+  '    <div class="p038v3-foot">',
+  '      <div class="p038v3-hint">A4 portrait — margins 20pt</div>',
+  '      <button class="p038v3-print" type="button" id="p038v3Print">Print</button>',
+  '    </div>',
+  '  </div>',
+  '</div>'
+].join('\n');
+var v3Seq = 0;
+var v3Zoom = 100;
 function v3Esc(s) {
   return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
