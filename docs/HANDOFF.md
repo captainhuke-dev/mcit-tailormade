@@ -1290,6 +1290,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Modal CSS: width:1150px (A4 landscape + padding), iframe height:794px (A4 landscape height at 100%)
 - Verify CDP: modal 1150x884 (landscape), A4 page 1122.52x793.688 (landscape) — both match
 - cache 20261027a3 -> 20261027a4
+## P038 select-all toggle fix (2026-10-29)
+- User: col 1 select-all checkbox — 1st click selects all, but 2nd click should deselect all (was not working)
+- Root cause: updateSelection() computed state from currentItems (ALL items), so after selecting the current page the header checkbox was reset to unchecked+indeterminate; 2nd click re-checked it (no-op)
+- Fix: updateSelection now uses pageItems (current page) — checkbox reflects current-page selection; 2nd click deselects all
+- Verify CDP: afterSelect=15 (checked=true), afterDeselect=0 (checked=false) — toggle works
+- cache 20261027a4 -> 20261027a5
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
