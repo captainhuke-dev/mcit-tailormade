@@ -909,7 +909,7 @@ function printV3() {
     f.srcdoc = v3DocHtml(v3ReportHtml(d));
     var overlay = document.getElementById("p038v3Overlay");
     overlay.classList.add("show");
-    v3Fit();
+    v3SetZoom(100);
   }).catch(function (e) {
     if (apiSeq !== v3Seq) return;
     showToast("ผิดพลาด: " + e.message);
