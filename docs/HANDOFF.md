@@ -1211,6 +1211,14 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Column-header row (tr.h) keeps 1px black grid + grey #dcdcdc background
 - Verify CDP: r1/r2 border 0px, r3 border 1px + grey bg; vision PASS
 - cache 20261027p -> 20261027q
+## P038 V3: header on every page + page number (2026-10-29)
+- User: when the report spans pages, the document header (table 1) must repeat on EVERY page; page number ("หน้า 1..") at top-right of each page
+- v3ReportHtml: added <div class="p038v3-pgno">1</div> to the first page
+- CSS: .p038v3-page gets position:relative; new .p038v3-pgno{position:absolute;top:0;right:0;background:#fff;padding:1px 4px;font-size:10pt;font-weight:bold}
+- pag(): continuation pages now clone the header table (table.p038v3-hdr) and add a pgno div; renumber() fills page numbers
+- Note: "หน้าที่" not in trusted sources -> plain numbers used (1, 2, ...)
+- Verify CDP: 90 products selected -> 2 pages, both hasHdr=true, pgno "1"/"2" at absolute top:0 right:0
+- cache 20261027q -> 20261027r
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
