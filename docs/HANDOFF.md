@@ -1226,6 +1226,15 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - CSS .p038v3-pgno: top:10pt;right:10pt (was top:0;right:0)
 - Verify CDP: 2 pages, pgnoText "หน้า 1"/"หน้า 2", computed top/right = 13.33px (=10pt)
 - cache 20261027r -> 20261027s
+## P038 V3 table styles (2026-10-29)
+- User spec: table 1 row 3 (column headers) valign=middle; table 2 product row = no background + blue text + bottom line only; section rows: col1 & cols4-6 no lines, cols2-3 bottom line only; detail rows: no lines
+- CSS changes in v3DocHtml:
+  - .p038v3-hdr tr.h th: added vertical-align:middle
+  - new .p038v3-data td{border:0} (removes grid from table 2)
+  - .p038v3-data tr.prow td: background:transparent; color:#1d4ed8; border:0; border-bottom:1px solid #000
+  - sec rows already matched (tr.sec td{border:0} + .sectxt{border-bottom:1px})
+- Verify CDP: hdrThValign=middle, prow bg=transparent color=rgb(29,78,216) borderBottom=1px, sec c1/c456=0px c23 bottom=1px, detail borders=0px
+- cache 20261027s -> 20261027t
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
