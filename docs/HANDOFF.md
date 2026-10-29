@@ -1198,6 +1198,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Added id="p038v3Body" to the body div
 - Verify CDP: modal 1400x884 @1440x900, zoom 67%, A4 sheet 532x752 fits fully (scrollTop 0), vision PASS
 - cache 20261027n -> 20261027o
+## P038 V3 modal: 100% zoom + table 2 lines (2026-10-29)
+- User: show V3 modal at 100% (not auto-fit); table 2 (data table) lines not visible
+- Root cause of missing lines: at 67% auto-fit, 1px borders render sub-pixel/invisible
+- Change: printV3 now calls v3SetZoom(100) instead of v3Fit()
+- Table 2 borders already defined (.p038v3-tbl th,td{border:1px solid #000}); at 100% they render as visible black grid
+- Verify CDP: zoomLabel 100%, detail-row td border-top/left = 1px rgb(0,0,0); vision PASS (100% + grid lines visible)
+- cache 20261027o -> 20261027p
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
