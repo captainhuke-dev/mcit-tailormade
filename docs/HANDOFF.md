@@ -1266,6 +1266,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Detail row: date/vnos/msg/dep/order/rsv/balance/(blank)/value/price
 - Verify CDP: A4 793.688x1122.52px, padding 26.67px=20pt, hdrCols=10, dataCols=10, prow, pgno "หน้า 1"
 - cache 20261027x -> 20261027y
+## P038 V3 fix (V3_HTML restored) (2026-10-29)
+- User: V2 = A4 portrait (done); V3 not working
+- Root cause: V2 modal patch (commit b6ddfe6) accidentally deleted `var V3_HTML`, `var v3Seq`, `var v3Zoom` -> `ReferenceError: V3_HTML is not defined` in v3InjectModal
+- Fix: restored the V3 block (V3_HTML + v3Seq + v3Zoom) from the previous version, inserted before `function v3Esc`
+- Verify CDP: V3 overlay opens (overlayShow=true), iframe srcdoc 12024 chars, no exceptions
+- cache 20261027y -> 20261027z
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
