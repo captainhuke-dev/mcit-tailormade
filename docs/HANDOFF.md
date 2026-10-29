@@ -1205,6 +1205,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Table 2 borders already defined (.p038v3-tbl th,td{border:1px solid #000}); at 100% they render as visible black grid
 - Verify CDP: zoomLabel 100%, detail-row td border-top/left = 1px rgb(0,0,0); vision PASS (100% + grid lines visible)
 - cache 20261027o -> 20261027p
+## P038 V3: table 1 = document header (2026-10-29)
+- User: table 1 rows 1 (title) & 2 (print date) should have no grid lines; table 1 defined as the document header
+- CSS added in v3DocHtml: .p038v3-hdr tr:nth-of-type(1) td,.p038v3-hdr tr:nth-of-type(2) td{border:0;background:transparent}
+- Column-header row (tr.h) keeps 1px black grid + grey #dcdcdc background
+- Verify CDP: r1/r2 border 0px, r3 border 1px + grey bg; vision PASS
+- cache 20261027p -> 20261027q
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
