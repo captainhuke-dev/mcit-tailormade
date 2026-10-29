@@ -787,6 +787,7 @@ function v3DocHtml(paperInner) {
     ".p038v3-hdr td{font-size:14pt}",
     ".p038v3-hdr td.t{font-size:18pt;font-weight:bold;text-align:center;padding:4px}",
     ".p038v3-hdr tr.h th{background:#dcdcdc;font-size:12pt;font-weight:bold;text-align:center;padding:2px 4px 5px}",
+    ".p038v3-hdr tr:nth-of-type(1) td,.p038v3-hdr tr:nth-of-type(2) td{border:0;background:transparent}",
     ".p038v3-data td.msg{white-space:pre-line}",
     ".p038v3-data td.c{text-align:center}",
     ".p038v3-data td.r{text-align:right;padding-right:5px}",
