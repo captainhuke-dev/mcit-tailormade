@@ -1219,6 +1219,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Note: "หน้าที่" not in trusted sources -> plain numbers used (1, 2, ...)
 - Verify CDP: 90 products selected -> 2 pages, both hasHdr=true, pgno "1"/"2" at absolute top:0 right:0
 - cache 20261027q -> 20261027r
+## P038 V3: page number "หน้า N" + 10pt offsets (2026-10-29)
+- User: top-right page number should read "หน้า 1", "หน้า 2" (word + number), positioned with 10pt from top and right
+- "หน้า" harvested from index.php (trusted), verified THAI code points, written as \uXXXX escapes (file convention)
+- renumber() now sets textContent = "หน้า N"; first page div pre-filled "หน้า 1"
+- CSS .p038v3-pgno: top:10pt;right:10pt (was top:0;right:0)
+- Verify CDP: 2 pages, pgnoText "หน้า 1"/"หน้า 2", computed top/right = 13.33px (=10pt)
+- cache 20261027r -> 20261027s
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
