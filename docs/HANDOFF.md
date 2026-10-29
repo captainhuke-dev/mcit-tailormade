@@ -1235,6 +1235,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
   - sec rows already matched (tr.sec td{border:0} + .sectxt{border-bottom:1px})
 - Verify CDP: hdrThValign=middle, prow bg=transparent color=rgb(29,78,216) borderBottom=1px, sec c1/c456=0px c23 bottom=1px, detail borders=0px
 - cache 20261027s -> 20261027t
+## P038 V3: product row top+bottom lines (2026-10-29)
+- User: table 2 product (stk) row should show ONLY the top and bottom lines of the row
+- CSS: .p038v3-data tr.prow td now has border-top:1px solid #000 + border-bottom:1px solid #000 (no left/right, no background, blue text)
+- Verify CDP: prowBorderTop=1px black, prowBorderBottom=1px black
+- cache 20261027t -> 20261027u
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
