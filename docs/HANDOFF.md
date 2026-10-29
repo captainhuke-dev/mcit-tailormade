@@ -1296,6 +1296,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Fix: updateSelection now uses pageItems (current page) — checkbox reflects current-page selection; 2nd click deselects all
 - Verify CDP: afterSelect=15 (checked=true), afterDeselect=0 (checked=false) — toggle works
 - cache 20261027a4 -> 20261027a5
+## P038 detail modal: highlight selected customer row (2026-10-29)
+- User: in the detail modal, table 1 (customers) — clicking a row loads the sub-detail (table 2) below; make it visually clear which row is selected
+- Added CSS: .p038-scope #p038detailBody tr.selected td { background: #dbeafe; } + td:first-child { box-shadow: inset 4px 0 var(--primary); }
+- JS: row click handler now removes 'selected' from all table-1 rows and adds it to the clicked row before openSubDetail()
+- Verify CDP: selectedCount=1, selectedIsRow2=true, subRows=4, subTitle populated
+- cache 20261027a5 -> 20261027a6
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
