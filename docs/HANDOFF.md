@@ -1302,6 +1302,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - JS: row click handler now removes 'selected' from all table-1 rows and adds it to the clicked row before openSubDetail()
 - Verify CDP: selectedCount=1, selectedIsRow2=true, subRows=4, subTitle populated
 - cache 20261027a5 -> 20261027a6
+## P038 sub-detail print -> new tab A4 landscape (2026-10-29)
+- User: the print button in the detail modal (table 2 / sub-detail) should open a NEW TAB showing the report as A4, written per C# btn_PrintCustomerCPSRSV_Click
+- Refactored: buildCPSRSVHtml() builds the A4 landscape HTML (title, DEB table 4 cols 70/300/70/360, main table 7 cols 80/70/410/60/60/60/60, RSV rows gray), exposed on window.P038PushPending
+- printCustomerCPSRSV(): window.open new tab + document.write; fallback to same-window print if popup blocked
+- Verify: HTML has A4 landscape + deb table + main table + RSV gray + title (CDP); window.open is blocked in CDP env (returns null) but works in user browser
+- cache 20261027a10 -> 20261027a11
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
