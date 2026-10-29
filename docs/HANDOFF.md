@@ -1258,6 +1258,14 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Print group now = Print V2 + Print V3 only
 - Verify CDP: buttons = [p038printV2Button, p038printV3Button]; hasPrint=false, hasPrintNew=false
 - cache 20261027w -> 20261027x
+## P038 V2 -> A4 portrait modal (2026-10-29)
+- User: make Print V2 like V3 (A4 modal), report = A4 portrait, 10 cols, 20pt margins
+- Added V2 modal (cloned V3 pattern, p038v2-* classes/ids): V2_HTML, v2DocHtml, v2ReportHtml (10 cols: 55/70/290/55/55/55/50/70/50/50pt = 750pt), v2InjectModal/v2SetZoom/v2Fit/v2Close
+- Rewrote printV2(): POST api/p038_v2.php -> build A4 portrait HTML -> srcdoc iframe -> open modal (no window.print)
+- Product row: group/stkcode/name/unit/sumstk/rsv/pending/balance+balance03+balance04/sumvalue/(blank)
+- Detail row: date/vnos/msg/dep/order/rsv/balance/(blank)/value/price
+- Verify CDP: A4 793.688x1122.52px, padding 26.67px=20pt, hdrCols=10, dataCols=10, prow, pgno "หน้า 1"
+- cache 20261027x -> 20261027y
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
