@@ -1252,6 +1252,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Fix: changed ::before border colors to blue: border:2px solid rgba(29,78,216,0.3), border-top-color:#1d4ed8
 - Verify CDP: loading=true, disabled=true, spinColor=rgb(29,78,216); screenshot during loading shows blue ring on white button
 - cache 20261027v -> 20261027w
+## P038: remove Print + Print ใหม่ buttons (2026-10-29)
+- User: take out the "Print" and "Print ใหม่" buttons from P038
+- Removed both button elements from the HTML template + their addEventListener bindings (printAll/printNew now unused)
+- Print group now = Print V2 + Print V3 only
+- Verify CDP: buttons = [p038printV2Button, p038printV3Button]; hasPrint=false, hasPrintNew=false
+- cache 20261027w -> 20261027x
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
