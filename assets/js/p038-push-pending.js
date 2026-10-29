@@ -556,33 +556,77 @@ function renderSubRows() {
   h += "</tbody></table>";
   body.innerHTML = h;
 }
-function printCustomerCPSRSV() {
-  if (!subCus || !subRows.length) return;
+function buildCPSRSVHtml() {
+  if (!subCus || !subRows.length) return '';
   var now = new Date();
   var pad = function (n) { return String(n).padStart(2, "0"); };
-  var stamp = pad(now.getDate()) + "/" + pad(now.getMonth() + 1) + "/" + now.getFullYear() + " " + pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
-  var h = '<h1>\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</h1>';
-  h += '<div class="meta">';
-  h += '<b>\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</b> ' + escapeHTML(subCus.code) + ' &nbsp;|&nbsp; <b>\u0E40\u0E02\u0E15\u002F\u0E2D\u0E33\u0E40\u0E20\u0E2D</b> ' + escapeHTML(subCus.contact) + "<br>";
-  h += '<b>\u0E0A\u0E37\u0E48\u0E2D\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</b> ' + escapeHTML(subCus.name) + ' &nbsp;|&nbsp; <b>\u0E01\u0E25\u0E38\u0E48\u0E21</b> ' + escapeHTML(subCus.group) + ' &nbsp;|&nbsp; <b>\u0E40\u0E01\u0E23\u0E14</b> ( ' + escapeHTML(subCus.grade) + ' )<br>';
-  h += "\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D " + stamp;
-  h += "</div>";
-  h += '<table><thead><tr><th>\u0E40\u0E25\u0E02\u0E43\u0E1A\u0E2A\u0E33\u0E04\u0E31\u0E0D</th><th>\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32</th><th>\u0E0A\u0E37\u0E48\u0E2D\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32</th><th class="num">\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07</th><th class="num">\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</th><th class="num">\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D</th><th>\u0E2B\u0E19\u0E48\u0E27\u0E22</th></tr></thead><tbody>';
+  var stamp = pad(now.getDate()) + "/" + pad(now.getMonth() + 1) + "/" + now.getFullYear() + " " + pad(now.getHours()) + "::" + pad(now.getMinutes()) + "::" + pad(now.getSeconds());
+  var h = [];
+  h.push('<!DOCTYPE html><html><head><meta charset="utf-8"><title>\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</title>');
+  h.push('<style>');
+  h.push('@page{size:A4 landscape;margin:20pt 20pt 20pt 25pt}');
+  h.push("body{margin:0;background:#fff;font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}");
+  h.push('h1{font-size:22pt;font-weight:bold;text-align:center;margin:0 0 8pt}');
+  h.push('table{border-collapse:collapse;margin:0 auto}');
+  h.push('table.deb{width:800pt}');
+  h.push('table.main{width:800pt}');
+  h.push('th,td{border:1px solid #000;padding:2px 4px;font-size:14pt}');
+  h.push('th{font-weight:bold;text-align:center}');
+  h.push('td.num{text-align:right;padding-right:5pt}');
+  h.push('tr.rsv td{background:#f0f0f0}');
+  h.push('</style></head><body>');
+  h.push('<h1>\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</h1>');
+  h.push('<table class="deb"><colgroup><col style="width:70pt"><col style="width:300pt"><col style="width:70pt"><col style="width:360pt"></colgroup>');
+  h.push('<tr><td><b>\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</b></td><td>' + escapeHTML(subCus.code) + '</td><td><b>\u0E40\u0E02\u0E15\u0E2F\u0E2D\u0E33\u0E40\u0E20\u0E2D</b></td><td>' + escapeHTML(subCus.contact) + '</td></tr>');
+  h.push('<tr><td><b>\u0E0A\u0E37\u0E48\u0E2D\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</b></td><td rowspan="2">' + escapeHTML(subCus.name) + '</td><td><b>\u0E01\u0E25\u0E38\u0E48\u0E21</b></td><td>' + escapeHTML(subCus.group) + '</td></tr>');
+  h.push('<tr><td></td><td><b>\u0E40\u0E01\u0E23\u0E14</b></td><td>( ' + escapeHTML(subCus.grade) + ' )</td></tr>');
+  h.push('</table>');
+  h.push('<table class="main"><colgroup><col style="width:80pt"><col style="width:70pt"><col style="width:410pt"><col style="width:60pt"><col style="width:60pt"><col style="width:60pt"><col style="width:60pt"></colgroup>');
+  h.push('<tr><td colspan="7">' + '\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D' + ' ' + stamp + '</td></tr>');
+  h.push('<tr><th>\u0E40\u0E25\u0E02\u0E43\u0E1A\u0E2A\u0E33\u0E04\u0E31\u0E0D</th><th>\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32</th><th>\u0E0A\u0E37\u0E48\u0E2D\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32</th><th>\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07</th><th>\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</th><th>\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D</th><th>\u0E2B\u0E19\u0E48\u0E27\u0E22</th></tr>');
   subRows.forEach(function (r) {
     var isRsv = r.vnos.indexOf("RSV") === 0;
-    h += '<tr' + (isRsv ? ' style="background:#f0f0f0"' : "") + '>';
-    h += '<td class="center">' + escapeHTML(r.vnos) + "</td>";
-    h += '<td class="center">' + escapeHTML(r.stkcode) + "</td>";
-    h += "<td>" + escapeHTML(r.desc) + "</td>";
-    h += '<td class="num">' + formatNumber(r.qty) + "</td>";
-    h += '<td class="num">' + formatNumber(r.rsv) + "</td>";
-    h += '<td class="num">' + formatNumber(r.balance) + "</td>";
-    h += "<td>" + escapeHTML(r.unit) + "</td>";
-    h += "</tr>";
+    h.push('<tr' + (isRsv ? ' class="rsv"' : '') + '>');
+    h.push('<td style="text-align:center">');
+    h.push(escapeHTML(r.vnos));
+    h.push('</td>');
+    h.push('<td style="text-align:center">');
+    h.push(escapeHTML(r.stkcode));
+    h.push('</td>');
+    h.push('<td>');
+    h.push(escapeHTML(r.desc));
+    h.push('</td>');
+    h.push('<td class="num">');
+    h.push(formatNumber(r.qty));
+    h.push('</td>');
+    h.push('<td class="num">');
+    h.push(formatNumber(r.rsv));
+    h.push('</td>');
+    h.push('<td class="num">');
+    h.push(formatNumber(r.balance));
+    h.push('</td>');
+    h.push('<td>');
+    h.push(escapeHTML(r.unit));
+    h.push('</td>');
+    h.push('</tr>');
   });
-  h += "</tbody></table>";
-  document.getElementById("p038printArea").innerHTML = h;
-  window.print();
+  h.push('</table>');
+  h.push('<p style="text-align:center;font-size:10pt;margin-top:6pt">' + '\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D' + ' ' + stamp + '</p>');
+  h.push('</body></html>');
+  return h.join('');
+}
+function printCustomerCPSRSV() {
+  var html = buildCPSRSVHtml();
+  if (!html) return;
+  var w = window.open('', '_blank');
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+    w.focus();
+  } else {
+    document.getElementById("p038printArea").innerHTML = html;
+    window.print();
+  }
 }
 
 /* ===== Print ===== */
@@ -1201,5 +1245,5 @@ buildOptionGroups();
     init();
   }
 
-  window.P038PushPending = { mount: mount };
+  window.P038PushPending = { mount: mount, buildCPSRSVHtml: buildCPSRSVHtml };
 })();
