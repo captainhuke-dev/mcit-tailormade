@@ -1272,6 +1272,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Fix: restored the V3 block (V3_HTML + v3Seq + v3Zoom) from the previous version, inserted before `function v3Esc`
 - Verify CDP: V3 overlay opens (overlayShow=true), iframe srcdoc 12024 chars, no exceptions
 - cache 20261027y -> 20261027z
+## P038 V2 button spinner + A4 portrait modal (2026-10-29)
+- User: V2 report shows in modal (A4 portrait, not landscape) + V2 button needs loading animation
+- Added CSS for #p038printV2Button.loading (blue spinner, same as V3 button)
+- printV2() already toggles loading class; V2 modal = A4 portrait (210x297mm, 20pt margins)
+- Verify CDP: at click loadingClass=true disabled=true spinColor=rgb(29,78,216) spinW=16px; modal pageW=793.688 pageH=1122.52 padding=26.67px portrait=true; after modal btnLoadingAfter=false
+- cache 20261027z -> 20261027a2
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
