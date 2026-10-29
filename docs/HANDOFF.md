@@ -1284,6 +1284,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Fix: V2 modal CSS -> portrait: width:820px (A4 width + padding), height:auto, max-height:calc(100vh - 16px), overflow:auto; iframe height:1123px (A4 height at 100%)
 - Verify CDP: modal 820x884 (portrait), A4 page 794x1123 (portrait) — both match; vision confirmed both portrait
 - cache 20261027a2 -> 20261027a3
+## P038 V2 -> A4 landscape (2026-10-29)
+- User: Print V2 must display the report as A4 landscape (changed from the earlier portrait request)
+- Changes in v2DocHtml: @page{size:A4 landscape;margin:20pt}; .p038v2-page width:297mm height:210mm
+- Modal CSS: width:1150px (A4 landscape + padding), iframe height:794px (A4 landscape height at 100%)
+- Verify CDP: modal 1150x884 (landscape), A4 page 1122.52x793.688 (landscape) — both match
+- cache 20261027a3 -> 20261027a4
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
