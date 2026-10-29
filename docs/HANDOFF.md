@@ -1246,6 +1246,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - JS printV3(): on click set btn.disabled=true + classList.add("loading"); on API success (after modal open) and on error, remove loading + re-enable
 - Verify CDP: at click loadingClass=true, disabled=true, ::before content="" width=16px animation=p038spin; after modal loadingClass=false, disabled=false
 - cache 20261027u -> 20261027v
+## P038 V3 spinner visibility fix (2026-10-29)
+- User: tested, could not see the spinner
+- Root cause: spinner was white (copied from search button which has blue gradient bg); V3 button has WHITE bg -> white spinner invisible
+- Fix: changed ::before border colors to blue: border:2px solid rgba(29,78,216,0.3), border-top-color:#1d4ed8
+- Verify CDP: loading=true, disabled=true, spinColor=rgb(29,78,216); screenshot during loading shows blue ring on white button
+- cache 20261027v -> 20261027w
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
