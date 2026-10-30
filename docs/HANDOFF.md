@@ -1380,6 +1380,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Replaced Thai label with inline SVG printer icon (Feather printer, stroke=currentColor) + text "Print"
 - Verified (Node standalone, mock data): ALL PASS (hasPrintLabel, hasPrintIcon)
 - cache 20261027a23 -> 20261027a24
+## P038 detail modal: sub print button "Print Preview" + eye icon (2026-10-29)
+- User: modal รายละเอียด ตาราง 2 ปุ่มพิมพ์เอกสาร เปลี่ยนเป็น "Print Preview" พร้อม icon รูป ตา (eye)
+- Replaced printer SVG with Feather eye icon (stroke=currentColor) + label "Print Preview" in p038subPrintButton (detail modal)
+- Verified: HTML template contains "Print Preview" + eye path (grep count=1 each)
+- cache 20261027a24 -> 20261027a25
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
