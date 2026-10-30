@@ -590,7 +590,7 @@ function buildCPSRSVHtml() {
   h.push('<button type="button" id="p038subZoomOut" title="zoom out">\u2212</button>');
   h.push('<span class="zl" id="p038subZoom">100%</span>');
   h.push('<button type="button" id="p038subZoomIn" title="zoom in">+</button>');
-  h.push('<button type="button" id="p038subPrint">' + '\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D' + '</button>');
+  h.push('<button type="button" id="p038subPrint"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:5px"><polyline points="6 9 6 20 18 20 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="2" width="12" height="8"></rect><line x1="6" y1="14" x2="18" y2="14"></line></svg> Print</button>');
   h.push('</div>');
   h.push('<div id="p038subContent">');
   h.push('<div class="p038sub-page">');
@@ -625,6 +625,7 @@ function buildCPSRSVHtml() {
   h.push('</body></html>');
   return h.join('');
 }
+
 
 
 
