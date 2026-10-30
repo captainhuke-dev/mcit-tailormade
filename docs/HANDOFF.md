@@ -1308,6 +1308,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - printCustomerCPSRSV(): window.open new tab + document.write; fallback to same-window print if popup blocked
 - Verify: HTML has A4 landscape + deb table + main table + RSV gray + title (CDP); window.open is blocked in CDP env (returns null) but works in user browser
 - cache 20261027a10 -> 20261027a11
+## P038 sub print tab: zoom + print button + A4 landscape page (2026-10-29)
+- User: the sub-detail print button opens a new tab showing the A4 landscape report; add zoom in/out buttons and a print button; display at A4 landscape paper size
+- buildCPSRSVHtml() now wraps the report in `.p038sub-page` (297mm x 210mm, padding 20pt) + a fixed toolbar `.p038sub-toolbar` (zoom out, zoom % label, zoom in, print button) + a zoom script (body.style.zoom, 50-200% step 25) + print button calling window.print()
+- @media print hides the toolbar, resets zoom to 1, and makes the page full-width for printing
+- Verify: CDP HTML check all true (A4 landscape, A4 page, toolbar, zoom in/out, print button, zoom script, deb table, main table, RSV gray, title)
+- cache 20261027a11 -> 20261027a12
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
