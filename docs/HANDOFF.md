@@ -1327,6 +1327,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
   - Removed the standalone <h1> title (title now lives in table 1 row 1)
 - Verified with standalone Node check (mock data): all structural checks PASS (title row, print-when row in table 1, no h1, RSV gray row, CPS row)
 - cache 20261027a13 -> 20261027a14
+## P038 CPSRSV report: THSarabunNew font + sizes (2026-10-29)
+- User: report uses THSarabunNew throughout; table 1 title 22pt bold, labels (รหัสลูกค้า/ชื่อลูกค้า/เขต-อำเภอ/กลุ่ม/เกรด) 14pt bold, values 14pt; table 2 header 14pt bold, data 14pt
+- Added @font-face (Regular 400 + Bold 700) so THSarabunNew actually renders; CSS: table.deb td.title 22pt bold, table.deb td.lbl 14pt bold, table.main th/td 14pt
+- Verified (Node standalone, mock data): ALL PASS (font-face, title 22pt, label bold, main th/td 14pt)
+- cache 20261027a14 -> 20261027a15
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
