@@ -1375,6 +1375,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Removed `tr.rsv td{background:#f0f0f0}` rule (RSV rows no longer gray)
 - Verified (Node standalone, mock data): ALL PASS (noRsvGray=true)
 - cache 20261027a22 -> 20261027a23
+## P038 CPSRSV: toolbar print button "Print" + icon (2026-10-29)
+- User: toolbar ปุ่มพิมพ์เปลี่ยนเป็น "Print" พร้อม icon เครื่องพิมพ์
+- Replaced Thai label with inline SVG printer icon (Feather printer, stroke=currentColor) + text "Print"
+- Verified (Node standalone, mock data): ALL PASS (hasPrintLabel, hasPrintIcon)
+- cache 20261027a23 -> 20261027a24
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
