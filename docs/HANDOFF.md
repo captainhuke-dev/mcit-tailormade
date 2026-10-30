@@ -1353,6 +1353,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Pad rows now: `<tr><td> </td><td> </td><td>xxx</td><td> </td><td> </td><td> </td><td> </td></tr>` (xxx in the 3rd column = product name)
 - Verified (Node standalone, mock data): ALL PASS, blankRowCount=13, hasXxxRow=true
 - cache 20261027a18 -> 20261027a19
+## P038 CPSRSV: valign + &nbsp; pad rows (2026-10-29)
+- User: table 1 col 2 row 2 valign=top; table 2 header row all valign=middle; table 2 pad rows use &nbsp; (not xxx) until 15 items
+- Table 1: DEBcode cell (col 2, row 2) gets `style="vertical-align:top"`
+- Table 2: `table.main th{...vertical-align:middle}` (header row)
+- Pad rows: `<td>&nbsp;</td>` in product column, loop until 15 items
+- Verified (Node standalone, mock data): ALL PASS (deb col2 top, main th middle, nbsp row, blankRowCount=13)
+- cache 20261027a19 -> 20261027a20
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
