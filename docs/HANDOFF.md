@@ -1320,6 +1320,13 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - `#p038subContent{margin-top:44px}` pushes the document below the fixed toolbar (no overlap); `@media print` hides the toolbar and resets the content margin to 0
 - Verify: CDP HTML check all true (A4 landscape, A4 page, content wrapper, toolbar outside content, zoom in/out, print button, zoom script, deb table, main table, RSV gray, title)
 - cache 20261027a12 -> 20261027a13
+## P038 CPSRSV report tables per user template (2026-10-29)
+- User provided the exact HTML template for the two report tables; buildCPSRSVHtml() now matches it:
+  - Table 1 (deb, 4 cols 70/300/70/360pt): row1 title (colspan 4) "รายงานค้างส่งและเบิกจอง", row2 รหัสลูกค้า/DEBcode + เขต-อำเภอ/DEBcontactT, row3 ชื่อลูกค้า/DEBnameT (rowspan 2) + กลุ่ม/DEBgroup, row4 เกรด/DEBgrade, row5 "พิมพ์เมื่อ [stamp]" (colspan 4)
+  - Table 2 (main, 7 cols 80/70/410/60/60/60/60pt): header row (th) + per-product data rows (CPSvnosID/CPSstkID/STKdescT1/CPSqty/RSVqty/SBLqty/STKuname1)
+  - Removed the standalone <h1> title (title now lives in table 1 row 1)
+- Verified with standalone Node check (mock data): all structural checks PASS (title row, print-when row in table 1, no h1, RSV gray row, CPS row)
+- cache 20261027a13 -> 20261027a14
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
