@@ -578,7 +578,7 @@ function buildCPSRSVHtml() {
   h.push('table.deb{width:800pt}');
   h.push('table.main{width:800pt;border:1px solid #000}');
   h.push('td{padding:2px 4px}');
-  h.push('table.deb td{border:0}');
+  h.push('table.deb td{border:0;font-size:14pt}');
   h.push('table.deb td.title{font-size:22pt;font-weight:bold;text-align:center}');
   h.push('table.deb td.lbl{font-weight:bold}');
   h.push('table.main td{border:0;font-size:14pt}');
@@ -626,6 +626,7 @@ function buildCPSRSVHtml() {
   h.push('</body></html>');
   return h.join('');
 }
+
 
 
 
