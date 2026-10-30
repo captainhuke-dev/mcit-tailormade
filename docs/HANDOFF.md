@@ -1360,6 +1360,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Pad rows: `<td>&nbsp;</td>` in product column, loop until 15 items
 - Verified (Node standalone, mock data): ALL PASS (deb col2 top, main th middle, nbsp row, blankRowCount=13)
 - cache 20261027a19 -> 20261027a20
+## P038 CPSRSV: table 1 col 2 row 3 valign=top (2026-10-29)
+- User: table 1 col 2 row 3 (DEBnameT, rowspan 2) valign=top
+- Added `style="vertical-align:top"` to the DEBnameT cell (rowspan=2)
+- Verified (Node standalone, mock data): ALL PASS (hasDebCol2Row3Top=true)
+- cache 20261027a20 -> 20261027a21
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
