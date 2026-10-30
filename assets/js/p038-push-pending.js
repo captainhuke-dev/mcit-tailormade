@@ -572,7 +572,6 @@ function buildCPSRSVHtml() {
   h.push('.p038sub-toolbar .zl{font-size:14pt;min-width:60px;text-align:center}');
   h.push('#p038subContent{margin-top:44px}');
   h.push('.p038sub-page{box-sizing:border-box;width:297mm;height:210mm;margin:0 auto;padding:20pt;background:#fff}');
-  h.push('h1{font-size:22pt;font-weight:bold;text-align:center;margin:0 0 8pt}');
   h.push('table{border-collapse:collapse;margin:0 auto}');
   h.push('table.deb{width:800pt}');
   h.push('table.main{width:800pt}');
@@ -590,49 +589,35 @@ function buildCPSRSVHtml() {
   h.push('</div>');
   h.push('<div id="p038subContent">');
   h.push('<div class="p038sub-page">');
-  h.push('<h1>\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</h1>');
   h.push('<table class="deb"><colgroup><col style="width:70pt"><col style="width:300pt"><col style="width:70pt"><col style="width:360pt"></colgroup>');
-  h.push('<tr><td><b>\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</b></td><td>' + escapeHTML(subCus.code) + '</td><td><b>\u0E40\u0E02\u0E15\u0E2F\u0E2D\u0E33\u0E40\u0E20\u0E2D</b></td><td>' + escapeHTML(subCus.contact) + '</td></tr>');
-  h.push('<tr><td><b>\u0E0A\u0E37\u0E48\u0E2D\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</b></td><td rowspan="2">' + escapeHTML(subCus.name) + '</td><td><b>\u0E01\u0E25\u0E38\u0E48\u0E21</b></td><td>' + escapeHTML(subCus.group) + '</td></tr>');
-  h.push('<tr><td></td><td><b>\u0E40\u0E01\u0E23\u0E14</b></td><td>( ' + escapeHTML(subCus.grade) + ' )</td></tr>');
+  h.push('<tr><td colspan="4">\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</td></tr>');
+  h.push('<tr><td>\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td>' + escapeHTML(subCus.code) + '</td><td>\u0E40\u0E02\u0E15\u0E2F\u0E2D\u0E33\u0E40\u0E20\u0E2D</td><td>' + escapeHTML(subCus.contact) + '</td></tr>');
+  h.push('<tr><td>\u0E0A\u0E37\u0E48\u0E2D\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td rowspan="2">' + escapeHTML(subCus.name) + '</td><td>\u0E01\u0E25\u0E38\u0E48\u0E21</td><td>' + escapeHTML(subCus.group) + '</td></tr>');
+  h.push('<tr><td> </td><td>\u0E40\u0E01\u0E23\u0E14</td><td>' + escapeHTML(subCus.grade) + '</td></tr>');
+  h.push('<tr><td colspan="4">\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D ' + stamp + '</td></tr>');
   h.push('</table>');
   h.push('<table class="main"><colgroup><col style="width:80pt"><col style="width:70pt"><col style="width:410pt"><col style="width:60pt"><col style="width:60pt"><col style="width:60pt"><col style="width:60pt"></colgroup>');
-  h.push('<tr><td colspan="7">' + '\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D' + ' ' + stamp + '</td></tr>');
   h.push('<tr><th>\u0E40\u0E25\u0E02\u0E43\u0E1A\u0E2A\u0E33\u0E04\u0E31\u0E0D</th><th>\u0E23\u0E2B\u0E31\u0E2A\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32</th><th>\u0E0A\u0E37\u0E48\u0E2D\u0E2A\u0E34\u0E19\u0E04\u0E49\u0E32</th><th>\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07</th><th>\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</th><th>\u0E04\u0E07\u0E40\u0E2B\u0E25\u0E37\u0E2D</th><th>\u0E2B\u0E19\u0E48\u0E27\u0E22</th></tr>');
   subRows.forEach(function (r) {
     var isRsv = r.vnos.indexOf("RSV") === 0;
     h.push('<tr' + (isRsv ? ' class="rsv"' : '') + '>');
-    h.push('<td style="text-align:center">');
-    h.push(escapeHTML(r.vnos));
-    h.push('</td>');
-    h.push('<td style="text-align:center">');
-    h.push(escapeHTML(r.stkcode));
-    h.push('</td>');
-    h.push('<td>');
-    h.push(escapeHTML(r.desc));
-    h.push('</td>');
-    h.push('<td class="num">');
-    h.push(formatNumber(r.qty));
-    h.push('</td>');
-    h.push('<td class="num">');
-    h.push(formatNumber(r.rsv));
-    h.push('</td>');
-    h.push('<td class="num">');
-    h.push(formatNumber(r.balance));
-    h.push('</td>');
-    h.push('<td>');
-    h.push(escapeHTML(r.unit));
-    h.push('</td>');
+    h.push('<td>' + escapeHTML(r.vnos) + '</td>');
+    h.push('<td>' + escapeHTML(r.stkcode) + '</td>');
+    h.push('<td>' + escapeHTML(r.desc) + '</td>');
+    h.push('<td class="num">' + formatNumber(r.qty) + '</td>');
+    h.push('<td class="num">' + formatNumber(r.rsv) + '</td>');
+    h.push('<td class="num">' + formatNumber(r.balance) + '</td>');
+    h.push('<td>' + escapeHTML(r.unit) + '</td>');
     h.push('</tr>');
   });
   h.push('</table>');
-  h.push('<p style="text-align:center;font-size:10pt;margin-top:6pt">' + '\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D' + ' ' + stamp + '</p>');
   h.push('</div>');
   h.push('</div>');
   h.push('<script>var _z=100;var _c=document.getElementById("p038subContent");function _sz(){_c.style.zoom=(_z/100);var l=document.getElementById("p038subZoom");if(l)l.textContent=_z+"%"}document.getElementById("p038subZoomIn").onclick=function(){_z=Math.min(200,_z+25);_sz()};document.getElementById("p038subZoomOut").onclick=function(){_z=Math.max(50,_z-25);_sz()};document.getElementById("p038subPrint").onclick=function(){window.print()};</scr' + 'ipt>');
   h.push('</body></html>');
   return h.join('');
 }
+
 
 
 function printCustomerCPSRSV() {
