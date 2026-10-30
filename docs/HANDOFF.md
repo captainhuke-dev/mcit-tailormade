@@ -1338,6 +1338,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - JS: after data rows, add `<tr><td colspan="7"> </td></tr>` blank rows until 18 total (16 blanks for 2 data rows)
 - Verified (Node standalone, mock data): ALL PASS (deb no border, main frame, main td no border, main th border, blankRowCount=16)
 - cache 20261027a15 -> 20261027a16
+## P038 CPSRSV: table 2 blank rows up to 15 items (2026-10-29)
+- User: table 2 should fill with blank rows until 15 items total (changed from 18)
+- Loop `for (var bi = subRows.length; bi < 15; bi++)` adds `<tr><td colspan="7"> </td></tr>`
+- Verified (Node standalone, mock data): ALL PASS, blankRowCount = 13 (15 - 2 data rows)
+- cache 20261027a16 -> 20261027a17
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
