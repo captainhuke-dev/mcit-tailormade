@@ -1365,6 +1365,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Added `style="vertical-align:top"` to the DEBnameT cell (rowspan=2)
 - Verified (Node standalone, mock data): ALL PASS (hasDebCol2Row3Top=true)
 - cache 20261027a20 -> 20261027a21
+## P038 CPSRSV: table 1 col3 row2 label เขต/อำเภอ (2026-10-29)
+- User: table 1 col 3 row 2 label แก้ไข "เขตฯอำเภอ" เป็น "เขต/อำเภอ"
+- Fixed codepoints for "เขต/อำเภอ" harvested from trusted p045-same-bill.js: 0xE40 0xE02 0xE15 0x2F 0xE2D 0xE33 0xE40 0xE20 0xE2D
+- Verified (Node standalone, mock data): ALL PASS (hasDistrictLabel=true)
+- cache 20261027a21 -> 20261027a22
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
