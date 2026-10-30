@@ -1343,6 +1343,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Loop `for (var bi = subRows.length; bi < 15; bi++)` adds `<tr><td colspan="7"> </td></tr>`
 - Verified (Node standalone, mock data): ALL PASS, blankRowCount = 13 (15 - 2 data rows)
 - cache 20261027a16 -> 20261027a17
+## P038 CPSRSV: table 1 labels+values 14pt (2026-10-29)
+- User: table 1 labels (รหัสลูกค้า/ชื่อลูกค้า/เขต-อำเภอ/กลุ่ม/เกรด) = 14pt bold; values (DEBcode/DEBcontactT/DEBnameT/DEBgroup/DEBgrade) = 14pt
+- CSS: `table.deb td{border:0;font-size:14pt}` (covers labels + values); labels stay bold via `.lbl`; title stays 22pt bold
+- Verified (Node standalone, mock data): ALL PASS
+- cache 20261027a17 -> 20261027a18
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
