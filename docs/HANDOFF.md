@@ -1314,6 +1314,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - @media print hides the toolbar, resets zoom to 1, and makes the page full-width for printing
 - Verify: CDP HTML check all true (A4 landscape, A4 page, toolbar, zoom in/out, print button, zoom script, deb table, main table, RSV gray, title)
 - cache 20261027a11 -> 20261027a12
+## P038 sub print: toolbar fixed-size + no overlap (2026-10-29)
+- User: toolbar must NOT resize with zoom in/out; and the toolbar was overlapping the top of the document
+- Fix: wrap the A4 page in `<div id="p038subContent">`; zoom is applied to the content wrapper (`_c.style.zoom`), so the fixed toolbar stays full size
+- `#p038subContent{margin-top:44px}` pushes the document below the fixed toolbar (no overlap); `@media print` hides the toolbar and resets the content margin to 0
+- Verify: CDP HTML check all true (A4 landscape, A4 page, content wrapper, toolbar outside content, zoom in/out, print button, zoom script, deb table, main table, RSV gray, title)
+- cache 20261027a12 -> 20261027a13
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
