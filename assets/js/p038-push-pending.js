@@ -584,7 +584,6 @@ function buildCPSRSVHtml() {
   h.push('table.main td{border:0;font-size:14pt}');
   h.push('table.main th{border:1px solid #000;font-size:14pt;font-weight:bold;text-align:center;vertical-align:middle}');
   h.push('td.num{text-align:right;padding-right:5pt}');
-  h.push('tr.rsv td{background:#f0f0f0}');
   h.push('@media print{.p038sub-toolbar{display:none}#p038subContent{margin-top:0}body{background:#fff;zoom:1}.p038sub-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;background:#fff}table tr{page-break-inside:avoid}');
   h.push('</style></head><body>');
   h.push('<div class="p038sub-toolbar">');
@@ -626,6 +625,7 @@ function buildCPSRSVHtml() {
   h.push('</body></html>');
   return h.join('');
 }
+
 
 
 
