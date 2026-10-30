@@ -566,11 +566,12 @@ function buildCPSRSVHtml() {
   h.push('<style>');
   h.push('@page{size:A4 landscape;margin:20pt 20pt 20pt 25pt}');
   h.push("body{margin:0;background:#e9eef5;font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}");
-  h.push('.p038sub-page{box-sizing:border-box;width:297mm;height:210mm;margin:0 auto;padding:20pt;background:#fff}');
   h.push('.p038sub-toolbar{position:fixed;top:0;left:0;right:0;z-index:20;background:#1d4ed8;color:#fff;padding:6px 12px;display:flex;align-items:center;gap:10px}');
   h.push('.p038sub-toolbar button{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.5);color:#fff;border-radius:6px;padding:3px 14px;font-size:14pt;cursor:pointer}');
   h.push('.p038sub-toolbar button:hover{background:rgba(255,255,255,0.35)}');
   h.push('.p038sub-toolbar .zl{font-size:14pt;min-width:60px;text-align:center}');
+  h.push('#p038subContent{margin-top:44px}');
+  h.push('.p038sub-page{box-sizing:border-box;width:297mm;height:210mm;margin:0 auto;padding:20pt;background:#fff}');
   h.push('h1{font-size:22pt;font-weight:bold;text-align:center;margin:0 0 8pt}');
   h.push('table{border-collapse:collapse;margin:0 auto}');
   h.push('table.deb{width:800pt}');
@@ -579,7 +580,7 @@ function buildCPSRSVHtml() {
   h.push('th{font-weight:bold;text-align:center}');
   h.push('td.num{text-align:right;padding-right:5pt}');
   h.push('tr.rsv td{background:#f0f0f0}');
-  h.push('@media print{.p038sub-toolbar{display:none}body{background:#fff;zoom:1}.p038sub-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;background:#fff}table tr{page-break-inside:avoid}');
+  h.push('@media print{.p038sub-toolbar{display:none}#p038subContent{margin-top:0}body{background:#fff;zoom:1}.p038sub-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;background:#fff}table tr{page-break-inside:avoid}');
   h.push('</style></head><body>');
   h.push('<div class="p038sub-toolbar">');
   h.push('<button type="button" id="p038subZoomOut" title="zoom out">\u2212</button>');
@@ -587,6 +588,7 @@ function buildCPSRSVHtml() {
   h.push('<button type="button" id="p038subZoomIn" title="zoom in">+</button>');
   h.push('<button type="button" id="p038subPrint">' + '\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D' + '</button>');
   h.push('</div>');
+  h.push('<div id="p038subContent">');
   h.push('<div class="p038sub-page">');
   h.push('<h1>\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</h1>');
   h.push('<table class="deb"><colgroup><col style="width:70pt"><col style="width:300pt"><col style="width:70pt"><col style="width:360pt"></colgroup>');
@@ -626,10 +628,12 @@ function buildCPSRSVHtml() {
   h.push('</table>');
   h.push('<p style="text-align:center;font-size:10pt;margin-top:6pt">' + '\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D' + ' ' + stamp + '</p>');
   h.push('</div>');
-  h.push('<script>var _z=100;function _sz(){document.body.style.zoom=(_z/100);var l=document.getElementById("p038subZoom");if(l)l.textContent=_z+"%"}document.getElementById("p038subZoomIn").onclick=function(){_z=Math.min(200,_z+25);_sz()};document.getElementById("p038subZoomOut").onclick=function(){_z=Math.max(50,_z-25);_sz()};document.getElementById("p038subPrint").onclick=function(){window.print()};</scr' + 'ipt>');
+  h.push('</div>');
+  h.push('<script>var _z=100;var _c=document.getElementById("p038subContent");function _sz(){_c.style.zoom=(_z/100);var l=document.getElementById("p038subZoom");if(l)l.textContent=_z+"%"}document.getElementById("p038subZoomIn").onclick=function(){_z=Math.min(200,_z+25);_sz()};document.getElementById("p038subZoomOut").onclick=function(){_z=Math.max(50,_z-25);_sz()};document.getElementById("p038subPrint").onclick=function(){window.print()};</scr' + 'ipt>');
   h.push('</body></html>');
   return h.join('');
 }
+
 
 function printCustomerCPSRSV() {
   var html = buildCPSRSVHtml();
