@@ -582,7 +582,7 @@ function buildCPSRSVHtml() {
   h.push('table.deb td.title{font-size:22pt;font-weight:bold;text-align:center}');
   h.push('table.deb td.lbl{font-weight:bold}');
   h.push('table.main td{border:0;font-size:14pt}');
-  h.push('table.main th{border:1px solid #000;font-size:14pt;font-weight:bold;text-align:center}');
+  h.push('table.main th{border:1px solid #000;font-size:14pt;font-weight:bold;text-align:center;vertical-align:middle}');
   h.push('td.num{text-align:right;padding-right:5pt}');
   h.push('tr.rsv td{background:#f0f0f0}');
   h.push('@media print{.p038sub-toolbar{display:none}#p038subContent{margin-top:0}body{background:#fff;zoom:1}.p038sub-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;background:#fff}table tr{page-break-inside:avoid}');
@@ -597,7 +597,7 @@ function buildCPSRSVHtml() {
   h.push('<div class="p038sub-page">');
   h.push('<table class="deb"><colgroup><col style="width:70pt"><col style="width:300pt"><col style="width:70pt"><col style="width:360pt"></colgroup>');
   h.push('<tr><td colspan="4" class="title">\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</td></tr>');
-  h.push('<tr><td class="lbl">\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td>' + escapeHTML(subCus.code) + '</td><td class="lbl">\u0E40\u0E02\u0E15\u0E2F\u0E2D\u0E33\u0E40\u0E20\u0E2D</td><td>' + escapeHTML(subCus.contact) + '</td></tr>');
+  h.push('<tr><td class="lbl">\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td style="vertical-align:top">' + escapeHTML(subCus.code) + '</td><td class="lbl">\u0E40\u0E02\u0E15\u0E2F\u0E2D\u0E33\u0E40\u0E20\u0E2D</td><td>' + escapeHTML(subCus.contact) + '</td></tr>');
   h.push('<tr><td class="lbl">\u0E0A\u0E37\u0E48\u0E2D\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td rowspan="2">' + escapeHTML(subCus.name) + '</td><td class="lbl">\u0E01\u0E25\u0E38\u0E48\u0E21</td><td>' + escapeHTML(subCus.group) + '</td></tr>');
   h.push('<tr><td> </td><td class="lbl">\u0E40\u0E01\u0E23\u0E14</td><td>' + escapeHTML(subCus.grade) + '</td></tr>');
   h.push('<tr><td colspan="4">\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D ' + stamp + '</td></tr>');
@@ -617,7 +617,7 @@ function buildCPSRSVHtml() {
     h.push('</tr>');
   });
   for (var bi = subRows.length; bi < 15; bi++) {
-    h.push('<tr><td> </td><td> </td><td>xxx</td><td> </td><td> </td><td> </td><td> </td></tr>');
+    h.push('<tr><td> </td><td> </td><td>&nbsp;</td><td> </td><td> </td><td> </td><td> </td></tr>');
   }
   h.push('</table>');
   h.push('</div>');
@@ -626,6 +626,7 @@ function buildCPSRSVHtml() {
   h.push('</body></html>');
   return h.join('');
 }
+
 
 
 
