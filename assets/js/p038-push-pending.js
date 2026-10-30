@@ -564,8 +564,10 @@ function buildCPSRSVHtml() {
   var h = [];
   h.push('<!DOCTYPE html><html><head><meta charset="utf-8"><title>\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</title>');
   h.push('<style>');
+  h.push("@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew.ttf') format('truetype');font-weight:400;font-style:normal;font-display:block}");
+  h.push("@font-face{font-family:'THSarabunNew';src:url('assets/fonts/THSarabunNew Bold.ttf') format('truetype');font-weight:700;font-style:normal;font-display:block}");
   h.push('@page{size:A4 landscape;margin:20pt 20pt 20pt 25pt}');
-  h.push("body{margin:0;background:#e9eef5;font-family:'THSarabunNew','TH Sarabun New',Arial,sans-serif;color:#000}");
+  h.push("body{margin:0;background:#e9eef5;font-family:'THSarabunNew',Arial,sans-serif;color:#000}");
   h.push('.p038sub-toolbar{position:fixed;top:0;left:0;right:0;z-index:20;background:#1d4ed8;color:#fff;padding:6px 12px;display:flex;align-items:center;gap:10px}');
   h.push('.p038sub-toolbar button{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.5);color:#fff;border-radius:6px;padding:3px 14px;font-size:14pt;cursor:pointer}');
   h.push('.p038sub-toolbar button:hover{background:rgba(255,255,255,0.35)}');
@@ -575,8 +577,12 @@ function buildCPSRSVHtml() {
   h.push('table{border-collapse:collapse;margin:0 auto}');
   h.push('table.deb{width:800pt}');
   h.push('table.main{width:800pt}');
-  h.push('th,td{border:1px solid #000;padding:2px 4px;font-size:14pt}');
-  h.push('th{font-weight:bold;text-align:center}');
+  h.push('th,td{border:1px solid #000;padding:2px 4px}');
+  h.push('table.deb td{font-size:14pt}');
+  h.push('table.deb td.title{font-size:22pt;font-weight:bold;text-align:center}');
+  h.push('table.deb td.lbl{font-weight:bold}');
+  h.push('table.main th{font-size:14pt;font-weight:bold;text-align:center}');
+  h.push('table.main td{font-size:14pt}');
   h.push('td.num{text-align:right;padding-right:5pt}');
   h.push('tr.rsv td{background:#f0f0f0}');
   h.push('@media print{.p038sub-toolbar{display:none}#p038subContent{margin-top:0}body{background:#fff;zoom:1}.p038sub-page{width:100%;height:auto;min-height:0;overflow:visible;margin:0;padding:0;background:#fff}table tr{page-break-inside:avoid}');
@@ -590,10 +596,10 @@ function buildCPSRSVHtml() {
   h.push('<div id="p038subContent">');
   h.push('<div class="p038sub-page">');
   h.push('<table class="deb"><colgroup><col style="width:70pt"><col style="width:300pt"><col style="width:70pt"><col style="width:360pt"></colgroup>');
-  h.push('<tr><td colspan="4">\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</td></tr>');
-  h.push('<tr><td>\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td>' + escapeHTML(subCus.code) + '</td><td>\u0E40\u0E02\u0E15\u0E2F\u0E2D\u0E33\u0E40\u0E20\u0E2D</td><td>' + escapeHTML(subCus.contact) + '</td></tr>');
-  h.push('<tr><td>\u0E0A\u0E37\u0E48\u0E2D\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td rowspan="2">' + escapeHTML(subCus.name) + '</td><td>\u0E01\u0E25\u0E38\u0E48\u0E21</td><td>' + escapeHTML(subCus.group) + '</td></tr>');
-  h.push('<tr><td> </td><td>\u0E40\u0E01\u0E23\u0E14</td><td>' + escapeHTML(subCus.grade) + '</td></tr>');
+  h.push('<tr><td colspan="4" class="title">\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</td></tr>');
+  h.push('<tr><td class="lbl">\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td>' + escapeHTML(subCus.code) + '</td><td class="lbl">\u0E40\u0E02\u0E15\u0E2F\u0E2D\u0E33\u0E40\u0E20\u0E2D</td><td>' + escapeHTML(subCus.contact) + '</td></tr>');
+  h.push('<tr><td class="lbl">\u0E0A\u0E37\u0E48\u0E2D\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td rowspan="2">' + escapeHTML(subCus.name) + '</td><td class="lbl">\u0E01\u0E25\u0E38\u0E48\u0E21</td><td>' + escapeHTML(subCus.group) + '</td></tr>');
+  h.push('<tr><td> </td><td class="lbl">\u0E40\u0E01\u0E23\u0E14</td><td>' + escapeHTML(subCus.grade) + '</td></tr>');
   h.push('<tr><td colspan="4">\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D ' + stamp + '</td></tr>');
   h.push('</table>');
   h.push('<table class="main"><colgroup><col style="width:80pt"><col style="width:70pt"><col style="width:410pt"><col style="width:60pt"><col style="width:60pt"><col style="width:60pt"><col style="width:60pt"></colgroup>');
@@ -617,6 +623,7 @@ function buildCPSRSVHtml() {
   h.push('</body></html>');
   return h.join('');
 }
+
 
 
 
