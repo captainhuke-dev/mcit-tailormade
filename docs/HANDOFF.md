@@ -1332,6 +1332,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Added @font-face (Regular 400 + Bold 700) so THSarabunNew actually renders; CSS: table.deb td.title 22pt bold, table.deb td.lbl 14pt bold, table.main th/td 14pt
 - Verified (Node standalone, mock data): ALL PASS (font-face, title 22pt, label bold, main th/td 14pt)
 - cache 20261027a14 -> 20261027a15
+## P038 CPSRSV: table borders + 18 rows (2026-10-29)
+- User: table 1 no table lines; table 2 shows only the outer frame (no row lines, except the header row keeps its lines); table 2 fills with blank rows up to 18 rows
+- CSS: `table.deb td{border:0}` (table 1 borderless); `table.main{border:1px solid #000}` (outer frame) + `table.main td{border:0}` (no data row lines) + `table.main th{border:1px solid #000}` (header row lines)
+- JS: after data rows, add `<tr><td colspan="7"> </td></tr>` blank rows until 18 total (16 blanks for 2 data rows)
+- Verified (Node standalone, mock data): ALL PASS (deb no border, main frame, main td no border, main th border, blankRowCount=16)
+- cache 20261027a15 -> 20261027a16
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
