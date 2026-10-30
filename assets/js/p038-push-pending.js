@@ -617,7 +617,7 @@ function buildCPSRSVHtml() {
     h.push('</tr>');
   });
   for (var bi = subRows.length; bi < 15; bi++) {
-    h.push('<tr><td colspan="7"> </td></tr>');
+    h.push('<tr><td> </td><td> </td><td>xxx</td><td> </td><td> </td><td> </td><td> </td></tr>');
   }
   h.push('</table>');
   h.push('</div>');
@@ -626,6 +626,7 @@ function buildCPSRSVHtml() {
   h.push('</body></html>');
   return h.join('');
 }
+
 
 
 
