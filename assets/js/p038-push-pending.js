@@ -597,7 +597,7 @@ function buildCPSRSVHtml() {
   h.push('<div class="p038sub-page">');
   h.push('<table class="deb"><colgroup><col style="width:70pt"><col style="width:300pt"><col style="width:70pt"><col style="width:360pt"></colgroup>');
   h.push('<tr><td colspan="4" class="title">\u0E23\u0E32\u0E22\u0E07\u0E32\u0E19\u0E04\u0E49\u0E32\u0E07\u0E2A\u0E48\u0E07\u0E41\u0E25\u0E30\u0E40\u0E1A\u0E34\u0E01\u0E08\u0E2D\u0E07</td></tr>');
-  h.push('<tr><td class="lbl">\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td style="vertical-align:top">' + escapeHTML(subCus.code) + '</td><td class="lbl">\u0E40\u0E02\u0E15\u0E2F\u0E2D\u0E33\u0E40\u0E20\u0E2D</td><td>' + escapeHTML(subCus.contact) + '</td></tr>');
+  h.push('<tr><td class="lbl">\u0E23\u0E2B\u0E31\u0E2A\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td style="vertical-align:top">' + escapeHTML(subCus.code) + '</td><td class="lbl">\u0E40\u0E02\u0E15/\u0E2D\u0E33\u0E40\u0E20\u0E2D</td><td>' + escapeHTML(subCus.contact) + '</td></tr>');
   h.push('<tr><td class="lbl">\u0E0A\u0E37\u0E48\u0E2D\u0E25\u0E39\u0E01\u0E04\u0E49\u0E32</td><td rowspan="2" style="vertical-align:top">' + escapeHTML(subCus.name) + '</td><td class="lbl">\u0E01\u0E25\u0E38\u0E48\u0E21</td><td>' + escapeHTML(subCus.group) + '</td></tr>');
   h.push('<tr><td> </td><td class="lbl">\u0E40\u0E01\u0E23\u0E14</td><td>' + escapeHTML(subCus.grade) + '</td></tr>');
   h.push('<tr><td colspan="4">\u0E1E\u0E34\u0E21\u0E1E\u0E4C\u0E40\u0E21\u0E37\u0E48\u0E2D ' + stamp + '</td></tr>');
@@ -626,6 +626,7 @@ function buildCPSRSVHtml() {
   h.push('</body></html>');
   return h.join('');
 }
+
 
 
 
