@@ -1348,6 +1348,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - CSS: `table.deb td{border:0;font-size:14pt}` (covers labels + values); labels stay bold via `.lbl`; title stays 22pt bold
 - Verified (Node standalone, mock data): ALL PASS
 - cache 20261027a17 -> 20261027a18
+## P038 CPSRSV: table 2 pad rows with xxx (2026-10-29)
+- User: table 2 should fill item rows with "xxx" (in the product column) continuing until 15 items
+- Pad rows now: `<tr><td> </td><td> </td><td>xxx</td><td> </td><td> </td><td> </td><td> </td></tr>` (xxx in the 3rd column = product name)
+- Verified (Node standalone, mock data): ALL PASS, blankRowCount=13, hasXxxRow=true
+- cache 20261027a18 -> 20261027a19
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
