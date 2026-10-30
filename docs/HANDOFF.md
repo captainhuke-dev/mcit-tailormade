@@ -1385,6 +1385,11 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Replaced printer SVG with Feather eye icon (stroke=currentColor) + label "Print Preview" in p038subPrintButton (detail modal)
 - Verified: HTML template contains "Print Preview" + eye path (grep count=1 each)
 - cache 20261027a24 -> 20261027a25
+## P038 READY (2026-10-29)
+- User: "P038 พร้อมใช้งาน" -> mark ready
+- data/modules.php: added "status" => "ready" to all 3 P038 entries (data-check line 124, sales-programs line 302, scm-programs line 327)
+- PHP lint PASS
+- 41 modules ready (P079, P084, P038)
 ## P038 UX fixes: no auto-search + search spinner + modal centering (2026-10-27)
 
 **Commit:** `17596c5` — cache `p038-push-pending.js?v=20261027e`
