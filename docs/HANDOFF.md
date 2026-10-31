@@ -1401,3 +1401,14 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
   **Pitfall:** `content: ""` inside the JS CSS string (double-quoted) breaks the string — use `content: ''`
 - Modal body max-height: `min(60vh, calc(100vh - 180px))`; overlay padding 24px, align-items center
 - CDP verified: no auto search (0 rows after open), spinner during search (loading=true), after search spinner gone (968 rows), detail modal centered (spaceTop=377=spaceBottom), comment modal centered; vision PASS
+
+## P100 ระวังหลังจัดซื้อ (2026-10-31)
+- User: "ทำหน้าต่อไปกันเอาเป็น P100 ตัวอย่างอยู่ที่ demo/P100-demo.html" + "source c# ไม่ถูกต้อง ไม่ต้องทำเกินที่สั่งไป"
+- สร้าง `assets/js/p100-stock-watch.js` จาก demo (extract CSS/HTML/JS + Babel ES5 + scope `.p100-scope` + rename ids `p100*` + IIFE `window.P100StockWatch = { mount }`)
+- **ไม่ใช้ C# source** — UI เท่านั้นจาก demo, mock data ในไฟล์
+- **แก้ bug 2 จุด:**
+  - สคริปต์ generate ตัดคำ `productCode` ทั้งหมดรวมถึง object property → `item.p100productCode` (ไม่มี) → แก้ให้ rename เฉพาะใน `getElementById`/`querySelector` (ไม่ touch property)
+  - demo มี bug: `updateSummary` reference `summaryCount`/`summaryNegative`/`summaryOverPO`/`summaryGradeX` ที่ไม่มีใน HTML → search พัง (TypeError) → ทำ null-safe ใน module
+- ต่อสาย: index.php (script tag `?v=20261030c` + bump portal.js `?v=20261030a`), portal.js (program block + mount block)
+- P100 เป็น placeholder ใน data/modules.php (กลุ่ม purchasing-programs, ชื่อ "ประเมินคำสั่งซื้อ (Forecast) V2") — ยังไม่มี status ready
+- CDP verify: mount OK, search แสดง 4 rows (5 คลัง pre-checked), countBadge "จำนวน 4 แถว", footerText "แสดง 4 รายการ"; node --check PASS

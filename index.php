@@ -196,6 +196,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p079-marketplace.js?v=20261023c"></script>
   <script src="assets/js/p082-picklist-pack.js?v=20261022m"></script>
   <script src="assets/js/p084-picklist-irw.js?v=20261024j"></script>
+  <script src="assets/js/p100-stock-watch.js?v=20261030c"></script>
   <script src="assets/js/p050-billing.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <script src="assets/js/qrcode.min.js"></script>
@@ -219,6 +220,6 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20261024k"></script>
+  <script src="assets/js/portal.js?v=20261030a"></script>
 </body>
 </html>
