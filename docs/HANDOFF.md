@@ -43,7 +43,7 @@
 | P032 | รายงานเงินมัดจำประจำวัน | ready |
 | P111 | เปลี่ยนสถานะ SO รอโอน | ready |
 | P050 | ใบวางบิล (search + ใบวางบิล + ใบเสร็จรับเงิน) | ready |
-| P013 | ใบอนุมัติสั่งขายและปรับวงเงิน | ready (1 หน้า — รายงานใบอนุมัติวงเงิน real data ทั้ง 6 ตาราง + พิมพ์ multi-paper + printN+1) |
+| P013 | ใบอนุมัติสั่งขายราว่ำำปรับวงเงิน | ready (1 หน้า — รายงานใบอนุมัติวงเงิน real data ทั้ง 6 ตาราง + พิมพ์ multi-paper + printN+1) |
 | P033 | รายงานลูกค้าที่มียอดค้างเกินวงเงิน | ready (1 หน้า — real data MAC5 3 modes + preview A4 Landscape multi-page + zoom + พิมพ์เอกสาร) |
 | P035 | ตรวจสอบลูกค้าติดอนุมัติ | ready (1 หน้า — real data MAC5 + checkbox เกรด X + pager 15/หน้า + detail modal) |
 | P053 | สติ๊กเกอร์ 10x7.5 (ใบปะ) | ready (rewrite ตาม C# MCIT_Frm_FaceSheetProduct_10x7 — real data MAC5 + logic A/B + totalCopy + company + table 280pt 4 คอลั่น border 0 + THSarabunNew web font + zoom 100% + หน้าถัด ๆ + พิมพ์ 1 ตั๋ว/หน้า 282×210pt) |
@@ -147,7 +147,7 @@
 - CDP pass: `d.fonts` = 400 loaded + 700 loaded, computed family = THSarabunNew — cache `v=20261014r`
 
 ### 14/10 — P081 ขนาด font รายงาน (commit `9668483`)
-- หัวเรื่ อง 16pt B, ประจำวันที่ 14pt B, พิมพ์เมื่อ 12pt, th/td 12pt, Page N of N 10pt
+- หัวเรื่ อง 16pt B, ประจำวันที่ 14pt B, พิมพ์เมื่าอ 12pt, th/td 12pt, Page N of N 10pt
 - CDP pass: 21.33/18.67/16/16/16/13.33px = 16/14/12/12/12/10pt — cache `v=20261014q`
 
 ### 14/10 — P081 preview เป็นกระดาษ A4 ใน modal (commit `42c562a`)
@@ -421,7 +421,7 @@
 - **1 หน้า (ไม่มี tab)** — `assets/js/p033-credit-report.js` (IIFE `window.P033CreditReport`) — real data MAC5 — ไม่ load ตอนเปิด (กด "แสดงรายการ" ก่อน) — 0 rows = ว่าง (ไม่มี mock) — **ไม่มี 4 summary cards** (user ตัดออก)
 - **Form**: 3 modes (all / overCredit / inCredit) — **ตาราง 10 คอลั่น** (row click | รหัส | ชื่อ | เกรด | ค้างชำระ | คำสั่งส่ง | ค้างเช็ค | รออนุมัติ | วงเงิน | สถานะ) — sortable + quick search + **pagination 15/หน้า** — footer = ยอดค้างรวม + ยอดเกินวงเงิน (filtered ทั้งหมด)
 - **API `api/p033_search.php`** (POST `{connectionId, mode}`) — DEB (grade NOT IN X,Z + nameT LIKE %(LM)%) + 4 subquery (sumCFS/sumCPS/sumCHQ/SO) + DEBlimit — mode filter: overCredit = (sum) − limit > 0 · inCredit = ≤ 0
-- **Preview modal (A4 Landscape 1123×794px)** — ขอบกระดาษ บน 25pt / ล่าง 25pt / ซ้าย 20pt / ขวา 20pt (print `@page margin:25pt 20pt`) — header 3 จุด: ซ้าย "พิมพ์เมื่อ dd/mm/พ.ศ. HH:MM:SS" · กลาง "รายงานลูกค้าที่มียอดค้างเกินวงเงิน" (absolute center) · ขวา "หน้า X จาก Y" — **ตาราง 10 คอลั่น fixed 800pt** (60/220/30/70×7 — border #000 — font th/td 10px) — **multi-page**: วัด row height ทุกแถว (probe visibility:hidden ที่ body — ชื่อ wrap 23/35px) + chunk ตาม cumulative height — zoom − / % / + / fit (เริ่ม **90%**) + ปุ่ม "พิมพ์เอกสาร" — **ไม่มี printN** (report ไม่ใช่เอกสาร)
+- **Preview modal (A4 Landscape 1123×794px)** — ขอบกระดาษ บน 25pt / ล่าง 25pt / ซ้าย 20pt / ขวา 20pt (print `@page margin:25pt 20pt`) — header 3 จุด: ซ้าย "พิมพ์เมื่าอ dd/mm/พ.ศ. HH:MM:SS" · กลาง "รายงานลูกค้าที่มียอดค้างเกินวงเงิน" (absolute center) · ขวา "หน้า X จาก Y" — **ตาราง 10 คอลั่น fixed 800pt** (60/220/30/70×7 — border #000 — font th/td 10px) — **multi-page**: วัด row height ทุกแถว (probe visibility:hidden ที่ body — ชื่อ wrap 23/35px) + chunk ตาม cumulative height — zoom − / % / + / fit (เริ่ม **90%**) + ปุ่ม "พิมพ์เอกสาร" — **ไม่มี printN** (report ไม่ใช่เอกสาร)
 - modules.php: P033 status **ready** — **13 modules ready**
 
 ### 21/09 — P013 ใบอนุมัติวงเงิน — **READY**
@@ -468,7 +468,7 @@
   - **Date binding (SQL Server):** JS `yyyy-mm-dd` → PHP convert → `CONVERT(DATE, ?, 103)` (dd-mm-yyyy) — อย่า bind yyyy-mm-dd ตรง ๆ
 
 ### 📅 11/09/2026 — Font / P031 / P111 (วันใหญ่)
-- **Font settings (final)** — `assets/js/font-settings.js` — **font family เท่านั้น** (ไม่ใช่ size — ซ้ำกับ UI Scale) — web fonts 4 ตัว (Chakra Petch, K2D, Prompt, Google Sans) ใน `assets/fonts/` + `assets/css/fonts.css` — dropdown ในกลุ่ม "ธีมและการแสดงผล" ข้าง UI Scale — localStorage `erp_font_family` — `.app,.app *{font-family:...!important}` — **report (tab แยก) ไม่ได้รับผลกระทบ**
+- **Font settings (final)** — `assets/js/font-settings.js` — **font family เท่านั้น** (ไม่ใช่ size — ซ้ำกับ UI Scale) — web fonts 4 ตัว (Chakra Petch, K2D, Prompt, Google Sans) ใน `assets/fonts/` + `assets/css/fonts.css` — dropdown ในกลุ่ม "ธีมราว่ำำการแสดงผล" ข้าง UI Scale — localStorage `erp_font_family` — `.app,.app *{font-family:...!important}` — **report (tab แยก) ไม่ได้รับผลกระทบ**
 - **P031 รายงานเงินโอนประจำวัน** — clone P032 — SQL ต่าง: `CHQstatusN IN (2,12)`, 14 LIKE patterns (RER/RVA/CER/VCV/VCF/VAF/VSB/VF1/VF2/VF3/PCC1/PCT1/PCT2/PCT3), `ACC.ACCcode` ใน SELECT + mapping แต่ไม่แสดง
   - Report column widths (user set): **45/100/90/90/220/225/115/55/85px** (ต่างจาก P032!)
   - **P031 ช้า ~6.8s** (96 rows × discount subquery) — ไม่ใช่ bug — CDP test ต้อง wait 10-15s
@@ -576,12 +576,12 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - `demo/P032_demo.html`, `demo/P033_demo.html`, `demo/P115_Launcher_Pattern.html` — prototypes
 - `docs/HANDOFF.md` — ไฟล์นี้
 - Skill `thaimade-portal` (Hermes) — รายละเอียดเพิ่มเติม + references (p064-report-spec.md, tms-table.md, deb-table.md, edge_cdp_probe.js)
-### 17/09 — P013 ใบอนุมัติสั่งขายและปรับวงเงิน — **DEV (Tab1 real data MAC5 / Tab2 mock — ยังไม่เสร็จ)**
+### 17/09 — P013 ใบอนุมัติสั่งขายราว่ำำปรับวงเงิน — **DEV (Tab1 real data MAC5 / Tab2 mock — ยังไม่เสร็จ)**
 - `assets/js/p013-approval.js` — IIFE `window.P013Approval` mount `#p013Root` + `api/p013_search.php` (MAC5 `c1788406814359`)
 - **Tab 1 "รายการรออนุมัติสั่งขาย" = real data** — ปุ่มค้นหา = `fetch('api/p013_search.php')` — SQL: `DEB INNER JOIN MIH ON MIHcus=DEBcode`, `MIHstatus=20`, `MIHtype='PS'`, date `BETWEEN`(103) + `MIHkeyUser LIKE ?` + `DEBnameT LIKE ?` (prepared, wrap `%...%`) — returns date/doc/code/name/note/amount/printN
 - **ไม่ load ตอนเปิดหน้า** — กดค้นหาก่อนถึง fetch — empty state 2 แบบ (ยังไม่ค้นหา / ค้นหาแล้วไม่พบ)
 - ตาราง **8 คอลั่น** (☐|วันที่|เลขที่|รหัส|ชื่อ|ยอดเงิน|**จำนวนพิมพ์**|หมายเหตุ) — sort — **ไม่ click/double-click แถว** (เลือก = checkbox, พิมพ์ = ปุ่มพิมพ์) — pagination 15/หน้า
-- Tab 2 "อนุมัติสั่งขายและปรับวงเงิน" = **mock** (ยังไม่มี SQL) — launcher 2 cards + ตารางดู (sort — ไม่เลือก — ไม่มี checkbox/preview) + credit modal **ปรับทั้งหมดตาม filter** (in-memory)
+- Tab 2 "อนุมัติสั่งขายราว่ำำปรับวงเงิน" = **mock** (ยังไม่มี SQL) — launcher 2 cards + ตารางดู (sort — ไม่เลือก — ไม่มี checkbox/preview) + credit modal **ปรับทั้งหมดตาม filter** (in-memory)
 - ตัด: summary cards (Tab1 3 ใบ / Tab2 4 ใบ), ปุ่มตัวอย่างก่อนพิมพ์, Odoo, qsearch
 - Tab animation `p013TabIn` 0.26s fade+slide
 - modules.php: P013 status **dev** (ไม่ได้ ready — Tab2 ยัง mock) — 11 modules ready + P013 dev — P033 placeholder
@@ -869,7 +869,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - ปุ่ม สร้างเอกสาร = สร้างเอกสาร + เปิด report modal (A4) ตาม C# frm_PickListMarketplaceGUI.cs
 - report API = api/p079_report.php (2 query: header + detail, รวม total นู PHP, ~2s)
 - modal: title Pick List Marketplace + ประจำวันที่ (พศ.) + gray row ต่อ STO + row รวม
-- footer: พิมพ์เมื่อ d/m/Y H:i โดย machine + ปุ่ม พิมพ์เอกสาร (window.print) + ปิด X
+- footer: พิมพ์เมื่าอ d/m/Y H:i โดย machine + ปุ่ม พิมพ์เอกสาร (window.print) + ปิด X
 - font THSarabunNew + Bold
 
 ## P079 Table Always Visible + Generate Gate (2026-10-23)
@@ -913,8 +913,8 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 - table 7 cols in pt: 50/20/250/70/60/50/50 (table-layout fixed)
 - title "Pick List Marketplace" centered; asof line centered (d MMMM yyyy พ.ศ.)
-- status line: สถานะ : [status]  พิมพ์เมื่อ : [printedAt] (left, under asof)
-- cap row (พิมพ์เมื่อ...โดย machine) removed from table
+- status line: สถานะ : [status]  พิมพ์เมื่าอ : [printedAt] (left, under asof)
+- cap row (พิมพ์เมื่าอ...โดย machine) removed from table
 - rowspan STO per product group; dates dd/mm/yyyy พ.ศ. (Number() fix)
 - CDP PASS 5/5: cols pt, title, status line, no cap row, dates ddmmyyyy
 - Cache: p079-marketplace.js?v=20261022z
@@ -944,7 +944,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - สรุป: UI clone demo + search API (p079_search) + report modal P083-style (overlay + iframe srcdoc A4)
 - search block 6 fields 3x2 (วันที่เริ่ม/ถึง/วันที่หัวเอกสาร + สถานะ 27/กลุ่ม/ค้นหา) — วันที่หัวเอกสาร = report as-of
 - generate button disabled ถ้าตารางว่าง + ตารางแสดงเสมอ
-- report: 7 cols pt (50/20/250/70/60/50/50), title/asof กลาง, stline (สถานะ/พิมพ์เมื่อ) row แรกไม่มีเส้น, STO rowspan, dates dd/mm/yyyy พ.ศ., font THSarabunNew ทั้งหมด
+- report: 7 cols pt (50/20/250/70/60/50/50), title/asof กลาง, stline (สถานะ/พิมพ์เมื่าอ) row แรกไม่มีเส้น, STO rowspan, dates dd/mm/yyyy พ.ศ., font THSarabunNew ทั้งหมด
 - A4 pagination: แบ่งหน้า 297mm + หน้า N + header ซ้ำทุกหน้า + table กึ่งกลาง + margin ตาม C#
 - zoom 50-200% step 25 + print + Esc/overlay close
 - Cache: p079-marketplace.js?v=20261023c
@@ -1165,7 +1165,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
   - distinct products = CPS (CPSclearALL=0) UNION RSV (MIL) — RSV-only products must appear (C# master grid merges RSV)
   - detail = C# `CPS_detailReport`: CPS UNION ALL RSV, 14 cols each branch (listno, vnostype, CPSdateID, datediff, CPSvnosID, CPScusID, DEBnameT, DEBgrade, DEBcontactT, total, MIHdesc, CPSper, DEPdescT, RSVqty, CPSstkREQ, CPSstkCUT1, CPSsumREQ, MILvCol1)
   - param order (CRITICAL): header = (sto,dates) x3 then sto,stk,stk; detail = sto,stk,dates(,stk when !reportRSV31)
-- Report HTML (print area, A4 landscape via existing @page): title + "พิมพ์เมื่อ" stamp (ค.ศ.), 10 cols: กลุ่ม/วันที่, รหัส/เลขที่, ชื่อ/รายละเอียด, หน่วย/ฝ่ายขาย, สั่งซื้อ, จอง, ค้างส่ง, คงเหลือ [01...]+[03,04...], ยอดเงิน, ราคา/ทุน — product rows `.prow` (blue bg, bold), detail rows below; col widths via nth-child (6.9/8.8/36/6.9/6.9/6.9/6.3/8.8/6.3/6.3%)
+- Report HTML (print area, A4 landscape via existing @page): title + "พิมพ์เมื่าอ" stamp (ค.ศ.), 10 cols: กลุ่ม/วันที่, รหัส/เลขที่, ชื่อ/รายละเอียด, หน่วย/ฝ่ายขาย, สั่งซื้อ, จอง, ค้างส่ง, คงเหลือ [01...]+[03,04...], ยอดเงิน, ราคา/ทุน — product rows `.prow` (blue bg, bold), detail rows below; col widths via nth-child (6.9/8.8/36/6.9/6.9/6.9/6.3/8.8/6.3/6.3%)
 - CDP verified: 849 rows search -> select 2 -> Print V2 -> h1 + 10 th + product/detail rows rendered, Thai exact-match PASS, window.print called; vision PASS
 - cache: `p038-push-pending.js?v=20261027j`
 
@@ -1178,7 +1178,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - เปลี่ยน Print V3 จาก direct print เป็นเปิด modal แสดงรายงาน (pattern P083)
 - Modal: overlay z-index 120 บน document.body, max-width 980px, head blue gradient, zoom -/+ (25-200% step 50%), ปุ่มพิมพ์, hint "A4 portrait - margins 20pt"
 - iframe srcdoc: A4 210x297mm, @page{size:A4;margin:20pt}, padding 20pt, ฟอนต์ THSarabunNew @font-face ใน srcdoc (relative url — resolve ต่อ base URL ของ parent)
-- ตาราง 1 header: 3 แถว — ชื่อ colspan6, พิมพ์เมื่อ colspan6, หัว 6 คอลัมน์ (กลุ่มสินค้า/วันที่, รหัสสินค้า/เลขที่ใบสำคัญ, ชื่อสินค้า/รายละเอียด, หน่วย/ฝ่ายขาย, สั่งซื้อ, ค้างส่ง)
+- ตาราง 1 header: 3 แถว — ชื่อ colspan6, พิมพ์เมื่าอ colspan6, หัว 6 คอลัมน์ (กลุ่มสินค้า/วันที่, รหัสสินค้า/เลขที่ใบสำคัญ, ชื่อสินค้า/รายละเอียด, หน่วย/ฝ่ายขาย, สั่งซื้อ, ค้างส่ง)
 - ตาราง 2: 6 คอลัมน์กว้าง 55/70/255/55/55/55pt — แถวสินค้า (blue) + แถวกลุ่ม >15/<15 วัน (border-bottom) + แถวรายละเอียด
 - ไม่ auto-print — view ก่อนแล้วกดปุ่มพิมพ์เอง (print = window.print ใน iframe)
 - API ใช้ p038_v2.php เดิม (mี datediff)
@@ -1322,7 +1322,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - cache 20261027a12 -> 20261027a13
 ## P038 CPSRSV report tables per user template (2026-10-29)
 - User provided the exact HTML template for the two report tables; buildCPSRSVHtml() now matches it:
-  - Table 1 (deb, 4 cols 70/300/70/360pt): row1 title (colspan 4) "รายงานค้างส่งและเบิกจอง", row2 รหัสลูกค้า/DEBcode + เขต-อำเภอ/DEBcontactT, row3 ชื่อลูกค้า/DEBnameT (rowspan 2) + กลุ่ม/DEBgroup, row4 เกรด/DEBgrade, row5 "พิมพ์เมื่อ [stamp]" (colspan 4)
+  - Table 1 (deb, 4 cols 70/300/70/360pt): row1 title (colspan 4) "รายงานค้างส่งราว่ำำเบิกจอง", row2 รหัสลูกค้า/DEBcode + เขต-อำเภอ/DEBcontactT, row3 ชื่อลูกค้า/DEBnameT (rowspan 2) + กลุ่ม/DEBgroup, row4 เกรด/DEBgrade, row5 "พิมพ์เมื่าอ [stamp]" (colspan 4)
   - Table 2 (main, 7 cols 80/70/410/60/60/60/60pt): header row (th) + per-product data rows (CPSvnosID/CPSstkID/STKdescT1/CPSqty/RSVqty/SBLqty/STKuname1)
   - Removed the standalone <h1> title (title now lives in table 1 row 1)
 - Verified with standalone Node check (mock data): all structural checks PASS (title row, print-when row in table 1, no h1, RSV gray row, CPS row)
@@ -1402,13 +1402,275 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 - Modal body max-height: `min(60vh, calc(100vh - 180px))`; overlay padding 24px, align-items center
 - CDP verified: no auto search (0 rows after open), spinner during search (loading=true), after search spinner gone (968 rows), detail modal centered (spaceTop=377=spaceBottom), comment modal centered; vision PASS
 
-## P100 ระวังหลังจัดซื้อ (2026-10-31)
-- User: "ทำหน้าต่อไปกันเอาเป็น P100 ตัวอย่างอยู่ที่ demo/P100-demo.html" + "source c# ไม่ถูกต้อง ไม่ต้องทำเกินที่สั่งไป"
-- สร้าง `assets/js/p100-stock-watch.js` จาก demo (extract CSS/HTML/JS + Babel ES5 + scope `.p100-scope` + rename ids `p100*` + IIFE `window.P100StockWatch = { mount }`)
-- **ไม่ใช้ C# source** — UI เท่านั้นจาก demo, mock data ในไฟล์
-- **แก้ bug 2 จุด:**
-  - สคริปต์ generate ตัดคำ `productCode` ทั้งหมดรวมถึง object property → `item.p100productCode` (ไม่มี) → แก้ให้ rename เฉพาะใน `getElementById`/`querySelector` (ไม่ touch property)
-  - demo มี bug: `updateSummary` reference `summaryCount`/`summaryNegative`/`summaryOverPO`/`summaryGradeX` ที่ไม่มีใน HTML → search พัง (TypeError) → ทำ null-safe ใน module
-- ต่อสาย: index.php (script tag `?v=20261030c` + bump portal.js `?v=20261030a`), portal.js (program block + mount block)
-- P100 เป็น placeholder ใน data/modules.php (กลุ่ม purchasing-programs, ชื่อ "ประเมินคำสั่งซื้อ (Forecast) V2") — ยังไม่มี status ready
-- CDP verify: mount OK, search แสดง 4 rows (5 คลัง pre-checked), countBadge "จำนวน 4 แถว", footerText "แสดง 4 รายการ"; node --check PASS
+## P098 ระวังหลังจัดซื้อ (2026-10-31)
+- ย้ายจาก P100: user "ผมสั่งทำผิด หน้า P100 ยังไม่พร้อมทำ ย้ายไปที่ P098 เปลี่ยนชื่อไฟล์ตามด้วย" — "ระวังหลังจัดซื้อ" คือ P098 ตาม `data/modules.php`; P100 = "ประเมินคำสั่งซื้อ (Forecast) V2" ยังไม่พร้อม ทำแล้วจะสร้าง
+- **rename ไฟล์ทั้งหมด:** `assets/js/p100-stock-watch.js`→`p098-stock-watch.js`, `api/p100_search.php`→`api/p098_search.php`, `demo/P100-demo.html`→`demo/P098-demo.html` + แก้ชื่อภายใน (`window.P098StockWatch`, `.p098-scope`, `p098*` ids, fetch URL `api/p098_search.php`)
+- ต่อสาย: `index.php` → `p098-stock-watch.js?v=20261031d`; `portal.js` program block + mount block → P098 + `window.P098StockWatch` + `p098Root`
+- ปุ่มค้นหา (`btn_search_Click` ตาม C# `AppPUR_CPS/frm_PUR_CPS_PR_X_GUI.cs`): `api/p098_search.php` (MAC5); `search()` ใน `p098-stock-watch.js` ใช้ `fetch("api/p098_search.php")`
+- Loading animation ปุ่มค้นหา: CSS `.p098-scope .action-button.search.loading` (spinner `::before` + `@keyframes p098spin`) + JS ตั้ง `loading`/`disabled` ก่อน fetch — CDP ยืนยัน `HAS_LOADING=true`
+- Fix: `p098toggleLauncher` ไม่อยู่ใน HTML → `init()` พัง — แก้เป็น null-safe (`if (_tl)`)
+- P100 (ประเมินคำสั่งซื้อ Forecast V2) ยังเป็น placeholder ใน `data/modules.php` — ยังไม่ทำ (ยังไม่พร้อม)
+- ตัวเลือกคอลัมน์ (user "P098 ตาราง รายการสินค้าที่ต้องระวัง เอา STKdescT2 ออก หรือซ่อน"): ลบคอลัมน์ STKdescT2 ออกจากตารางหลัก — ลบ `<th data-sort="stkDesc">` ใน thead + ลบ `<td>` stkDesc ใน row template (STKdescT2 ยังเหลือใน edit modal + print report — ไม่ได้อยู่ในขอบเขตตาราง)
+- Pagination (user "แบ่งหน้า แสดง 15 รายการต่อหน้า มีปุ่มหน้าให้ดูสวยงาม"): `PAGE_SIZE=15` + `currentPage` state, `renderRows()` slice ตามหน้า, ฟังก์ชัน `renderPagination(totalPages)` (ปุ่ม prev/เลขหน้า/next + page-info), CSS `.p098-scope .pagination` (ปุ่ม rounded, hover/active state) — CDP ยืนยัน: ตารางไม่มี STKdescT2, แสดง 15 แถวต่อหน้า, ปุ่มหน้าพิมพ์ 3 ตัว (prev, 1, next), info "1 / 1"
+- Cache busting: `index.php` → `p098-stock-watch.js?v=20261031e`
+- ไม่ auto search ตอนเปิดหน้า (user "P098 เปิดหน้ามา ไม่ต้อง search ผลค้นหา ผู้ใช้จะเป็นคนกดเอง"): ลบ `search(false)` ที่ทาย `init()` — เปิดหน้ามา 0 แถว (ไม่มีผลค้นหา), ผู้ใช้กดปุ่ม "ค้นหา" เอง — CDP ยืนยัน: ตอนเปิด 0 แถว, หลังกดค้นหา 18 แถว (15 ต่อหน้า, 2 หน้า), `index.php` → `?v=20261031f`
+- ย้าย flag filters ไป panel (user "P098 Stock ติดลบ(-) สินค้าเกิน PO ลูกค้าเกรด X ย้ายไปไว้ที่ รายการสินค้าที่ต้องระวัง เพิ่มเป็นตัวกรองตามที่เลือก"): ย้าย 3 flag chips (Stock ติดลบ(-) / สินค้าเกิน PO / ลูกค้าเกรด X) จาก launcher form ไปไว้ใน panel "รายการสินค้าที่ต้องระวัง" + เพิ่ม `applyFlagFilters()` (กรองด้าน client ตาม checkbox ที่เลือก) + change listeners ที่รีเรนเดอร์ — CDP ยืนยัน: flags อยู่ใน panel (ไม่ใช่ launcher), check "Stock ติดลบ(-)" ลดแถว 15→6, `index.php` → `?v=20261031g`
+- ย้ายปุ่ม Print + เรียง flags ให้อยู่ด้านบน ทางขวา (user "P098 ย้ายปุ่ม Print ... อยู่ด้านบน ทางขวา"): ลบปุ่ม Print ออกจาก launcher action-buttons + รีโครง panel header เป็น `.panel-tools` (flex, justify-content: flex-end) วาง [ปุ่ม Print][3 flags][badge] อยู่ด้านขวาของ panel-header — CDP ยืนยัน: `printInTools=true`, `printInLauncherForm=false`, `flagsInTools=3`, `index.php` → `?v=20261031h`
+- ย้ายปุ่ม Print ไปขวาสุด + สีน้ำเงิน (user "P098 ย้ายปุ่ม Print ไปทางขวาสุด ปุ่มสีน้ำเงิน"): เรียงใหม่ `.panel-tools` เป็น [flags][badge][print] (print เป็นสูบบุตร์สุดท้าย = ขวาสุด) + เปลี่ยน CSS ปุ่ม print เป็นสีน้ำเงิน (`background:#2563eb`, `color:#fff`, `border:none`) — CDP ยืนยัน: `printIsLastChild=true`, `childOrder=[flag-filters, badge, action-button print]`, `bg=rgb(37,99,235)`, `index.php` → `?v=20261031i`
+- ลบจำนวนแถวจากด้านบนขวา (user "P098 เอาจำนวนแถว ด้านบนขวา ออก"): ลบ `p098countBadge` ออกจาก `.panel-tools` (HTML + JS update) — จำนวนแถวแสดงที่ข้างล่าง (`p098footerText` "แสดง X รายการ") — CDP ยืนยัน: `badgeExists=false`, `toolsChildren=[flag-filters, action-button print]`, `footerText` = "แสดง 101 รายการ" หลังค้นหา, `index.php` → `?v=20261031j`
+- ย้ายปุ่มค้นหาไปข้างล่างกลุ่มคลัง (user "P098 ย้าย ปุ่มค้นหามาไว้ข้างล่างกลุ่มคลัง ตามรูป"): ย้าย `action-buttons` (ปุ่มค้นหา) จากนอก warehouse-card มาไว้ภายใน warehouse-card ข้างล่าง `p098warehouseGrid` — CDP ยืนยัน: `searchInWarehouseCard=true`, `searchAfterGrid=true`, `gridSiblingClass=action-buttons`, `index.php` → `?v=20261031k`
+- ย้ายปุ่มค้นหาให้อยู่ในระดับเดียวกับฟิลด์ชื่อสินค้า (user "ไม่ใช้แบบนี้ ปุ่มค้นหาอยู่ในระดับเดียวกับ text ค้นหาจากชื่อสินค้า"): ถอดปุ่มค้นหาออกจาก warehouse-card + กลับไปไว้ในระดับเดียวกับ input ชื่อสินค้า (หุ้มด้วย `.field-row` [ฟิลด์ชื่อสินค้า][ปุ่มค้นหา]) — CDP ยืนยัน: `searchInFieldRow=true`, `searchInWarehouseCard=false`, `sameRowAsProductName=true`, `index.php` → `?v=20261031l`
+- ย้ายปุ่มค้นหาโดยไม่ให้ layout อื่นขยับ (user "P098 การย้ายปุ่มค้นหา ไม่ส่งผลให้ layout อื่นขยับ"): เปลี่ยน `.field-row` (1fr 1fr ที่ทำให้ input แคบลง) เป็น `.search-inline` (flex, `align-items: flex-end`) — input `flex:1` (กว้าง 439px) + ปุ่ม 150px อยู่ด้านขวาล่าง — CDP ยืนยัน: ปุ่มอยู่ระดับเดียวกับ input (`btnTop=416` ≈ `prodTop=420`), layout อื่นไม่ขยับ (date 272, warehouse 251, legend 251 อยู่คงที่), `index.php` → `?v=20261031m`
+- ปุ่ม Edit แก้ไข STKmemo (user "P098 รายการสินค้าที่ต้องระวัง ปุ่ม Edit แก้ไข STKmemo"): เพิ่มฟิลด์ STKmemo ใน Edit modal (หลัง STKdescT2) + `openEdit` load `item.stkMemo` + `saveEdit` save `item.stkMemo` — CDP ยืนยัน: `SET=set-memo-test-123`, `AFTER-SAVE={"stkMemoAfterSave":"memo-test-123"}` (ค่าคงที่หลัง save + reopen item เดิม), `index.php` → `?v=20261031n` — หมายเหตุ: ค่ายังเป็น client-side (ไม่ persist ลง DB); ถ้าต้องการให้ API คืนค่า memo เดิม ต้องทราบ column ชื่อใน DB ก่อน (C# ใช้ `Frm_editSTKmemo`)
+- ปุ่ม Edit แสดง รหัส-ชื่อ + ดึง STKmemo มาแสดง + เอาฟิลด์อื่นออก (user "P098 รายการสินค้าที่ต้องระวัง ปุ่ม Edit เปิด modal แสดง รหัส-ชื่อสินค้า แล้วดึง STKmemo มาแสดง เพื่อที่จะแก้ไขได้ นอกนั้นให้เอาออก"): (1) API `p098_search.php` เพิ่ม subquery `(SELECT STKmemo FROM STK WHERE STKcode=CS.CPSstkID) STKmemo` + mapping `stkMemo` (column ชื่อจาก C# `Frm_editSTKmemo.cs`: `SELECT STKmemo FROM STK`) (2) ลบฟิลด์ MKTPlan + STKdescT2 ออกจาก modal (คง modal-info + STKmemo) (3) แก้ `openEdit`/`saveEdit` ให้ lookup `currentItems` (ข้อมูล API) ไม่ใช่ `items` (mock) — CDP ยืนยัน: `modalOpen=true`, `modalInfo` แสดง "10010722 · 1001-0931\nกรองแสง...", `stkMemoValue="25/11/2562"` (ดึงจาก DB), `index.php` → `?v=20261031p`
+- Row-click detail modal (user "ตาราง รายการสินค้าที่ต้องระวัง เมื่อคลิ๊กเลือกแถว จะแสดง modal..."): (1) สร้าง `api/p098_detail.php` (MAC5) — POST `{connectionId, stkcode, dateFrom, dateTo, warehouses[]}` → `{ok, sorsv[9 คอลัมน์], po[6 คอลัมน์]}` (SQL จาก C# `getSORSV`/`getPO`) (2) module: detail modal (`p098detailModal`) แถบด้านบน `p098detailTopbar` แสดง รหัส-ชื่อสินค้า + SO/RSV/PO + 2 ตาราง (`.detail-table-scroll` max-height 272px + overflow-y auto = สูงสุด 7 แถว, เกินนี้ scrollbar) + `openDetail`/`closeDetail`/`renderSorsv`/`renderPo` + row click เปิด modal — CDP ยืนยัน: `modalOpen=true`, SO/RSV 9 คอลัมน์, PO 6 คอลัมน์, `index.php` → `?v=20261031q`
+- สีตามคำอธิบายสีในทั้ง 2 ตาราง (user "modal รายละเอียดสินค้า ทั้ง 2 ตาราง ใส้สีตามคำอธิบายสีให้ถูกต้อง"): ใส่ class สีตาม legend — `renderSorsv`: ค้างส่ง → `c-so` (ถ้าติดลบ → `c-neg` แดง), RSV → `c-rsv`; `renderPo`: จำนวน → `c-po` (CSS เดิม `.p098-scope td.c-so/c-rsv/c-po/c-neg`) — CDP ยืนยัน: `soBg=rgba(255,247,209,0.55)` (SO หมดู), `rsvBg=rgba(187,247,208,0.45)` (RSV เขียวดู), `poBg=rgba(254,205,211,0.45)` (PO แดงดู) — ตรงตาม legend (`--c-so #fff7d1`, `--c-rsv #bbf7d0`, `--c-po #fecdd3`), `index.php` → `?v=20261031r`
+- ปุ่ม Print ไม่ทำงานเมื่อไม่มีการเลือก (user "P098 ปุ่ม Print เมื่อไม่ได้เลือก... จะไม่ทำงาน"): แก้ `printReport()` — เดิม: ไม่มีการเลือกจะพิมพ์ทั้งหมดที่แสดง; ตอนนี้ `if (!picked.length) return;` (ไม่พิมพ์เลย) — CDP ยืนยัน: ไม่เลือก → `printAreaLen=0` (ไม่พิมพ์), เลือกแถว → `printAreaLen=1123` (พิมพ์เฉพาะที่เลือก), `index.php` → `?v=20261031s`
+- ช่วงวันที่-ถึง ใช้วันปัจจุบัน (user "P098 ช่วงวันที่-ถึง วันที่ ค้นหา ใช้วันปัจจุบัน"): ลบ `value="2026-10-31"` ที่ hardcoded ออกจากฟิลด์วันที่ทั้ง 2 + set ค่าเป็นวันปัจจุบัน (`new Date()` → `YYYY-MM-DD`) ใน `mount()` หลัง `el.innerHTML = HTML` — CDP ยืนยัน: `dateFrom`/`dateTo` = วันนี้ (`match=true`), `index.php` → `?v=20261031u`
+- Print report 2 ตาราง A4 แนวนอน (user "P098 Print รายงานระวังหลังจัดซื้อ แก้ไขดังนี้..."): รีไฟล์ `printReport()` — (1) ตาราง 1 (header): 9 คอลัมน์ col widths `40/70/70/70/270/70/70/70/70pt` (colgroup) + แถวหัว 2 แถว (rowspan คลัง/SO/RSV/PO + วันที่/เลขที่ใบสำคัญ/รหัสลูกค้า/ชื่อลูกค้า) + แถว title + "พิมพ์เมื่าอ : <stamp> โดย : " (2) ตาราง 2 (vnos): แถวข้อมูลสินค้า `[CPSstkID] [STKgroup] [STKdescT1] [STKdescT2]` + loop SO/RSV (`&nbsp;` ที่คอลัมน์ PO) + loop PO (`&nbsp;` ที่คอลัมน์ SO/RSV) — ดึงข้อมูลต่อสินค้าจาก `api/p098_detail.php` (Promise.all) + CSS `.print-sheet table` เปลี่ยน `width:100%`→`width:auto` ให้ table ใช้ col widths — CDP ยืนยัน: `tableCount=2`, `t1_cols`/`t2_cols` = 9 widths ตาม spec, `t1_rows=4`, `t2_rows=49`, `t1_title`/`t1_printWhen`/`t2_firstRow` ถูกต้อง, `index.php` → `?v=20261031v`
+- Print report: row 3-4 สีพื้นหลังเทาอ่อน + ตัดเส้นระหว่าง col1-col2 ของ row 4 (user "P098 print รายงานระวังหลังจัดซื้อ - ตาราง1 row4 col 1 เอาเส้นทางขวาออก หรือ col2 เอาเส้นทางซ้ายออก - ตาราง 1 row 3 ราว่ำำ row 4 ใส่สีพื้นหลัง สีเทาอ่อนๆ"): (1) `.p098hdr tr.h th{background:#f0f0f0}` (ตั้งที่ `th` ไม่ใช่ `tr` เพราะ computed background ของ tr ไม่ propagate สู่ cell) (2) `.p098hdr tr:nth-child(4) th:first-child{border-right:0}` + `.p098hdr tr:nth-child(4) th:nth-child(2){border-left:0}` (user "ตาราง1 row4 col2 เอาเส้นทางซ้ายออก" — ตัดเส้นระหว่าง col1-col2 ใน row 4 ทั้ง 2 ด้าน) — CDP ยืนยัน (เลือก 10309023): `row3bg`/`row4bg` = rgb(240,240,240), `r4c1_borderRight` = 0px, `r4c2_borderLeft` = 0px, `index.php` → `?v=20261103h`
+- ปุ่ม Print มี animation "กำลังทำงาน" (user "P098 ปุ่ม print ทำ animation ให้รู้ว่าทำงานอยู่" + "ไม่ต้องใส่ข้อความ แค่ทำ icon กำลังหมุนก็พอ"): `setBtnBusy(btn, busy)` — ตอน `printReport()` เริ่ม (หลัง check `picked.length`) ตั้ง `disabled=true` + class `busy` + แทนเนื้อปุ่มด้วย **spinner SVG หมุนเท่านั้น (ไม่มีข้อความ)**; หลัง `openPrintModal()` / ผิดพลาด `.catch` ให้คืนเนื้อเดิม (`dataset.origHtml`) + ปล่อย disabled + ลบ class `busy`; CSS `.action-button.busy{opacity:.9;cursor:wait}` + `@keyframes p098spin` (spinner หมุน 0.9s linear infinite) — CDP ยืนยัน: ช่วง fetch `disabled=true,busy=true,hasSpinner=true,label=""` (ไม่มีข้อความ), หลัง modal เปิด `disabled=false,busy=false,hasSpinner=false,label="Print",modalShown=true`, `index.php` → `?v=20261103e`
+- Print report: ทำใหม่ตาม **P038 Print V2** ทุกขั้น (user "P098 print รายงานระวังหลังจัดซื้อ ดูการแบ่งหน้า ราว่ำำแสดงในกระดาษA4แนวนอน ตัวอย่างได้จาก P038 Print V2 เป็นแนวทาง"): เลิกวิธี manual page-box + print CSS hack ของ portal แล้วเปลี่ยนเป็นสถาปัตยกรรมเดียวกับ P038 V2 — (1) modal มี **iframe** `#p098printFrame` แทน `#p098printSheet` (2) `p098DocHtml(inner,title)` สร้าง **เอกสาร HTML เต็ม** (doctype + @font-face THSarabunNew + `@page{size:A4 landscape;margin:20pt;@bottom-right{content:"หน้า " counter(page)}}`) ใส่ `srcdoc` (3) `.p098-page{297mm x 210mm; padding:20pt; overflow:hidden}` + `.p098-page+.p098-page{margin-top:20pt}` (แผ่นห่าง 20pt) (4) **paginator ในเอกสาร** (`pag()`) วัด `rowOver()` เทียบขอบล่างของ section แล้วย้ายแถวที่ล้นไป section ใหม่ + clone `table.p098hdr` (หัวเอกสาร title + พิมพ์เมื่าอ + column header) ไปทุกแผ่น + `renumber()` "หน้า N" + กัน product row (`bdr`) ถูกทิ้งไว้ล่างสุด (5) print: `.p098-page{width:100%;height:auto;padding:0;margin:0;page-break-after:always}` + `:last-child{auto}` + `.p098-page+.p098-page{margin-top:0}` (ต้อง override เพราะ specificity สูงกว่า ไม่งั้นได้หน้าเกิน) + `.p098-pgno{display:none}` (เลขหน้าออกทาง @page margin box) (6) ปุ่ม Print → `frame.contentWindow.focus(); print()` (พิมพ์เฉพาะ iframe ไม่ปน chrome ของ portal) (7) zoom modal → `frame.contentWindow.setZoom()` (8) ลบ `@media print` block เดิมของ `.p098-scope` ทั้งหมด — CDP ยืนยัน (เลือก 10309023, 49 แถว): 3 แผ่น (18/18/13), ทุกแผ่น `hdr`+`title`(22pt)+`meta`(พิมพ์เมื่าอ)+`thead 10 th`, `pgno` = หน้า 1/2/3, content bottom 750/749/589 ≤ 767 (ไม่ล้น), print `Page.printToPDF` = **3 หน้า** (ตรงกับ 3 แผ่น), ภาพ PDF แสดงหัวเอกสาร + พิมพ์เมื่าอ + header ซ้ำทุกหน้า ราว่ำำเลขหน้าล่างขวา, modal preview `frameH=859`, zoom 75% ทำงาน, `index.php` → `?v=20261103c`
+- Print report: แก้ระบบแบ่งหน้า + footer เลขหน้า (user "P098 print รายงานระวังหลังจัดซื้อ แก้ปัญหาการแบ่งหน้า... A4 แนวนอน... header ทุกหน้า... 20f ทั้ง4ด้าน... ห่างกัน 20f... Footer เลขหน้าล่างขวา"): (1) `.rep-page` = แผ่น A4 จริง `297x210mm` + `padding: 20pt` (ขอบ 20f อยู่ในการ์ดแผ่น จึงเห็นเหมือนกันทั้ง modal ราว่ำำกระดาษ) + `margin: 0 auto 20pt` (แผ่นห่างกัน 20f) (2) footer `.rep-page-num` = `position:absolute; right:20pt; bottom:2pt; font-size:14pt` ข้อความ "หน้า N" (ย้ายจาก `@top-right` เดิมที่อยู่บนขวา) (3) `@page{size:A4 landscape;margin:0}` + print `.rep-page{ width:297mm; height:209.9mm; padding:20pt; margin:0; overflow:hidden; break-after:page }` + `:last-child{ break-after:auto }` (4) **แก้บั๊กการวัดแถว** — เดิมวัดใน div ลอยนอก `.p098-scope`/`.print-sheet` ทำให้ CSS `th/td` (14pt, padding 3px 5px) ไม่ถูกใช้ → วัดแถวเตี้ย/สูงผิด → แพ็กแถวผิดหน้า; ใหม่: render probe sheet ที่มีทุกแถวลง `#p098printSheet` จริง แล้ววัด `getBoundingClientRect()` ของแต่ละ `tr` + `startH` จากแถวแรก (5) **แก้หน้าเปล่า** — `visibility:hidden` ยังกิน layout ทำให้ chrome ของ portal (`#p098Root` margin-top 20px, `#appContent` padding-top 32px) ดันเนื้อหาไป 1017px → เพิ่ม `@media print` : `body *:not(.print-sheet):not(.print-sheet *):not(:has(.print-sheet)){display:none!important}` + zero margin/padding ให้ ancestor chain (`.app`, `.main-wrap`, `#appContent`, `#p098Root`, `.p098-scope`, `.modal-backdrop`, `.modal.print-modal`, `.print-body`, `#p098printContent`) (6) ไม่ให้ product header ไปอยู่ล่างสุดของแผ่น (`rowIsProduct` orphan guard) — CDP ยืนยัน (เลือก 10309023, 49 แถว): 4 แผ่น (15/14/14/6), ทุกแผ่น `title`+`meta`+`thead`(10 th)+footer "หน้า N", `padding` 26.67px (20pt), `gap` 26.67px (20pt), print media `sheet1 top=0`, `docH=3173` (=4x793, ไม่มีที่ว่างนำหน้า), `Page.printToPDF` = **4 หน้า** (ตรงกับจำนวนแผ่น ไม่มีหน้าเปล่า), sample `scratch/p098_report_final.pdf`, `index.php` → `?v=20261102t`
+- Print report: แบ่งหน้าแบบ P038 V2 (user "P098 print รายงานระวังหลังจัดซื้อ ดูการแบ่งหน้า ราว่ำำแสดงในกระดาษA4แนวนอน ตัวอย่างได้จาก P038 Print V2 เป็นแนวทาง"): ยึดแนวทาง P038 V2 — (1) `@page{size:A4 landscape;margin:20pt 20pt 20pt 25pt}` (เดิม 20pt ทุกด้าน → เปลี่ยน left เป็น 25pt ตาม P038) (2)เพิ่ม `table tr{page-break-inside :avoid; }` ใน `@media print` (ไม่แบ่งแถวข้ามหน้า — เทคนิค P038) — CDP verify (เลือก 10309023): `Page.printToPDF` (A4 landscape) → PDF 7 หน้า, 348KB, save `scratch/p098_report_p038ref.pdf`, `index.php` → `?v=20261102k`
+- Print report: ตารางจัดกึ่งกลาง + ข้ามหน้าชัดเจน (user "print รายงานระวังหลังจัดซื้อ ตารางทั้ง 2 จัดกึ่งกลางหน้ากระดาษ แล้วก็ระยะหน้า ระหว่างกระดาษ ผมเห็นยังติดกันอยู่เลย"): (1) `.print-sheet table` ใส่ `margin: 0 auto` (จัดกึ่งกลางตารางทั้ง 2 บนหน้ากระดาษ) (2) `.rep-page` bottom margin `20pt` → `40pt` (ข้ามระหว่างหน้าให้ชัดเจน ไม่ติดกัน) — CDP ยืนยัน (เลือก 10309023): ทุกหน้า `table1`/`table2` `left`≈`right` (~27px, `centered`=true), `bottomMargin` = 53.33px (40pt), `index.php` → `?v=20261102j`
+- Print report: margin 20pt + ข้ามหน้า 20pt + หัวเอกสาร/พิมพ์เมื่าอ ทุกหน้า (user "print รายงานระวังหลังจัดซื้อ modal แบ่งหน้า... ตั้งค่าหน้ากระดาษ 20f,20f,20f,20f; กระดาษแต่ละหน้าห่างกัน 20f; แสดง header ทุกหน้าแต่อย่าลืมหัวเอกสารราว่ำำ พิมพ์เมื่าอ..."): (1) `@page { margin: 20pt 20pt 20pt 20pt }` (เดิม 10pt) (2) `.rep-page` bottom margin `10px` → `20pt` (ข้ามระหว่างหน้าใน modal) (3) รีไฟล์ page-building — ทุกหน้า = `table1` (title + "พิมพ์เมื่าอ") + thead + rows (เดิม table1 อยู่แค่หน้า 1) — CDP ยืนยัน (เลือก 10309023): `pageCount` = 3, ทุกหน้า `hasTitle`/`hasMeta`/`hasThead` = true, `bottomMargin` = 26.67px (20pt), `w`/`h` = 1122.52/793.688px, `index.php` → `?v=20261102i`
+- Print report: modal แบ่งเป็น box หน้า A4 + header ทุกหน้า (user "print รายงานระวังหลังจัดซื้อ modal แบ้งหน้า แล้วในกระดาษ A4 แนวนอน แสดง header ทุกหน้าด้วย"): (1) รีไฟล์ `printReport()` — รวบรวม rows เป็น array `rowsArr`, วัดความสูงต่อแถว (hidden measure div), pack rows แยกเป็น N หน้า (หน้า 1 = table1 (title+meta) + thead + rows, หน้าต่อไป = thead + rows) (2) CSS `.rep-page` (box 297x210mm + border +เลขหน้า `.rep-page-num`) + sheet `padding: 0` (3) `@media print` override: `.rep-page{ border: none; margin: 0; width: auto; height: auto; overflow: visible; }` + `.rep-page-num{ display: none; }` (ไม่พิมพ์ box/เลขหน้า) — CDP ยืนยัน (เลือก 10309023): `pageCount` = 3, ทุกหน้า `w`=1122.52px(297mm) `h`=793.688px(210mm), `hasThead`=true (header ทุกหน้า), `pageNum` = 1/2/3, `index.php` → `?v=20261102h`
+- Print report: modal แสดงเส้นแบ่งหน้า (user "print รายงานระวังหลังจัดซื้อ pdf เห็น 6 หน้า แต่แสดงใน modal ไม่แบ่งหน้าให้เห็น"): modal เดิมแสดงเป็น flow ต่อเนื่อง (sheet สูงตายตัว 210mm) — เปลี่ยน `.print-sheet` (screen/modal) `height: 210mm` → `height: auto` + ใส่ `background-image: repeating-linear-gradient(to bottom, transparent 0, transparent calc(210mm - 1px), #c8c8c8 calc(210mm - 1px), #c8c8c8 210mm)` → แสดงเส้นแบ่งหน้า (สีเทา) ทุก 210mm ให้เห็นจุดแบ่งหน้า — CDP ยืนยัน (เลือก 10309023): `sheetHeight` = 1774px (auto), `estPages` = 3, `hasPageBreakLines` = true, `index.php` → `?v=20261102g`
+- Print report ขึ้นหน้าใหม่ (user "print รายงานระวังหลังจัดซื้อ ยังไม่ขึ้นหน้าใหม่ให้เลย" + "ไม่ขึ้นหน้าใหม่ นายนายทำไม่ได้ใช่มั้ย"): สาเหตุที่แท้จริงที่กั้นการขึ้นหน้า = `.modal-backdrop` ใช้ `position: fixed; inset: 0` (element แบบ fixed ไม่ไหลตามหน้า) — แก้โดยใส่ `@media print` override: `.p098-scope .modal-backdrop{ position: static; inset: auto; display: block; padding: 0; background: none; backdrop-filter: none; }` (พร้อม `.modal.print-modal{ max-height: none; overflow: visible; }` + `#p098printContent{ overflow: visible; }` + `.print-sheet{ position: static; }`) — verify ด้วย CDP `Page.printToPDF` (เลือกทั้งหมด → PDF 4 หน้า, 148KB), `index.php` → `?v=20261102f`
+- Print report ขึ้นหน้าใหม่เมื่อล้น (user "print รายงานระวังหลังจัดซื้อ ยังไม่ขึ้นหน้าใหม่ให้เลย"): สาเหตุที่ไม่ขึ้นหน้า: (1) `.print-sheet` ใช้ `position: absolute; top: 0` (element แบบ absolute ไม่ไหลตามหน้า) + (2) `.modal` base มี `overflow: hidden` + `max-height` ที่กั้นการไหล — แก้: (1) เปลี่ยน `position: absolute; left: 0; top: 0` → `position: static` (2) ใส่ `@media print` overrides: `.modal.print-modal{ max-height: none; overflow: visible; }` + `#p098printContent{ overflow: visible; }` — verify ด้วย CDP `Page.printToPDF` (เลือกทั้งหมด → PDF 3 หน้า, 146KB), `index.php` → `?v=20261102e`
+- Print report: ตัดเส้นตาราง 1 rows 1,2 (user "print รายงานระวังหลังจัดซื้อ - ตาราง 1 row1ราว่ำำ2 ยังแสดงเส้นตารางอยู่เลย"): เส้นที่เห็นคือ outer frame ของตาราง (ไม่ใช่ cell border) — แยก border ออก: (1) CSS `.print-sheet table{ width: auto; border-collapse: collapse; }` (ลบ `border: 1px solid #000` ออกจาก base) + ใส่ `.print-sheet table.rep-t2{ border: 1px solid #000; }` (2) JS: table2 ใส่ `class="rep rep-t2"` (table1 คง `class="rep"` ไม่มี border) — CDP ยืนยัน: `t1_border` = "0px none" (ตาราง 1 ไม่มีเส้น), `t2_border` = "1px solid" (ตาราง 2 มีขอบนอก), `t1r1_border`/`t1r2_border` = "0px none", `index.php` → `?v=20261102d`
+- Print report: ตัดเส้นตาราง 1 rows 1,2 + หนาแถวข้อมูลสินค้า + แบ่งหน้าเมื่อล้น (user "print รายงานระวังหลังจัดซื้อ - ตาราง 1 row1ราว่ำำ2 เอาเส้นออก; ตาราง 2 row 1 อักษรตัวหน้า; ทำการแบ่งหน้า เมื่อล้นกระดาษด้วย"): (1) ตาราง 1 rows 1,2 (rep-title/rep-meta) — ยืนยัน `border: none` (จาก `th,td{border:none}`) (2) ใส่ `class="rep-prod"` ที่แถวข้อมูลสินค้า (table 2 row 1) + CSS `.p098-scope .print-sheet td.rep-prod{ font-weight: bold; }` (2 จุด: screen + print) (3) แบ่งหน้าเมื่อล้น — มีอยู่แล้ว: `thead` (ซ้ำทุกหน้า) + `tbody` + `@page { size: A4 landscape; margin: 10pt; @top-right: "หน้า N" }` + `@media print` visibility — CDP ยืนยัน: `t1r1_border`/`t1r2_border` = "0px none", `pinfo_font_weight` = "700" (หนา), `sheet_scrollHeight` = 794px = A4 landscape (794px) → `est_pages` = 2 (ล้น 1 หน้า → แบ่ง 2 หน้า), `index.php` → `?v=20261102c`
+- Print report เส้นแนวตั้งแถว loop ปรับ (user "print รายงานระวังหลังจัดซื้อ - ตาราง 2 row 2 col 1 เอาเส้นทางขวาออก หรือ col2 เอาเส้นทางซ้ายออก"): เปลี่ยน selector CSS จาก `td:not(:first-child)` เป็น `td:not(:first-child):not(:nth-child(2))` → ลบเส้นแนวตั้งระหว่าง col1–col2 (col1 ขวา / col2 ซ้าย) คงไว้แค่ col 3–9 — CDP ยืนยัน: `col1_right` = "0px none", `col2_left` = "0px none", `col3_left`/`col9_left` = "1px solid", `index.php` → `?v=20261102b`
+- Print report เส้นแนวตั้งแถว loop (user "print รายงานระวังหลังจัดซื้อ - ตาราง 2 row 2 มีเส้นแนวตั้ง ยกเว้น col1"): ใส่ `class="vline"` ที่แถว loop SO/RSV + PO (rows 2+) ของตาราง 2 + CSS `.p098-scope .print-sheet tr.vline > td:not(:first-child){ border-left: 1px solid #555; }` (2 จุด: screen + print) — CDP ยืนยัน: `row2_class=vline`, `col1_border` = "0px none" (col1 ไม่มีเส้น), `col2_border`/`col9_border` = "1px solid" (col2-9 มีเส้นแนวตั้ง), `index.php` → `?v=20261102a`
+- Print report col+border ปรับรอบ 2 (user "print รายงานระวังหลังจัดซื้อ: ตาราง 1 col 30,65,85,70,270,70,70,70,70 row3,4 มีเส้นตาราง; ตาราง 2 col 30,65,85,70,270,70,70,70,70 row 1 มีเส้นตาราง"): (1) เปลี่ยน `colgroup` (ตาราง 1) เป็น 30,65,85,70,270,70,70,70,70pt (เดิม 40,70,...) — ตอนนี้ทั้ง 2 ตารางใช้ colgroup เดียวกัน (2) ใส่ `class="bdr"` ที่ thead rows 2 แถว (rows 3,4) + แถวข้อมูลสินค้า (table2 row 1) (3) CSS: `.p098-scope .print-sheet tr.bdr > th, .p098-scope .print-sheet tr.bdr > td{ border: 1px solid #555; }` (2 จุด: screen + print) — CDP ยืนยัน: `t1_cols`/`t2_cols` = 30/65/85/70/270/70/70/70/70, `theadRowBorders` = ["1px solid","1px solid"] (rows 3,4 มีเส้น), `pinfoBorder` = "1px solid" (row 1 มีเส้น), `loopBorder` = "0px none" (แถว loop ไม่มีเส้น), `index.php` → `?v=20261031z`
+- Print report layout ปรับ (user "print รายงานระวังหลังจัดซื้อ: ตาราง 1 row1,2 ไม่มีเส้นตาราง; ตาราง 2 col 30,65,85,70,270,70,70,70,70; loop so rsv po col 2,3,4,6 align=center; ไม่มีเส้นตาราง มีแค่เส้นขอบตาราง"): (1) ลบ `border="1"` ออกจากตาราง 1 (2) สร้าง `colgroup2` (30,65,85,70,270,70,70,70,70pt) ให้ตาราง 2 (3) ใส่ `class="ctr"` ที่ col 2,3,4,6 ของแถว loop SO/RSV + PO (4) CSS: `.print-sheet table.rep` มี `border: 1px solid #000` (ขอบนอก) + `th,td` `border: none` (ไม่มีเส้นใน) + `.print-sheet td.ctr{ text-align: center; }` — CDP ยืนยัน: `t1_cols` = 40/70/70/70/270/70/70/70/70, `t2_cols` = 30/65/85/70/270/70/70/70/70, `t1r1_border`/`t1r2_border` = "0px none", `t1_border`/`t2_border` = "1px rgb(0,0,0)", `ctr_align` = [center,center,center,center], `index.php` → `?v=20261031y`
+- Font หน้า P098 = ตามการตั้งค่า, THSarabunNew ใช้เฉพาะ modal รายงาน PDF (user "P098 หน้านี้ใช้ font ตามการตั้งค่า - THSarabunNew ใช้ใน modal รายงาน pdf เท่านั้น"): (1) ลบ `font-family: "THSarabunNew"` ออกจาก `.p098-scope` (base scope) → หน้า P098 ใช้ font ตามการตั้งค่าของ portal (`.app *{font-family:...!important}` จาก `font-settings.js`, localStorage `erp_font_family`) (2) ใส่ `!important` ที่ `font-family: "THSarabunNew"` ของ `.print-sheet` (3 จุด: screen + print 2 จุด) → THSarabunNew ชนะ font settings ในหน้าพิมพ์ (specificity `.p098-scope .print-sheet` สูงกว่า `.app *`) + `@page @top-right` ยังคง `font-family: "THSarabunNew"` — CDP ยืนยัน: `pageFont="Noto Sans Thai, Sarabun, Tahoma, Arial, sans-serif"` (ตามการตั้งค่า, `hasTHS=false`), `sheetFont="THSarabunNew, sans-serif"` (`hasTHS=true`), `index.php` → `?v=20261031x`
+- Font + size + page break ของรายงาน (user "แก้ไข รายงานระวังหลังจัดซื้อ... font THSarabunNew, title 22pt B กลาง, พิมพ์เมื่าอ 14pt, th 14pt B, td 14pt, เกินหน้า→หน้าใหม่มี header ตามไปทุกหน้า + เลขหน้า 'หน้า N' ด้านบนขวา padding 10pt"): (1) เปลี่ยน `font-family` จาก "Noto Sans Thai"→"THSarabunNew" (4 จุด) (2) ใส่ class `rep-title` (22pt bold กลาง) + `rep-meta` (14pt) ในตาราง 1, ย้ายแถวหัว (column headers) ไป `thead` ของตาราง 2 (ซ้ำทุกหน้าที่พิมพ์) + `tbody` เป็นแถวข้อมูล (3) CSS: `th`/`td` = 14pt, `th` bold, `.rep-title` 22pt bold กลาง, `.rep-meta` 14pt (4) `@page { size: A4 landscape; margin: 10pt; @top-right { content: "หน้า " counter(page); font-family: THSarabunNew; font-size: 14pt; } }` — CDP ยืนยัน: `sheetFont=THSarabunNew`, `title=29.33px(22pt) bold กลาง`, `meta=18.67px(14pt)`, `th=18.67px(14pt) bold`, `td=18.67px(14pt)`, `t2HasThead=true`, `t2HasTbody=true`, `tbodyRowCount=19`, `index.php` → `?v=20261031w`
+- ปุ่ม Print เปิด modal แสดงรายงาน A4 แนวนอน (user "ปุ่ม print เปิด modal แสดงรายงานเป็นกระดาษA4แนวนอน มีปุ่ม ย่อ ขยาย ราว่ำำปุ่ม Print พร้อมโลโก้เครื่องพิมพ์"): (1) HTML `p098printModal` (modal-backdrop) — toolbar มีโลโก้เครื่องพิมพ์ SVG + ปุ่ม zoom `−`/`+` + label + ปุ่ม Print (`p098printGo`) + ปิด; `p098printContent` (zoom wrapper) หุ้ม `p098printSheet` (A4 landscape 297x210mm) (2) CSS `.modal.print-modal` (width min(1150px,100vw-40px), max-height 100vh-40px) + `.print-toolbar` + `.zoom-btn` + `.print-go` + `.print-sheet` (A4 landscape) + `@media print` ใช้เทคนิค visibility (`.p098-scope *{visibility:hidden}` + `.print-sheet` visible) ให้พิมพ์เฉพาะ sheet (3) JS `openPrintModal`/`closePrintModal`/`setPrintZoom` + `printReport()` build report ไป `p098printSheet` + เปิด modal (ไม่ใช่ `window.print` ตรง ๆ) + ปุ่ม `p098printGo` ค่อย `window.print()` — CDP ยืนยัน: `modalOpen=true`, `sheetLen=1123`, zoom-in `zoomStyle=1.25`/`125%`, zoom-out กลับ `1`/`100%`, print-go `printed=1`, `index.php` → `?v=20261031t`
+
+
+## P098 READY (2026-11-02)
+- User: "P098 พร้อมใช้งาน" → เพิ่ม `"status" => "ready"` ที่ P098 ใน `data/modules.php` (line 276) — `php -l` ผ่าน
+- สถานะ P098 ระวังหลังจัดซื้อ เสร็จ: search API (MAC5), detail modal (SO/RSV + PO), print report ตาม P038 V2 (modal + iframe + srcdoc + paginator ในเอกสาร), ปุ่ม print animation (spinner เท่านั้น), ตาราง 1 row 3-4 สีเทาอ่อน + row 4 ไม่มีเส้นระหว่าง col1-col2
+
+## P017 บิลเงินสดที่ยังไม่รับเงิน — UI + mock data (2026-11-02)
+- User: "หน้าต่อไป P017 ดูตัวอย่างได้จาก demo/P017-demo.html ทำแค่ UI ราว่ำำ mock data ไปก่อน"
+- สร้าง `assets/js/p017-cash-bill-unreceived.js` — IIFE `window.P017CashBill = { mount }`, CSS scoped `.p017-scope` + classes ข้างหน้า `p017-`, mock 10 บิลจาก demo (NET 6 + ลด 3% 4 = ฿18,959.85)
+- `portal.js` — branch P017 ใน `renderProgramPage` (`#p017Root`) + mount ใน `bindPageEvents`
+- `index.php` — `<script src="assets/js/p017-cash-bill-unreceived.js?v=20261102a">` ก่อน `portal.js`
+- `data/modules.php` — P017 มีอยู่แล้ว (line 61, ไม่มี status = ยังไม่ ready)
+- ฟีเจอร์ตาม demo: ค้นหา (Vnos/DEP/รหัสลูกค้า/PER/ชื่อลูกค้า) + ประเภท (ทั้งหมด/เงินสด (NET)/ลด 3%) + sort + row select + 4 summary cards + Print (window.print + @media print แสดงเฉพาะ `#p017printArea`) + Export CSV + Refresh
+- CDP ยืนยัน (localhost:8080): `rootLen=12631`, `rowCount=10`, `summaryBills="10 ใบ"`, `summaryAmount="฿18,959.85"`, `summaryNet="6 ใบ"`, `summaryDiscount="4 ใบ"`; ฟิลต์ DEP=`DIV2.TEL2` → 6 rows / ฿12,265.75; type=net → 6 rows — screenshot `scratch/p017_shot.png`
+
+## P017 — ลบปุ่ม Refresh + การ์ด 4 ใบ + ย้าย textbox ออกจาก group (2026-11-02)
+- User: "P017 ปุ่ม refresh นำออก กาดทั้ง 4 ใบ นำออก" แล้ว "P017 textbox ทั้ง 4 เอาออกจาก group จัดวาง textbox ให้พอดีราว่ำำสวยงาม"
+- `p017-cash-bill-unreceived.js`:
+  - ลบ ปุ่ม Refresh (HTML + ฟังศัพท์ `refreshData` + ผูก event)
+  - ลบ `<section class="summary-grid">` (การ์ด 4 ใบ) + CSS `.summary-grid/.summary-card/.summary-icon/.summary-text` ทั้งหมด
+  - ย้าย 5 textbox ออกจาก group "ค้นหา" — เปลี่ยน `<div class="search-fields">` + `<h2>` เป็น `<div class="search-row">` (1 แถว 5 คอลั่นเสมอ)
+  - แก้ grid `launcher-body` (เดิม `auto minmax(430px,1fr) 150px` ที่คงอยู่หลังลบ refresh) เป็น `minmax(760px,1fr) 150px` + `.filters` เป็น `1fr 220px`
+  - `index.php` → `p017-cash-bill-unreceived.js?v=20261102d`
+- CDP: `.search-row` 5 คอลั่นเท่ากัน (~125px), `.filters` = 675px | 220px, ไม่มี h2 ในแถว — สกรีนชอต `scratch/p017_shot3.png` ยืนยัน layout สะอาด
+
+## P017 — ปุ่ม Print ย้ายไปตาราง + jัดวาง textbox 2 แถว (2026-11-02)
+- User: "P017 ย้ายปุ่ม Print ไปไว้ที่ตาราง รายการบิลเงินสดที่ยังไม่ได้รับเงิน ด้านบนขวา + จัดวาง textbox: แถว1 = เลขที่vnos, รหัสลูกค้า, ชื่อลูกค้า, ประเภท, ค้นหา; แถว2 = DEP, PER, Export Excel"
+- `p017-cash-bill-unreceived.js`:
+  - HTML: `.filters` เรียงใหม่เป็น 2 แถว (5 คอลั่น `1fr 1fr 1fr 220px auto`): แถว1 = vnos/รหัสลูกค้า/ชื่อลูกค้า/type-box/ปุ่มค้นหา, แถว2 = DEP/PER/Export Excel (col 5)
+  - ปุ่ม Print ย้ายจาก action-stack ไป `.panel-header` (d้านบนขวาของตาราง) เป็น `.tool-btn` สีน้ำเงิน #2563eb
+  - ลบ CSS สิ้นคงอยู่: `.search-row`, `.action-stack`, `.action.print`, `.launcher-body` กลับเป็น 1fr
+  - `index.php` → `p017-cash-bill-unreceived.js?v=20261102e`
+- CDP ยืนยัน: filtersCols `225px 225px 225px 220px 131px`, ลำดับ children ตรง, `printInPanelHeader=true`, กด Print → `p017printArea` มี 11 rows — สกรีนชอต `scratch/p017_shot4.png`
+
+## P017 — ย้าย DEP/PER ขึ้นมาชิดกับ vnos (2026-11-02)
+- User: "P017 textbox DEP ราว่ำำ PER เอาขึ้นไปชิดกับ เลข vnos ตามรูป"
+- `p017-cash-bill-unreceived.js`: ลำดับ `.filters` = vnos, DEP, PER, รหัสลูกค้า, ชื่อลูกค้า, ประเภท, ปุ่มค้นหา (แถว 1) + Export Excel (แถว 2 มุมขวา)
+- CSS `.filters` = 7 คอลั่น `1fr 1fr 1fr 1fr 1fr 220px auto`, `.filters .action.export{ grid-column: 7 }`
+- `index.php` → `p017-cash-bill-unreceived.js?v=20261102f`
+- CDP: คอลั่น `130px×5, 220px, 131px`; tops ยืนยัน 6 items แถว 1 + search bottom-aligned + export แถว 2 col 7 — สกรีนชอต `scratch/p017_shot5.png`
+
+## P017 — ลบ textbox ทั้งหมด (2026-11-02)
+- User: "P017 เอา textbox ทั้ง 4 ออก"
+- `p017-cash-bill-unreceived.js`: ลบ field div ทั้ง 5 (vnos/dep/per/cuscode/cusname) ออกจาก `.filters` — เหลือ type-box + ปุ่มค้นหา + ปุ่ม Export Excel
+- CSS `.filters` = `220px auto auto`, ปุ่ม `align-self: start`
+- JS `applyFilters` — อ่าน input แบบ null-safe (`el ? el.value... : ""`) ไม่ error เมื่อไม่มี input
+- `index.php` → `p017-cash-bill-unreceived.js?v=20261102g`
+- CDP ยืนยัน: `textInputs=0`, `filterKids=[type-box, action search, action export]`, type=net → 6 rows — สกรีนชอต `scratch/p017_shot6.png`
+
+## P017 — quick search + ย้าย Export Excel ไปข้าง Print (2026-11-02)
+- User: "P017 เพิ่ม quick search ก่อนปุ่ม Print ราว่ำำย้าย Export Excel ไปไว้ทางขวาของปุ่ม Print"
+- `p017-cash-bill-unreceived.js`:
+  - panel-header: `[badge] [quick-search input] [Print] [Export Excel]` — quick search อยู่ก่อน Print, Export Excel อยู่ขวาที่สุด
+  - ลบปุ่ม Export Excel ออกจาก `.filters` (เหลือ type-box + ปุ่มค้นหา), CSS `.filters` = `220px auto`
+  - JS: `quickTerm` state + เงื่อนไข OR (vnos/cuscode/cusname/dep/per/desc) ใน `applyFilters` + `input` listener ที่ `p017quickSearch` (filter แบบ real-time)
+  - CSS `.quick-search` (180px, 34px, focus ring) + `.tool-btn.green` (สีเขียว #047857)
+- `index.php` → `p017-cash-bill-unreceived.js?v=20261102h`
+- CDP ยืนยัน: `qs-left-of-print`, `exportRightOfPrint=true`, ค้นหา "G03" → 2 rows / "2 รายการ" — สกรีนชอต `scratch/p017_shot7.png`
+
+## P017 — ปุ่มค้นหาขนาดพอดี (2026-11-02)
+- User: "P017 ปุ่มค้นหา ยาวเกินไป เอาแค่พอดีกับ text"
+- `p017-cash-bill-unreceived.js`: `.filters` grid `220px auto` → `220px max-content` — ปุ่มค้นหาไม่โดน stretch ล้น panel
+- `index.php` → `p017-cash-bill-unreceived.js?v=20261102i`
+- CDP ยืนยัน: ปุ่มกว้าง 85px (fit กับ "ค้นหา"), คอลั่น 2 = 85.3px — สกรีนชอต `scratch/p017_shot8.png`
+
+## P017 — ปเง่ซงนพะ animation + quick search placeholder (2026-11-03)
+- User: "P017 ปเง่ซงนพะ ่î animation ุหืยูืวาง ซคแ่ซงนพะ / ยา๙ซย่วแหัแ่นะพศî๙า่่แงพยัุ่นะพ quick search ่î placeholder ซงนพะ..."
+- `p017-cash-bill-unreceived.js`:
+  - ปเง่ซงนพะ: append spinner span (SVG arc, `@keyframes p017spin` 0.8s linear infinite), display none โดยตั้น
+  - submit: เติม class `busy` + `disabled=true` + spinner แสดง (หมุน) — คืนสถานะหลัง 400ms
+  - quick search: แก้ placeholder เป็น "ซงนพะ..." (ข้อความเดิมในไฟล์พัง)
+- `index.php` → `p017-cash-bill-unreceived.js?v=20261103a`
+- CDP ยืนยัน: placeholder codepoints = ซงนพะ..., spinner display none→block→none, busy class toggle — สกรีนชอต `scratch/p017_anim_shot.png`
+
+## P017 — ปเง่ซงนพะ UTF-8 + charset attribute (2026-11-03)
+- User: "P017 ปเง่ซงนพะ หุู่้้โงนะ่ ลองแปลงเป็น utf8 รึยัง / placeholder ใน quick search ด้วย"
+- ตรวจสอบ: ไฟล์ `p017-cash-bill-unreceived.js` เป็น UTF-8 ดีแล้ว (ไม่มี BOM, decode ผ่าน) — ไม่ได้ต้องแปลง
+- `index.php`: script tag เพิ่ม `charset="utf-8"` + bump `?v=20261103b` (ฝังให้ browser ดึงสคริปต์ใหม่)
+- ลบ `assets/js/.htaccess` ที่สร้างไว้ — Apache `AllowOverride None` จึง ignore .htaccess (ไม่จำเป็นต้องแก้ httpd.conf)
+- CDP ยืนยัน: DOM codepoints ถูกต้อง, สกรีนชอตแสดง "ปเง่ซงนพะ" / placeholder "ซงนพะ..."
+- สกรีนชอต `scratch/p017_utf8_shot.png`
+
+## P017 — เปลี่ยน ซงนพะ เป็น "search" (2026-11-03)
+- User: "ไหนลองเปลี่ยน ซงนพะ เป็น search ซิ"
+- `p017-cash-bill-unreceived.js`: replace ซงนพะ → "search" ทั้ง 2 จุด (label ปุ่มค้นหา + placeholder quick search) — ไม่มี Thai อีก, ล้างปัญหา mojibake
+- `node --check` ผ่าน, `index.php` → `?v=20261103c`
+- CDP + สกรีนชอตยืนยัน: ปุ่ม "search", placeholder "search..." — สกรีนชอต `scratch/p017_search_shot_small.png`
+
+## P017 — เปลี่ยน search เป็น ซงนพะ + charset (2026-11-03)
+- User: "แล้วลองเปลี่ยน จาก search เป็น ซงนพะ ต่อได้ไหม"
+- `p017-cash-bill-unreceived.js`: replace "search" → ซงนพะ ทั้ง 2 จุด (label ปุ่มค้นหา + placeholder quick search) — ไฟล์เป็น UTF-8 ถูกต้อง (bytes decode = e0b e07 e19 e1e e30)
+- `node --check` ผ่าน, `index.php` → `?v=20261103d`
+- ปัญหา render: response .js ไม่มี charset header → browser ตีความผิด (เห็น "ซงนพะ" / tofu box)
+- `httpd.conf`: enable `mod_headers` + `LocationMatch .js` ส่ง `Content-Type: application/javascript; charset=utf-8` — config ผ่าน (`Syntax OK`) แต่ต้อง restart Apache ด้วยสิทธิ์ admin
+- `index.php`: script tag มี `charset="utf-8"`
+- ต้องการ: รัน `C:\AppServ
+estart-apache-php8.bat` แบบ Run as administrator, แล้ว Ctrl+Shift+R
+
+## P017 — นำ loaddata() จาก C# มาใส่ปุ่มซงนพะ (2026-11-03)
+- User: "P017 จาก source c# นำ loaddata() มาใส่ในปุ่มซงนพะ"
+- อ่าน `demo/file_ref/Tailor_Made/AppCashBillNotReceivedMoney/frm_NotReceivedMoney.cs`:
+  - `loaddata()`: อ่าน radio type → สร้าง condition (typeAll/typeNet/typeDis3per) → ดึงข้อมูลจาก MAC5 → set grid → update count → ถ้า 0 แถวแสดง "ไม่พบข้อมูล"
+  - `rdo_typeX_CheckedChanged` → `loaddata()` + `resetAllText()`
+- `p017-cash-bill-unreceived.js`:
+  - สร้าง `loaddata()` (port ของ C#) — filter ซ้ำ mock data ตาม type + quickTerm, render, update count, empty state
+  - ปุ่มซงนพะ (submit) เรียก `loaddata()` (แทน `applyFilters(true)`)
+  - type radio buttons: `change` listener เรียก `loaddata()` (ตรงกับ C# radio CheckedChanged)
+- `node --check` ผ่าน, `index.php` → `?v=20261103e`
+- CDP ยืนยัน: ปุ่มซงนพะ → 10 รายการ (all), type=net → 6, type=discount → 4 — สกรีนชอต `scratch/p017_loaddata_check.js`
+## P017 — SQL ปุ่มซงนพะ เชื่อมต่อ MAC5 (2026-11-03)
+- User: "P017 SQL ปุ่มซงนพะ" + SQL (CFS LEFT JOIN DEB/MIH, CFSclearALL=0, MIHtype='IS', MIHnetSUM>0 + type condition)
+- สร้าง `api/p017_search.php` — รัน SQL นี้กับ MAC5 (c1788406814359), รับ ปเง่ (all/net/discount), คืน { ok, count, rows } 
+  - type=all: `AND (MIHdiscHT1 LIKE '3' OR MIHdesc LIKE '%cash%')`
+  - type=net: `AND MIHdiscHT1 NOT LIKE '3' AND MIHdesc LIKE '%cash%'`
+  - type=discount: `AND MIHdiscHT1 LIKE '3' AND MIHdesc LIKE '%cash%'`
+  - PHP 7.3-compatible, `php -l` ผ่าน
+- `p017-cash-bill-unreceived.js`:
+  - `loaddata()` fetch `api/p017_search.php` (relative path, ตรงกับ pattern P098) → set `loadedData` → `applyFilters(true)`
+  - `applyFilters` filter `loadedData` (ไม่ใช่ mock `bills`)
+  - `mount()` เรียก `loaddata()`
+  - `fmtDate` แก้ให้ parse datetime "2026-10-05 00:00:00.000" (substring 0,10) — แก้ปัญหา "NaN/10/2026"
+- `node --check` ผ่าน, `index.php` → `?v=20261103h`
+- ทดสอบ: curl API → all=31, net=0, discount=0; browser load ข้อมูลหัวิ 31 rows / ฿136,038.51, row แรก 5/10/2026 — สกรีนชอต `scratch/p017_realdata_shot.png`
+
+## P017 - Thai mangle in SQL (2026-11-03)
+- Symptom: LIKE '%เงินสด%' was replaced by wrong chars, query returned 31 rows (wrong)
+- Root cause: built Thai from GUESSED codepoints (0xe0b=SO SO, NOT KHO KHWAI; 0xe40=SARA E, NOT RO RUA)
+- Rule: build Thai ONLY via `unicodedata.lookup('THAI CHARACTER ...')`, never guessed codepoints / direct typing in scripts
+  - เงินสด = SARA E+NGO NGU+SARA I+NO NU+SO SUA+DO DEK
+  - ค้นหา = KHO KHWAI+MAI THO+NO NU+HO HIP+SARA AA
+- Files fixed: `api/p017_search.php` (LIKE x3 + error msg), `assets/js/p017-cash-bill-unreceived.js` (toast x2)
+- Verified real: all=48 / 204,747.50 | net=17 / 68,708.99 | discount=25 / 110,537.56
+- Browser CDP: btn 'ค้นหา' cps e04 e49 e19 e2b e32, placeholder 'ค้นหา...', 48 rows, first desc reads 'คุณ เบีย e-com จ่ายเงินสดสิ้นเดือน 10/69'
+- index.php -> ?v=20261103i
+
+## P017 — โหลดข้อมูลเฉพาะกดปุ่มค้นหา (2026-11-03)
+- User: "เปิดหน้ามา ไม่ต้องโหลดข้อมูล / เลือกประเภทก็ไม่ต้องโหลด / โหลดเฉพาะกดปุ่มค้นหาเท่านั้น"
+- ลบ `loaddata()` ออกจาก `mount()` (ไม่โหลดอัตโนมัติจัดตัว)
+- ลบ event listener ของ radio ประเภทที่เรียก `loaddata()` (เลือกประเภทแค่ลงสถานะ, ไม่มี request)
+- `loaddata()` เหลือถูกเรียกจากปุ่มค้นหา (form submit) เท่านั้น — type ที่เลือกจะถูกใช้ตอนกด
+- `node --check` ผ่าน, `index.php` -> `?v=20261103k`
+- ทดสอบ CDP: เปิดหน้า=0 rows, เลือก discount=0 rows, กดค้นหา=25 rows / 110,537.56 — สกรีนชอต `scratch/p017_manualload_shot.png`
+
+## P017 — Export Excel เป็น CP874/TIS-620 (2026-11-03)
+- User: "ปุ่ม Export excel ออกมาแล้ว อ่านภาษาไทยไม่ออก" (ได้ตัวอย่างตัวอักษรเพี้ยน)
+- สาเหตุ: export เดิมเขียน UTF-8 + BOM แต่ Excel ภาษาไทยอ่าน byte เป็น CP874 จึงได้ตัวอักษรเพี้ยน
+- แก้: เพิ่ม `toCp874()` — map ตัวอักษรไทย U+0E00..U+0E7B -> byte 0xA0..0xFB (ตรงกับ C# เดิมที่ export TIS-620), ลบ BOM
+- `node --check` ผ่าน, `index.php` -> `?v=20261103l`
+- ทดสอบ CDP: blob 8224 bytes, BOM=false, ตัวอักษรไทย 3239 byte ทั้งหมดอยู่ใน 0xA0-0xFB, decode ย้อนกลับได้คำถูกต้อง — สกรีนชอต `scratch/p017_cp874_shot.png`
+
+## P017 — แบ่งหน้า 15 รายการ/หน้า + ปุ่มหน้า/ถัด (2026-11-03)
+- User: "ตาราง รายการบิลเงินสดที่ยังไม่ได้รับเงิน แบ่งหน้า 15รายการต่อหน้า มีปุ่มหน้า สวยงาม"
+- `pageSize = 15`, `page` state; `renderRows` slice ตามหน้า, `renderPager()` สร้าง ปุ่ม ‹ 1..N ›
+- filter/quick search เปลี่ยน → `page = 1`
+- CSS: `.p017-pager` (flex center, gap 8px, border-top) + `.pager-btn` (34x34, radius 9px, active=blue, disabled=opacity .4)
+- `node --check` ผ่าน, `index.php` -> `?v=20261103m`
+- ทดสอบ CDP: หน้า 1 = 15 rows (pager: prev(disabled) 1(active) 2 3 4 next), หน้า 2 = 15 rows, หน้าสุดท้าย = 4 rows + next disabled — สกรีนชอต `scratch/p017_pager_shot.png`
+
+## P017 — ลบยอดรวมมุมล่างขวา (2026-11-03)
+- User: "ผลรวมข้างล่างขวา เอาออก"
+- ลบ `<span class="total-box" id="p017footerAmount">` ออกจาก HTML template
+- ลบบรรทัด `p017footerAmount` + `total` ออกจาก `updateSummary`
+- ลบกฎ CSS `.p017-scope .total-box`
+- `node --check` ผ่าน, `index.php` -> `?v=20261103n`
+- ทดสอบ CDP: footer เหลือเพียง SPAN#p017footerText ("แสดง 47 รายการ"), totalBoxExists=false — สกรีนชอต `scratch/p017_nototal_shot.png`
+
+## P017: ปุ่ม พิมพ์เมื่า เปิด modal แสดงรายงาน A4 แนวนอน (2026-11-03)
+
+- ปุ่ม พิมพ์เมื่า ใน panel header เปิด modal (#p017printModal) มี toolbar (zoom -/+ , % , ปุ่ม พิมพ์เมื่า , ปิด)
+- กระดาษ A4 แนวนอน (297mm x 210mm) ขอบกระดาษ 25pt ทั้ง 4 ด้าน (@page size:A4 landscape; margin:25pt)
+- ตาราง 1 (header) แสดงทุกหน้า: คอลั้น 9 สัน แห่ง 60,60,60,120,70,70,70,220,70 pt
+- คอลั้น: วันที่ / ลเขใทับาูศำคสี / รหัสลูกค้า / ชื่อลูกค้า / DEP / PER / จำนวน / วทิธ่วฅเ / (ว่าง)
+- ตาราง 2 (body) แสดงรายละเอียด เมื่อล้นหน้าจะขึ้นหน้าใหม่ (test: 44 rows = 6 หน้า)
+- Footer: เลขหน้า "หน้า N" มุมขวาล่างกระดาษ padding-right 15pt / padding-bottom 15pt
+- แก้ ลเขใทับาูศำคสี: เดิมห่างคำ "ที่" (0E17 0E31) — ปัจจุบันตรง spec
+- ไข้ @page ท้าย array CSS (ถ้าวางที่หลักจะห่าง rule ที่เหลือ) — test 17 rules ทั้งหมด
+- test CDP: pageWidth 1122px (297mm), pageHeight 794px (210mm), padding 33px (25pt), pgno absolute right/bottom 20px (15pt), colgroup 9 สัน 6 หน้า, 44 rows
+- cache: ?v=20261103q
+
+
+## P017:งัฌยิูบยจำนวนคบลู + font รายงานบิลเงินสด พิมพ์เมื่า (2026-11-03)
+
+- คบลู 9 ฌยา: 60, 70, 60, 120, 70, 70, 60, 220, 70 pt (col2: 60→70, col7: 70→60) — ลศ้ทัลศ้ รศวา่ำำ 1 (header) ราว่ำำรศวา่ำำ 2 (body)
+- บัรวเระจ 1 (วันที่ ...): font 22pt Bold
+- บัรวเระจ 2 (พิมพ์เมื่า): font 14pt
+- บัรวเระจ 3 (th): font 14pt Bold
+- รศวา่ำำ 2: font 14pt ธวย รศวา่ำำ
+- พิมพ์เมื่ธวย CDP: hdrCols = 60pt,70pt,60pt,120pt,70pt,70pt,60pt,220pt,70pt (หน้า หน้า, 5 หน้า), row1 29.33px(22pt) B, row2 18.67px(14pt), row3 18.67px(14pt) B, table2 18.67px(14pt)
+- cache: ?v=20261103r
+
+## P017 - ราปอวูำชอลูม 60, 75, 60, 120, 70, 70, 60, 220, 65 (pt)
+- ตราวูำ 1 (header) ละวอำ ตราวูำ 2 (body): ชอลูม 60pt, 75pt, 60pt, 120pt, 70pt, 70pt, 60pt, 220pt, 65pt
+- หู้า 3 col 2 (th): ลเขทุบาูศำคุูี
+- พิมพฺ modal: A4 landscape, หู้า 15 จำูวู/หู้า, พิมพฺ ่ำ้าหู้า, ลเขหู้า มุมขว้าลุำำ
+- ศำเทูอบีีืนีูน: CDP ีืนีูน ชอลูม ขานด 2 ตราวูำ = 60,75,60,120,70,70,60,220,65 (5 หู้า ่ำ้า), th row col 2 = ลเขทุบาูศำคุูี
+- cache-buster ?v=20261103t
+
+
+## P017 - ราปอวูำชอลูม 55, 80, 60, 140, 60, 60, 60, 220, 65 (pt)
+- ตราวูำ 1 (header) ละวอำ ตราวูำ 2 (body): ชอลูม 55pt, 80pt, 60pt, 140pt, 60pt, 60pt, 60pt, 220pt, 65pt
+- ศำเทูอบีีืนีูน: CDP ีืนีูน ชอลูม ทู้ำ 2 ตราวูำ = 55,80,60,140,60,60,60,220,65 (4 หู้า ่ำ้า), modal show + srcdoc set
+- cache-buster ?v=20261103u
+
+## P017 - ราปอวูำชอลูม 55, 80, 60, 150, 60, 55, 55, 220, 65 (pt) + ตราวูำ 2 valign=top
+- ตราวูำ 1 (header) ละวอำ ตราวูำ 2 (body): ชอลูม 55pt, 80pt, 60pt, 150pt, 60pt, 55pt, 55pt, 220pt, 65pt
+- ตราวูำ 2: ทู้ำตราวูำ valign=top (CSS .p017data td{vertical-align:top})
+- ศำเทูอบีีืนีูน: CDP ีืนีูน ชอลูม ทู้ำ 2 ตราวูำ = 55,80,60,150,60,55,55,220,65 (4 หู้า ่ำ้า), ตราวูำ 2 valign=top
+- cache-buster ?v=20261103v
+
+
+## P017 - ราปอวูำปุุม Print ทู้ำ modal: label = "Print" (ASCII)
+- ตราวูำ 1 (header) ละวอำ ตราวูำ 2 (body): ชอลูม 55pt, 80pt, 60pt, 150pt, 60pt, 55pt, 55pt, 220pt, 65pt
+- ศำเทูอบีีืนีูน: CDP ีืนีูน ปุุม Print ทู้ำ modal "Print" (codepoints 32 80 114 105 110 116)
+- cache-buster ?v=20261103w
+
+
+## P017 - ราปอวูำ: ทู้ำ modal - ลบ print-brand (icon + text)
+- ตราวูำ 1 (header) ละวอำ ตราวูำ 2 (body): ชอลูม 55pt, 80pt, 60pt, 150pt, 60pt, 55pt, 55pt, 220pt, 65pt
+- ศำเทูอบีีืนีูน: CDP ีืนีูน print-brand ่ำ้า (brandExists=false, toolbar = print-tools)
+- cache-buster ?v=20261103x
+
+## P017 - ราปอวูำ ทู้ำ modal - หู้า paper margin: ละวอำ bottom 30pt, ทู้ำ 3 หู้า 25pt
+- ศำเทูอบีีืนีูน: CDP ีืนีูน @page margin = 25pt 25pt 30pt 25pt (top/right/bottom/left)
+- cache-buster ?v=20261103y
+
+P017: ขยับลเขหน้าล่มา (bottom 15pt→8pt) + rowOver ไ้พ฼นทุ์ 36px ขางล่าง ศั็ทรางศึดก่อนลเขหน้า — วัดมูการทับทั็ง 5 หน้า (ทราวท่อหน้า 9,12,13,13,2)

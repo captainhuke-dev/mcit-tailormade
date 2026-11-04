@@ -1436,7 +1436,7 @@
         <div id="p032Root" style="margin-top:20px"></div>
       `;
     }
-    if (programId === "P100") {
+    if (programId === "P098") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
       return `
         <div class="breadcrumb">
@@ -1445,7 +1445,31 @@
         <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
           ${backLabel}
         </button>
-        <div id="p100Root" style="margin-top:20px"></div>
+        <div id="p098Root" style="margin-top:20px"></div>
+      `;
+    }
+    if (programId === "P017") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p017Root" style="margin-top:20px"></div>
+      `;
+    }
+    if (programId === "P069") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p069Root" style="margin-top:20px"></div>
       `;
     }
 
@@ -1890,9 +1914,17 @@
       const root = document.getElementById("p084Root");
       if (root) window.P084PickListIrw.mount(root);
     }
-    if (page.type === "program" && page.programId === "P100" && window.P100StockWatch) {
-      const root = document.getElementById("p100Root");
-      if (root) window.P100StockWatch.mount(root);
+    if (page.type === "program" && page.programId === "P098" && window.P098StockWatch) {
+      const root = document.getElementById("p098Root");
+      if (root) window.P098StockWatch.mount(root);
+    }
+    if (page.type === "program" && page.programId === "P017" && window.P017CashBill) {
+      const root = document.getElementById("p017Root");
+      if (root) window.P017CashBill.mount(root);
+    }
+    if (page.type === "program" && page.programId === "P069" && window.P069DropShip) {
+      const root = document.getElementById("p069Root");
+      if (root) window.P069DropShip.mount(root);
     }
   }
 
