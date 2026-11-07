@@ -36,6 +36,7 @@
 |---|---|---|
 | P063 | KTV (พิมพ์ใบกำกับภาษี) | ready |
 | P064 | MCIT (พิมพ์ใบกำกับภาษี) | ready |
+| P069 | MCIT Print Invoice Drop Ship | ready (clone P063/P064 flag Drop Ship — 3 APIs `p069_search`/`p069_report`/`p069_markprint` — หน้าค้นหา: ไม่ออโต้ค้นหา (กดปุ่มเอง) + Doctype/สถานะ (ไม่มี option "ทั้งหมด" — เลือก option แรก) + วันที่ from/to = วันปัจจุบัน — รายงาน 4 หน้า (invoice1/invoice2/DO1/DO2) font THSarabunNew + QR + zoom + พิมพ์ — cache v=20261107b) |
 | P115 | TMS View Picture (ฝ่ายขาย) | ready |
 | P128 | TMS View Picture (จัดส่ง) | ready |
 | P022 | View Billing Document | ready |

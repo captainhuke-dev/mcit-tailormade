@@ -198,7 +198,7 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p084-picklist-irw.js?v=20261024j"></script>
   <script src="assets/js/p098-stock-watch.js?v=20261103h"></script>
   <script charset="utf-8" src="assets/js/p017-cash-bill-unreceived.js?v=20261104d"></script>
-  <script charset="utf-8" src="assets/js/p069-dropsip-invoice.js?v=20261104f"></script>
+  <script charset="utf-8" src="assets/js/p069-dropsip-invoice.js?v=20261107b"></script>
   <script src="assets/js/p050-billing.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <script src="assets/js/qrcode.min.js"></script>

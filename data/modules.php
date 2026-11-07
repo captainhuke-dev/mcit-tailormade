@@ -175,7 +175,7 @@ return [
                     ["id" => "P066", "name" => "ขายปลีก"],
                     ["id" => "P067", "name" => "ห้าง"],
                     ["id" => "P068", "name" => "AGN,AGV"],
-                    ["id" => "P069", "name" => "Drop Ship"],
+                    ["id" => "P069", "name" => "Drop Ship", "status" => "ready"],
                     ["id" => "P070", "name" => "FAN,FAV"],
                     ["id" => "P071", "name" => "พิเศษ"],
                     ["id" => "P072", "name" => "รับเอง"],
@@ -191,7 +191,7 @@ return [
                 "programs"   => [
                     ["id" => "P129", "name" => "KTV (BKK)", "status" => "ready"],
                     ["id" => "P130", "name" => "MCIT (BKK)", "status" => "ready"],
-                    ["id" => "P069", "name" => "Drop Ship"],
+                    ["id" => "P131", "name" => "Drop Ship (BKK)"],
                     ["id" => "P072", "name" => "รับเอง"],
                 ],
             ],
