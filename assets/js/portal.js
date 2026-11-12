@@ -983,6 +983,48 @@
       `;
     }
 
+    // P024: ตรวจสอบวงเงินลูกค้า (UI only)
+    if (programId === "P024") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p024Root" style="margin-top:20px"></div>
+      `;
+    }
+
+    // P025: ตรวจสอบบิลเกิน due (UI only — copy UI จาก P024)
+    if (programId === "P025") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p025Root" style="margin-top:20px"></div>
+      `;
+    }
+
+    // P127: Barcode ห้าง (UI only — ตามตัวอย่าง demo/P127_demo.html)
+    if (programId === "P127") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p127Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P111: เปลี่ยนสถานะ SO รอโอน (รายงานลูกค้ายอดค้างเกินวงเงิน)
     if (programId === "P111") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1460,7 +1502,7 @@
         <div id="p017Root" style="margin-top:20px"></div>
       `;
     }
-    if (programId === "P069") {
+    if (programId === "P069" || programId === "P131") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
       return `
         <div class="breadcrumb">
@@ -1470,6 +1512,30 @@
           ${backLabel}
         </button>
         <div id="p069Root" style="margin-top:20px"></div>
+      `;
+    }
+    if (programId === "P071") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p071Root" style="margin-top:20px"></div>
+      `;
+    }
+    if (programId === "P072") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p072Root" style="margin-top:20px"></div>
       `;
     }
 
@@ -1723,6 +1789,24 @@
       if (root) window.P022BillingDoc.mount(root);
     }
 
+    // P024: mount ตรวจสอบวงเงินลูกค้า app (UI only)
+    if (page.type === "program" && page.programId === "P024" && window.P024CreditCheck) {
+      const root = document.getElementById("p024Root");
+      if (root) window.P024CreditCheck.mount(root);
+    }
+
+    // P025: mount ตรวจสอบบิลเกิน due app (UI only — copy จาก P024)
+    if (page.type === "program" && page.programId === "P025" && window.P025DueBillCheck) {
+      const root = document.getElementById("p025Root");
+      if (root) window.P025DueBillCheck.mount(root);
+    }
+
+    // P127: mount Barcode ห้าง app (UI only — จาก demo)
+    if (page.type === "program" && page.programId === "P127" && window.P127BarcodeStore) {
+      const root = document.getElementById("p127Root");
+      if (root) window.P127BarcodeStore.mount(root);
+    }
+
     // P111: mount เปลี่ยนสถานะ SO รอโอน (report ลูกค้ายอดค้างเกินวงเงิน)
     if (page.type === "program" && page.programId === "P111" && window.P111Overlimit) {
       const root = document.getElementById("p111Root");
@@ -1922,9 +2006,17 @@
       const root = document.getElementById("p017Root");
       if (root) window.P017CashBill.mount(root);
     }
-    if (page.type === "program" && page.programId === "P069" && window.P069DropShip) {
+    if (page.type === "program" && (page.programId === "P069" || page.programId === "P131") && window.P069DropShip) {
       const root = document.getElementById("p069Root");
-      if (root) window.P069DropShip.mount(root);
+      if (root) window.P069DropShip.mount(root, page.programId);
+    }
+    if (page.type === "program" && page.programId === "P071" && window.P071DropShip) {
+      const root = document.getElementById("p071Root");
+      if (root) window.P071DropShip.mount(root, page.programId);
+    }
+    if (page.type === "program" && page.programId === "P072" && window.P072InvoicePreview) {
+      const root = document.getElementById("p072Root");
+      if (root) window.P072InvoicePreview.mount(root, page.programId);
     }
   }
 

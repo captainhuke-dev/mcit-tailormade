@@ -65,8 +65,8 @@ return [
                     ["id" => "P021", "name" => "ตรวจสอบ Payment MarketPlace"],
                     ["id" => "P022", "name" => "View Billing Document", "status" => "ready"],
                     ["id" => "P023", "name" => "ตรวจสอบ Performance การเก็บบัญชี"],
-                    ["id" => "P024", "name" => "ตรวจสอบมูลหนี้เฝ้าระวัง"],
-                    ["id" => "P025", "name" => "ตรวจสอบบิลเกิน due"],
+                    ["id" => "P024", "name" => "ตรวจสอบมูลหนี้เฝ้าระวัง", "status" => "ready"],
+                    ["id" => "P025", "name" => "ตรวจสอบบิลเกิน due", "status" => "ready"],
                 ],
             ],
             [
@@ -177,8 +177,8 @@ return [
                     ["id" => "P068", "name" => "AGN,AGV"],
                     ["id" => "P069", "name" => "Drop Ship", "status" => "ready"],
                     ["id" => "P070", "name" => "FAN,FAV"],
-                    ["id" => "P071", "name" => "พิเศษ"],
-                    ["id" => "P072", "name" => "รับเอง"],
+                    ["id" => "P071", "name" => "พิเศษ", "status" => "ready"],
+                    ["id" => "P072", "name" => "รับเอง", "status" => "ready"],
                     ["id" => "P073", "name" => "สำหรับแจ้งความ"],
                     ["id" => "P074", "name" => "MarketPlace"],
                     ["id" => "P075", "name" => "TKS (ไทยเกษตร)"],
@@ -191,8 +191,8 @@ return [
                 "programs"   => [
                     ["id" => "P129", "name" => "KTV (BKK)", "status" => "ready"],
                     ["id" => "P130", "name" => "MCIT (BKK)", "status" => "ready"],
-                    ["id" => "P131", "name" => "Drop Ship (BKK)"],
-                    ["id" => "P072", "name" => "รับเอง"],
+                    ["id" => "P131", "name" => "Drop Ship (BKK)", "status" => "ready"],
+                    ["id" => "P072", "name" => "รับเอง", "status" => "ready"],
                 ],
             ],
             [

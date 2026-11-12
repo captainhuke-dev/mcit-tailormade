@@ -37,6 +37,8 @@
 | P063 | KTV (พิมพ์ใบกำกับภาษี) | ready |
 | P064 | MCIT (พิมพ์ใบกำกับภาษี) | ready |
 | P069 | MCIT Print Invoice Drop Ship | ready (clone P063/P064 flag Drop Ship — 3 APIs `p069_search`/`p069_report`/`p069_markprint` — หน้าค้นหา: ไม่ออโต้ค้นหา (กดปุ่มเอง) + Doctype/สถานะ (ไม่มี option "ทั้งหมด" — เลือก option แรก) + วันที่ from/to = วันปัจจุบัน — รายงาน 4 หน้า (invoice1/invoice2/DO1/DO2) font THSarabunNew + QR + zoom + พิมพ์ — cache v=20261107b) |
+| P071 | MCIT Print Invoice พิเศษ | ready (clone P069 — ไฟล์ของตัวเอง `p071_*` — รายงาน 2 หน้า (invoice1/invoice2, ไม่มี DO) + table3 rowspan + คอลั่น หมายเหตุ 90px — cache v=20261109e) |
+| P072 | MCIT Print Invoice รับเอง | ready (หน้าค้นหา: วันที่ from/to = วันนี้ + doctype/status (ไม่ load ตอนเปิด) + ตาราง 7 คอลั่น (มีคอลั่น select — ไม่ออโตเลือกเมื่อค้นหาพบข้อมูล) + pagination 15/หน้า + ปุ่มเลข 5 ปุ่ม + ปุ่ม Print Preview สีเขียว — Print Preview = modal "Print Preview - Invoice รับเอง" ใช้ iframe โหลด `report/p069_report.html?docs=p072` (report file ร่วมกับ P069/P131 — ทุกการแก้ไข scoped ด้วย `docs === "p072"` + body class `.p072` — P069 ไม่ได้รับผลกระทบ) — cache v=20261110w) |
 | P115 | TMS View Picture (ฝ่ายขาย) | ready |
 | P128 | TMS View Picture (จัดส่ง) | ready |
 | P022 | View Billing Document | ready |
@@ -558,7 +560,7 @@ fixed inset:0, z-index 10000, dark bg — top bar (title + url + img) — ปิ
 
 ## 4. สถานะปัจจุบัน + สิ่งที่ทำต่อได้
 
-### เสร็จแล้ว (ready): P006, P008, P013, P015, P019, P022, P031, P032, P033, P034, P035, P037, P039, P045, P047, P050, P051, P052, P053, P054, P059, P063, P064, P080, P081, P082, P083, P092, P103, P106, P111, P115, P128, P129, P130
+### เสร็จแล้ว (ready): P006, P008, P013, P015, P019, P022, P024, P025, P031, P032, P033, P034, P035, P037, P039, P045, P047, P050, P051, P052, P053, P054, P059, P063, P064, P072, P080, P081, P082, P083, P092, P103, P106, P111, P115, P128, P129, P130
 
 ### ทำต่อได้
 - P036+ (บัญชี), P112, P113-P119 ฯลฯ — placeholders
@@ -1674,4 +1676,81 @@ estart-apache-php8.bat` แบบ Run as administrator, แล้ว Ctrl+Shift+
 - ศำเทูอบีีืนีูน: CDP ีืนีูน @page margin = 25pt 25pt 30pt 25pt (top/right/bottom/left)
 - cache-buster ?v=20261103y
 
-P017: ขยับลเขหน้าล่มา (bottom 15pt→8pt) + rowOver ไ้พ฼นทุ์ 36px ขางล่าง ศั็ทรางศึดก่อนลเขหน้า — วัดมูการทับทั็ง 5 หน้า (ทราวท่อหน้า 9,12,13,13,2)
+P017: ขยับเลขหน้าเล่มา (bottom 15pt→8pt) + rowOver ไล่ออ่วันทุ้น 36px ข้างล่าง ศักด์เครื่องก่อนเลขหน้า — วัดมุการทับทั้ง 5 หน้า (แถวต่อหน้า 9,12,13,13,2)
+## P071 MCIT Print Invoice พิเศษ — READY (2026-11-09)
+- User: "P071 พร้อมใช้งาน" → `data/modules.php` P071 status=ready (42 modules ready)
+- สร้างจาก P069 เป็นไฟล์ของตัวเอง (ไม่กระทบ P069):
+  - `assets/js/p071-dropsip-invoice.js` (window.P071DropShip) — ตัด checkbox 2 อย่าง (Invoice/DO) — preview ใช้ `docs="inv"` เสมอ
+  - `report/p071_report.html` — รายงาน 2 หน้า (invoice1+invoice2, ไม่มี DO) — fetch `../api/p071_report.php` + `../api/p071_markprint.php`
+  - `api/p071_search.php` — SQL ปุ่มค้นหาตาม C# `MCIT_FrmPrintInvoiceSpecialGUI.cs` (คำสั่ง SQL ของ user ไม่เปลี่ยน)
+  - `api/p071_report.php` — แยก `JOBcode`, `JOBdescT`, `JOBdescE` เป็น field แห่งตัว
+  - `api/p071_markprint.php` — บันทึก `MIHprintN +1`
+- ทีเนียส: `MCIT Print Invoice Drop Ship` → `MCIT Print Invoice พิเศษ`; `รายการ Invoice สำหรับ Drop Ship` → `รายการ Print Invoice พิเศษ`; modal `<h3>Print Preview - Invoice พิเศษ</h3>`
+- table1 (หน้า invoice): row3 col1 `ผู้ส่ง :` → `ชื่อลูกค้า`; row5 col1 `ส่งต่อ :` → `ขนส่ง :` (12pt) + ค่า `[JOBcode],[JOBdescT].[JOBdescE]`
+- table3 (totalsbox): 4 คอลั่น 335/130/173/80px — col1 `หมายเหตุ` rowspan=5, col2 `รวมหน่วยบรรจุ` rowspan=5, ลบ row4 (col3 `ส่วนเพิ่มท้ายบิล`/MIHvatSUM + col4) — เหลือ 5 แถว: จำนวนเงิน (MIHcog) / ส่วนลดท้ายบิล (MIHdisc) / ยอดเงินหลังหักส่วนลด (AfterDisc) / ยอดมัดจำ (MIHextraSUM) / ยอดชำระ (MIHnetSUM)
+- ตารางค้นหา: คอลั่น หมายเหตุ ลดจาก 134px → 90px (class `col-notes` + CSS `.p071-scope th.col-notes, .p071-scope td.col-notes { width: 90px; }`)
+- Doctype options: IVN, CBA, CBC, ICN, IMV, IMN, ICS, IVVN, 1CB7, 2CBN, ICVN, IMV7, IMVN, IVSP
+- Status options: 3-ด่วน, 4-ปกติ - BKK, 5-ด่วน - BKK, 6-ลูกค้ารับเอง, 17-ติดท้ายรถ, 18-PickList QC/PD, 23-ค่าขนส่ง, 24-รายได้อื่น, 25-เช็คคืน, 32-Pack - ปกติ, 33-Pack - ด่วน, 34-Pack - ปกติ BKK, 35-Pack - ด่วน BKK, 42-INV - ปกติ, 43-INV - ด่วน, 44-INV - ปกติ BKK, 45-INV - ด่วน BKK, 50-PL ปกติ, 51-PL ด่วน, 52-Picking List ปกติ, 53-Picking List ด่วน, 54-PL ปกติ BKK, 55-PL ด่วน BKK, 60-ADS, 61-ADS ส่ง WH, 62-ADS ส่ง ACC, 65-WH, 67-Not Ship
+- Cache: `p071-dropsip-invoice.js?v=20261109e`
+- Probe ยืนยัน: report 2 หน้า, table3 rowspan=5 + 5 แถว, คอลั่น หมายเหตุ 90px, P069 files ไม่ถูกแก้
+
+## P072 MCIT Print Invoice รับเอง — READY (2026-11-11)
+- User: "P072 พร้อมใช้งาน" → `data/modules.php` P072 status=ready ใน 2 จุด (กลุ่มหลัก + กลุ่ม P131) — 43 modules ready
+- P072 ไม่มี report file ของตัวเอง — ใช้ `report/p069_report.html` ร่วมกับ P069/P131; ทุกการแก้ไข P072 ต้อง scoped ด้วย `docs === "p072"` + body class `.p072` — P069/P131 ไม่ได้รับผลกระทบ (probe ยืนยันแล้ว)
+- `assets/js/p072-invoice-preview.js` (`window.P072InvoicePreview = { mount }`):
+  - หน้าค้นหา: วันที่ Invoice เริ่ม-ถึง = วันปัจจุบันทั้ง 2 ช่อง (ไม่ออโตค้นหา — ผู้ใช้กดเอง)
+  - ตาราง 7 คอลั่น (คอลั่น select row คืนกลับตามคำสั่ง "เอากลับมา") — เมื่อค้นหาพบข้อมูล **ไม่ออโตเลือก** (`selectedIds = new Set()`)
+  - pagination 15 รายการ/หน้า + ปุ่มเลขหน้า 5 ปุ่ม (sliding window)
+  - ปุ่ม "Print Preview" สีเขียว (gradient #10b981→#059669, อักษรขาว)
+  - Toast self-contained (append ที่ body, inline style — หลีก cascade/`!important` ที่ครอบงำ) — show 3s แล้ว hide (visibility/opacity/transform ชัดเจน)
+  - Modal "Print Preview - Invoice รับเอง": iframe โหลด `report/p069_report.html?ids=<vnos>&conn=<id>&docs=p072&src=P072` + toolbar zoom/พิมพ์ — modal เต็มหน้า (`grid-template-columns: minmax(0,1fr)` + `height: 92vh`) — wrapper `display: contents` (ไม่มีพื้นที่ว่าง)
+- `report/p069_report.html` mode `docs=p072` (P069 ไม่เปลี่ยน):
+  - ลำดับหน้า: invoice2 (renderReport) → DO1 (renderDeliveryOrder) → invoice1 (renderInvoiceCopy) — ตัวนับเลขหน้า reset ต่อ 1 รายการที่เลือก (หน้า 1,2,3) — P069 ยังนับต่อเนื่อง
+  - `headerBlockP072(row, h, pageNo, barcode, pageType, idx)`:
+    - ตาราง 1: 3 คอลั่น 239px/239px/240px (719px) — td 12pt, padding 4px 8px, line-height 1.1
+    - invoice1 row1 col3 = "ใบแจ้งหนี้ ( Invoice )" ชิดซ้าย padding-left 10px + QR "Invoice" ด้านขวา
+    - DO1 row1 col3 = "ใบรับสินค้า" align=center valign=middle
+    - invoice2 row1 col3 = "ใบแจ้งหนี้ (สำหรับลูกค้า)" align=center
+    - row3 col1 "ชื่อลูกค้า" height 100px padding-top 10px · row5 col1 "ส่งต่อ" 12pt bold + [MIHmemo] 12pt
+  - DO1: ซ่อน `rep-do-company` (div ว่าง font 22pt) → หัว MCIT ห่างขอบบน 30px · MCIT font 32pt bold · มุมบนขวายังคง `rep-do-topright` (jobgroup "DS" + "หน้า N") ที่เดิม
+  - ตาราง 3: row4 col3 = "ภาษีมูลค่าเพิ่ม (7%)" (หน้า invoice1+invoice2) · DO1 row1 col3 = "ยอดสุทธิ :" (P069 ยัง "จำนวนเงิน") · หมายเหตุ line-height 1.6
+- Cache: `p072-invoice-preview.js?v=20261110w`
+- Probe ยืนยัน: คอลั่น select คืน (7 คอลั่น, ไม่ออโตเลือก), P072 report 2 ใบ × 3 หน้า, P069 `docs=both` ไม่มี class `.p072`
+
+## P024 ตรวจสอบมูลหนี้เฝ้าระวัง — READY (2026-11-11)
+- User: "P024 พร้อมใช้งาน" → `data/modules.php` P024 status=ready — 44 modules ready
+- `assets/js/p024-credit-check.js` (`window.P024CreditCheck = { mount }`):
+  - Panel title "รายการตรวจสอบข้อมูลหนี้เฝ้าระวัง" — ห้าม auto-search เมื่อเปิดหน้า (0 แถว/0 ปุ่ม pagination) — ผู้ใช้กดค้นหาเอง
+  - แถว filter 1 แถว: รหัสจังหวัด (2 ตัวเลข) | รหัสพนักงาน | มูลค่ารวม | ปุ่ม "ค้นหา" (loading animation)
+  - ตาราง 5 คอลั่น + sort column (default = รหัสลูกค้า asc — indicator ▲ ที่หัวคอลั่น)
+  - Pagination 15 แถว/หน้า + ปุ่มเลขหน้า 5 ปุ่ม (sliding window) + prev/next
+  - Toast อยู่ใน `.p024-app` — hidden เมื่อเปิดหน้า (show rule ทิ้งไว้ตามสั่ง "ไม่ต้องแล้ว")
+  - ปุ่ม "Print Preview" มุมบนขวา panel
+- `api/p024_search.php` — POST `{connectionId, province, employee, amount}` — SQL จาก C# `btn_check_Click` (CFS + DEB + MIH — filter `CFScusID LIKE '<province>%'` + `DEBsalesP LIKE '%<employee>%'` + `CFSclearALL=0`, outer `A.CFSsum > amount`, `ORDER BY A.CFScusID`) — ผล: province=10 → 137 แถว / +G01+0 → 38 / amount=50000 → 8
+- Print Preview (modal "Print Preview - ตรวจสอบมูลหนี้เฝ้าระวัง"):
+  - กระดาษ A4 portrait 794×1123 ตาม C# `bgWorker_DoWork` — 5 คอลั่น (รหัสพนักงาน | รหัสลูกหนี้ | ชื่อลูกค้า (เกรด) | ยอดชำระสูงสุด | ยอดหนี้รวม) + "พิมพ์โดย : P024 Web / พิมพ์เมื่อ : stamp" + "หน้า N" ล่างหน้า
+  - **แบ่งหน้าเมื่อล้น**: วัดความสูงบรรทัด/หัว/หมายเลขหน้า runtime → `rowsPerPage` (หักสุขาติ 2 แถว) — 134 รายการ = 5 หน้า (32 แถว/หน้า) — print CSS `page-break-after:always` (last-child auto)
+  - Zoom 0.5–2.0 (ก้าว 0.1) ทำงานกับทุกหน้า
+  - Font: base ตาม font-settings.js (default Noto Sans Thai) — h1 20px · meta/th/td 11px · คอลั่นยอด (p024-num) = Arial สะทัวขวา
+- Cache: `p024-credit-check.js?v=20261111r`
+- Probe ยืนยัน: default sort รหัสลูกค้า asc (▲ ที่หัวคอลั่น), 5 หน้า × 32 แถว, paper สูง 1123px พอดี A4, zoom 120%/80%, ปิด modal ถูกต้อง
+
+## P025 ตรวจสอบบิลเกิน due — READY (2026-11-12)
+- User: "P025 พร้อมใช้งาน" → `data/modules.php` P025 status=ready
+- `assets/js/p025-due-bill-check.js` (`window.P025DueBillCheck = { mount }`):
+  - UI copy จาก P024 — panel "รายการตรวจสอบบิลเกิน due" — ห้าม auto-search เมื่อเปิดหน้า — ผู้ใช้กดค้นหาเอง
+  - แถว filter: รหัสจังหวัด (2 ตัวเลข) | รหัสพนักงาน | จำนวนวัน (value 65, step 1) | ปุ่ม "ค้นหา"
+  - ตาราง 7 คอลั่น (หน้าจอ): รหัสพนักงาน | รหัสลูกค้า | ชื่อลูกค้า | เกรด | วันที่บิล | เลขที่บิล | ยอดหนี้
+  - หน้า P025 ใช้ font ตามการตั้งค่าจาก `font-settings.js` (ตัดฟอนต์ตายตัวออกแล้ว)
+  - `api/p025_search.php` — POST `{connectionId, province, employee, days}` — SQL จาก C# `frm_CheckDebtDue.cs` `btn_check_Click` — ผล: จว.10+65 วัน = 18–20 แถว / ทั้งหมด (days=0) = 545–550 แถว
+- Print Preview (modal "Print Preview - ตรวจสอบบิลเกิน due"):
+  - กระดาษ A4 portrait 794×1123 ตาม C# `bgWorker_DoWork` — 6 คอลั่น (รหัสพนักงาน | รหัสลูกหนี้ | ชื่อลูกค้า (เกรด) | วันที่บิล | เลขที่ Invoice | ยอดหนี้) + แถว "รวม" ท้ายหน้าสุดท้าย
+  - ความกว้าคอลั่นตาม C# SetWidths {70,80,305,85,105,80} → วัดได้ [69,79,302,84,104,79] px — `table-layout:fixed`
+  - **แบ่งหน้าเต็มหน้า (ไม่มีพื้นที่เหลือ)**: วัดส่วนคงที่ (หัว+meta+thead+เลขหน้า รวม margin) + วัดความสูงทุกแถว runtime → fill ตาม budget — 550 รายการ = 19 หน้า — print CSS `page-break-after:always`
+  - **รอ font โหลดก่อนวัด** (`document.fonts.load("12px 'THSarabunNew'")`)
+  - Font รายงาน = **THSarabunNew จาก `assets/fonts`** (`!important` ครอบทั้งใบกระดาษ — ชนะ `.app *{font-family:Prompt !important}` ของ font-settings.js) — หน้าจอยังคงใช้ font ตามการตั้งค่า
+  - ขนาด font: h1 20pt B · meta 12pt · th 12pt B · td 12pt · เลขหน้า 11pt
+  - ช่องว่างระหว่างบรรทัด: padding แถว 3px (ลดจาก 7px)
+  - Zoom 0.5–2.0 ทำงานกับทุกหน้า
+- Cache: `p025-due-bill-check.js?v=20261111r`, `portal.js?v=20261111c`
+- Probe ยืนยัน: ทุกกระดาษ 794×1123 (A4 พอดี), 19 หน้า, แถว "รวม" ท้ายหน้าสุดท้าย, computed font = THSarabunNew, col widths [69,79,302,84,104,79]

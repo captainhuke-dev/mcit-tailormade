@@ -166,7 +166,7 @@ function openPreview() {
   if (optDO) docTypes.push("do");
   var docs = docTypes.length === 2 ? "both" : docTypes[0] || "both";
   var frame = document.getElementById("p069-previewFrame");
-  var url = "report/p069_report.html?ids=" + encodeURIComponent(ids) + "&conn=" + encodeURIComponent("c1788406814359") + "&docs=" + encodeURIComponent(docs) + "&_t=" + Date.now();
+  var url = "report/p069_report.html?ids=" + encodeURIComponent(ids) + "&conn=" + encodeURIComponent("c1788406814359") + "&docs=" + encodeURIComponent(docs) + "&src=" + encodeURIComponent(curProgramId) + "&_t=" + Date.now();
 
   // เปิด modal ก่อน แล้วโหลดหน้าจอรายงานของ P069 เอง เข้า iframe
   els.modal.classList.add("show");
@@ -354,7 +354,9 @@ if (_p069tl) _p069tl.addEventListener("click", function () {
 })();
   }
 
-  function mount(root) {
+  var curProgramId = "P069";
+  function mount(root, programId) {
+    curProgramId = programId || "P069";
     root.innerHTML = "<style>" + CSS + "</style>" + HTML;
     init();
   }

@@ -201,6 +201,34 @@ try {
     unset($row);
 }
 
+// ── strLocation: Google Maps URL จาก Odoo res_partner (partner_latitude, partner_longitude) ──
+// ตาม C# getLatLang: SELECT ... FROM res_partner WHERE company_registry = <MIHcus>
+try {
+    $odooPdo = getDb('c1788406918263'); // Odoo PostgreSQL (MERP_live)
+    $locSql = "SELECT partner_latitude, partner_longitude FROM res_partner WHERE company_registry = ? AND partner_latitude IS NOT NULL AND partner_longitude IS NOT NULL";
+    $locStmt = $odooPdo->prepare($locSql);
+    foreach ($rows as &$row) {
+        $locStmt->execute(array($row['MIHcus']));
+        $loc = $locStmt->fetch(PDO::FETCH_ASSOC);
+        $strLocation = '';
+        if ($loc) {
+            $lat = $loc['partner_latitude'];
+            $lng = $loc['partner_longitude'];
+            if ($lat !== null && $lng !== null && (float) $lat > 0 && (float) $lng > 0) {
+                $strLocation = 'https://www.google.com/maps/search/?api=1&query=' . $lat . ',' . $lng;
+            }
+        }
+        $row['strLocation'] = $strLocation;
+    }
+    unset($row);
+} catch (Exception $e) {
+    // ไม่ fail ทั้งรายงานถ้า query Odoo พลาด — ให้ strLocation ว่าง
+    foreach ($rows as &$row) {
+        $row['strLocation'] = '';
+    }
+    unset($row);
+}
+
 // map invoice ที่ไม่พบ
 $found = array();
 foreach ($rows as $row) {

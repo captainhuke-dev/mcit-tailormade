@@ -198,7 +198,9 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p084-picklist-irw.js?v=20261024j"></script>
   <script src="assets/js/p098-stock-watch.js?v=20261103h"></script>
   <script charset="utf-8" src="assets/js/p017-cash-bill-unreceived.js?v=20261104d"></script>
-  <script charset="utf-8" src="assets/js/p069-dropsip-invoice.js?v=20261107b"></script>
+  <script charset="utf-8" src="assets/js/p069-dropsip-invoice.js?v=20261109a"></script>
+  <script charset="utf-8" src="assets/js/p071-dropsip-invoice.js?v=20261109e"></script>
+  <script charset="utf-8" src="assets/js/p072-invoice-preview.js?v=20261110w"></script>
   <script src="assets/js/p050-billing.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <script src="assets/js/qrcode.min.js"></script>
@@ -221,7 +223,10 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p026-payable-history.js?v=20261001e"></script>
   <script src="assets/js/p034-debtor-history.js"></script>
   <script src="assets/js/p032-deposit-report.js"></script>
+  <script src="assets/js/p024-credit-check.js?v=20261111r"></script>
+  <script src="assets/js/p025-due-bill-check.js?v=20261111r"></script>
+  <script src="assets/js/p127-barcode-store.js?v=20261112e"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20261030a"></script>
+  <script src="assets/js/portal.js?v=20261112a"></script>
 </body>
 </html>
