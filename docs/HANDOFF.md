@@ -71,6 +71,7 @@
 | P082 | PickList To Pack | in development (UI clone P080 + search API — generate รอ C# reference — cache v=20261021b) |
 | P083 | PickList To Load V2 | ready (clone C# frm_PickListToLOAD_v2 — 2 APIs `p083_search`/`p083_generate` — launcher (status 12 + route 7 + warehouse groups 9 + search btn spinner) + 3 result tables (By Route / Zone SparePart / Zone QC) + generate btn (guard >=1 row + spinner) + modal A4 report 210x297mm (header per page, 7-col table 70/220/70/65/60/30/45, grid borders, grow row no inner line, footer, pagination) — user confirmed 2026-10-20 — cache v=20261020r) |
 | P036 ฯลฯ | อื่น ๆ | placeholder |
+| P127 | Barcode ห้าง (Barcode Store) | ready (1 หน้า — real data MAC5 3 APIs `p127_list`/`p127_search`/`p127_save` + `p127_update` — modal เพิ่ม/แก้ไข (วาลิเดิ้ฟิลด์ขัดต้อง + toast ใน body) + Print Preview modal (กระดาษ 282×210pt margin 1pt — font THSarabunNew + EAN13 30pt ชิดขวา l่าง — cache v=20261113o) |
 
 ---
 
@@ -1754,3 +1755,48 @@ P017: ขยับเลขหน้าเล่มา (bottom 15pt→8pt) + row
   - Zoom 0.5–2.0 ทำงานกับทุกหน้า
 - Cache: `p025-due-bill-check.js?v=20261111r`, `portal.js?v=20261111c`
 - Probe ยืนยัน: ทุกกระดาษ 794×1123 (A4 พอดี), 19 หน้า, แถว "รวม" ท้ายหน้าสุดท้าย, computed font = THSarabunNew, col widths [69,79,302,84,104,79]
+
+## P127 Barcode ห้าง (Barcode Store) — READY (2026-11-13)
+- User: "P127 พร้อมใช้งาน" → `data/modules.php` P127 status=ready (กลุ่ม `mt-print` Moderntrade)
+- C# source: `demo/file_ref/Tailor_Made/AppBarcodeStore/frm_configBarcodeStore.cs` — `createPdf()` → `frm_printPreview.ShowDialog()`
+- `assets/js/p127-barcode-store.js` (`window.P127BarcodeStore = { mount }`):
+  - หน้ารายการ: real data MAC5 `api/p127_list.php` — 15 รายการ/หน้า + pagination
+  - Modal เพิ่มสินค้า: ฟิลด์ขัดต้อง (รหัสสินค้า (ห้าง)/ขนาด/หน่วย/รหัสบาร์โค้ด) — วาลิเดิ้ทับที่ JS + `api/p127_save.php` (server-side check เดียวกัน) — **toast ย้ายไป `document.body`** (transform ของ `#appContent` ครอบงำ position:fixed)
+  - Modal แก้ไข: วาลิเดิ้ MAC5 code → `api/p127_update.php` (UPDATE `BI_CUBE.dbo.tb_ConfigBarcodeStore` WHERE STKcode)
+  - Autocomplete รหัสสินค้า MAC5: `api/p127_search.php` (TOP 15)
+  - **Print Preview modal** (ตาม `createPdf()`):
+    - กระดาษ `@page{size:282pt 210pt; margin:1pt}` (C# `new Document(new Rectangle(282f, 210f), 1f, 1f, 1f, 1f)`)
+    - Font: `@font-face` THSarabunNew (4 variant) + **EAN13** (`assets/fonts/ean13.ttf`)
+    - Label: label (ตัวอักษร) **12pt bold** / value **12pt** / ข้อควรระวัง **14pt bold** / barcode ฟอนต์ EAN13 **30pt** ตำแหน่ง **right:5pt; bottom:10pt** (C# `ShowTextAligned(..., 100f, 20f, 0)` → ปรับตาม user)
+    - ช่องว่างระหว่างบรรทัด 1px — label ขาว vs พื้นหลัง modal `#e3eaf3`
+- Cache: `p127-barcode-store.js?v=20261113o`
+- Probe ยืนยัน: label 99.7mm, font size ถูกต้อง, `@page` 282pt 210pt margin 1pt, EAN13 @font-face parse, request ไม่มี fail
+
+## P116 ตรวจสอบลูกค้าที่สังสินค้าซ้ำ — READY (2026-11-14)
+- User: "P116 พร้อมใช้งาน" → `data/modules.php` P116 status=ready (กลุ่ม SCM `scm-programs`)
+- C# source: `demo/file_ref/Tailor_Made/AppForCheck/frm_checkCUS_STK_duplicate.cs`
+- `assets/js/p116-repeat-order.js` (`window.P116RepeatOrder = { mount }`):
+  - Launcher: รหัสลูกค้า + รหัสสินค้า + ปุ่ม "ค้นหา" (ปุ่มอยู่ในระดับเดียวกับ textbox) — **ห้าม auto-search เมื่อเปิดหน้า — ผู้ใช้กดค้นหาเอง**
+  - ตาราง 5 คอลั่น: รหัสลูกค้า | ชื่อลูกค้า | เขต/อำเภอ (`DEBcontactT`) | รหัสสินค้าที่ซ้ำ | จำนวนที่ซ้ำ
+  - แบ่งหน้า 15 รายการ/หน้า — pager « ‹ 1 › » (5 ปุ่ม)
+  - คลิกแถว → เปิด modal แสดงตารางรายละเอียดสินค้า (วันที่ | ลำดับ | เลขที่ | รหัส | รายละเอียด | จำนวน | หน่วย) — หัว modal แสดงรหัส-ชื่อลูกค้า
+  - ปุ่มค้นหา: animation loading (spinner หมุน) ขณะ API ทำงาน
+- `api/p116_search.php` — query ค้นหา (C# `btn_search_Click`) — หาคู่ ลูกค้า+สินค้าที่สังซ้ำ (COUNT>1)
+- `api/p116_detail.php` — query รายละเอียด (C# `GetSTK`) — แสดงใน modal
+- เชื่อมต่อ: MAC5 (`c1788406814359`, sqlserver `M5CM-AA-01`)
+- Cache: `p116-repeat-order.js?v=20261114k`
+- Probe ยืนยัน: search คืน 33 รายการ, detail (10280-043+100****1166) = 3 แถวตรงรูป, คอลั่นเขต/อำเภอ = `DEBcontactT`, animation loading ทำงาน, chip รายการที่เลือกถูกลบ
+
+## P041 สินค้าจ่ายที่ไม่อ้างถึง SO — READY (2026-11-16)
+- User: "P041 พร้อมใช้งาน" → `data/modules.php` P041 status=ready (ทั้งกลุ่ม `data-check` (admin) และ `sales-programs`)
+- C# source: `demo/file_ref/Tailor_Made/AppReserveNotLink/FrmReserveNotLinkGUI.cs`
+- `assets/js/p041-reserved-so-check.js` (`window.P041ReservedSoCheck = { mount }`):
+  - Auto-load จาก MAC5 เมื่อเปิดหน้า (เหมือน C# `_Load → LoadData()`), ปุ่ม Refresh ก็เรียก `loadData(true)` หน้าที่เดียวกัน
+  - ตารางหลัก 5 คอลั่น: วันที่ | เลขที่ (RSV) | รหัสลูกค้า | ชื่อลูกค้า | จำนวนสินค้า (คง 5 คอลั่นเดิม)
+  - แบ่งหน้า 15 รายการ/หน้า — pager « ‹ 1 › » (5 ปุ่ม)
+  - คลิกแถว → เปิด modal, hัวแสดง "รหัสลูกค้า · ชื่อลูกค้า" + "เลขที่ใบสำคัญ <vnos>", ตัวตาราง fetch `api/p041_detail.php` (รหัสสินค้า | ชื่อสินค้า | จำนวน | หน่วย | มูลค่า)
+- `api/p041_search.php` — query LoadData (C# `LoadData`): `MIH LEFT JOIN MIL LEFT JOIN DEB`, เงื่อนไข `MIHtype='SS' AND MIHvnos LIKE 'RSV%' AND MIHcancel=0 AND (MILlinkVCno ว่าง/NULL)` = สินค้าจ่ายที่ไม่อ้างถึง SO
+- `api/p041_detail.php` — query รายละเอียด (C# `dtMIL`): `SELECT MILstk, MILdesc, (MILquan/MILconv), MILuname, MILsum FROM MIL WHERE MILvnos=?`
+- เชื่อมต่อ: MAC5 (`c1788406814359`, sqlserver `M5CM-AA-01`)
+- Cache: `p041-reserved-so-check.js?v=20261114w`
+- Probe ยืนยัน: search คืน 6 รายการ, detail (RSV16911-0357) = 4 แถว, auto-load + Refresh + modal ทำงาน

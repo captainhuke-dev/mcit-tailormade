@@ -1381,6 +1381,34 @@
       `;
     }
 
+    // P116: ตรวจสอบค้างส่งลูกค้าที่สั่งสินค้าซ้ำ
+    if (programId === "P116") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p116Root" style="margin-top:20px"></div>
+      `;
+    }
+
+    // P041: ตรวจสอบสินค้าจ่ายที่ไม่อ้างถึง SO
+    if (programId === "P041") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p041Root" style="margin-top:20px"></div>
+      `;
+    }
+
     // P047: เช็คสถานะ Invoice
     if (programId === "P047") {
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
@@ -1392,6 +1420,20 @@
           ${backLabel}
         </button>
         <div id="p047Root" style="margin-top:20px"></div>
+      `;
+    }
+
+    // P093: ใบอนุมัติ PO
+    if (programId === "P093") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p093Root" style="margin-top:20px"></div>
       `;
     }
 
@@ -1903,10 +1945,28 @@
       if (root) window.P038PushPending.mount(root);
     }
 
+    // P116: mount Repeat Order Check app
+    if (page.type === "program" && page.programId === "P116" && window.P116RepeatOrder) {
+      const root = document.getElementById("p116Root");
+      if (root) window.P116RepeatOrder.mount(root);
+    }
+
+    // P041: mount Reserved SO Check app
+    if (page.type === "program" && page.programId === "P041" && window.P041ReservedSoCheck) {
+      const root = document.getElementById("p041Root");
+      if (root) window.P041ReservedSoCheck.mount(root);
+    }
+
     // P047: mount Invoice Status Check app
     if (page.type === "program" && page.programId === "P047" && window.P047InvoiceStatus) {
       const root = document.getElementById("p047Root");
       if (root) window.P047InvoiceStatus.mount(root);
+    }
+
+    // P093: mount PO Approval app
+    if (page.type === "program" && page.programId === "P093" && window.P093PoApproval) {
+      const root = document.getElementById("p093Root");
+      if (root) window.P093PoApproval.mount(root);
     }
 
     // P015: mount Bill Status app

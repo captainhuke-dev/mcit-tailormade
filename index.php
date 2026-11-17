@@ -225,8 +225,11 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p032-deposit-report.js"></script>
   <script src="assets/js/p024-credit-check.js?v=20261111r"></script>
   <script src="assets/js/p025-due-bill-check.js?v=20261111r"></script>
-  <script src="assets/js/p127-barcode-store.js?v=20261112e"></script>
+  <script src="assets/js/p127-barcode-store.js?v=20261113p"></script>
+  <script src="assets/js/p116-repeat-order.js?v=20261114k"></script>
+  <script src="assets/js/p041-reserved-so-check.js?v=20261114w"></script>
+  <script src="assets/js/p093-po-approval.js?v=20261117z"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20261112a"></script>
+  <script src="assets/js/portal.js?v=20261116a"></script>
 </body>
 </html>
