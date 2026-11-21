@@ -1428,12 +1428,40 @@
       const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
       return `
         <div class="breadcrumb">
-          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${escapeHtml(program.id)} ${escapeHtml(program.name)}
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${program.id} ${escapeHtml(program.name)}
         </div>
         <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
           ${backLabel}
         </button>
         <div id="p093Root" style="margin-top:20px"></div>
+      `;
+    }
+
+    // P094: PO Dropship
+    if (programId === "P094") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${program.id} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p094Root" style="margin-top:20px"></div>
+      `;
+    }
+
+    // P040: ตรวจสอบค้างส่งสินค้า LOT
+    if (programId === "P040") {
+      const backLabel = program.groupName ? `← กลับไป${program.groupName}` : "← กลับหน้ารายการ";
+      return `
+        <div class="breadcrumb">
+          หน้าหลัก › ${escapeHtml(program.moduleName)} › ${escapeHtml(program.groupName)} › ${program.id} ${escapeHtml(program.name)}
+        </div>
+        <button class="text-link" style="padding:0" data-back-to-group="${escapeHtml(program.groupId)}" data-module="${escapeHtml(program.moduleId)}">
+          ${backLabel}
+        </button>
+        <div id="p040Root" style="margin-top:20px"></div>
       `;
     }
 
@@ -1967,6 +1995,18 @@
     if (page.type === "program" && page.programId === "P093" && window.P093PoApproval) {
       const root = document.getElementById("p093Root");
       if (root) window.P093PoApproval.mount(root);
+    }
+
+    // P094: mount PO Dropship app
+    if (page.type === "program" && page.programId === "P094" && window.P094Dropship) {
+      const root = document.getElementById("p094Root");
+      if (root) window.P094Dropship.mount(root);
+    }
+
+    // P040: mount Lot Pending app (UI only — mock data)
+    if (page.type === "program" && page.programId === "P040" && window.P040LotPending) {
+      const root = document.getElementById("p040Root");
+      if (root) window.P040LotPending.mount(root);
     }
 
     // P015: mount Bill Status app

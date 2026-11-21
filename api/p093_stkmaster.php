@@ -102,7 +102,7 @@ try {
       "deliveryStk" => (float)$r["Delivery_stk"],
       "cusLock" => (float)$r["cusLock"],
       "nonMove" => $r["ITEMNONMOVE"] === null ? 0 : (float)$r["ITEMNONMOVE"],
-      "imPlan" => $r["F_MKTIMPlan"] === null ? 0 : (float)$r["F_MKTIMPlan"]
+      "imPlan" => $r["F_MKTIMPlan"] === null ? 0 : $r["F_MKTIMPlan"]
     );
   }
 

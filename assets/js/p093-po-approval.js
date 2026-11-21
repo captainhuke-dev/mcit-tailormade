@@ -16,13 +16,13 @@
     ".p093-app .p093-launcher-title{display:flex;min-height:44px;align-items:center;justify-content:space-between;padding:0 8px 0 16px;color:#fff;background:linear-gradient(90deg,#1e3a8a,#2563eb)}",
     ".p093-app .p093-launcher-title strong{display:flex;align-items:center;gap:8px;font-size:14px}",
     ".p093-app .p093-launcher-title svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-linecap:round;stroke-linejoin:round;stroke-width:2}",
-    ".p093-app .p093-launcher-body{display:grid;grid-template-columns:1fr 1fr minmax(220px,auto);gap:14px 18px;padding:18px 22px;background:linear-gradient(180deg,#e4fbfd,#eefbfd)}",
+    ".p093-app .p093-launcher-body{display:grid;grid-template-columns:repeat(5,1fr);gap:14px 18px;padding:18px 22px;background:linear-gradient(180deg,#e4fbfd,#eefbfd)}",
     ".p093-app .p093-launcher-body > :nth-child(1){grid-column:1;grid-row:1}",
     ".p093-app .p093-launcher-body > :nth-child(2){grid-column:2;grid-row:1}",
-    ".p093-app .p093-launcher-body > :nth-child(3){grid-column:3;grid-row:1}",
-    ".p093-app .p093-launcher-body > :nth-child(4){grid-column:1;grid-row:2}",
-    ".p093-app .p093-launcher-body > :nth-child(5){grid-column:2;grid-row:2}",
-    ".p093-app .p093-launcher-body > :nth-child(6){grid-column:3;grid-row:2}",
+    ".p093-app .p093-launcher-body > :nth-child(3){grid-column:3 / span 2;grid-row:1}",
+    ".p093-app .p093-launcher-body > :nth-child(4){grid-column:1 / span 2;grid-row:2}",
+    ".p093-app .p093-launcher-body > :nth-child(5){grid-column:3 / span 2;grid-row:2}",
+    ".p093-app .p093-launcher-body > :nth-child(6){grid-column:5;grid-row:2}",
     ".p093-app .p093-field label{display:block;margin-bottom:5px;color:#334155;font-size:12px;font-weight:700}",
     ".p093-app .p093-field input,.p093-app .p093-field select{width:100%;height:40px;padding:0 10px;color:#172033;border:1px solid #b6c5d8;border-radius:8px;outline:none;background:#fff;font-size:13px}",
     ".p093-app .p093-field input:focus,.p093-app .p093-field select:focus{border-color:#60a5fa;box-shadow:0 0 0 4px rgba(96,165,250,.14)}",
@@ -113,6 +113,20 @@
     ".p093-paper td.p093-title{font-size:14pt;font-weight:700;text-align:center}",
     ".p093-paper td.p093-status-cell{text-align:center}",
     ".p093-table-stk,.p093-table-stk th,.p093-table-stk td{font-family:\"THSarabunNew\",sans-serif;font-size:11pt}",
+    ".p093-table-detail,.p093-table-detail th,.p093-table-detail td,.p093-table-stock,.p093-table-stock th,.p093-table-stock td,.p093-table-inv,.p093-table-inv th,.p093-table-inv td{font-family:\"THSarabunNew\",sans-serif;font-size:11pt}",
+    ".p093-table-detail th{background:transparent;text-align:center}",
+    ".p093-table-detail th.p093-th-small{font-size:9pt;font-weight:700}",
+    ".p093-table-detail td{font-size:10pt}",
+    ".p093-table-detail td,.p093-table-stock td,.p093-table-inv td{padding-top:1px;padding-bottom:1px;text-align:center;vertical-align:middle}",
+    ".p093-table-detail tbody tr:nth-child(1) td:nth-child(2),.p093-table-detail tbody tr:nth-child(2) td:nth-child(2){border-right:0}",
+    ".p093-table-detail tbody tr:nth-child(1) td:nth-child(3),.p093-table-detail tbody tr:nth-child(2) td:nth-child(3){border-left:0;text-align:left}",
+    ".p093-table-detail td.p093-price-head{font-weight:700}",
+    ".p093-table-stock th{background:transparent}",
+    ".p093-table-stock td.p093-stock-code{font-weight:700}",
+    ".p093-table-detail th,.p093-table-stock th{padding:3px}",
+    ".p093-table-detail{margin-bottom:0;table-layout:fixed;width:716px}",
+    ".p093-table-stock,.p093-table-inv{margin-bottom:0;margin-top:1px}",
+    ".p093-stk-block + .p093-stk-block{margin-top:10px}",
     ".p093-table-stk{border:0;border-bottom:1px solid #cbd5e1}",
     ".p093-table-stk th{border:1px solid #cbd5e1;background:transparent}",
     ".p093-table-stk td.p093-number{font-family:\"THSarabunNew\",sans-serif}",
@@ -126,9 +140,9 @@
     ".p093-approval-box{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:34px}",
     ".p093-approval-box div{min-height:85px;padding:10px;border:1px dashed #94a3b8;color:#64748b;font-size:11px;text-align:center}",
     /* print — พิมพ์เฉพาะ paper */
-    "@media print{@page{size:A4 portrait;margin:10mm}body>*:not(#p093Modal){display:none}#p093Modal{position:static;padding:0;background:none}#p093Modal .p093-modal{display:block;width:100%;max-width:none;max-height:none;overflow:visible;box-shadow:none}#p093Modal .p093-modal-header,#p093Modal .p093-modal-toolbar{display:none}#p093Modal .p093-preview-area{overflow:visible;padding:0;background:none}#p093Paper{width:100%;min-height:0;padding:0;box-shadow:none}}",
-    /* screen — แสดงขีดแบ่งหน้ากระดาษาใน modal */
-    "@media screen{.p093-report-body .p093-po-page + .p093-po-page{margin-top:28px;padding-top:20px;border-top:2px dashed #94a3b8}}",
+    "@media print{@page{size:A4 portrait;margin:10mm}body>*:not(#p093Modal){display:none}#p093Modal{position:static;padding:0;background:none}#p093Modal .p093-modal{display:block;width:100%;max-width:none;max-height:none;overflow:visible;box-shadow:none}#p093Modal .p093-modal-header,#p093Modal .p093-modal-toolbar{display:none}#p093Modal .p093-preview-area{overflow:visible;padding:0;background:none}#p093Paper{width:100%;min-height:0;padding:0;box-shadow:none}.p093-po-page{border:0;padding:0;min-height:0;background:none;box-shadow:none;margin:0}}",
+    /* screen — หน้ากระดาษา A4 เต็มแผ่น (794x1123 @96dpi) */
+    "@media screen{.p093-paper{width:794px;min-height:0;padding:0;background:transparent;box-shadow:none}.p093-report-body .p093-po-page{width:794px;min-height:1123px;padding:34px 38px;background:#fff;border:1px solid #94a3b8;box-shadow:0 4px 14px rgba(15,23,42,.18);box-sizing:border-box;margin:0 auto}.p093-report-body .p093-po-page + .p093-po-page{margin-top:10px}}",
     /* responsive (ตาม demo) */
     "@media (max-width:900px){.p093-app .p093-launcher-body{grid-template-columns:1fr}.p093-app .p093-launcher-body > *{grid-column:auto;grid-row:auto}.p093-app .p093-actions{flex-direction:row}.p093-app .p093-actions .p093-button{flex:1}}",
     "@media (max-width:680px){.p093-modal-backdrop{padding:8px}.p093-preview-area{padding:12px}.p093-paper{padding:20px}.p093-paper-info{grid-template-columns:1fr}}"
@@ -173,6 +187,28 @@
     var s = (Number(v) || 0).toFixed(2);
     if (s.indexOf(".") !== -1) s = s.replace(/0+$/, "").replace(/\.$/, "");
     return s;
+  }
+  // #,##0.## — คั่นหลักพัน, ทศนิยมไม่เกิน 2 ตำแหน่ง (ล้าง trailing zero)
+  function fmtNum(v) {
+    var n = Number(v) || 0;
+    var parts = n.toFixed(2).split(".");
+    var intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    var dec = parts[1].replace(/0+$/, "");
+    return dec ? intPart + "." + dec : intPart;
+  }
+  // #,##0.00 — ทศนิยม 2 ตำแหน่งเสมอ
+  function fmtNum2(v) {
+    var n = Number(v) || 0;
+    var parts = n.toFixed(2).split(".");
+    return parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",") + "." + parts[1];
+  }
+  // #,##0.#### — ทศนิยมไม่เกิน 4 ตำแหน่ง
+  function fmtNum4(v) {
+    var n = Number(v) || 0;
+    var parts = n.toFixed(4).split(".");
+    var intPart = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    var dec = parts[1].replace(/0+$/, "");
+    return dec ? intPart + "." + dec : intPart;
   }
   function dateTH(v) {
     var p = String(v || "").split("-");
@@ -340,6 +376,90 @@
 
   var UNIT_CODE = { "หน่วยหลัก": 0, "หน่วยย่อย": 1, "หน่วยรอง": 2 };
 
+  // ---- แบ่งหน้ากระดาษา A4 (screen): ถ้าเนื้อหาล้น 1 หน้า ให้ขึ้นหน้าใหม่
+  var A4_PAGE_H = 1123;   // px @96dpi
+
+  function newPageDiv() {
+    var d = document.createElement("div");
+    d.className = "p093-po-page";
+    return d;
+  }
+
+  function cloneTableShell(table) {
+    var clone = table.cloneNode(false);
+    clone.removeAttribute("id");
+    var cg = table.querySelector("colgroup");
+    if (cg) clone.appendChild(cg.cloneNode(true));
+    var thead = table.querySelector("thead");
+    if (thead) clone.appendChild(thead.cloneNode(true));
+    clone.appendChild(document.createElement("tbody"));
+    return clone;
+  }
+
+  function paginateReport() {
+    if (!els.reportBody) return;
+    var pages = Array.prototype.slice.call(els.reportBody.querySelectorAll(".p093-po-page"));
+    pages.forEach(function (page) {
+      if (page.scrollHeight > A4_PAGE_H) splitPageIntoA4(page);
+    });
+  }
+
+  function splitPageIntoA4(page) {
+    var parent = page.parentNode;
+    var items = Array.prototype.slice.call(page.children);
+    var cur = page;
+    page.innerHTML = "";
+
+    items.forEach(function (el) {
+      cur.appendChild(el);
+      if (cur.scrollHeight <= A4_PAGE_H) return;
+
+      // element ปกติ — ย้ายทั้งก้อนไปหน้าใหม่
+      if (el.tagName !== "TABLE") {
+        cur.removeChild(el);
+        var np = newPageDiv();
+        parent.insertBefore(np, cur.nextSibling);
+        np.appendChild(el);
+        cur = np;
+        return;
+      }
+
+      // table — แยกแถวได้เฉพาะตาราง 2 (stk) ที่เป็นลิสต์; ตาราง 3/4/5 ย้ายทั้งตาราง
+      var tbody = el.tBodies[0];
+      if (!el.classList.contains("p093-table-stk") || !tbody || tbody.rows.length <= 1) {
+        cur.removeChild(el);
+        var np2 = newPageDiv();
+        parent.insertBefore(np2, cur.nextSibling);
+        np2.appendChild(el);
+        cur = np2;
+        return;
+      }
+
+      // แยกแถวท้ายๆ ออกไปหน้าถัดไป (clone thead/colgroup ไว้หัวตาราง)
+      var clone = null;
+      var clonePage = null;
+      var guard = 0;
+      while (cur.scrollHeight > A4_PAGE_H && tbody.rows.length > 1 && guard < 500) {
+        guard++;
+        if (!clone) {
+          clone = cloneTableShell(el);
+          clonePage = newPageDiv();
+          parent.insertBefore(clonePage, cur.nextSibling);
+          clonePage.appendChild(clone);
+        } else if (clonePage.scrollHeight > A4_PAGE_H && clone.tBodies[0].rows.length > 0) {
+          var nextPage = newPageDiv();
+          parent.insertBefore(nextPage, clonePage.nextSibling);
+          clone = cloneTableShell(el);
+          nextPage.appendChild(clone);
+          clonePage = nextPage;
+        }
+        var row = tbody.rows[tbody.rows.length - 1];
+        clone.tBodies[0].insertBefore(row, clone.tBodies[0].firstChild);
+      }
+      if (clonePage) cur = clonePage;
+    });
+  }
+
   function openPreview() {
     // ขั้นตอน 1 (C# btn_preview_Click): ตรวจว่ามีการเลือกข้อมูลไหม
     if (state.selected.size === 0) {
@@ -374,8 +494,14 @@
             var cSub = pSub.catch(function () { return { ok: false, error: "ดึง sub-detail ล้มเหลว" }; });
             var pRe = fetchJson("api/p093_re.php", { stk: r.stkCode, vnos: po.poNo, unit: unitCode });
             var cRe = pRe.catch(function () { return { ok: false, error: "ดึง RE ล้มเหลว" }; });
-            return Promise.all([cSub, cRe]).then(function (rr) {
-              return { sub: rr[0], re: rr[1] };
+            var pMaster = fetchJson("api/p093_stkmaster.php", { stk: r.stkCode, cus: po.vendorCode, unit: unitCode });
+            var cMaster = pMaster.catch(function () { return { ok: false, error: "ดึง STK master ล้มเหลว" }; });
+            var pBal = fetchJson("api/p093_balance.php", { stk: r.stkCode });
+            var cBal = pBal.catch(function () { return { ok: false, error: "ดึงสตอร์ก์คงเหลือล้มเหลว" }; });
+            var pInv = fetchJson("api/p093_inventory.php", { stk: r.stkCode });
+            var cInv = pInv.catch(function () { return { ok: false, error: "ดึง inventory ล้มเหลว" }; });
+            return Promise.all([cSub, cRe, cMaster, cBal, cInv]).then(function (rr) {
+              return { sub: rr[0], re: rr[1], master: rr[2], balance: rr[3], inv: rr[4] };
             });
           });
           return Promise.all(subJobs).then(function (subs) {
@@ -399,6 +525,11 @@
         renderReport(d.po, d.rows, d.subs, unitCode, parts);
       });
       els.reportBody.innerHTML = parts.join('');
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(function () { paginateReport(); });
+      } else {
+        paginateReport();
+      }
     });
   }
 
@@ -481,7 +612,124 @@
       }
     });
     out.push('</tbody></table>');
+
+    // (3-5) ตาราง detail / stock / inventoryDay — loop ตามแถวหลัก stk ของตาราง 2
+    rows.forEach(function (r, i) {
+      var pair = results[i] || {};
+      renderStkTables(pair.master, pair.balance, pair.inv, unitCode, out);
+    });
+
     out.push('</div>');
+  }
+
+  // ตาราง 3 (detail 13 คอลั่น) + ตาราง 4 (stock 10 คอลั่น) + ตาราง 5 (inventoryDay 8 คอลั่น) ต่อ 1 stk
+  function renderStkTables(master, balance, inv, unitCode, out) {
+    var blockStart = out.length;
+    var mrow = (master && master.ok && master.row) ? master.row : null;
+    var prices = (master && master.ok && master.prices) ? master.prices : [];
+    var conv = mrow ? (Number(mrow.conv) || 1) : 1;
+    var isPrimary = unitCode === 0;
+    var unitLabel = els.unitSelect ? els.unitSelect.value : "";
+
+    function q(v) {
+      var n = Number(v) || 0;
+      return fmtNum(isPrimary ? n : n / conv);
+    }
+
+    // ---- ตาราง 3 detail (13 คอลั่น: 45,30,165,30,30,30,30,30,32,32,32,32,32)
+    out.push('<table class="p093-report-table p093-table-detail">');
+    out.push('<colgroup><col style="width:60px"><col style="width:45px"><col style="width:191px"><col style="width:40px"><col style="width:40px"><col style="width:40px"><col style="width:40px"><col style="width:40px"><col style="width:45px"><col style="width:45px"><col style="width:45px"><col style="width:45px"><col style="width:40px"></colgroup>');
+    out.push('<thead><tr>' +
+      '<th>รหัสสินค้า<br>IMPlan</th>' +
+      '<th colspan="2">ชื่อสินค้า</th>' +
+      '<th class="p093-th-small">' + esc(unitLabel) + '</th>' +
+      '<th>PR</th><th>PO</th><th>RSV</th><th>SO</th>' +
+      '<th class="p093-th-small">ค้างส่งจริง</th><th class="p093-th-small">นัดโอนเงิน</th><th class="p093-th-small">นัดส่งสินค้า</th><th>ลูกค้า<br>Lock</th><th>non-Move</th>' +
+      '</tr></thead>');
+    out.push('<tbody>');
+    if (mrow) {
+      out.push('<tr>' +
+        '<td>' + esc(mrow.stkCode) + '</td>' +
+        '<td>Master:</td>' +
+        '<td>' + esc(mrow.desc) + '</td>' +
+        '<td>' + esc(mrow.unitName) + '</td>' +
+        '<td>' + q(mrow.prQty) + '</td>' +
+        '<td>' + q(mrow.poQty) + '</td>' +
+        '<td>' + q(mrow.rsvQty) + '</td>' +
+        '<td>' + q(mrow.soQty) + '</td>' +
+        '<td>' + q(mrow.cpsTrue) + '</td>' +
+        '<td>' + fmtNum((Number(mrow.transferMoney) || 0) / conv) + '</td>' +
+        '<td>' + fmtNum((Number(mrow.deliveryStk) || 0) / conv) + '</td>' +
+        '<td>' + fmtNum((Number(mrow.cusLock) || 0) / conv) + '</td>' +
+        '<td>' + fmtNum4(mrow.nonMove) + '</td>' +
+        '</tr>');
+      out.push('<tr>' +
+        '<td rowspan="2">' + esc(mrow.imPlan) + '</td>' +
+        '<td rowspan="2">PO :</td>' +
+        '<td rowspan="2">' + esc(String(mrow.milDesc || "").replace(/[\r\n]/g, "")) + '</td>' +
+        '<td colspan="2" class="p093-price-head">Price 1</td><td colspan="2" class="p093-price-head">Price 2</td><td colspan="2" class="p093-price-head">Price 3</td><td colspan="2" class="p093-price-head">Price 4</td><td colspan="2" class="p093-price-head">Price 5</td>' +
+        '</tr>');
+      out.push('<tr>' +
+        '<td colspan="2">' + fmtNum(prices[0] ? prices[0].price : 0) + '</td>' +
+        '<td colspan="2">' + fmtNum(prices[1] ? prices[1].price : 0) + '</td>' +
+        '<td colspan="2">' + fmtNum(prices[2] ? prices[2].price : 0) + '</td>' +
+        '<td colspan="2">' + fmtNum(prices[3] ? prices[3].price : 0) + '</td>' +
+        '<td colspan="2">' + fmtNum(prices[4] ? prices[4].price : 0) + '</td>' +
+        '</tr>');
+    }
+    out.push('</tbody></table>');
+
+    // ---- ตาราง 4 stock (10 คอลั่น x 55)
+    var b = (balance && balance.ok && balance.row) ? balance.row : {};
+    out.push('<table class="p093-report-table p093-table-stock">');
+    out.push('<colgroup><col style="width:55pt"><col style="width:55pt"><col style="width:55pt"><col style="width:55pt"><col style="width:55pt"><col style="width:55pt"><col style="width:55pt"><col style="width:55pt"><col style="width:55pt"><col style="width:55pt"></colgroup>');
+    out.push('<tbody>');
+    out.push('<tr><th colspan="3">ส่ง</th><th>พัก</th><th>ห้าง</th><th colspan="2">Ecom</th><th colspan="2">PD/QC</th><th>RTV</th></tr>');
+    out.push('<tr><td class="p093-stock-code">01</td><td class="p093-stock-code">01-B</td><td class="p093-stock-code">01-CL</td><td class="p093-stock-code">02</td><td class="p093-stock-code">03</td><td class="p093-stock-code">04</td><td class="p093-stock-code">04-B</td><td class="p093-stock-code">06</td><td class="p093-stock-code">FRE</td><td class="p093-stock-code">RTV</td></tr>');
+    out.push('<tr>' +
+      '<td>' + esc(b.b01 || "") + '</td>' +
+      '<td>' + esc(b.b01B || "") + '</td>' +
+      '<td>' + esc(b.b01CL || "") + '</td>' +
+      '<td>' + esc(b.b02 || "") + '</td>' +
+      '<td>' + esc(b.b03 || "") + '</td>' +
+      '<td>' + esc(b.b04 || "") + '</td>' +
+      '<td>' + esc(b.b04B || "") + '</td>' +
+      '<td>' + esc(b.b06 || "") + '</td>' +
+      '<td>' + esc(b.bFRE || "") + '</td>' +
+      '<td>' + esc(b.bRTV || "") + '</td>' +
+      '</tr>');
+    out.push('</tbody></table>');
+
+    // ---- ตาราง 5 inventoryDay (8 คอลั่น: 68,69,69,69,68,69,69,69)
+    var iv = (inv && inv.ok && inv.row) ? inv.row : null;
+    var stock = mrow ? ((Number(mrow.poQty) || 0) + (iv ? (Number(iv.qty) || 0) : 0) - (Number(mrow.soQty) || 0)) : 0;
+    var metrics = [
+      { label: "IV_AVG", avg: iv ? iv.ivAvg : 0 },
+      { label: "IV_30", avg: iv ? iv.iv30 : 0 },
+      { label: "IV_60", avg: iv ? iv.iv60 : 0 },
+      { label: "IV_90", avg: iv ? iv.iv90 : 0 },
+      { label: "SO_AVG", avg: iv ? iv.soAvg : 0 },
+      { label: "SO_30", avg: iv ? iv.so30 : 0 },
+      { label: "SO_60", avg: iv ? iv.so60 : 0 },
+      { label: "SO_90", avg: iv ? iv.so90 : 0 }
+    ];
+    out.push('<table class="p093-report-table p093-table-inv">');
+    out.push('<colgroup><col style="width:68pt"><col style="width:69pt"><col style="width:69pt"><col style="width:69pt"><col style="width:68pt"><col style="width:69pt"><col style="width:69pt"><col style="width:69pt"></colgroup>');
+    out.push('<tbody>');
+    out.push('<tr>' + metrics.map(function (m) {
+      var avg = Number(m.avg) || 0;
+      var str = avg > 0 ? fmtNum2(avg) : "N/A";
+      return '<td><b>' + m.label + '</b> [' + str + ']</td>';
+    }).join('') + '</tr>');
+    out.push('<tr>' + metrics.map(function (m) {
+      var avg = Number(m.avg) || 0;
+      return '<td>' + fmtNum(avg > 0 ? stock / avg : 0) + '</td>';
+    }).join('') + '</tr>');
+    out.push('</tbody></table>');
+
+    // รวม 3 ตารางเป็นบล็อกเดียว (กันแยกข้ามหน้า)
+    var blockParts = out.splice(blockStart, out.length - blockStart);
+    out.push('<div class="p093-stk-block">' + blockParts.join('') + '</div>');
   }
 
   function closePreview() {

@@ -1800,3 +1800,49 @@ P017: ขยับเลขหน้าเล่มา (bottom 15pt→8pt) + row
 - เชื่อมต่อ: MAC5 (`c1788406814359`, sqlserver `M5CM-AA-01`)
 - Cache: `p041-reserved-so-check.js?v=20261114w`
 - Probe ยืนยัน: search คืน 6 รายการ, detail (RSV16911-0357) = 4 แถว, auto-load + Refresh + modal ทำงาน
+
+## P093 ใบอนุมัติ PO — READY (2026-11-18)
+- User: "P093 พร้อมใช้งาน" → `data/modules.php` P093 status=ready (กลุ่ม `po-document` โมดูลจัดซื้อ)
+- C# source: `demo/file_ref/Tailor_Made/AppApprovePO/frm_ApprovePO_GUI.cs`
+- `assets/js/p093-po-approval.js` (`window.P093PoApproval = { mount }`, cache `?v=20261118s`):
+  - Filter 5 คอลั่น × 2 แถว — row1: วันที่เริ่ม | วันที่สิ้นสุด | เลขที่ PO (span 2) | (ว่าง); row2: รหัส Vendor (span 2) | ชื่อ Vendor (span 2) | ปุ่มค้นหา
+  - ห้าม auto-search — ผู้ใช้กดค้นหาเอง (loading animation); วันตั้น = วันนี้−1 ถึง วันนี้
+  - ตารางหลัก 11 คอลั่น เรียงตามวันที่ PO, แบ่งหน้า 15/หน้า
+  - Preview (A4): ตาราง 1 vendor (80,100,185,185) col3 "ใบอนุมัติ PO" 14pt B center | ตาราง 2 stk 11 คอลั่น (35,25,50,70,155,40,30,30,35,30,50) เส้นหัว+เส้นล่างเท่านั้น, แถว PO loop สีเท่าอ่อน col 2–11, col 7/8/9 ล้าง trailing zero | RE loop ที่ PO loop | ตาราง 3 detail 13 คอลั่น px (60,45,191,40×5,45×4,40) + fixed 716px, th เล็ก 9pt B (col 4/9/10/11), td 10pt, Price 1–5 ตัวหนา, row2/3 col2 ขอบขวา 0, col3 ขอบซ้าย 0 + left, row3 col1 = F_MKTIMPlan (ค่าจริง: 0 → "0", "Just In time" → "Just In time") | ตาราง 4 stock 10 คอลั่น ×55pt, row1 = th (ไม่มีพื้น), row2 โค้ดตัวหนา | ตาราง 5 inventoryDay 8 คอลั่น (68,69,69,69,68,69,69,69)
+  - ตาราง 3/4/5 loop ตามแถวหลัก stk ของตาราง 2 — แต่ละกลุ่ม = `.p093-stk-block` (ไม่แยกข้ามหน้า)
+  - กระดาษ A4: 794×1123px (พื้นขาว, ขอบ #94a3b8, เงา, ห่าง 10px), ล้น → ขึ้นหน้าใหม่อัตโนมัติ (`paginateReport`), print = 1 PO ต่อ 1 หน้า
+- APIs (POST JSON, PHP 7.3, MAC5 `M5CM-AA-01`, `connectionId` = `[REDACTED]`):
+  - `api/p093_search.php` (C# `loadMaster`), `api/p093_detail.php` (C# `getStkPo`), `api/p093_subdetail.php` (C# `getVnosPO`), `api/p093_re.php` (C# `getVnosRE`), `api/p093_stkmaster.php` (C# `get_STKmaster` + `priceperUnit`), `api/p093_balance.php` (C# `getSTKBalance`, N/M คิดใน PHP), `api/p093_inventory.php` (`OPENQUERY(SERVERBI)` → `vw_stkAVGday`)
+- Probe ยืนยัน: search 7 วัน = 139 รายการ; preview PO016910-0127 (4 stk) = 2 หน้า A4; `Page.printToPDF` = 2 หน้า; filter 5 คอลั่น วัด grid placement ถูกต้อง
+
+## P094 PO Dropship — สร้างตาม C# (2026-11-19)
+- C# source: `demo/file_ref/Tailor_Made/AppPOdropship/frm_POdropship_GUI.cs`
+- `assets/js/p094-dropship.js` (`window.P094Dropship = { mount }`, cache `?v=20261119g`):
+  - Launcher: ช่องวันที่ PO (เริ่ม/ถึง) + เลขใบสำคัญ + ปุ่มค้นหา อยู่ระดับเดียวกัน; วันที่ตั้น = วันนี้ทั้ง 2 ช่อง; ห้าม auto-search
+  - ตาราง 8 คอลั่น (ลำดับ C#): วันที่ PO | เลขใบสำคัญ | รหัสลูกค้า | ชื่อลูกค้า | มูลค่า | รายการสินค้า | จำนวนพิมพ์ | เงื่อนไขการชำระเงิน
+  - Preview modal (layout ตาม C# PDF): หัวบริษัท มหาโชค มหาชัย อินเตอร์เทรด + ที่อยู่/โทร-แฟกซ์, ข้อมูลลูกค้า/เลขที่/วันที่ (dd MMMM yyyy ภาษาไทย)/กำหนดการชำระเงิน X วัน, bl็อกต่อ job (ลูกค้า [grade] + ขนส่ง) + ตาราง 7 คอลั่น (No.|สินค้า|Check OK/ASK|จำนวน|ราคา|ส่วนลด|มูลค่า) + รวม/รวมทั้งสิ้น + หมายเหตุ 2 ข้อ + ชื่อรองเท็จ 3 ช่อง + รหัสแบบฟอร์ม FM-PS-00-02
+  - **แบ่งหน้ารายการ 15 รายการ/หน้า** + ปุ่มหน้า `« ‹ 1..N › »` (≥5 ปุ่ม) — ค้นหา/เรียงลำดับ → ย้อนหน้า 1
+  - **Print Preview หลายหน้า A4**: 1 รายการที่เลือก = 1 หน้า (794×1123px บนจอ; พิมพ์ `@page A4 margin 8mm`, `page-break-after`); ปุ่ม Print Preview สีเขียว `#16a34a`
+- APIs (POST JSON, PHP 7.3, MAC5 `M5CM-AA-01`, `connectionId` = `[REDACTED]`):
+  - `api/p094_search.php` (C# `btn_search_Click`): `MIH LEFT JOIN CRE ON CREcode=MIHcus`, `MIHtype='PP'`, `MIHcancel=0`, `MIHvnos LIKE '<poNo>%'`, วันที่ >= / <=, `ORDER BY date, MIHvnos`
+  - `api/p094_detail.php` (C# `getPOjob` + `getPOdetail` + `checking` + `getCRE`): คืน `{poNo, cus{code,nameT,add1,tel,fax}, jobs[{cusCode,cusName,grade,contact,job,jobDescT,jobDescE,details[{stk,desc,quan,unit,uprice,sum,discA,check}]}]`
+- Probe ยืนยัน: search 18 พ.ย. 2569 = 45 รายการ; preview PMTO6911-0013 และ PO016911-0436 — 1 job block, check OK/ASK, รวมทั้งสิ้น, FM-PS-00-02, modal เปิดถูกต้อง
+- **Status = ready** — ผู้ใช้ประกาศ "P094 พร้อมใช้งาน" (2026-11-19); ตั้ง `data/modules.php` P094 status ready
+
+## P040 ตรวจสอบค้างส่งสินค้า LOT — สร้างตาม C# (2026-11-20)
+- C# source: `demo/file_ref/Tailor_Made/AppCheckCPSProductLot/FrmCheckCPSproductLotGUI.cs` (อ่าน/วิเคราะห์แล้วนำมาใช้)
+- UI: `assets/js/p040-lot-pending.js` (`window.P040LotPending = { mount }`, cache `?v=20261120h`)
+  - สร้างจาก `demo/P040-demo.html` (mock เดิม) แล้วเปลี่ยนเป็นข้อมูล MAC-5 จริง
+  - Launcher: 17 checkbox กลุ่มสินค้า (1056, 1057, 1067, 1068, 1069, 1070, 1074, 1078, 1101, 1108, 1111, 1113, 1170, 1194, 1298, 3000, ACC — 1056 checked โดยตั้น) + 3 radio รับสินค้า (เสร็จแล้ว/ยังไม่เสร็จ/ไม่ใช้ filter) + ปุ่ม Search
+  - ลบการ์ดสูมมารี 4 ใบ; กลุ่ม checkbox `repeat(auto-fill,minmax(90px,1fr))` responsive; ปุ่ม Print Preview สีเขียว `#16a34a` ย้ายมาหัวตาราง (`.p040-panel-header`) + loading animation ปุ่ม Search/Preview (spinner 400ms)
+  - ตาราง 9 คอลั่น 15 รายการ/หน้า + pager `« ‹ 1..N › »` (≥5 ปุ่ม); ค้นหา/เรียง → หน้า 1
+  - **Print Preview มีปุ่มย่อ/ขยาย**: `−` / `+` / `พอดีหน้า` + แสดง % (25–200% step 10, เปิดมา = พอดีหน้าจอ, Ctrl+ล้อเมาส์) — zoom ด้วย `transform:scale()` และ print reset `transform:none`
+  - **แก้ modal จมหายด้านบน**: `.content.page-anim` มี `transform` ทำให้ `position:fixed` อ้างกรอบ ancestor → ย้าย modal ไป `#p040ModalHost` (class `p040-app`) ท้าย `body` + overlay `flex/overflow:auto` + box `margin:auto;max-height:calc(100vh-40px)` (cache `?v=20261120k`)
+  - **จำนวนรายการชิดปุ่ม Preview + ตัด chip เลือก** (ผู้ใช้สั่ง): badge `#p040ResultBadge` อยู่ในกลุ่ม `.p040-header-actions` (flex, gap 12px) ชิดกับปุ่ม Print Preview ที่หัวตาราง; ตัด `.p040-footer-chip`/`#p040SelectedText` ("เลือก: เลขที่ใบสำคัญ · รหัสสินค้า") ท้ายตารางออก — footer เหลือ "แสดง N รายการ" (cache `?v=20261120l`)
+  - **ปุ่ม X ที่ title bar ของ modal** — ถูกลบออกแล้วผู้ใช้สั่ง "ย้อนกลับ" → **ตั้นคืน** ปุ่ม X (`.p040-modal-close`/`#p040ClosePreview`) (cache `?v=20261120n`)
+  - **รายงาน preview ตาม C# `bgWorker_DoWork` + `_events.OnEndPage`**: A4 landscape 297×210mm แบบ flow หลายหน้า — ทุกหน้ามี หัว "รายงานค้างส่งสินค้าลอต" 18pt BOLD + "วันที่ dd MMMM พ.ศ. / จากกลุ่ม ..." 14pt BOLD + หัวตาราง 8 คอลั่น 80/40/65/70/345/60/60/60pt (มีเส้น) + แถวข้อมูล 14pt ธรรมดา (ไม่มีเส้น) + "หน้า N" มุมขวาบน (C# x=800, y=550); แบ่งหน้าโดยวัด `scrollHeight > clientHeight` หลังรอฟอนต์โหลด; พิมพ์ผ่าน `#p040PrintRoot` (clone ท้าย body) + `@page A4 landscape` + `page-break-after:always`
+- APIs (POST JSON, PHP 7.3, MAC5 `M5CM-AA-01`, `connectionId` = `[REDACTED]`):
+  - `api/p040_groups.php` (C# `getSTKgroup`): `SELECT DISTINCT LEFT(STKgroup,4) FROM STK WHERE STKsnsv=4 AND (STKlock=0 OR STKhide=0)`
+  - `api/p040_search.php` (C# `btn_search_Click`): `SELECT *, (tableA.unit-tableA.unit2) AS sumUnit FROM (SELECT CPS.CPSvnosID, CPS.CPSlistNo, CPS.CPSstkID, STK.STKgroup, STK.STKdescT1, MIL.MILuname, (CPS.CPSstkREQ/MIL.MILconv) AS [unit], (subquery COUNT MIS JOIN MIL type='IS' ไม่ใช่ RSV) AS [unit2] FROM CPS LEFT JOIN STK LEFT JOIN MIL WHERE CPS.CPSclearALL=0 AND LEFT(STKgroup,4) IN (...) **)) AS tableA** + เงื่อนไขรับ (unit-unit2 = 0 / > 0) — **ORDER BY ใน derived table ล้มเหลวผ่าน ODBC Driver 18 → สอร์ตทำใน PHP (`usort` ตาม CPSvnosID, CPSlistNo)**
+- Probe ยืนยัน: กลุ่ม 1056 → ทั้งหมด 73 รายการ / ค้างส่ง 48 / เสร็จ 25; 15/หน้า (หน้า 1 = 15, หน้า 2 = 15), pager 8 ปุ่ม; **รายงาน 73 รายการ = 3 หน้า (25/25/23 แถว), `Page.printToPDF` = 3 หน้า 841.9×595.9pt, หัวรายงานซ้ำทุกหน้า + "หน้า 1..3" มุมขวาบน**
+- **Status = ready** — ผู้ใช้ประกาศ "P040 พร้อมใช้งาน" (2026-11-20); ตั้ง `data/modules.php` P040 status ready (ทั้ง 2 กลุ่ม: ตรวจสอบข้อมูล + รายการระดับ SCM)

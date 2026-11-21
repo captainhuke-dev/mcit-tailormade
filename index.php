@@ -228,8 +228,10 @@ $user = ['name' => 'สมชาย', 'initial' => 'ส'];
   <script src="assets/js/p127-barcode-store.js?v=20261113p"></script>
   <script src="assets/js/p116-repeat-order.js?v=20261114k"></script>
   <script src="assets/js/p041-reserved-so-check.js?v=20261114w"></script>
-  <script src="assets/js/p093-po-approval.js?v=20261117z"></script>
+  <script src="assets/js/p093-po-approval.js?v=20261118s"></script>
+  <script src="assets/js/p040-lot-pending.js?v=20261120n"></script>
+  <script src="assets/js/p094-dropship.js?v=20261119g"></script>
   <script src="assets/js/font-settings.js"></script>
-  <script src="assets/js/portal.js?v=20261116a"></script>
+  <script src="assets/js/portal.js?v=20261120a"></script>
 </body>
 </html>
